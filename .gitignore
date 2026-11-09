@@ -1,0 +1,16 @@
+# Android and local tools
+.gradle/
+.idea/
+local.properties
+**/build/
+.tools/
+*.iml
+*.apk
+*.aab
+*.jks
+*.keystore
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
