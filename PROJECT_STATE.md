@@ -15,9 +15,9 @@
 - 내용 검증: `node scripts/validate-content.cjs` → PASS (6 characters, 205 research records, 20 role prompts).
 - Gradle Wrapper: `scripts/bootstrap-gradle.ps1`로 생성 완료(gradlew, gradlew.bat, gradle-wrapper.jar, SHA-256 고정). Windows PowerShell 5.1에서 실패하던 세 지점(java -version stderr, Invoke-WebRequest 기본 파싱, settings.gradle BOM)을 스크립트에서 수정했다.
 - 명령줄 빌드: 6명 병합본 기준 `.\gradlew.bat :app:assembleDebug` 성공, app/build/outputs/apk/debug/app-debug.apk 생성. 병합 직후에는 CharacterScreens.kt 101행의 `'다.'` 문자 리터럴 때문에 컴파일이 실패해 `"다."` 문자열로 고쳤다.
-- 단위 테스트: `:app:testDebugUnitTest`는 테스트 소스가 없어 NO-SOURCE. 통과한 테스트는 없다.
-- Lint: `:app:lintDebug` 오류 0, 경고 7(앱 아이콘 없음, 사용하지 않는 리소스, Overdraw, 데이터 추출 규칙 등). 보고서: app/build/reports/lint-results-debug.html.
-- 에뮬레이터 실행: 6명 병합본을 사용자가 Android Studio Run으로 실행해 6명 선택과 프로필 표시가 동작함을 확인했다(사용자 보고). 게임 시작 버튼은 러닝 엔진이 없어 눈에 띄는 변화가 없다. 작은 화면 확인은 아직 하지 않았다.
+- 단위 테스트: 러너 추가 후 `:app:testDebugUnitTest` 12개 통과, 실패 0 (RunnerEngineTest).
+- Lint: `:app:lintDebug` 오류 0, 경고 6(앱 아이콘 없음, 사용하지 않는 리소스 2, Overdraw, 데이터 추출 규칙, 가로 고정 DiscouragedApi). 보고서: app/build/reports/lint-results-debug.html.
+- 에뮬레이터 실행: 6명 병합본을 사용자가 Android Studio Run으로 실행해 6명 선택과 프로필 표시가 동작함을 확인했다(사용자 보고). 이때는 러닝 엔진이 없었다. 러너 추가 후 결과는 아래 "3단계 B 공통 러너"를 본다. 작은 화면 확인은 아직 하지 않았다.
 - 설치된 Android Studio의 JBR은 Java 25로 확인됐다. 고정 Gradle 8.9 프로젝트에는 Gradle JDK 17을 별도로 선택한다. AGP 업그레이드 권유 알림은 버전 고정을 위해 따르지 않는다.
 - GitHub 원격: https://github.com/juhee34/mp-project 에 팀원 커밋이 올라와 있다. 이번 B 변경(Wrapper·스크립트 수정·컴파일 수정)은 아직 커밋하지 않았다.
 
@@ -26,9 +26,18 @@
 현재 화면은 개발 시작용이며 플레이 가능한 게임이 아니다.
 
 ## 다음 작업
-1. Wrapper 파일과 스크립트·컴파일 수정을 커밋해 팀원이 같은 빌드 경로를 쓰게 한다.
-2. 6명 병합본을 에뮬레이터에서 실행해 6명 선택·프로필·GameActivity 진입을 확인한다.
-3. 3단계 B: 6명 전원을 유지한 공통 러너(자동 전진, 점프, 장애물, 충돌, 점수, 재시작, 일시정지)를 GameActivity에 구현한다.
+1. 사용자가 실기기 또는 에뮬레이터에서 6명 각각으로 한 판씩 플레이하고 난이도(속도·장애물 간격)를 체감 확인한다.
+2. 7단계 B 전 결과 화면/기록 저장 설계: RunResult(runId) 중복 방지와 CharacterProgress. 현재 기록은 저장하지 않는다.
+3. 4단계 B: 스프라이트 규격 확정 후 CharacterPortrait 자리를 애니메이션 스프라이트로 교체한다.
+
+## 3단계 B 공통 러너 (2026-11-09)
+- 파일: game/RunnerEngine.kt(순수 Kotlin 상태·물리), game/RunnerView.kt(Canvas 그리기·터치), game/GameActivity.kt(연결용 안내 화면을 러너로 교체), res/values/game_strings.xml, app/src/test/.../RunnerEngineTest.kt. build.gradle.kts에 testImplementation junit 4.13.2 추가.
+- 흐름: 준비(탭하면 출발) → 달리기(탭 점프, 오른쪽 위 일시정지) → 충돌 시 결과(0.6초 뒤 탭하면 새 판, 뒤로가기는 선택 화면). 앱이 백그라운드로 가면 자동 일시정지. GameActivity는 가로 고정.
+- 6명 동일 물리: RunnerEngine은 캐릭터 입력을 받지 않는다. 캐릭터는 그림 색상과 이름 표시에만 쓰인다. ID 계약(EXTRA_CHARACTER_ID, 잘못된 ID는 finish)은 그대로다.
+- 수치(월드 단위): 중력 2400, 점프 속도 820(최고 140, 체공 0.68초), 속도 260→520(초당 +6), 장애물 높이 30~70·너비 24~44, 간격 ≥ 속도×(체공+0.35초)+44. 1/120초 고정 스텝, 프레임 최대 1/20초.
+- 테스트로 확인: 점프 최고점·착지, 이중 점프 불가, 최고 속도에서도 가장 큰 장애물 통과 가능, 장애물 간격 ≥ 착지 후 재점프 거리, 자동 플레이 봇이 시드 20개 모두 180초 생존, 충돌 시 종료, 재시작 지연과 상태 초기화, 일시정지, 프레임 지연 제한, 프레임률 무관, 같은 시드 같은 코스.
+- 에뮬레이터(Medium_Phone, Claude가 adb로 조작): 치즈로 준비·달리기·충돌 결과·새 판·일시정지(2초간 화면 동일)·뒤로가기 후 선택 화면 복귀 확인, 앱 크래시 로그 없음. 나머지 5명으로의 진입과 사람 손 플레이 감각은 확인하지 않았다.
+- 아직 없음: 기록 저장, 결과 화면 Activity, 캐릭터별 배경·음악, 스프라이트 애니메이션, 효과음. 화면 크기 변경으로 Activity가 다시 만들어지면 진행 중인 판은 사라진다.
 
 ## 2026-11-09 구성 변경
 - 사용자 확정: 라일·치즈·포포·루미·누누·피코 6명. 첫 시연부터 전원 선택 및 플레이 목표.
