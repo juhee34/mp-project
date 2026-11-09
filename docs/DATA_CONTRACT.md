@@ -1,7 +1,7 @@
 # 공동 데이터 계약
 
 ## ID
-mint, cheese, mochi, bolt, lumi, popo, nunu, bam, piko, sol — 변경 금지. 표시 이름과 ID를 분리한다.
+mint, cheese, popo, lumi, nunu, piko — 변경 금지. 표시 이름과 ID를 분리한다.
 
 ## 캐릭터
 app/src/main/assets/content/characters.json이 앱의 캐릭터 데이터다.
@@ -23,8 +23,11 @@ path=null인 파일은 로드하지 않는다. planned 항목은 완료 통계�
 
 ## 상태 및 저장 제안
 RunResult(runId, characterId, distance, score)와 CharacterProgress(characterId, totalDistance, bestScore, readStoryIds)를 분리한다.
-runId별 중복 저장 방지. 실패 거리도 반영. 10명 동일 점프/속도/기본 충돌 판정. 미접속 관계 감소 없음.
+runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속도/기본 충돌 판정. 미접속 관계 감소 없음.
 
 ## 화면 계약
-소개 → 10명 선택 → game(characterId) → 결과 → 도감/재시작.
+소개 → 6명 선택 → game(characterId) → 결과 → 도감/재시작.
 정의되지 않은 ID는 선택 화면으로 복귀한다. 원시 JSON과 Activity 사이의 의존을 Repository로 제한한다.
+
+## 기획 합의
+상세 필드 제안은 PROJECT_PLAN.md를 따른다. 기존 JSON 키 id는 유지하며 화면 전달값 characterId와 같은 식별값이다. 전체 키 변경은 B와 합의 후 진행한다.

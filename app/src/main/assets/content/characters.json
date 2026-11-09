@@ -34,36 +34,19 @@
     "assetStatus": "planned"
   },
   {
-    "id": "mochi",
-    "name": "모찌",
-    "species": "토끼",
-    "home": "달빛 우체국의 다락방",
-    "personality": "낯을 가리지만 남의 말을 끝까지 듣는다. 편지 봉투의 모서리를 꼭 맞추는 습관이 있다.",
-    "summary": "모찌는 배달되지 않는 편지를 열어 정답을 확인하는 대신 여러 동네에 물어본다. 모두가 자기 편지일지도 모른다고 생각하지만 조금씩 다르다. 편지는 누군가를 고르는 시험이 아니라 함께 앉을 자리를 알리는 초대장임이 드러난다. 모찌도 마지막 빈칸에 자기 이름을 적는다.",
-    "color": "#CEBCE2",
+    "id": "popo",
+    "name": "포포",
+    "species": "펭귄",
+    "home": "눈꽃 항구의 조개지붕집",
+    "personality": "조용히 관찰하고 마음에 드는 것은 오래 간직한다. 무표정해 보여도 발끝은 자주 들썩인다.",
+    "summary": "포포는 여름을 뜨겁고 시끄러운 계절이라고 상상한다. 여행에서 만난 친구들은 전부 다른 여름을 이야기한다. 하나의 정확한 여름 대신 서로 다른 소리를 담아 돌아와 눈밭에 작은 듣는 자리를 만든다. 포포의 집은 여전히 차갑고, 조금 더 풍부해진다.",
+    "color": "#7295B0",
     "portraitPath": null,
     "spritePath": null,
-    "backgroundId": "mochi",
-    "musicId": "mochi",
+    "backgroundId": "popo",
+    "musicId": "popo",
     "storyIds": [
-      "mochi_intro"
-    ],
-    "assetStatus": "planned"
-  },
-  {
-    "id": "bolt",
-    "name": "볼트",
-    "species": "로봇",
-    "home": "별기차가 쉬어 가는 정류장 옆 정비소",
-    "personality": "꼼꼼하고 말은 짧다. 농담을 조금 늦게 이해하고 혼자 다시 웃는다.",
-    "summary": "볼트는 오지 않는 기차를 기다리는 동안 소리를 빠짐없이 수집한다. 정확히 맞춘 연주는 너무 빽빽해서 친구들의 발소리가 들리지 않는다. 몇 음을 비우자 기다리는 시간이 음악의 일부가 된다. 기차가 아직 오지 않은 날에도 정류장은 빈 곳이 아니다.",
-    "color": "#91B0C5",
-    "portraitPath": null,
-    "spritePath": null,
-    "backgroundId": "bolt",
-    "musicId": "bolt",
-    "storyIds": [
-      "bolt_intro"
+      "popo_intro"
     ],
     "assetStatus": "planned"
   },
@@ -85,29 +68,12 @@
     "assetStatus": "planned"
   },
   {
-    "id": "popo",
-    "name": "포포",
-    "species": "펭귄",
-    "home": "눈꽃 항구의 조개지붕집",
-    "personality": "조용히 관찰하고 마음에 드는 것은 오래 간직한다. 무표정해 보여도 발끝은 자주 들썩인다.",
-    "summary": "포포는 여름을 뜨겁고 시끄러운 계절이라고 상상한다. 여행에서 만난 친구들은 전부 다른 여름을 이야기한다. 하나의 정확한 여름 대신 서로 다른 소리를 담아 돌아와 눈밭에 작은 듣는 자리를 만든다. 포포의 집은 여전히 차갑고, 조금 더 풍부해진다.",
-    "color": "#7295B0",
-    "portraitPath": null,
-    "spritePath": null,
-    "backgroundId": "popo",
-    "musicId": "popo",
-    "storyIds": [
-      "popo_intro"
-    ],
-    "assetStatus": "planned"
-  },
-  {
     "id": "nunu",
     "name": "누누",
     "species": "유령",
     "home": "안개 도서관의 책갈피방",
     "personality": "소심하면서도 장난기가 있다. 보이지 않는 척 숨었다가 먼저 웃음을 흘린다.",
-    "summary": "발자국을 남기려 여러 물건을 들고 뛰지만 누누의 자국은 금방 사라진다. 치즈가 웃음소리를 흉내 내고 모찌가 자주 머물던 자리를 비워 두면서, 누누는 흔적의 다른 모습을 발견한다. 보이지 않는 장난은 여전히 즐기고, 필요할 때는 리본을 흔들어 위치를 알린다.",
+    "summary": "발자국을 남기려 여러 물건을 들고 뛰지만 누누의 자국은 금방 사라진다. 치즈가 웃음소리를 흉내 내고 민트가 누누가 자주 머물던 자리를 비워 두면서, 누누는 흔적의 다른 모습을 발견한다. 보이지 않는 장난은 여전히 즐기고, 필요할 때는 리본을 흔들어 위치를 알린다.",
     "color": "#C9C5E2",
     "portraitPath": null,
     "spritePath": null,
@@ -115,23 +81,6 @@
     "musicId": "nunu",
     "storyIds": [
       "nunu_intro"
-    ],
-    "assetStatus": "planned"
-  },
-  {
-    "id": "bam",
-    "name": "밤이",
-    "species": "곰",
-    "home": "잠든 과수원의 찻잔 오두막",
-    "personality": "차분하고 다정하지만 새로운 조리법에는 고집이 있다. 졸리면 문장의 끝이 느려진다.",
-    "summary": "밤이는 마지막 꽃을 아끼느라 차를 내지 못한다. 바람에 꽃이 흩어진 뒤 친구들이 가져온 낯선 잎으로 차를 끓인다. 향은 전과 다르다. 밤이는 예전 차의 이름을 지우지 않고 새 차 옆에 적어 놓는다. 바뀐 것과 남은 것이 함께 자리를 얻는다.",
-    "color": "#B38B6A",
-    "portraitPath": null,
-    "spritePath": null,
-    "backgroundId": "bam",
-    "musicId": "bam",
-    "storyIds": [
-      "bam_intro"
     ],
     "assetStatus": "planned"
   },
@@ -149,23 +98,6 @@
     "musicId": "piko",
     "storyIds": [
       "piko_intro"
-    ],
-    "assetStatus": "planned"
-  },
-  {
-    "id": "sol",
-    "name": "솔",
-    "species": "아기 용",
-    "home": "불씨 온실의 벽돌 둥지",
-    "personality": "의욕이 넘치고 작은 일에도 감탄한다. 자랑하다가 민망하면 코에서 둥근 연기가 나온다.",
-    "summary": "솔이 연습한 큰 불꽃에 꽃들이 잎을 오므린다. 불을 없애려 애쓰는 대신 누누와 밤이가 함께 여러 밝기를 시험한다. 마지막 밤에는 작은 불씨와 달빛이 섞여 꽃들이 제 속도로 열린다. 솔은 크게 빛나는 것도 좋아하지만 이제 선택할 수 있다.",
-    "color": "#D88F7F",
-    "portraitPath": null,
-    "spritePath": null,
-    "backgroundId": "sol",
-    "musicId": "sol",
-    "storyIds": [
-      "sol_intro"
     ],
     "assetStatus": "planned"
   }

@@ -59,15 +59,15 @@ class MainActivity : Activity() {
     }
     private fun showIntro() {
         route = "intro"
-        val body = screen("열 친구와 작은 모험")
+        val body = screen("여섯 친구와 작은 모험")
         text(body, "친구를 고르고, 그 친구의 고향과 이야기를 만나세요.")
-        text(body, "현재는 캐릭터 10명과 화면 연결을 준비한 시작 프로젝트입니다. 달리기·음악·완성 배경은 아직 구현되지 않았습니다.", 14)
-        button(body, "친구 10명 만나기") { showSelect() }
+        text(body, "현재는 캐릭터 6명과 화면 연결을 준비한 시작 프로젝트입니다. 달리기·음악·완성 배경은 아직 구현되지 않았습니다.", 14)
+        button(body, "친구 6명 만나기") { showSelect() }
     }
     private fun showSelect() {
         route = "select"
         val body = screen("오늘 함께할 친구")
-        text(body, "10명 모두 선택할 수 있습니다. 현재 그림은 색상 표식으로 대신합니다.", 14)
+        text(body, "6명 모두 선택할 수 있습니다. 현재 그림은 색상 표식으로 대신합니다.", 14)
         repository.characters.forEach { friend ->
             val card = Button(this).apply {
                 text = friend.name + " · " + friend.species + "\n" + friend.home

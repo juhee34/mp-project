@@ -30,33 +30,18 @@
     }
   },
   {
-    "characterId": "mochi",
+    "characterId": "popo",
     "background": {
-      "id": "mochi",
+      "id": "popo",
       "path": null,
       "status": "planned",
-      "brief": "연보라 황혼, 달 모양 우체통, 구름 종이배가 흐르는 수로, 먼 다락 창문. 라벤더·은빛·버터색."
+      "brief": "분홍빛 극야 하늘, 푸른 눈언덕, 조개지붕 항구, 낮게 뜬 작은 달. 얼음파랑·복숭아·아이보리."
     },
     "music": {
-      "id": "mochi",
+      "id": "popo",
       "path": null,
       "status": "planned",
-      "brief": "90 BPM. 첼레스타, 부드러운 클라리넷, 작은 종. 물음처럼 끝나는 선율이 후반에 따뜻한 답을 얻는다."
-    }
-  },
-  {
-    "characterId": "bolt",
-    "background": {
-      "id": "bolt",
-      "path": null,
-      "status": "planned",
-      "brief": "청록빛 정류장, 초승달 철길, 작은 정비 도구, 반딧불 전구. 슬레이트·청록·앰버."
-    },
-    "music": {
-      "id": "bolt",
-      "path": null,
-      "status": "planned",
-      "brief": "116 BPM. 둥근 말렛 신스와 오르골, 낮은 클릭 리듬. 기계적 반복 사이에 쉼표를 두고 차갑지 않게 편곡한다."
+      "brief": "92 BPM. 펠트 피아노와 유리 같은 벨, 낮은 패드. 차가운 음색 아래 포근한 화성을 둔다."
     }
   },
   {
@@ -75,21 +60,6 @@
     }
   },
   {
-    "characterId": "popo",
-    "background": {
-      "id": "popo",
-      "path": null,
-      "status": "planned",
-      "brief": "분홍빛 극야 하늘, 푸른 눈언덕, 조개지붕 항구, 낮게 뜬 작은 달. 얼음파랑·복숭아·아이보리."
-    },
-    "music": {
-      "id": "popo",
-      "path": null,
-      "status": "planned",
-      "brief": "92 BPM. 펠트 피아노와 유리 같은 벨, 낮은 패드. 차가운 음색 아래 포근한 화성을 둔다."
-    }
-  },
-  {
     "characterId": "nunu",
     "background": {
       "id": "nunu",
@@ -105,21 +75,6 @@
     }
   },
   {
-    "characterId": "bam",
-    "background": {
-      "id": "bam",
-      "path": null,
-      "status": "planned",
-      "brief": "노란 잎 과수원, 거대한 찻잔 모양 지붕, 낮게 흐르는 찻김. 밤색·세이지·버터색."
-    },
-    "music": {
-      "id": "bam",
-      "path": null,
-      "status": "planned",
-      "brief": "86 BPM. 낮은 클라리넷, 칼림바, 부드러운 목제 타악. 느린 호흡과 살짝 둥근 리듬."
-    }
-  },
-  {
     "characterId": "piko",
     "background": {
       "id": "piko",
@@ -132,21 +87,6 @@
       "path": null,
       "status": "planned",
       "brief": "112 BPM. 우쿨렐레와 물방울 말렛, 가벼운 스네어 브러시. 튀지만 서두르지 않는 당김음."
-    }
-  },
-  {
-    "characterId": "sol",
-    "background": {
-      "id": "sol",
-      "path": null,
-      "status": "planned",
-      "brief": "둥근 유리 온실, 밤에 피는 꽃, 따뜻한 벽돌 길, 작은 불씨 등. 코랄·딥틸·호박색."
-    },
-    "music": {
-      "id": "sol",
-      "path": null,
-      "status": "planned",
-      "brief": "100 BPM. 덜시머, 아주 부드러운 호른, 낮은 손북. 작은 음형에서 시작해 공간을 넓히되 웅장한 전투곡으로 가지 않는다."
     }
   }
 ]
