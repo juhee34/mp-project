@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="characters_brand">TINY RUNNERS</string>
+    <string name="characters_intro_eyebrow">함께 달리는 작은 모험</string>
+    <string name="characters_intro_title">친구들의\n작은 세계</string>
+    <string name="characters_intro_body">오늘은 누구와 떠날까요? 친구를 골라 어디에 살고, 어떤 마음을 품고 있는지 만나 보세요.</string>
+    <string name="characters_intro_friends">처음부터 함께할 수 있는 친구 %1$d명</string>
+    <string name="characters_choose">친구 고르기</string>
+    <string name="characters_select_title">오늘 함께할 친구</string>
+    <string name="characters_select_hint">%1$d명 모두 선택할 수 있어요. 친구를 선택한 뒤 아래 시작 버튼을 눌러 주세요.</string>
+    <string name="characters_placeholder_notice">캐릭터 초상은 임시 픽셀 이미지예요.</string>
+    <string name="characters_placeholder_portrait">임시 픽셀 초상</string>
+    <string name="characters_name_and_species">%1$s · %2$s</string>
+    <string name="characters_selected_name">%1$s · 선택됨</string>
+    <string name="characters_home">사는 곳</string>
+    <string name="characters_personality">성격</string>
+    <string name="characters_story_outline">이야기 개요</string>
+    <string name="characters_run">이 친구와 달리기</string>
+    <string name="characters_run_pending">달리기 화면은 연결 준비 중이에요.</string>
+    <string name="characters_load_error">캐릭터 정보를 읽을 수 없어요.</string>
+    <string name="characters_back_intro">소개로 돌아가기</string>
+    <string name="characters_back_selection">다른 친구 고르기</string>
+    <string name="characters_profile">이 친구 이야기 보기</string>
+</resources>

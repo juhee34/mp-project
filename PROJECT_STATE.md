@@ -29,3 +29,15 @@ docs/START_HERE.md에 따라 JDK 17과 SDK 35를 준비하고 wrapper 생성, Gr
 - 캐릭터·서사·배경/음악 명세·설정집을 6명으로 정리하고 제외 캐릭터와의 관계를 수정했다.
 - docs/PROJECT_PLAN.md에 A 역할 기획, 화면 흐름, 데이터 규격 제안, 미확정 과제 조건을 기록했다.
 - 게임 기능·정식 소재는 이 변경으로 완성되지 않는다. Android 실행 검증은 별도 필요하다.
+
+## 캐릭터 화면 인수인계
+
+- 화면 담당 파일은 `app/src/main/java/com/tinyrunners/school/characters/`의 `CharacterScreens.kt`와 `CharacterPortrait.kt`, 그리고 `app/src/main/res/values/character_screen_strings.xml`이다. 화면은 Repository의 목록을 그대로 표시한다. 프로필에서 이름·사는 곳·성격·이야기 개요를 확인할 수 있고, 목록으로 돌아가면 이전 위치와 선택 표시를 복원한다.
+- `MainActivity`가 화면 호스트와 뒤로가기·상태 복원을 연결한다. 팀원은 `MainActivity.onStartRun(characterId: String)`의 준비 안내를 게임 진입 코드로 교체한다. 별도 게임 Activity를 시작하면 게임에서 뒤로 갈 때 기존 프로필을 그대로 쓸 수 있다. 콜백에는 표시 이름이나 목록 위치 대신 데이터 계약의 캐릭터 ID가 전달된다.
+- 임시 초상은 캐릭터의 기존 색상을 사용한다. 정식 초상이 준비되면 Repository에서 데이터 계약의 `portraitPath`를 읽고 `CharacterScreens.portraitArtwork`에서 불러온다. 파일이 없는 캐릭터에는 `CharacterPortrait`를 쓰고 임시 안내를 자산 상태에 맞춰 갱신한다.
+
+## A 선택 화면 연결 구현
+- 카드에 이름·성격·고향·선택 상태, 목록 아래 시작/프로필 버튼. 임시 초상 표시와 ScrollView 유지.
+- MainActivity가 GameActivity로 characterId를 Intent extra로 전달한다. 수신 ID 검증 후 B 연결용 화면을 표시하며 실제 러닝 엔진은 아직 없다.
+- 6명 데이터 순서와 XML 검사 통과. Gradle daemon/ADB 연결 오류로 컴파일·실제 6명 탭·작은 화면 검증은 미실시.
+- B 연결 규격과 기기 검증 절차: docs/A_SCREEN_HANDOFF.md.
