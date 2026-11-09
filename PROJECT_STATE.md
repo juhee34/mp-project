@@ -11,18 +11,24 @@
 - 내용 검증 도구, Windows 개발 환경 준비 절차
 
 ## 검증 상태
-- 내용 검증: 생성 후 실행 로그를 확인할 것.
-- Gradle 빌드와 Android 실행: 미검증. 현재 작업 환경에 유효한 Android SDK가 없고 외부 다운로드가 실패했다.
-- Gradle Wrapper JAR와 표준 실행 스크립트: 아직 없음. scripts/bootstrap-gradle.ps1로 정상 인터넷 환경에서 생성해야 한다.
-- 설치된 Android Studio의 JBR은 Java 25로 확인됐다. 고정 Gradle 8.9 프로젝트에는 Gradle JDK 17을 별도로 선택한다.
-- GitHub 원격 업로드: 아직 미완료. 인증 상태 확인 후 README 상태와 함께 갱신한다.
+2026-11-09 B(Claude) 환경 확인 기준. JDK는 Eclipse Temurin 17.0.21(`JAVA_HOME`을 명령에만 지정), SDK는 Platform 35.
+- 내용 검증: `node scripts/validate-content.cjs` → PASS (6 characters, 205 research records, 20 role prompts).
+- Gradle Wrapper: `scripts/bootstrap-gradle.ps1`로 생성 완료(gradlew, gradlew.bat, gradle-wrapper.jar, SHA-256 고정). Windows PowerShell 5.1에서 실패하던 세 지점(java -version stderr, Invoke-WebRequest 기본 파싱, settings.gradle BOM)을 스크립트에서 수정했다.
+- 명령줄 빌드: 6명 병합본 기준 `.\gradlew.bat :app:assembleDebug` 성공, app/build/outputs/apk/debug/app-debug.apk 생성. 병합 직후에는 CharacterScreens.kt 101행의 `'다.'` 문자 리터럴 때문에 컴파일이 실패해 `"다."` 문자열로 고쳤다.
+- 단위 테스트: `:app:testDebugUnitTest`는 테스트 소스가 없어 NO-SOURCE. 통과한 테스트는 없다.
+- Lint: `:app:lintDebug` 오류 0, 경고 7(앱 아이콘 없음, 사용하지 않는 리소스, Overdraw, 데이터 추출 규칙 등). 보고서: app/build/reports/lint-results-debug.html.
+- 에뮬레이터 실행: 6명 병합본을 사용자가 Android Studio Run으로 실행해 6명 선택과 프로필 표시가 동작함을 확인했다(사용자 보고). 게임 시작 버튼은 러닝 엔진이 없어 눈에 띄는 변화가 없다. 작은 화면 확인은 아직 하지 않았다.
+- 설치된 Android Studio의 JBR은 Java 25로 확인됐다. 고정 Gradle 8.9 프로젝트에는 Gradle JDK 17을 별도로 선택한다. AGP 업그레이드 권유 알림은 버전 고정을 위해 따르지 않는다.
+- GitHub 원격: https://github.com/juhee34/mp-project 에 팀원 커밋이 올라와 있다. 이번 B 변경(Wrapper·스크립트 수정·컴파일 수정)은 아직 커밋하지 않았다.
 
 ## 미완료
 러닝 엔진/충돌/점수/저장/음악 재생/정식 아트/배경 6종/테마 6곡/완성 에피소드.
 현재 화면은 개발 시작용이며 플레이 가능한 게임이 아니다.
 
 ## 다음 작업
-docs/START_HERE.md에 따라 JDK 17과 SDK 35를 준비하고 wrapper 생성, Gradle sync, 첫 빌드를 확인한다. 그 다음 모든 6명을 유지한 러닝 기능을 구현한다.
+1. Wrapper 파일과 스크립트·컴파일 수정을 커밋해 팀원이 같은 빌드 경로를 쓰게 한다.
+2. 6명 병합본을 에뮬레이터에서 실행해 6명 선택·프로필·GameActivity 진입을 확인한다.
+3. 3단계 B: 6명 전원을 유지한 공통 러너(자동 전진, 점프, 장애물, 충돌, 점수, 재시작, 일시정지)를 GameActivity에 구현한다.
 
 ## 2026-11-09 구성 변경
 - 사용자 확정: 라일·치즈·포포·루미·누누·피코 6명. 첫 시연부터 전원 선택 및 플레이 목표.

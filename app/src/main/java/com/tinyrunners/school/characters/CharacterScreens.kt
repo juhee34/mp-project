@@ -98,7 +98,7 @@ internal class CharacterScreens(
             val card = Button(context).apply {
                 text = SpannableStringBuilder(title).apply {
                     setSpan(StyleSpan(Typeface.BOLD), 0, title.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    append('\n').append(friend.personality.substringBefore('다.') + if (friend.personality.contains("다.")) "다." else "")
+                    append('\n').append(friend.personality.substringBefore("다.") + if (friend.personality.contains("다.")) "다." else "")
                     append('\n').append(friend.home)
                 }
                 textSize = 16f
