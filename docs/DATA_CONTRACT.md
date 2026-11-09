@@ -31,3 +31,21 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 
 ## 기획 합의
 상세 필드 제안은 PROJECT_PLAN.md를 따른다. 기존 JSON 키 id는 유지하며 화면 전달값 characterId와 같은 식별값이다. 전체 키 변경은 B와 합의 후 진행한다.
+
+## A 역할 콘텐츠 필드 보강
+기존 id 및 자산/이야기 참조는 유지한다. characterId는 화면 전달 시 같은 id를 뜻한다. 새 필드는 콘텐츠 전용이며 이번 작업에서 Kotlin 모델이나 화면 코드는 변경하지 않는다. B가 읽어 사용할 시점을 합의한다.
+
+| 필드 | 형태 | 의미 |
+| --- | --- | --- |
+| habits | 문자열 배열 | 생활 습관 |
+| cherishedItem | 문자열 | 애착 소품 |
+| runningReason | 문자열 | 달리는 구체적인 이유 |
+| speechStyle | 문자열 | 말투 원칙 |
+| sampleLines | 문자열 배열 | 짧은 대사 예시 |
+| shortIntro | 문자열 | 선택·프로필용 짧은 소개 |
+| design | 문자열 | 따뜻한 픽셀 디자인 명세 |
+| centralConflict | 문자열 | 캐릭터 고유 갈등 |
+| emotionalTheme | 문자열 | 감정 중심 |
+| contentStatus | 문자열 | 현재 draft: 콘텐츠 초안 |
+
+소재 상태 assetStatus=planned는 콘텐츠 상태 draft와 별개다. background/music의 실제 제작 상태는 assets.json에서 관리한다.
