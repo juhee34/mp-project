@@ -49,3 +49,6 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 | contentStatus | 문자열 | 현재 draft: 콘텐츠 초안 |
 
 소재 상태 assetStatus=planned는 콘텐츠 상태 draft와 별개다. background/music의 실제 제작 상태는 assets.json에서 관리한다.
+
+## 이름 변경 호환성
+표시 이름 민트 → 라일(LAIL), 몸 색상은 라벤더로 변경한다. 기존 저장·이야기·게임 연결을 보존하기 위해 내부 ID mint와 mint_intro, backgroundId/musicId는 유지한다. 루미의 망토는 빨간색이다.

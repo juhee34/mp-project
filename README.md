@@ -44,6 +44,6 @@ https://github.com/juhee34/mp-project
 
 ## 확정 기획서
 
-[6명 구성과 A 역할 기획서](docs/PROJECT_PLAN.md)를 우선 참고한다. 선택 순서는 민트·치즈·포포·루미·누누·피코다.
+[6명 구성과 A 역할 기획서](docs/PROJECT_PLAN.md)를 우선 참고한다. 선택 순서는 라일·치즈·포포·루미·누누·피코다.
 
 [캐릭터 6명 상세 설정과 소개](docs/CHARACTER_PROFILES.md)에서 생활 습관·소품·달리는 이유·말투를 확인할 수 있다.
