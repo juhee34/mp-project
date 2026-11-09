@@ -1,4 +1,4 @@
-param([string]$RepositoryName = 'tiny-runners-android')
+param([string]$RepositoryName = 'mp-project')
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 if ($RepositoryName -notmatch '^[a-zA-Z0-9_.-]+$') { throw 'Use a repository name without an owner or URL.' }

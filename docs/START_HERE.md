@@ -3,7 +3,7 @@
 ## 1 프로젝트 열기
 GitHub 업로드가 완료되면 저장소의 Code 버튼에서 HTTPS 주소를 복사한다.
 Android Studio의 Get from VCS로 복제하거나 터미널에서 git clone 뒤 그 폴더를 연다.
-ZIP을 받은 경우 압축 해제한 tiny-runners-android 폴더를 Open한다. app 폴더가 아니라 settings.gradle.kts가 있는 최상위 폴더다.
+ZIP을 받은 경우 압축 해제한 mp-project 폴더를 Open한다. app 폴더가 아니라 settings.gradle.kts가 있는 최상위 폴더다.
 
 ## 2 개발 환경
 학교에서 지정한 버전이 있으면 우선한다. 이 시작 프로젝트는 재현 가능한 기존 조합으로 AGP 8.7.3 / Gradle 8.9 / Kotlin 2.0.21 / JDK 17 / compileSdk 35를 고정했다. 최신 버전이라는 뜻은 아니다.

@@ -1,4 +1,4 @@
-# Tiny Runners
+# mp-project
 
 학교 과제로 만드는 Android 2D 픽셀 러너. **처음 플레이 가능한 시연부터 캐릭터 10명 전원 선택**을 지원한다.
 
