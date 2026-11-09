@@ -25,10 +25,27 @@
 러닝 엔진/충돌/점수/저장/음악 재생/정식 아트/배경 6종/테마 6곡/완성 에피소드.
 현재 화면은 개발 시작용이며 플레이 가능한 게임이 아니다.
 
+## 과제 공식 요건 (교수 안내 PDF, 2026-11-09 확인)
+- 마감: 보고서+코드 2026-11-23(월) 23:59 KLAS, 발표 11-24(화)/11-26(목) 10분+질의 5분(실제 시연, 예산 집행 계획 필수).
+- 기술 최소 요건: 화면 5~8개 이상과 데이터 전달 / 회원가입·로그인(BaaS 인증) / 원격(BaaS) 또는 로컬 저장 / 외부 API 1개 이상 / 수업 개발 환경.
+- 주제 틀: "1인당 100만 원으로 창업하기"(2인 팀 가상 예산 200만 원, 출시 준비+3개월 운영, 공식 가격·출처·조사일). 실제 과금 금지.
+- 현재 충족: 화면 9개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정), Intent로 characterId·RunResult 전달, Firebase Auth/Firestore 코드, 기기 저장, Open-Meteo 외부 API.
+- 남은 요건 작업: Firebase 프로젝트 생성과 google-services.json 배치(사용자), 실제 로그인·Firestore 저장 시연 확인, 보고서·예산표·발표(A와 사용자).
+
 ## 다음 작업
-1. 사용자가 실기기 또는 에뮬레이터에서 6명 각각으로 한 판씩 플레이하고 난이도(속도·장애물 간격)를 체감 확인한다.
-2. 7단계 B 전 결과 화면/기록 저장 설계: RunResult(runId) 중복 방지와 CharacterProgress. 현재 기록은 저장하지 않는다.
+1. 사용자: docs/FIREBASE_SETUP.md대로 Firebase 프로젝트를 만들고 app/google-services.json을 넣는다. 그 뒤 B가 실제 회원가입·로그인·Firestore 저장을 확인한다.
+2. A/사용자: 보고서(서비스 개요·타깃·경쟁 앱, 기능·화면, 구조·BaaS·외부 API, 예산표)와 발표 준비.
 3. 4단계 B: 스프라이트 규격 확정 후 CharacterPortrait 자리를 애니메이션 스프라이트로 교체한다.
+
+## 과제 요건 대응: 로그인·저장·외부 API·화면 (2026-11-09, B)
+- 새 화면: auth/LoginActivity, auth/SignupActivity, result/ResultActivity, records/RecordsActivity, settings/SettingsActivity. 공통 UI는 ui/Page.kt. MainActivity는 세션이 없으면 로그인으로 보낸다. activity_main.xml 위에 내 기록·설정 메뉴를 추가했다(CharacterScreens는 변경 없음).
+- 로그인: Firebase Authentication 이메일/비밀번호, 닉네임은 displayName. google-services.json이 없으면 플러그인이 적용되지 않고 로그인 버튼이 꺼지며 개발용 임시 모드(기기 저장)만 열린다.
+- 저장: ProgressStore. 로그인 시 Firestore 트랜잭션, 임시 모드는 SharedPreferences. runId 중복 방지, 손상된 기기 데이터는 새로 시작.
+- 외부 API: Open-Meteo forecast(API 키·과금 없음, CC BY 4.0 출처 표기). 설정에서 도시 7곳 중 선택·켜기/끄기. 게임 하늘 색과 비·눈·안개 효과만 바뀌고 물리는 그대로다.
+- 게임 종료 0.9초 뒤 결과 화면으로 이동하고 GameActivity는 닫힌다. 결과 화면에서 다시 달리기·내 기록·친구 선택.
+- 의존성: Firebase BoM 33.5.1(auth, firestore), google-services 4.4.2, 테스트용 org.json. lint는 BoM 35.1.0이 있다고 알리지만 Kotlin 2.0.21/AGP 8.7.3 고정 조합을 위해 올리지 않았다.
+- 검증: assembleDebug 성공, 단위 테스트 24개 통과(RunnerEngine 12, ProgressBook 7, Weather 3, AuthInput 2), lint 오류 0. 에뮬레이터(Claude가 adb로 조작, Firebase 미설정 상태): 로그인 화면과 미설정 안내 → 임시 모드 → 라일 한 판 → 결과 저장("새 최고 점수", 1번 28m) → 결과 화면 2회 회전 후에도 1번 유지 → 내 기록 6명 표시 → 앱 강제 종료·재실행 후 기록 유지 → 설정에서 제주 선택 시 "제주 · 맑음 12°C" 표시 → 게임 HUD "서울 · 맑음 5°C". 크래시 0.
+- 미검증: 실제 Firebase 회원가입·로그인·Firestore 저장(설정 파일 없음), 비·눈 효과 실제 날씨에서의 모습, 오프라인에서 로그인 사용자의 저장 실패 안내.
 
 ## 3단계 B 공통 러너 (2026-11-09)
 - 파일: game/RunnerEngine.kt(순수 Kotlin 상태·물리), game/RunnerView.kt(Canvas 그리기·터치), game/GameActivity.kt(연결용 안내 화면을 러너로 교체), res/values/game_strings.xml, app/src/test/.../RunnerEngineTest.kt. build.gradle.kts에 testImplementation junit 4.13.2 추가.
@@ -36,7 +53,7 @@
 - 6명 동일 물리: RunnerEngine은 캐릭터 입력을 받지 않는다. 캐릭터는 그림 색상과 이름 표시에만 쓰인다. ID 계약(EXTRA_CHARACTER_ID, 잘못된 ID는 finish)은 그대로다.
 - 수치(월드 단위): 중력 2400, 점프 속도 820(최고 140, 체공 0.68초), 속도 260→520(초당 +6), 장애물 높이 30~70·너비 24~44, 간격 ≥ 속도×(체공+0.35초)+44. 1/120초 고정 스텝, 프레임 최대 1/20초.
 - 테스트로 확인: 점프 최고점·착지, 이중 점프 불가, 최고 속도에서도 가장 큰 장애물 통과 가능, 장애물 간격 ≥ 착지 후 재점프 거리, 자동 플레이 봇이 시드 20개 모두 180초 생존, 충돌 시 종료, 재시작 지연과 상태 초기화, 일시정지, 프레임 지연 제한, 프레임률 무관, 같은 시드 같은 코스.
-- 에뮬레이터(Medium_Phone, Claude가 adb로 조작): 치즈로 준비·달리기·충돌 결과·새 판·일시정지(2초간 화면 동일)·뒤로가기 후 선택 화면 복귀 확인, 앱 크래시 로그 없음. 나머지 5명으로의 진입과 사람 손 플레이 감각은 확인하지 않았다.
+- 에뮬레이터(Medium_Phone, Claude가 adb로 조작): 치즈로 준비·달리기·충돌 결과·새 판·일시정지(2초간 화면 동일)·뒤로가기 후 선택 화면 복귀 확인, 앱 크래시 로그 없음. 이후 사용자가 6명 전원으로 러너 실행을 확인했다(사용자 보고, 2026-11-09). 난이도 체감 의견은 아직 받지 않았다.
 - 아직 없음: 기록 저장, 결과 화면 Activity, 캐릭터별 배경·음악, 스프라이트 애니메이션, 효과음. 화면 크기 변경으로 Activity가 다시 만들어지면 진행 중인 판은 사라진다.
 
 ## 2026-11-09 구성 변경

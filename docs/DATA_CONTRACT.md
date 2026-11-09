@@ -25,8 +25,16 @@ path=null인 파일은 로드하지 않는다. planned 항목은 완료 통계�
 RunResult(runId, characterId, distance, score)와 CharacterProgress(characterId, totalDistance, bestScore, readStoryIds)를 분리한다.
 runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속도/기본 충돌 판정. 미접속 관계 감소 없음.
 
+## 저장 구현 (B, 2026-11-09)
+- 코드: `progress/Progress.kt`(RunResult, CharacterProgress, ProgressRules, ProgressBook), `progress/ProgressStore.kt`.
+- RunResult(runId, characterId, meters, score, cleared). runId는 GameActivity가 판마다 UUID로 만든다.
+- CharacterProgress(characterId, runs, totalMeters, bestMeters, bestScore). 실패한 판도 runs·totalMeters에 더한다. 감소·만료 없음.
+- 같은 runId는 한 번만 반영한다. 로그인 사용자는 Firestore(`users/{uid}/runs/{runId}`, `users/{uid}/progress/{characterId}`) 트랜잭션, 임시 모드는 기기 SharedPreferences.
+- A의 도감은 `ProgressStore.forCurrentUser(context).loadAll { }`로 읽는다. readStoryIds는 아직 저장하지 않는다(도감 구현 때 필드 추가 합의).
+- 상세 설정·보안 규칙: docs/FIREBASE_SETUP.md.
+
 ## 화면 계약
-소개 → 6명 선택 → game(characterId) → 결과 → 도감/재시작.
+(로그인/회원가입) → 소개 → 6명 선택 → game(characterId) → 결과(runId 저장) → 다시 달리기 / 내 기록 / 친구 선택. 소개·선택 화면 위 메뉴에서 내 기록·설정.
 정의되지 않은 ID는 선택 화면으로 복귀한다. 원시 JSON과 Activity 사이의 의존을 Repository로 제한한다.
 
 ## 기획 합의

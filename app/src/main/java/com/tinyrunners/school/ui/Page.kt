@@ -1,0 +1,122 @@
+package com.tinyrunners.school.ui
+
+import android.app.Activity
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
+import android.os.Build
+import android.text.InputType
+import android.view.View
+import android.view.WindowInsets
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
+import kotlin.math.roundToInt
+
+/** Small builder for B-owned screens, matching the palette of the character screens. */
+class Page(private val activity: Activity) {
+    val body = LinearLayout(activity).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(dp(20), dp(20), dp(20), dp(28))
+    }
+    val root = ScrollView(activity).apply {
+        setBackgroundColor(BACKGROUND)
+        isFillViewport = true
+        addView(body)
+        setOnApplyWindowInsetsListener { v, insets ->
+            if (Build.VERSION.SDK_INT >= 30) {
+                val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout() or WindowInsets.Type.ime())
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            } else {
+                @Suppress("DEPRECATION")
+                v.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop,
+                    insets.systemWindowInsetRight, insets.systemWindowInsetBottom)
+            }
+            insets
+        }
+    }
+
+    fun show(): Page { activity.setContentView(root); return this }
+
+    fun eyebrow(text: String) = label(text, 13f, LEAF, bold = true)
+    fun title(text: String) = label(text, 28f, INK, top = 6, bold = true).apply { isAccessibilityHeading(this) }
+    fun text(text: String, size: Float = 16f, color: Int = MUTED, top: Int = 8) = label(text, size, color, top)
+
+    fun label(text: String, size: Float, color: Int, top: Int = 0, bold: Boolean = false): TextView =
+        TextView(activity).apply {
+            this.text = text
+            textSize = size
+            setTextColor(color)
+            if (bold) typeface = Typeface.DEFAULT_BOLD
+            setLineSpacing(0f, 1.15f)
+        }.also { body.addView(it, params(top)) }
+
+    fun field(hint: String, type: Int = InputType.TYPE_CLASS_TEXT): EditText = EditText(activity).apply {
+        this.hint = hint
+        inputType = type
+        textSize = 16f
+        setTextColor(INK)
+        setHintTextColor(MUTED)
+        minHeight = dp(52)
+        setPadding(dp(14), dp(8), dp(14), dp(8))
+        background = shape(PAPER, 14, LINE)
+        importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_YES
+    }.also { body.addView(it, params(10)) }
+
+    fun button(text: String, primary: Boolean = false, click: () -> Unit): Button = Button(activity).apply {
+        this.text = text
+        textSize = 16f
+        isAllCaps = false
+        setTextColor(if (primary) Color.WHITE else LEAF)
+        minHeight = dp(52)
+        setPadding(dp(14), dp(10), dp(14), dp(10))
+        background = RippleDrawable(ColorStateList.valueOf(MINT), shape(if (primary) LEAF else PAPER, 16, if (primary) LEAF else LINE), null)
+        stateListAnimator = null
+        setOnClickListener { click() }
+    }.also { body.addView(it, params(12)) }
+
+    /** A rounded card with its own vertical column. */
+    fun card(top: Int = 12): LinearLayout = LinearLayout(activity).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(dp(16), dp(14), dp(16), dp(14))
+        background = shape(PAPER, 18, LINE)
+    }.also { body.addView(it, params(top)) }
+
+    fun line(card: LinearLayout, text: String, size: Float = 15f, color: Int = MUTED, bold: Boolean = false, top: Int = 4): TextView =
+        TextView(activity).apply {
+            this.text = text
+            textSize = size
+            setTextColor(color)
+            if (bold) typeface = Typeface.DEFAULT_BOLD
+        }.also { card.addView(it, params(top)) }
+
+    fun params(top: Int) = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        .apply { topMargin = dp(top) }
+
+    fun shape(fill: Int, radius: Int, border: Int? = null) = GradientDrawable().apply {
+        setColor(fill)
+        cornerRadius = dp(radius).toFloat()
+        if (border != null) setStroke(dp(1), border)
+    }
+
+    fun dp(value: Int) = (value * activity.resources.displayMetrics.density).roundToInt()
+
+    private fun isAccessibilityHeading(view: TextView) {
+        if (Build.VERSION.SDK_INT >= 28) view.isAccessibilityHeading = true
+    }
+
+    companion object {
+        val BACKGROUND = Color.rgb(250, 246, 236)
+        val LEAF = Color.rgb(48, 83, 65)
+        val MINT = Color.rgb(225, 239, 218)
+        val PAPER = Color.rgb(255, 253, 246)
+        val LINE = Color.rgb(221, 224, 209)
+        val INK = Color.rgb(38, 52, 43)
+        val MUTED = Color.rgb(79, 96, 84)
+        val ERROR = Color.rgb(160, 60, 50)
+    }
+}
