@@ -30,7 +30,8 @@
     "emotionalTheme": "호기심·당황·발견",
     "cherishedItem": "모서리가 자꾸 늘어나는 천 지도",
     "design": "라벤더 몸, 크림 배, 짙은 자주색 등판, 살구 주황 스카프. 길쭉한 공룡 주둥이와 짧은 팔, 천 지도를 유지한다.",
-    "contentStatus": "draft"
+    "contentStatus": "draft",
+    "skillName": "불꽃 재채기"
   },
   {
     "id": "cheese",
@@ -63,7 +64,8 @@
     "emotionalTheme": "기대·머쓱함·편안함",
     "cherishedItem": "햇빛 무늬를 넣었다고 믿는 작은 빈 통",
     "design": "살구색 털, 크림 주둥이, 줄무늬 꼬리, 초록 손수건. 기존 시안 유지.",
-    "contentStatus": "draft"
+    "contentStatus": "draft",
+    "skillName": "햇빛 통"
   },
   {
     "id": "popo",
@@ -96,7 +98,8 @@
     "emotionalTheme": "경이·향수·귀환의 안도",
     "cherishedItem": "녹지 않는 작은 조개 상자",
     "design": "남색 등, 크림 배, 짧은 살구 목도리, 작은 둥근 가방.",
-    "contentStatus": "draft"
+    "contentStatus": "draft",
+    "skillName": "조개 방패"
   },
   {
     "id": "lumi",
@@ -129,7 +132,8 @@
     "emotionalTheme": "들뜸·서운함·친밀함",
     "cherishedItem": "소리를 담는 솔방울 마이크",
     "design": "황갈색 몸, 크림 주둥이와 큰 꼬리 끝, 벽돌빛 빨간 망토, 솔방울 마이크.",
-    "contentStatus": "draft"
+    "contentStatus": "draft",
+    "skillName": "메아리 노래"
   },
   {
     "id": "nunu",
@@ -162,7 +166,8 @@
     "emotionalTheme": "장난·서운함·소속감",
     "cherishedItem": "아무 페이지에나 끼울 수 없는 반투명 책갈피",
     "design": "작은 크림색 유령, 연보라 가장자리, 민트 리본. 죽음의 사연 없이 달안개에서 태어난 존재.",
-    "contentStatus": "draft"
+    "contentStatus": "draft",
+    "skillName": "안개 통과"
   },
   {
     "id": "piko",
@@ -195,6 +200,7 @@
     "emotionalTheme": "신남·답답함·나누는 기쁨",
     "cherishedItem": "매번 접는 모양이 다른 종이배",
     "design": "노란 몸, 짙은 살구 부리, 하늘색 우비, 작은 물방울 장화.",
-    "contentStatus": "draft"
+    "contentStatus": "draft",
+    "skillName": "종이배 파도"
   }
 ]

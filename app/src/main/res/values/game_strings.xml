@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="game_ready_title">%1$s · 함께 달리기</string>
-    <string name="game_ready_hint">화면을 누르면 출발하고, 달리는 동안 누르면 점프해요</string>
+    <string name="game_ready_hint">누르면 출발 · 한 번 더 누르면 점프 · 공중에서 한 번 더 2단 점프 · 오른쪽 아래 버튼은 스킬</string>
+    <string name="game_skill_default">스킬</string>
+    <string name="game_skill_rest">쉬는 중 %1$d</string>
     <string name="game_paused">잠깐 쉬는 중</string>
     <string name="game_paused_hint">화면을 누르면 이어서 달려요</string>
     <string name="game_over_title">%1$s · %2$dm 함께 달렸어요</string>

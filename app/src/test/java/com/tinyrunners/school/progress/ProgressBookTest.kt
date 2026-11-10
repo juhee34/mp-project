@@ -52,6 +52,23 @@ class ProgressBookTest {
         assertTrue(restored.record(run("a")).duplicate)
     }
 
+    @Test fun readStoriesAreSavedOnceAndSurviveRunsAndJson() {
+        val book = ProgressBook()
+        book.markRead("mint", "mint_intro")
+        book.markRead("mint", "mint_intro")
+        book.record(run("a", character = "mint"))
+        assertEquals(listOf("mint_intro"), book.all.getValue("mint").readStoryIds)
+        assertEquals(1, book.all.getValue("mint").runs)
+        val restored = ProgressBook.fromJson(book.toJson())
+        assertEquals(listOf("mint_intro"), restored.all.getValue("mint").readStoryIds)
+    }
+
+    @Test fun firestoreStyleMapParsesReadStories() {
+        val p = CharacterProgress.fromMap("nunu", mapOf("runs" to 2L, "readStoryIds" to listOf("nunu_intro", 3)))
+        assertEquals(2, p.runs)
+        assertEquals(listOf("nunu_intro"), p.readStoryIds)
+    }
+
     @Test fun corruptOrMissingDataStartsFresh() {
         assertTrue(ProgressBook.fromJson(null).all.isEmpty())
         assertTrue(ProgressBook.fromJson("{not json").all.isEmpty())

@@ -10,6 +10,7 @@ import com.tinyrunners.school.game.GameActivity
 import com.tinyrunners.school.progress.ProgressStore
 import com.tinyrunners.school.progress.RunResult
 import com.tinyrunners.school.records.RecordsActivity
+import com.tinyrunners.school.story.StoryRunSignal
 import com.tinyrunners.school.ui.Page
 
 /**
@@ -37,14 +38,20 @@ class ResultActivity : Activity() {
         page.line(card, getString(R.string.result_cleared, run.cleared))
         val status = page.text(getString(R.string.result_saving), 15f)
 
-        page.button(getString(R.string.result_again), primary = true) {
-            startActivity(GameActivity.intent(this, character.id))
+        val storyId = intent.getStringExtra(GameActivity.EXTRA_STORY_ID)
+        if (storyId != null) {
+            // Any result continues the story; there is no "try again to unlock".
+            StoryRunSignal.finishedFor = storyId
+            page.button(getString(R.string.result_continue_story), primary = true) { finish() }
+        }
+        page.button(getString(R.string.result_again), primary = storyId == null) {
+            startActivity(GameActivity.intent(this, character.id).putExtra(GameActivity.EXTRA_STORY_ID, storyId))
             finish()
         }
         page.button(getString(R.string.result_records)) {
             startActivity(Intent(this, RecordsActivity::class.java))
         }
-        page.button(getString(R.string.result_choose_friend)) { finish() }
+        if (storyId == null) page.button(getString(R.string.result_choose_friend)) { finish() }
 
         val store = ProgressStore.forCurrentUser(this)
         store.record(run) { result ->

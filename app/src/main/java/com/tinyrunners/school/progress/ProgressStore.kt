@@ -3,7 +3,9 @@ package com.tinyrunners.school.progress
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.tinyrunners.school.auth.AuthService
 
 /** Saves and reads run records. Callbacks always arrive on the main thread. */
@@ -12,6 +14,8 @@ interface ProgressStore {
     val location: Location
     fun record(run: RunResult, done: (Result<RecordOutcome>) -> Unit)
     fun loadAll(done: (Result<Map<String, CharacterProgress>>) -> Unit)
+    /** Remembers that a story was seen. Repeating it is harmless. */
+    fun markStoryRead(characterId: String, storyId: String, done: (Result<Unit>) -> Unit)
 
     enum class Location { CLOUD, DEVICE }
 
@@ -41,6 +45,13 @@ class LocalProgressStore(context: Context, owner: String) : ProgressStore {
         main.post { done(Result.success(all)) }
     }
 
+    override fun markStoryRead(characterId: String, storyId: String, done: (Result<Unit>) -> Unit) {
+        val book = ProgressBook.fromJson(prefs.getString(KEY, null))
+        book.markRead(characterId, storyId)
+        prefs.edit().putString(KEY, book.toJson()).apply()
+        main.post { done(Result.success(Unit)) }
+    }
+
     private companion object { const val KEY = "book" }
 }
 
@@ -66,7 +77,7 @@ class FirestoreProgressStore(private val uid: String) : ProgressStore {
                 val outcome = ProgressRules.outcome(previous, run)
                 tx.set(runRef, mapOf(
                     "characterId" to run.characterId, "meters" to run.meters, "score" to run.score,
-                    "cleared" to run.cleared, "savedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp(),
+                    "cleared" to run.cleared, "savedAt" to FieldValue.serverTimestamp(),
                 ))
                 tx.set(progressRef, outcome.progress.toMap())
                 outcome
@@ -80,6 +91,14 @@ class FirestoreProgressStore(private val uid: String) : ProgressStore {
             .addOnSuccessListener { snap ->
                 done(Result.success(snap.documents.associate { it.id to CharacterProgress.fromMap(it.id, it.data.orEmpty()) }))
             }
+            .addOnFailureListener { done(Result.failure(it)) }
+    }
+
+    override fun markStoryRead(characterId: String, storyId: String, done: (Result<Unit>) -> Unit) {
+        // Merge keeps run statistics; arrayUnion ignores an ID that is already there.
+        db.collection("users").document(uid).collection("progress").document(characterId)
+            .set(mapOf("characterId" to characterId, "readStoryIds" to FieldValue.arrayUnion(storyId)), SetOptions.merge())
+            .addOnSuccessListener { done(Result.success(Unit)) }
             .addOnFailureListener { done(Result.failure(it)) }
     }
 }
