@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.tinyrunners.school.R
+import com.tinyrunners.school.MainActivity
 import com.tinyrunners.school.data.CharacterRepository
 import com.tinyrunners.school.game.GameActivity
 import com.tinyrunners.school.progress.ProgressStore
@@ -51,7 +52,11 @@ class ResultActivity : Activity() {
         page.button(getString(R.string.result_records)) {
             startActivity(Intent(this, RecordsActivity::class.java))
         }
-        if (storyId == null) page.button(getString(R.string.result_choose_friend)) { finish() }
+        // In a story run, leaving goes back to the story instead (the "continue story" button above).
+        if (storyId == null) page.button(getString(R.string.result_choose_friend)) {
+            startActivity(MainActivity.selectionIntent(this))
+            finish()
+        }
 
         val store = ProgressStore.forCurrentUser(this)
         store.record(run) { result ->

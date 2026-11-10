@@ -9,9 +9,6 @@ for(const a of assets)for(const kind of ['background','music']){assert.equal(a[k
 const research=['andersen','grimm','aesop','modern','world'].flatMap(n=>read('research/'+n+'.json'));assert.equal(research.length,205);assert.equal(new Set(research.map(r=>r.id)).size,205);
 for(const r of research)assert(r.source_url.startsWith('http')&&r.verified_content);
 const p=fs.readFileSync(path.join(root,'docs/PROMPTS.md'),'utf8');assert.equal((p.match(/^## \d+단계 [AB] /gm)||[]).length,20);
-// Skills: same effect for everyone, each friend only has its own display name (docs/IDEA_GUIDE.md).
-for(const c of chars)assert(typeof c.skillName==='string'&&c.skillName.trim().length>0&&c.skillName.length<=8,`${c.id}: skillName needs 1-8 characters`);
-
 // Story dialogue (DATA_CONTRACT "이야기 대사"): speakers, at most 2 choices with replies, at most 1 run, unlock refs.
 const SPEAKERS=new Set([...expected,'player','narrator']);
 const checkLine=(l,where)=>{assert(SPEAKERS.has(l.speaker),`${where}: unknown speaker "${l.speaker}"`);assert(typeof l.text==='string'&&l.text.trim(),`${where}: empty text`);};

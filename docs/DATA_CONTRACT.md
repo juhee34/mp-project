@@ -23,10 +23,8 @@ id, characterId, title, body, status, unlockDistance.
 - 현재 `mint_intro`에만 B가 쓴 샘플 대사(status=draft)가 있다. A가 고쳐 쓴다.
 - 본 이야기: CharacterProgress.readStoryIds. 끝까지 보거나 건너뛰면 기록한다. Firestore는 progress 문서에 arrayUnion으로 더한다.
 
-## 스킬
-- `characters.json`의 `skillName`(1~8자): 스킬 버튼과 효과에 표시하는 이름. A가 확정한다. 지금 값은 IDEA_GUIDE 제안이다.
-- 효과는 6명 같다: 앞 600단위 안의 가장 가까운 장애물 1개를 없애고 넘은 장애물로 센다. 쉬는 시간 10초(달리는 중에만 줄어듦). 앞에 장애물이 없으면 쓰이지 않는다.
-- 2단 점프: 공중에서 1회, 속도 700(추가 높이 약 102). 6명 같다.
+## 2단 점프
+- 공중에서 1회, 속도 700(추가 높이 약 102). 6명 같다. 스킬은 2026-11-10에 범위에서 뺐다(IDEA_GUIDE 참고).
 
 ## 배경과 음악
 assets.json의 background/music에는 id, path, status, brief가 있다.

@@ -1,0 +1,41 @@
+{
+  "note": "Historical initial-source inspection; current source files were replaced from the approved exported package. Current output validation is in review/validation.json and scripts/validate-sprite-pixels.ps1.",
+  "initialInspection": [
+    {
+      "source": "mint-cheese.png",
+      "width": 1024,
+      "height": 1536,
+      "transparentPixels": 759468,
+      "partialAlphaPixels": 813396,
+      "opaquePixels": 0,
+      "layout": "4x6",
+      "cellWidth": 256,
+      "cellHeight": 256,
+      "status": "source_verified_export_pending"
+    },
+    {
+      "source": "nunu-piko.png",
+      "width": 1024,
+      "height": 1536,
+      "transparentPixels": 788904,
+      "partialAlphaPixels": 783960,
+      "opaquePixels": 0,
+      "layout": "4x6",
+      "cellWidth": 256,
+      "cellHeight": 256,
+      "status": "source_verified_export_pending"
+    },
+    {
+      "source": "popo-lumi.png",
+      "width": 1024,
+      "height": 1536,
+      "transparentPixels": 812162,
+      "partialAlphaPixels": 760702,
+      "opaquePixels": 0,
+      "layout": "4x6",
+      "cellWidth": 256,
+      "cellHeight": 256,
+      "status": "source_verified_export_pending"
+    }
+  ]
+}

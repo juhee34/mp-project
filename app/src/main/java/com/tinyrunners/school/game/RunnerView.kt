@@ -6,16 +6,19 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.view.Choreographer
 import android.view.MotionEvent
 import android.view.View
 import com.tinyrunners.school.R
 import com.tinyrunners.school.characters.CharacterPortrait
+import com.tinyrunners.school.characters.CharacterSprites
 import com.tinyrunners.school.data.CharacterDefinition
 import com.tinyrunners.school.weather.Sky
 import com.tinyrunners.school.weather.WeatherReport
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /** Draws a [RunnerEngine] and forwards touches. Holds no game rules of its own. */
 @SuppressLint("ViewConstructor")
@@ -26,13 +29,17 @@ class RunnerView(
 ) : View(context), Choreographer.FrameCallback {
 
     private val runnerArt = CharacterPortrait(character.color)
+    private val sprites = CharacterSprites.load(resources, character.id)
+    private val spritePaint = Paint().apply {
+        isFilterBitmap = false
+        isAntiAlias = false
+        isDither = false
+    }
+    private val spriteBounds = Rect()
+    private var spriteScale = 1
     private val fill = Paint()
-    private val ring = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeCap = Paint.Cap.ROUND }
-    private val ringRect = RectF()
     private val text = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK }
     private val pauseRect = RectF()
-    private val skillRect = RectF()
-    private val skillLabel = character.skillName.ifBlank { context.getString(R.string.game_skill_default) }
     private var lastFrameNanos = 0L
     private var looping = false
 
@@ -73,6 +80,7 @@ class RunnerView(
             if (engine.phase != RunnerEngine.Phase.PAUSED) animTime += min(dt, 0.05f)
         }
         lastFrameNanos = frameTimeNanos
+        if (engine.phase == RunnerEngine.Phase.READY && lastPhase != RunnerEngine.Phase.READY) animTime = 0f
         if (engine.phase == RunnerEngine.Phase.OVER && lastPhase != RunnerEngine.Phase.OVER) onRunOver?.invoke()
         lastPhase = engine.phase
         invalidate()
@@ -85,12 +93,11 @@ class RunnerView(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         // Keep at least 640 world units visible across and 360 up, whatever the screen ratio.
         scale = min(h / WORLD_HEIGHT, w / MIN_WORLD_WIDTH)
+        spriteScale = scale.roundToInt().coerceAtLeast(1)
         groundY = h - GROUND_THICKNESS * scale
         val size = 44f * resources.displayMetrics.density
         val margin = 12f * resources.displayMetrics.density
         pauseRect.set(w - margin - size, margin, w - margin, margin + size)
-        val skill = 72f * resources.displayMetrics.density
-        skillRect.set(w - margin - skill, h - margin - skill, w - margin, h - margin)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -100,12 +107,10 @@ class RunnerView(
         if (action != MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_POINTER_DOWN) return true
         val i = event.actionIndex
         val x = event.getX(i); val y = event.getY(i)
-        val running = engine.phase == RunnerEngine.Phase.RUNNING
         when {
-            running && pauseRect.contains(x, y) -> engine.pause()
-            // The skill button never jumps, even while cooling down, so a mistimed press is harmless.
-            running && skillRect.contains(x, y) -> engine.useSkill()
-            else -> engine.tap()
+            engine.phase == RunnerEngine.Phase.RUNNING && pauseRect.contains(x, y) -> engine.pause()
+            // When a result screen follows (onRunOver set), a late tap after the crash must not restart the run.
+            engine.phase != RunnerEngine.Phase.OVER || onRunOver == null -> engine.tap()
         }
         performClick()
         return true
@@ -123,7 +128,6 @@ class RunnerView(
         drawGroundMarks(canvas, w)
 
         for (o in engine.obstacles) drawObstacle(canvas, o)
-        drawSkillEffect(canvas)
         drawRunner(canvas)
         drawWeather(canvas, w)
         drawHud(canvas, w)
@@ -141,65 +145,6 @@ class RunnerView(
                 if (onRunOver == null && engine.canRestart) context.getString(R.string.game_over_hint) else null)
             RunnerEngine.Phase.RUNNING -> Unit
         }
-    }
-
-    /**
-     * Shared placeholder effect until each friend's skill frames exist: the removed obstacle scatters into
-     * squares in the friend's colour, and the skill name floats up. The effect is the same for everyone.
-     */
-    private fun drawSkillEffect(canvas: Canvas) {
-        val target = engine.lastSkillTarget ?: return
-        val t = engine.sinceLastSkill
-        if (t > SKILL_EFFECT_SECONDS) return
-        val p = t / SKILL_EFFECT_SECONDS
-        val cx = sx(target.x + target.width / 2 - engine.speed * t)
-        val cy = sy(target.height / 2)
-        val accent = android.graphics.Color.parseColor(character.color)
-        fill.color = accent
-        fill.alpha = ((1f - p) * 255).toInt()
-        val size = 6f * scale * (1f - p * 0.5f)
-        val spread = 40f * scale * p
-        for (k in 0 until 8) {
-            val a = k * (Math.PI / 4).toFloat()
-            val px = cx + kotlin.math.cos(a) * spread
-            val py = cy + kotlin.math.sin(a) * spread
-            canvas.drawRect(px - size / 2, py - size / 2, px + size / 2, py + size / 2, fill)
-        }
-        fill.alpha = 255
-        val d = resources.displayMetrics.density
-        text.textAlign = Paint.Align.CENTER
-        text.typeface = Typeface.DEFAULT_BOLD
-        text.textSize = 16f * d
-        text.alpha = ((1f - p) * 255).toInt()
-        canvas.drawText(skillLabel, sx(engine.config.playerX + engine.config.playerSize / 2), sy(engine.playerY + 70f) - 20f * d * p, text)
-        text.alpha = 255
-        text.typeface = Typeface.DEFAULT
-        text.textAlign = Paint.Align.LEFT
-    }
-
-    private fun drawSkillButton(canvas: Canvas) {
-        val d = resources.displayMetrics.density
-        val ready = engine.skillReady
-        fill.color = if (ready) SKILL_READY else PANEL
-        canvas.drawOval(skillRect, fill)
-        if (!ready) {
-            // Ring fills back up as the rest ends.
-            val done = 1f - engine.skillCooldownLeft / engine.config.skillCooldown
-            ring.strokeWidth = 4f * d
-            ring.color = SKILL_READY
-            val inset = ring.strokeWidth / 2
-            ringRect.set(skillRect.left + inset, skillRect.top + inset, skillRect.right - inset, skillRect.bottom - inset)
-            canvas.drawArc(ringRect, -90f, 360f * done, false, ring)
-        }
-        text.textAlign = Paint.Align.CENTER
-        text.color = if (ready) android.graphics.Color.WHITE else INK
-        text.textSize = 12f * d
-        text.typeface = Typeface.DEFAULT_BOLD
-        val label = if (ready) skillLabel else context.getString(R.string.game_skill_rest, kotlin.math.ceil(engine.skillCooldownLeft).toInt())
-        canvas.drawText(label, skillRect.centerX(), skillRect.centerY() + 4f * d, text)
-        text.color = INK
-        text.typeface = Typeface.DEFAULT
-        text.textAlign = Paint.Align.LEFT
     }
 
     private fun skyColor(): Int {
@@ -285,11 +230,19 @@ class RunnerView(
 
     private fun drawRunner(canvas: Canvas) {
         val c = engine.config
-        // Small two-frame bob while running on the ground; purely visual, hitbox is unchanged.
-        val bob = if (engine.phase == RunnerEngine.Phase.RUNNING && engine.grounded &&
-            (engine.distance / 24f).toInt() % 2 == 0) 2f else 0f
+        val art = sprites
+        if (art != null) {
+            val center = sx(c.playerX + c.playerSize / 2).roundToInt()
+            val feet = sy(engine.playerY).roundToInt()
+            val left = center - CharacterSprites.CENTER_X * spriteScale
+            val top = feet - CharacterSprites.FOOT_EDGE_Y * spriteScale
+            val size = CharacterSprites.SIZE * spriteScale
+            spriteBounds.set(left, top, left + size, top + size)
+            canvas.drawBitmap(art[RunnerAnimation.frame(engine, animTime)], null, spriteBounds, spritePaint)
+            return
+        }
         val l = sx(c.playerX).toInt()
-        val b = sy(engine.playerY + bob).toInt()
+        val b = sy(engine.playerY).toInt()
         val size = (c.playerSize * scale).toInt()
         runnerArt.setBounds(l, b - size, l + size, b)
         runnerArt.draw(canvas)
@@ -306,7 +259,9 @@ class RunnerView(
         canvas.drawText(context.getString(R.string.game_hud, engine.meters, engine.score), 16f * d, 54f * d, text)
         text.textSize = 11f * d
         text.alpha = 150
-        canvas.drawText(context.getString(R.string.game_placeholder_art), 16f * d, 72f * d, text)
+        if (sprites == null) {
+            canvas.drawText(context.getString(R.string.game_placeholder_art), 16f * d, 72f * d, text)
+        }
         weather?.let {
             text.textAlign = Paint.Align.RIGHT
             val right = if (engine.phase == RunnerEngine.Phase.RUNNING) pauseRect.left - 12f * d else w - 16f * d
@@ -317,7 +272,6 @@ class RunnerView(
         text.alpha = 255
 
         if (engine.phase == RunnerEngine.Phase.RUNNING) {
-            drawSkillButton(canvas)
             fill.color = PANEL; canvas.drawRoundRect(pauseRect, 8f * d, 8f * d, fill)
             fill.color = INK
             val bw = pauseRect.width() * 0.14f
@@ -348,8 +302,6 @@ class RunnerView(
         const val WORLD_HEIGHT = 360f
         const val MIN_WORLD_WIDTH = 640f
         const val GROUND_THICKNESS = 48f
-        const val SKILL_EFFECT_SECONDS = 0.45f
-        val SKILL_READY = Color.rgb(48, 83, 65)
         val SKY = Color.rgb(250, 246, 236)
         val SKY_CLOUDY = Color.rgb(232, 234, 228)
         val SKY_RAIN = Color.rgb(214, 222, 226)

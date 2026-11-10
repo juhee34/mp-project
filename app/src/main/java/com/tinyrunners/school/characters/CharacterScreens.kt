@@ -2,6 +2,8 @@ package com.tinyrunners.school.characters
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
@@ -84,7 +86,7 @@ internal class CharacterScreens(
         body.action(R.string.characters_choose, primary = true) { showSelection() }
     }
 
-    private fun showSelection() {
+    fun showSelection() {
         if (repository.find(selectedId.orEmpty()) == null) selectedId = repository.characters.first().id
         val body = screen(Route.SELECT)
         body.label(context.getString(R.string.characters_select_title), 28f, top = 8, bold = true, heading = true)
@@ -98,7 +100,7 @@ internal class CharacterScreens(
             val card = Button(context).apply {
                 text = SpannableStringBuilder(title).apply {
                     setSpan(StyleSpan(Typeface.BOLD), 0, title.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    append('\n').append(friend.personality.substringBefore("다.") + if (friend.personality.contains("다.")) "다." else "")
+                    append('\n').append(friend.personality.substringBefore('.'))
                     append('\n').append(friend.home)
                 }
                 textSize = 16f
@@ -188,7 +190,14 @@ internal class CharacterScreens(
         importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
     }
 
-    private fun portraitArtwork(friend: CharacterDefinition): Drawable = CharacterPortrait(friend.color)
+    private fun portraitArtwork(friend: CharacterDefinition): Drawable {
+        val bitmap = CharacterSprites.load(context.resources, friend.id)?.get(SpriteFrame.IDLE_0)
+            ?: return CharacterPortrait(friend.color)
+        return BitmapDrawable(context.resources, bitmap).apply {
+            isFilterBitmap = false
+            setAntiAlias(false)
+        }
+    }
 
     private fun LinearLayout.detail(title: Int, value: String, top: Int = 0) {
         label(context.getString(title), 15f, LEAF, top, bold = true, heading = true)

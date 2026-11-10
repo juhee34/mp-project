@@ -8,7 +8,7 @@ class CharacterRepository(context: Context) {
         val array = JSONArray(reader.readText())
         List(array.length()) { i ->
             val value = array.getJSONObject(i)
-            CharacterDefinition(value.getString("id"), value.getString("name"), value.getString("species"), value.getString("home"), value.getString("personality"), value.getString("summary"), value.getString("color"), value.optString("skillName", ""))
+            CharacterDefinition(value.getString("id"), value.getString("name"), value.getString("species"), value.getString("home"), value.getString("personality"), value.getString("summary"), value.getString("color"))
         }
     }.also { list ->
         require(list.size == 6) { "캐릭터 6명이 필요합니다." }

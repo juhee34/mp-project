@@ -1,6 +1,7 @@
 package com.tinyrunners.school
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -57,6 +58,20 @@ class MainActivity : Activity() {
         characterScreens = CharacterScreens(host, repository, ::onStartRun).also {
             it.restore(savedInstanceState)
         }
+        openRequestedSelection()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        openRequestedSelection()
+    }
+
+    private fun openRequestedSelection() {
+        if (intent.getBooleanExtra(EXTRA_SHOW_SELECTION, false)) {
+            intent.removeExtra(EXTRA_SHOW_SELECTION)
+            characterScreens?.showSelection()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -71,5 +86,13 @@ class MainActivity : Activity() {
     @Deprecated("Uses the Activity back callback for the character screen stack.")
     override fun onBackPressed() {
         if (characterScreens?.goBack() != true) super.onBackPressed()
+    }
+
+    companion object {
+        private const val EXTRA_SHOW_SELECTION = "showCharacterSelection"
+
+        fun selectionIntent(context: Context) = Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            .putExtra(EXTRA_SHOW_SELECTION, true)
     }
 }

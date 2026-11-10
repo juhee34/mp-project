@@ -1,0 +1,688 @@
+{
+  "status": "exported_and_pixel_validated",
+  "note": "72 PNGs exported. Required 54 frames present; optional greet/land/home have one frame each. Runtime animation validation pending.",
+  "spec": "docs/SPRITE_SPEC.md",
+  "sheets": [
+    {
+      "ids": [
+        "mint",
+        "cheese"
+      ],
+      "file": "docs/art/source/mint-cheese.png",
+      "columns": 4,
+      "rows": 6,
+      "frames": [
+        {
+          "character": "mint",
+          "action": "greet",
+          "index": 0,
+          "row": 0,
+          "column": 0,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_greet_0.png"
+        },
+        {
+          "character": "mint",
+          "action": "idle",
+          "index": 0,
+          "row": 0,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_idle_0.png"
+        },
+        {
+          "character": "mint",
+          "action": "idle",
+          "index": 1,
+          "row": 0,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_idle_1.png"
+        },
+        {
+          "character": "mint",
+          "action": "run",
+          "index": 0,
+          "row": 0,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_run_0.png"
+        },
+        {
+          "character": "mint",
+          "action": "run",
+          "index": 1,
+          "row": 1,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_run_1.png"
+        },
+        {
+          "character": "mint",
+          "action": "run",
+          "index": 2,
+          "row": 1,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_run_2.png"
+        },
+        {
+          "character": "mint",
+          "action": "run",
+          "index": 3,
+          "row": 1,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_run_3.png"
+        },
+        {
+          "character": "mint",
+          "action": "jump",
+          "index": 0,
+          "row": 1,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_jump_0.png"
+        },
+        {
+          "character": "mint",
+          "action": "jump",
+          "index": 1,
+          "row": 2,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_jump_1.png"
+        },
+        {
+          "character": "mint",
+          "action": "land",
+          "index": 0,
+          "row": 2,
+          "column": 1,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_land_0.png"
+        },
+        {
+          "character": "mint",
+          "action": "fail",
+          "index": 0,
+          "row": 2,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_fail_0.png"
+        },
+        {
+          "character": "mint",
+          "action": "home",
+          "index": 0,
+          "row": 2,
+          "column": 3,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_mint_home_0.png"
+        },
+        {
+          "character": "cheese",
+          "action": "greet",
+          "index": 0,
+          "row": 3,
+          "column": 0,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_greet_0.png"
+        },
+        {
+          "character": "cheese",
+          "action": "idle",
+          "index": 0,
+          "row": 3,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_idle_0.png"
+        },
+        {
+          "character": "cheese",
+          "action": "idle",
+          "index": 1,
+          "row": 3,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_idle_1.png"
+        },
+        {
+          "character": "cheese",
+          "action": "run",
+          "index": 0,
+          "row": 3,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_run_0.png"
+        },
+        {
+          "character": "cheese",
+          "action": "run",
+          "index": 1,
+          "row": 4,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_run_1.png"
+        },
+        {
+          "character": "cheese",
+          "action": "run",
+          "index": 2,
+          "row": 4,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_run_2.png"
+        },
+        {
+          "character": "cheese",
+          "action": "run",
+          "index": 3,
+          "row": 4,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_run_3.png"
+        },
+        {
+          "character": "cheese",
+          "action": "jump",
+          "index": 0,
+          "row": 4,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_jump_0.png"
+        },
+        {
+          "character": "cheese",
+          "action": "jump",
+          "index": 1,
+          "row": 5,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_jump_1.png"
+        },
+        {
+          "character": "cheese",
+          "action": "land",
+          "index": 0,
+          "row": 5,
+          "column": 1,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_land_0.png"
+        },
+        {
+          "character": "cheese",
+          "action": "fail",
+          "index": 0,
+          "row": 5,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_fail_0.png"
+        },
+        {
+          "character": "cheese",
+          "action": "home",
+          "index": 0,
+          "row": 5,
+          "column": 3,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_cheese_home_0.png"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "popo",
+        "lumi"
+      ],
+      "file": "docs/art/source/popo-lumi.png",
+      "columns": 4,
+      "rows": 6,
+      "frames": [
+        {
+          "character": "popo",
+          "action": "greet",
+          "index": 0,
+          "row": 0,
+          "column": 0,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_greet_0.png"
+        },
+        {
+          "character": "popo",
+          "action": "idle",
+          "index": 0,
+          "row": 0,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_idle_0.png"
+        },
+        {
+          "character": "popo",
+          "action": "idle",
+          "index": 1,
+          "row": 0,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_idle_1.png"
+        },
+        {
+          "character": "popo",
+          "action": "run",
+          "index": 0,
+          "row": 0,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_run_0.png"
+        },
+        {
+          "character": "popo",
+          "action": "run",
+          "index": 1,
+          "row": 1,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_run_1.png"
+        },
+        {
+          "character": "popo",
+          "action": "run",
+          "index": 2,
+          "row": 1,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_run_2.png"
+        },
+        {
+          "character": "popo",
+          "action": "run",
+          "index": 3,
+          "row": 1,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_run_3.png"
+        },
+        {
+          "character": "popo",
+          "action": "jump",
+          "index": 0,
+          "row": 1,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_jump_0.png"
+        },
+        {
+          "character": "popo",
+          "action": "jump",
+          "index": 1,
+          "row": 2,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_jump_1.png"
+        },
+        {
+          "character": "popo",
+          "action": "land",
+          "index": 0,
+          "row": 2,
+          "column": 1,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_land_0.png"
+        },
+        {
+          "character": "popo",
+          "action": "fail",
+          "index": 0,
+          "row": 2,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_fail_0.png"
+        },
+        {
+          "character": "popo",
+          "action": "home",
+          "index": 0,
+          "row": 2,
+          "column": 3,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_popo_home_0.png"
+        },
+        {
+          "character": "lumi",
+          "action": "greet",
+          "index": 0,
+          "row": 3,
+          "column": 0,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_greet_0.png"
+        },
+        {
+          "character": "lumi",
+          "action": "idle",
+          "index": 0,
+          "row": 3,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_idle_0.png"
+        },
+        {
+          "character": "lumi",
+          "action": "idle",
+          "index": 1,
+          "row": 3,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_idle_1.png"
+        },
+        {
+          "character": "lumi",
+          "action": "run",
+          "index": 0,
+          "row": 3,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_run_0.png"
+        },
+        {
+          "character": "lumi",
+          "action": "run",
+          "index": 1,
+          "row": 4,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_run_1.png"
+        },
+        {
+          "character": "lumi",
+          "action": "run",
+          "index": 2,
+          "row": 4,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_run_2.png"
+        },
+        {
+          "character": "lumi",
+          "action": "run",
+          "index": 3,
+          "row": 4,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_run_3.png"
+        },
+        {
+          "character": "lumi",
+          "action": "jump",
+          "index": 0,
+          "row": 4,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_jump_0.png"
+        },
+        {
+          "character": "lumi",
+          "action": "jump",
+          "index": 1,
+          "row": 5,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_jump_1.png"
+        },
+        {
+          "character": "lumi",
+          "action": "land",
+          "index": 0,
+          "row": 5,
+          "column": 1,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_land_0.png"
+        },
+        {
+          "character": "lumi",
+          "action": "fail",
+          "index": 0,
+          "row": 5,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_fail_0.png"
+        },
+        {
+          "character": "lumi",
+          "action": "home",
+          "index": 0,
+          "row": 5,
+          "column": 3,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_lumi_home_0.png"
+        }
+      ]
+    },
+    {
+      "ids": [
+        "nunu",
+        "piko"
+      ],
+      "file": "docs/art/source/nunu-piko.png",
+      "columns": 4,
+      "rows": 6,
+      "frames": [
+        {
+          "character": "nunu",
+          "action": "greet",
+          "index": 0,
+          "row": 0,
+          "column": 0,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_greet_0.png"
+        },
+        {
+          "character": "nunu",
+          "action": "idle",
+          "index": 0,
+          "row": 0,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_idle_0.png"
+        },
+        {
+          "character": "nunu",
+          "action": "idle",
+          "index": 1,
+          "row": 0,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_idle_1.png"
+        },
+        {
+          "character": "nunu",
+          "action": "run",
+          "index": 0,
+          "row": 0,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_run_0.png"
+        },
+        {
+          "character": "nunu",
+          "action": "run",
+          "index": 1,
+          "row": 1,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_run_1.png"
+        },
+        {
+          "character": "nunu",
+          "action": "run",
+          "index": 2,
+          "row": 1,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_run_2.png"
+        },
+        {
+          "character": "nunu",
+          "action": "run",
+          "index": 3,
+          "row": 1,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_run_3.png"
+        },
+        {
+          "character": "nunu",
+          "action": "jump",
+          "index": 0,
+          "row": 1,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_jump_0.png"
+        },
+        {
+          "character": "nunu",
+          "action": "jump",
+          "index": 1,
+          "row": 2,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_jump_1.png"
+        },
+        {
+          "character": "nunu",
+          "action": "land",
+          "index": 0,
+          "row": 2,
+          "column": 1,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_land_0.png"
+        },
+        {
+          "character": "nunu",
+          "action": "fail",
+          "index": 0,
+          "row": 2,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_fail_0.png"
+        },
+        {
+          "character": "nunu",
+          "action": "home",
+          "index": 0,
+          "row": 2,
+          "column": 3,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_nunu_home_0.png"
+        },
+        {
+          "character": "piko",
+          "action": "greet",
+          "index": 0,
+          "row": 3,
+          "column": 0,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_greet_0.png"
+        },
+        {
+          "character": "piko",
+          "action": "idle",
+          "index": 0,
+          "row": 3,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_idle_0.png"
+        },
+        {
+          "character": "piko",
+          "action": "idle",
+          "index": 1,
+          "row": 3,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_idle_1.png"
+        },
+        {
+          "character": "piko",
+          "action": "run",
+          "index": 0,
+          "row": 3,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_run_0.png"
+        },
+        {
+          "character": "piko",
+          "action": "run",
+          "index": 1,
+          "row": 4,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_run_1.png"
+        },
+        {
+          "character": "piko",
+          "action": "run",
+          "index": 2,
+          "row": 4,
+          "column": 1,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_run_2.png"
+        },
+        {
+          "character": "piko",
+          "action": "run",
+          "index": 3,
+          "row": 4,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_run_3.png"
+        },
+        {
+          "character": "piko",
+          "action": "jump",
+          "index": 0,
+          "row": 4,
+          "column": 3,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_jump_0.png"
+        },
+        {
+          "character": "piko",
+          "action": "jump",
+          "index": 1,
+          "row": 5,
+          "column": 0,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_jump_1.png"
+        },
+        {
+          "character": "piko",
+          "action": "land",
+          "index": 0,
+          "row": 5,
+          "column": 1,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_land_0.png"
+        },
+        {
+          "character": "piko",
+          "action": "fail",
+          "index": 0,
+          "row": 5,
+          "column": 2,
+          "required": true,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_fail_0.png"
+        },
+        {
+          "character": "piko",
+          "action": "home",
+          "index": 0,
+          "row": 5,
+          "column": 3,
+          "required": false,
+          "output": "app/src/main/res/drawable-nodpi/sprite_piko_home_0.png"
+        }
+      ]
+    }
+  ]
+}

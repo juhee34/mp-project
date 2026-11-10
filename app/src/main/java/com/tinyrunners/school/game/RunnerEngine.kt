@@ -39,9 +39,6 @@ data class RunnerConfig(
     /** Second jump in the air: one per airtime, same for every character. */
     val airJumps: Int = 1,
     val airJumpVelocity: Float = 700f,
-    /** Skill: removes the nearest obstacle ahead within [skillRange], then rests for [skillCooldown] seconds. */
-    val skillCooldown: Float = 10f,
-    val skillRange: Float = 600f,
 ) {
     val airTime: Float get() = 2f * jumpVelocity / gravity
     val apexHeight: Float get() = jumpVelocity * jumpVelocity / (2f * gravity)
@@ -75,12 +72,6 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     var cleared = 0; private set
     var elapsed = 0f; private set
     var airJumpsUsed = 0; private set
-    /** Seconds until the skill can be used again; 0 means ready. Only counts down while running. */
-    var skillCooldownLeft = 0f; private set
-    var skillUses = 0; private set
-    /** The obstacle the last skill removed and how long ago, for the view's effect. Visual only. */
-    var lastSkillTarget: Obstacle? = null; private set
-    var sinceLastSkill = Float.MAX_VALUE; private set
     private val _obstacles = mutableListOf<Obstacle>()
     val obstacles: List<Obstacle> get() = _obstacles
 
@@ -97,27 +88,6 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         Phase.RUNNING -> jump()
         Phase.PAUSED -> { phase = Phase.RUNNING; true }
         Phase.OVER -> if (canRestart) { restart(); true } else false
-    }
-
-    val skillReady: Boolean get() = phase == Phase.RUNNING && skillCooldownLeft <= 0f
-
-    /**
-     * Removes the nearest obstacle that is still ahead of (or touching) the player and within range.
-     * With no obstacle in range nothing happens and the cooldown is not spent.
-     */
-    fun useSkill(): Boolean {
-        if (!skillReady) return false
-        val playerLeft = config.playerX + config.playerInset
-        val target = _obstacles
-            .filter { it.x + it.width - config.obstacleInset > playerLeft && it.x < config.playerX + config.skillRange }
-            .minByOrNull { it.x } ?: return false
-        _obstacles.remove(target)
-        if (!target.cleared) { target.cleared = true; cleared++ }
-        skillUses++
-        skillCooldownLeft = config.skillCooldown
-        lastSkillTarget = target
-        sinceLastSkill = 0f
-        return true
     }
 
     fun pause() { if (phase == Phase.RUNNING) phase = Phase.PAUSED }
@@ -158,8 +128,6 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         distance = 0f; cleared = 0; elapsed = 0f
         accumulator = 0f; overTime = 0f
         airJumpsUsed = 0
-        skillCooldownLeft = 0f; skillUses = 0
-        lastSkillTarget = null; sinceLastSkill = Float.MAX_VALUE
         _obstacles.clear()
         // First obstacle spawns after about one second of running, then needs a few more seconds to arrive.
         nextGap = config.startSpeed
@@ -168,8 +136,6 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     private fun tick(dt: Float) {
         elapsed += dt
         speed = min(config.maxSpeed, speed + config.acceleration * dt)
-        if (skillCooldownLeft > 0f) skillCooldownLeft = (skillCooldownLeft - dt).coerceAtLeast(0f)
-        if (sinceLastSkill < Float.MAX_VALUE) sinceLastSkill += dt
 
         playerVy -= config.gravity * dt
         playerY += playerVy * dt

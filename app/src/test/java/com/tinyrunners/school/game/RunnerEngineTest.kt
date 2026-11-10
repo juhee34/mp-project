@@ -73,63 +73,6 @@ class RunnerEngineTest {
         assertTrue(doubleApex > singleApex)
     }
 
-    /** Runs until an obstacle is on screen ahead of the player. */
-    private fun RunnerEngine.runUntilObstacleAhead() {
-        tap()
-        var t = 0f
-        while (obstacles.none { it.x > config.playerX + config.playerSize && it.x < config.playerX + config.skillRange } && t < 20f) {
-            update(frame); t += frame
-        }
-        assertTrue("an obstacle appeared", t < 20f)
-    }
-
-    @Test fun skillRemovesNearestObstacleAheadAndCountsIt() {
-        val e = RunnerEngine(seed = 7)
-        e.runUntilObstacleAhead()
-        val target = e.obstacles.filter { it.x + it.width > e.config.playerX }.minBy { it.x }
-        val clearedBefore = e.cleared
-        assertTrue(e.useSkill())
-        assertFalse(target in e.obstacles)
-        assertEquals(clearedBefore + 1, e.cleared)
-        assertEquals(target, e.lastSkillTarget)
-        assertEquals(e.config.skillCooldown, e.skillCooldownLeft, 0f)
-    }
-
-    @Test fun skillRestsTenSecondsAndPauseDoesNotCount() {
-        val e = RunnerEngine(seed = 7)
-        e.runUntilObstacleAhead()
-        assertTrue(e.useSkill())
-        assertFalse("cooling down", e.useSkill())
-        e.pause(); e.run(30f); e.resume()
-        assertEquals("paused time does not count", e.config.skillCooldown, e.skillCooldownLeft, 0.01f)
-        e.run(e.config.skillCooldown - 0.5f) { it.autoJump() }
-        assertFalse(e.skillReady)
-        e.run(0.6f) { it.autoJump() }
-        assertTrue(e.skillReady)
-    }
-
-    @Test fun skillWithNothingAheadKeepsCooldown() {
-        val e = RunnerEngine(seed = 7)
-        e.tap()
-        assertTrue(e.obstacles.isEmpty())
-        assertFalse(e.useSkill())
-        assertEquals(0f, e.skillCooldownLeft, 0f)
-        assertEquals(0, e.skillUses)
-    }
-
-    @Test fun skillOnlyWhileRunningAndResetsOnRestart() {
-        val e = RunnerEngine(seed = 7)
-        assertFalse("not before start", e.useSkill())
-        e.runUntilObstacleAhead()
-        assertTrue(e.useSkill())
-        while (e.phase != RunnerEngine.Phase.OVER) e.update(frame)
-        e.run(1f)
-        e.tap()
-        assertEquals(0f, e.skillCooldownLeft, 0f)
-        assertEquals(0, e.skillUses)
-        assertEquals(null, e.lastSkillTarget)
-    }
-
     @Test fun everyObstacleSizeIsClearableAtEverySpeed() {
         val c = RunnerConfig()
         val needed = c.obstacleMaxWidth + c.playerHitWidth
