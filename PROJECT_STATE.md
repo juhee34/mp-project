@@ -234,3 +234,29 @@
 - 콘텐츠/해시 검증 통과 후 지정 파일만 git add 시도. .git/index.lock 생성 Permission denied로 중단. 커밋/푸시 미실행.
 - scripts/publish-backgrounds.ps1 준비: 대상 브랜치 확인, 기존 staged 변경 차단, 검증 후 이번 파일만 add/commit/push. .kotlin/.tools 등 임시 파일 제외, 강제 push 없음. PowerShell 구문 검사 통과. 이 스크립트는 아직 실행하지 않았다.
 - 최신 APK를 emulator-5554에 설치했고 Success를 확인했다. 현재 제어 가능한 데스크톱 창에 에뮬레이터가 없어 게임 UI 시각 검수는 완료하지 못했다.
+
+
+## 2026-11-10 A 연결 배경 파일 확보 및 접합부 검수
+- 사용자 다운로드 최신 연결 PNG 3장을 docs/art/background-connectors/에 원본 그대로 보관했다. 게임 assets에는 추가하지 않았다.
+- 6명 양방향 접합부 12곳을 1:1 양끝 230px/하단 200px 발췌 비교판으로 육안 검수했다. docs/art/review/connector-seams.png 및 connector-review.html.
+- 결과: 모두 경계 보정 필요. 색면·뿌리·수풀·수면·벽돌 줄눈의 불연속을 docs/art/CONNECTOR_REVIEW.md에 기록했다. loopReady=false 유지.
+- 이후 작업은 A팀 양끝 아트 보정. B팀 게임 코드/렌더링/충돌은 변경하지 않았다. 소스 치수와 이번 비교용 rect 및 해시는 background-connectors/manifest.json에 기록했다.
+
+
+## 2026-11-10 A 연결 배경 부분 보정
+- 연결 PNG 3장 수정: 중복 화분/큰 나무 제거, 피코 수국 크기와 단차 수정. 원본 배경 및 게임 코드 변경 없음.
+- 정확한 접합은 아직 미완료. 검수판 재생성은 PowerShell 실행 정책에 막힘. 기존 비교판은 보정 전 자료이며 manifest에 명시했다.
+- Git add 실패: .git/index.lock Permission denied. 커밋/푸시 미완료.
+- 다음 A 작업: 라일·치즈 장애물 소품 콘셉트. 실제 게임용 규격/충돌/연결은 별도 작업.
+
+## 2026-11-10 A 장애물 소품 후속
+- 사용자 요청으로 Git 업로드는 별도 Codex에 인계한다. 이번 대화에서 푸시하지 않았다.
+- docs/art/obstacle-concepts/popo-lumi.png 제작: 포포·루미 각 3종 콘셉트. 라일·치즈와 합쳐 4명 12종 시안이며 최종 게임용 스프라이트는 아니다.
+- 투명 외곽·크기·분리·바닥선 검증 및 누누·피코 소품 제작이 남아 있다. 게임 코드 변경 없음.
+
+## 2026-11-10 A 아트 게시 검토
+- 게시 대상은 background-connectors, obstacle-concepts, CONNECTOR_REVIEW.md, connector-review.html, connector-seams.png와 이번 아트 작업 기록으로 한정했다. 기존 staged 변경은 없었으며 게임 코드·다른 팀원 파일·.tools/.kotlin은 제외한다.
+- 연결 PNG 3장의 실제 치수와 SHA-256이 manifest의 6명 항목과 일치하고 전원 loopReady=false임을 확인했다. 라일/치즈·누누/피코는 2172×724, 포포/루미는 2169×725이며 문서의 낡은 치수를 바로잡았다.
+- 부분 보정 PNG 3장, 장애물 콘셉트 시트 2장(1536×1024, 4명 12종), 보정 전 접합 비교판(960×1380)을 열어 문서와 대조했다. 비교판 이미지 자체는 유지하고 HTML·문서에 보정 전 자료임을 명확히 표시했다. manifest의 rect와 접합 지적은 최신 이미지에서 재검증되지 않은 과거 자료다.
+- 콘텐츠 검사 통과. 새 접합 비교판 생성, 최종 투명도·프레임 분리·바닥선·충돌 검수, Android 빌드·기기 검증은 수행하지 않았다. 연결 배경은 부분 보정, 장애물은 콘셉트 상태를 유지한다.
+- 원격 작업 브랜치는 게시 전 로컬 HEAD와 같았다. origin/main의 후속 게임 변경(d4e66ef)은 확인했으나 이번 아트 전용 게시에는 병합하지 않는다. 다음은 보정 후 12곳 접합 재검수와 장애물 자산 정리·누누/피코 제작이다.
