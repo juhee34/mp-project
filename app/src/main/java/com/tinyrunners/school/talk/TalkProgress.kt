@@ -18,6 +18,12 @@ class TalkProgress(context: Context) {
     fun shouldShowTalk(characterId: String): Boolean = !prefs.getBoolean(talkKey(account, characterId), false)
     fun markTalkSeen(characterId: String) { prefs.edit().putBoolean(talkKey(account, characterId), true).apply() }
 
+    /** Shows the prologue and every friend talk again for this account (settings, e.g. before a demo). */
+    fun resetAll() {
+        val mine = prefs.all.keys.filter { it == prologueKey(account) || it.startsWith("talk_${account}_") }
+        prefs.edit().apply { mine.forEach { remove(it) } }.apply()
+    }
+
     companion object {
         private const val GUEST = "guest"
         fun prologueKey(account: String) = "prologue_$account"

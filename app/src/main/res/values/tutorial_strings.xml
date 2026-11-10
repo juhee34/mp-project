@@ -12,7 +12,7 @@
     <string name="tutorial_skip">건너뛰기</string>
     <string name="tutorial_next">다음</string>
     <string name="tutorial_start">시작하기</string>
-    <string name="settings_guide">게임 안내</string>
-    <string name="settings_guide_replay">게임 안내 다시 보기</string>
-    <string name="settings_guide_reset">다음에 게임을 시작할 때 안내가 다시 나와요.</string>
+    <string name="settings_guide">처음 안내</string>
+    <string name="settings_guide_replay">처음 안내 다시 보기 (이야기·대화·게임 안내)</string>
+    <string name="settings_guide_reset">다시 볼 수 있게 했어요. 친구와 달리기를 누르면 대화와 게임 안내가, 다음 로그인 때 세계 이야기가 다시 나와요.</string>
 </resources>

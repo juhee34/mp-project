@@ -93,6 +93,7 @@ class SettingsActivity : Activity() {
             background = page.shape(Page.MINT, 12)
             setOnClickListener {
                 OnboardingStore(this@SettingsActivity).resetGameGuide()
+                com.tinyrunners.school.talk.TalkProgress(this@SettingsActivity).resetAll()
                 guideStatus.text = getString(R.string.settings_guide_reset)
             }
         }, page.params(8))

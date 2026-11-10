@@ -40,11 +40,13 @@ class TutorialFlow(private val steps: List<TutorialStep> = TutorialStep.entries)
 }
 
 /** Remembers whether the guide was completed or skipped; settings can reset it to show it again. */
+/** The game guide shows before the first run of each account on this device (guest counts as one account). */
 class OnboardingStore(context: Context) {
     private val prefs = context.applicationContext.getSharedPreferences("onboarding", Context.MODE_PRIVATE)
-    val shouldShowGameGuide: Boolean get() = !prefs.getBoolean(KEY_GAME_GUIDE, false)
-    fun markGameGuideDone() { prefs.edit().putBoolean(KEY_GAME_GUIDE, true).apply() }
-    fun resetGameGuide() { prefs.edit().remove(KEY_GAME_GUIDE).apply() }
+    private val key = KEY_GAME_GUIDE + "_" + (com.tinyrunners.school.auth.AuthService.currentUid(context) ?: "guest")
+    val shouldShowGameGuide: Boolean get() = !prefs.getBoolean(key, false)
+    fun markGameGuideDone() { prefs.edit().putBoolean(key, true).apply() }
+    fun resetGameGuide() { prefs.edit().remove(key).apply() }
 
     private companion object { const val KEY_GAME_GUIDE = "gameGuideDone" }
 }
