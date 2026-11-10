@@ -33,6 +33,11 @@
 - 검증: validate-content PASS(6명 모두 필수 프레임 9/9, 대사 있는 이야기 1/6), assembleDebug 성공, 단위 테스트 40개 통과(A의 RunnerAnimationTest 포함), lint 오류 0·경고 25(대부분 아직 쓰지 않는 land/greet/home 프레임의 UnusedResources). 에뮬레이터(Firebase 로그인 상태): 선택 화면 6명 초상, 라일 달리기·2단 점프 스프라이트, 스킬 버튼 없음 확인. 다른 5명의 게임 화면과 이야기→달리기→이야기 흐름은 이번에 기기로 보지 않았다.
 - Firebase: 사용자가 프로젝트를 만들고 app/google-services.json을 넣었다. 에뮬레이터 결과 화면에서 "계정(Firebase)에 저장된 기록이에요"를 확인했다.
 
+## 오프닝 기본 화면 확정 (2026-11-10, B)
+- 사용자 결정: 코드로 그린 오프닝을 정식 디자인으로 쓴다. 언덕을 화면 전체로 끊김 없이 잇고 위쪽에 계단식 픽셀 윤곽을 넣었다. 하늘은 크림에서 연초록으로 세로 그라데이션, 픽셀 구름 4개가 천천히 오른쪽으로 흐른다(약 15fps 다시 그리기). 부제는 "여섯 친구와 함께 달리는 작은 모험".
+- A의 opening_background.png는 선택 사항으로 바꿨다(docs/OPENING_SPEC.md).
+- 검증: 빌드·lint 오류 0, 에뮬레이터 캡처 2장(6초 간격)으로 구름 이동 확인.
+
 ## 가로 오프닝 화면 (2026-11-10, B)
 - opening/OpeningActivity를 런처로 바꿨다. 앱을 열 때마다 가로·전체 화면 오프닝이 나오고 가운데 버튼 하나: 로그인 안 했으면 "로그인"(로그인 화면), 했으면 "시작하기"(친구 선택). MainActivity는 런처에서 빠졌고(exported=false) 로그인 확인은 그대로 둔다. 설정의 로그아웃은 오프닝으로 돌아간다.
 - 오프닝 그림은 A 담당: res/drawable-nodpi/opening_background.png가 있으면 가운데 기준으로 꽉 채워 선명하게 그리고, 없으면 임시 화면(제목 + 6명 idle 그림)을 그린다. 규격은 docs/OPENING_SPEC.md.

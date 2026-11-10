@@ -2,5 +2,5 @@
 <resources>
     <string name="opening_login">로그인</string>
     <string name="opening_start">시작하기</string>
-    <string name="opening_placeholder">오프닝 그림 준비 중 · 여섯 친구가 기다리고 있어요</string>
+    <string name="opening_tagline">여섯 친구와 함께 달리는 작은 모험</string>
 </resources>

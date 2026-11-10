@@ -9,7 +9,9 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.LinearGradient
 import android.graphics.Rect
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
@@ -30,6 +32,7 @@ import com.tinyrunners.school.data.CharacterRepository
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 /**
  * Landscape title screen shown on every launch: the friends' artwork fills the screen and one button sits in the
@@ -124,11 +127,28 @@ private class OpeningBackground(context: Context) : View(context) {
     }
 
     private fun drawPlaceholder(canvas: Canvas, w: Int, h: Int) {
-        canvas.drawColor(SKY)
         val ground = h * 0.78f
+        val px = max(2f, (h / 90f).roundToInt().toFloat())          // one "pixel" of the scenery
+        val hillBase = ground - h * 0.17f
+
+        // Sky: cream at the top fading into pale green just above the hills, so there is no hard edge.
+        if (skyShaderHeight != h) {
+            sky.shader = LinearGradient(0f, 0f, 0f, hillBase, SKY, SKY_LOW, Shader.TileMode.CLAMP)
+            skyShaderHeight = h
+        }
+        canvas.drawRect(0f, 0f, w.toFloat(), ground, sky)
+
+        drawClouds(canvas, w, h, px)
+
+        // One continuous band of hills across the whole width, with a stepped pixel skyline on top.
         fill.color = HILL
-        canvas.drawRect(0f, ground - h * 0.16f, w * 0.35f, ground, fill)
-        canvas.drawRect(w * 0.6f, ground - h * 0.22f, w.toFloat(), ground, fill)
+        canvas.drawRect(0f, hillBase, w.toFloat(), ground, fill)
+        var x = 0f
+        while (x < w) {
+            val bump = ((sin(x / (w * 0.11f)) + 1f) * 0.5f * 7f + (sin(x / (w * 0.043f) + 1.3f) + 1f) * 2f).toInt()
+            canvas.drawRect(x, hillBase - bump * px, x + px * 4, hillBase, fill)
+            x += px * 4
+        }
         fill.color = GROUND; canvas.drawRect(0f, ground, w.toFloat(), h.toFloat(), fill)
         fill.color = GRASS; canvas.drawRect(0f, ground, w.toFloat(), ground + h * 0.015f, fill)
 
@@ -137,7 +157,7 @@ private class OpeningBackground(context: Context) : View(context) {
         canvas.drawText(context.getString(R.string.app_name), w / 2f, h * 0.2f, text)
         text.textSize = h * 0.035f
         text.color = MUTED
-        canvas.drawText(context.getString(R.string.opening_placeholder), w / 2f, h * 0.27f, text)
+        canvas.drawText(context.getString(R.string.opening_tagline), w / 2f, h * 0.27f, text)
 
         // Six friends in a row on the ground, leaving the centre clear for the button.
         if (friends.isEmpty()) return
@@ -155,8 +175,47 @@ private class OpeningBackground(context: Context) : View(context) {
         }
     }
 
+    /**
+     * Blocky pixel clouds drifting slowly to the right. Each cloud is a small grid of on/off cells scaled by
+     * [px]; a slightly darker underside row gives them a soft pixel-art shading.
+     */
+    private fun drawClouds(canvas: Canvas, w: Int, h: Int, px: Float) {
+        val seconds = (System.nanoTime() - startNanos) / 1_000_000_000f
+        val cell = px * 2
+        CLOUDS.forEach { (shape, yFrac, xFrac, speed) ->
+            val cloudW = shape[0].length * cell
+            val span = w + cloudW
+            val left = ((xFrac * w + seconds * speed * px) % span) - cloudW
+            val top = h * yFrac
+            shape.forEachIndexed { row, line ->
+                fill.color = if (row == shape.lastIndex) CLOUD_SHADE else CLOUD
+                line.forEachIndexed { col, c ->
+                    if (c == '#') canvas.drawRect(left + col * cell, top + row * cell, left + (col + 1) * cell, top + (row + 1) * cell, fill)
+                }
+            }
+        }
+        // Keep the clouds moving; a light 15 fps redraw is enough for this slow drift.
+        postInvalidateDelayed(66)
+    }
+
+    private val sky = Paint()
+    private var skyShaderHeight = -1
+    private val startNanos = System.nanoTime()
+
+    private data class Cloud(val shape: List<String>, val yFrac: Float, val xFrac: Float, val speed: Float)
+
     private companion object {
         val SKY = Color.rgb(250, 246, 236)
+        /** Sky colour just above the hills: halfway between cream and the hill green. */
+        val SKY_LOW = Color.rgb(236, 240, 226)
+        val CLOUD = Color.rgb(255, 255, 252)
+        val CLOUD_SHADE = Color.rgb(228, 232, 226)
+        val CLOUDS = listOf(
+            Cloud(listOf("...####.....", ".########...", "###########.", ".#########.."), 0.08f, 0.05f, 6f),
+            Cloud(listOf("..###...", ".######.", "########"), 0.33f, 0.62f, 4f),
+            Cloud(listOf("....###......", "..########...", ".###########.", "#############", ".###########."), 0.13f, 0.78f, 5f),
+            Cloud(listOf(".####..", "#######", ".#####."), 0.42f, 0.30f, 3f),
+        )
         val HILL = Color.rgb(221, 232, 214)
         val GROUND = Color.rgb(196, 170, 128)
         val GRASS = Color.rgb(122, 160, 110)
