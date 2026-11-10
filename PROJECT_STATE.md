@@ -27,6 +27,12 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 로그인 → 세계 이야기 → 친구 선택 → 대화 → 달리기 (2026-11-10, B)
+- 사용자 요청 흐름 구현. talk/PrologueActivity: 로그인(또는 이 계정으로 계속하기) 직후 검은 배경에 흰 글씨로 세계 이야기 6쪽, 누르면 다음 쪽, 건너뛰기 가능, 끝나면 친구 선택 화면으로 간다.
+- talk/TalkActivity: 친구 선택·프로필의 "이 친구와 달리기"를 누르면 그 친구 고향 배경 첫 장면(움직이지 않음) 가운데에 친구를 크게 세우고, 아래 대사 칸(이름표, 한 글자씩 나오는 글, ▼ 표시)을 누르며 넘긴다. 끝나거나 건너뛰기를 누르면 게임 시작. 다시 달리기·이야기 달리기는 대화 없이 바로 시작.
+- 내용: content/talks.json(세계 이야기 6쪽, 6명 각 6줄 대사). 캐릭터 바이블의 runningReason·말투·짧은 대사를 바탕으로 B가 작성했으므로 A의 문안 검토가 필요하다.
+- 검증: validate-content PASS(Talks 6쪽·6명), assembleDebug·testDebugUnitTest(70개, 실패 0, TalkTest 3개 추가)·lintDebug 성공. 에뮬레이터: 로그인 → 세계 이야기 → 선택(루미) → 루미 대화 6줄 → 게임 시작까지 확인, crash 0건. 루미 외 5명의 대화 화면은 직접 보지 않았다.
+
 ## A 이야기 도감 병합, 두 이야기 기능 유지 (2026-11-10, B)
 - codex/character-screens ba5a2ec(이야기 12편·이야기 도감·읽기 기록)를 main에 병합했다. 사용자 결정: 두 기능 모두 유지.
 - 충돌 해결: stories.json은 A의 도감 형식(24편)을 그대로 쓰고, B의 대사형 "마을 이야기"는 content/village_stories.json으로 옮겼다(story/StoryActivity의 StoryRepository). story_strings.xml은 양쪽 문자열을 모두 두고 상단 메뉴 이름을 "이야기" → "마을 이야기"로 바꿨다. 검사기는 두 파일을 각각 검사한다. DATA_CONTRACT에 분리 규칙 기록.

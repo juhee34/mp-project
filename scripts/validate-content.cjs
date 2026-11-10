@@ -53,6 +53,14 @@ for(const s of village){
   assert(runs<=1,`${s.id}: at most 1 run per story`);
 }
 
+// Talks before a run (content/talks.json): prologue pages, one talk per friend, known speakers, friend speaks last.
+const talks=read("app/src/main/assets/content/talks.json");
+assert(Array.isArray(talks.prologue)&&talks.prologue.length>0&&talks.prologue.every(p=>typeof p==="string"&&p.trim()),"talks: prologue pages");
+assert.deepEqual(talks.talks.map(t=>t.characterId),expected,"talks: one per friend in order");
+for(const t of talks.talks){assert(t.lines.length>0,`${t.characterId}: empty talk`);
+  t.lines.forEach((l,i)=>{assert([t.characterId,"player","narrator"].includes(l.speaker),`${t.characterId} talk line ${i}: speaker`);assert(l.text&&l.text.trim());});
+  assert.equal(t.lines.at(-1).speaker,t.characterId,`${t.characterId}: the friend should speak last`);}
+
 // Sprites (docs/SPRITE_SPEC.md): 48x48 PNG with alpha, sprite_<id>_<motion>_<n>.png in res/drawable-nodpi.
 const SPRITE_DIR='app/src/main/res/drawable-nodpi';
 const MOTIONS={idle:2,run:4,jump:2,fail:1,land:1,greet:2,home:2},REQUIRED=['idle','run','jump','fail'];
@@ -94,6 +102,7 @@ for(const id of expected)for(const prop of OBSTACLE_PROPS[id]){
 
 console.log('PASS: 6 characters; story/asset references; asset readiness honest; 205 research records; 20 role prompts.');
 console.log(`Sprites (required frames): ${spriteSummary.join(', ')}`);
+console.log(`Talks: prologue ${talks.prologue.length} pages, ${talks.talks.length} friends`);
 console.log(`Obstacle props in app: ${obstacleCount}/18`);
 console.log(`Village stories with dialogue: ${scripted}/${village.length} (others play from their outline)`);
 

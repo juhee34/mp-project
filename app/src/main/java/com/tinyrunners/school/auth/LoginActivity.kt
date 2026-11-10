@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.widget.Button
 import android.widget.TextView
-import com.tinyrunners.school.MainActivity
+import com.tinyrunners.school.talk.PrologueActivity
 import com.tinyrunners.school.R
 import com.tinyrunners.school.ui.Page
 import kotlin.math.min
@@ -85,9 +85,9 @@ class LoginActivity : Activity() {
     private fun showError(message: String) { error.text = message }
 
     companion object {
-        /** Goes to the friend selection and closes the opening and any login popups behind it. */
+        /** Shows the world's story, then the friend selection; closes the opening and any login popups behind it. */
         fun openMain(activity: Activity) {
-            activity.startActivity(Intent(activity, MainActivity::class.java)
+            activity.startActivity(PrologueActivity.intent(activity)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
             activity.finish()
         }

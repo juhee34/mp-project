@@ -14,7 +14,7 @@ import com.tinyrunners.school.settings.SettingsActivity
 import com.tinyrunners.school.story.StoryListActivity
 import android.widget.FrameLayout
 import android.widget.TextView
-import com.tinyrunners.school.game.GameActivity
+import com.tinyrunners.school.talk.TalkActivity
 import com.tinyrunners.school.characters.CharacterScreens
 import com.tinyrunners.school.data.CharacterRepository
 
@@ -80,7 +80,8 @@ class MainActivity : Activity() {
     }
 
     private fun onStartRun(characterId: String) {
-        startActivity(GameActivity.intent(this, characterId))
+        // Talk with the chosen friend first; the talk screen starts the run.
+        startActivity(TalkActivity.intent(this, characterId))
     }
 
     @Deprecated("Uses the Activity back callback for the character screen stack.")

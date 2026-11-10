@@ -62,8 +62,13 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - 상세 설정·보안 규칙: docs/FIREBASE_SETUP.md.
 
 ## 화면 계약
-(로그인/회원가입) → 소개 → 6명 선택 → game(characterId) → 결과(runId 저장) → 다시 달리기 / 내 기록 / 친구 선택. 소개·선택 화면 위 메뉴에서 내 기록·설정.
+(로그인/회원가입) → 세계 이야기(PrologueActivity, 검은 화면) → 6명 선택 → 친구와 대화(TalkActivity) → game(characterId) → 결과(runId 저장) → 다시 달리기 / 내 기록 / 친구 선택. 소개·선택 화면 위 메뉴에서 내 기록·설정.
 정의되지 않은 ID는 선택 화면으로 복귀한다. 원시 JSON과 Activity 사이의 의존을 Repository로 제한한다.
+
+### 출발 전 대화 (B, 2026-11-10)
+- `content/talks.json`: `prologue`(문자열 배열, 한 번 누를 때 한 쪽), `talks`(6명 순서, `{characterId, lines:[{speaker, text}]}`). speaker는 해당 캐릭터 ID, `player`(로그인 닉네임, 없으면 "나"), `narrator`(이름표 없음). 마지막 대사는 그 친구가 한다.
+- 대화 배경은 그 친구의 달리기 배경 첫 장면(거리 0)을 멈춘 채 쓴다. 대화가 끝나거나 건너뛰기를 누르면 게임이 시작된다. 다시 달리기·이야기 달리기·도감의 바로 달리기는 대화를 거치지 않는다.
+- 검사: validate-content의 Talks 항목, TalkTest.
 
 ### 도감 화면·읽음 저장 (A, 2026-11-10)
 - 소개·친구 선택·프로필 → `StoryActivity`. `StoryParser`가 JSON을 모델로 변환한다. 선택/프로필 진입은 현재 캐릭터를 전달한다.

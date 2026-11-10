@@ -2,6 +2,8 @@
     <!-- Title screen: full screen, cream window so launch shows no white flash before the artwork. -->
     <style name="OpeningTheme" parent="AppTheme"><item name="android:windowFullscreen">true</item><item name="android:windowBackground">@color/opening_window</item></style>
     <color name="opening_window">#FAF6EC</color>
+    <!-- World story after login: plain black, white text. -->
+    <style name="PrologueTheme" parent="OpeningTheme"><item name="android:windowBackground">@android:color/black</item><item name="android:windowLightStatusBar">false</item><item name="android:navigationBarColor">@android:color/black</item></style>
     <!-- Login/sign-up popup: rounded cream card, opening dimmed behind, full screen like the opening. -->
     <style name="AuthPopupTheme" parent="android:style/Theme.Material.Light.Dialog.NoActionBar"><item name="android:fontFamily">sans</item><item name="android:colorAccent">#42684D</item><item name="android:windowBackground">@drawable/auth_popup_background</item><item name="android:windowFullscreen">true</item><item name="android:windowCloseOnTouchOutside">false</item><item name="android:backgroundDimAmount">0.45</item></style>
 </resources>
