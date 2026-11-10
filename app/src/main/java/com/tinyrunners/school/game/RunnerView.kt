@@ -30,6 +30,9 @@ class RunnerView(
 
     private val runnerArt = CharacterPortrait(character.color)
     private val sprites = CharacterSprites.load(resources, character.id)
+    private val storyBackground = StoryBackground.load(context, character.id)
+    /** A's hometown props for boxes and towers; floating branches keep their drawn look. */
+    private val obstacleArt = ObstacleArt.load(resources, character.id)
     private val spritePaint = Paint().apply {
         isFilterBitmap = false
         isAntiAlias = false
@@ -123,10 +126,15 @@ class RunnerView(
         val w = width.toFloat()
         val h = height.toFloat()
         canvas.drawColor(skyColor())
-        drawHills(canvas, w)
-        fill.color = GROUND; canvas.drawRect(0f, groundY, w, h, fill)
-        fill.color = GRASS; canvas.drawRect(0f, groundY, w, groundY + 6f * scale, fill)
-        drawGroundMarks(canvas, w)
+        val background = storyBackground
+        if (background != null) {
+            background.draw(canvas, w, h, groundY, engine.distance, scale)
+        } else {
+            drawHills(canvas, w)
+            fill.color = GROUND; canvas.drawRect(0f, groundY, w, h, fill)
+            fill.color = GRASS; canvas.drawRect(0f, groundY, w, groundY + 6f * scale, fill)
+            drawGroundMarks(canvas, w)
+        }
 
         for (o in engine.obstacles) drawObstacle(canvas, o)
         drawRunner(canvas)
@@ -224,6 +232,9 @@ class RunnerView(
         val l = sx(o.x); val r = sx(o.x + o.width)
         val t = sy(o.top); val b = sy(o.bottom)
         val p = 3f * scale
+        val art = obstacleArt
+        if (art != null && o.kind == ObstacleKind.BOX) { art.drawBox(canvas, l, t, r, b); return }
+        if (art != null && o.kind == ObstacleKind.TOWER) { art.drawTower(canvas, l, t, r, b); return }
         when (o.kind) {
             ObstacleKind.BOX -> {
                 fill.color = CRATE_EDGE; canvas.drawRect(l, t, r, b, fill)
@@ -278,6 +289,9 @@ class RunnerView(
 
     private fun drawHud(canvas: Canvas, w: Float) {
         val d = resources.displayMetrics.density
+        // Stable contrast over detailed scenery, including snowy and dusk scenes.
+        fill.color = PANEL
+        canvas.drawRect(0f, 0f, w, 80f * d, fill)
         text.textSize = 18f * d
         text.typeface = Typeface.DEFAULT_BOLD
         text.textAlign = Paint.Align.LEFT

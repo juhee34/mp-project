@@ -112,6 +112,24 @@ class RunnerEngineTest {
         }
     }
 
+    @Test fun boxesKeepPropFriendlyProportions() {
+        val e = RunnerEngine(seed = 12)
+        e.tap()
+        val c = e.config
+        var boxes = 0
+        e.run(90f) { engine ->
+            engine.autoJump()
+            for (o in engine.obstacles.filter { it.kind == ObstacleKind.BOX }) {
+                boxes++
+                assertTrue("width ${o.width}", o.width in c.obstacleMinWidth..c.obstacleMaxWidth)
+                assertTrue("height ${o.height}", o.height in c.obstacleMinHeight..c.obstacleMaxHeight)
+                // Sprites are 0.5-1.23 tall per unit width; boxes stay close so the art is barely stretched.
+                assertTrue("aspect ${o.height / o.width}", o.height / o.width in 0.55f..1.05f)
+            }
+        }
+        assertTrue(boxes > 0)
+    }
+
     @Test fun floatingBarsLetTheRunnerPassUnderneath() {
         val c = RunnerConfig()
         assertTrue(c.playerHitHeight + 2 * c.obstacleInset < c.floatMinBottom)

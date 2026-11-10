@@ -1,0 +1,145 @@
+{
+  "status": "edge_revision_partial_not_seamless",
+  "method": "Previous revision review: unscaled 230px edge excerpts, bottom-aligned 200px review; input pixels unchanged during comparison. No blend or color correction. Current source hashes identify partially revised PNGs, not the old comparison inputs.",
+  "characters": [
+    {
+      "id": "mint",
+      "source": "mint-cheese.png",
+      "rect": [
+        0,
+        4,
+        2172,
+        317
+      ],
+      "sha256": "3794aefd115c30ac38727b576f8981aaa255bfa11e6c1d7236c90067afe97c26",
+      "status": "partial_revision_needs_join_review",
+      "loopReady": false,
+      "joinFindings": [
+        "물가 뒤 언덕과 수풀 윤곽이 수직으로 끊김.",
+        "뿌리 굵기·진행 방향과 나무껍질 명암이 불일치."
+      ],
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "rectStatus": "previous_revision_crop_not_revalidated",
+      "joinFindingsStatus": "previous_revision_findings; not a final review of revised image"
+    },
+    {
+      "id": "cheese",
+      "source": "mint-cheese.png",
+      "rect": [
+        0,
+        335,
+        2172,
+        385
+      ],
+      "sha256": "3794aefd115c30ac38727b576f8981aaa255bfa11e6c1d7236c90067afe97c26",
+      "status": "partial_revision_needs_join_review",
+      "loopReady": false,
+      "joinFindings": [
+        "연달아 나오는 화분의 반복감, 담장 명암·바닥 줄눈 불일치.",
+        "벽 하단 경계가 단차처럼 보이며 벽돌 원근선이 끊김."
+      ],
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "rectStatus": "previous_revision_crop_not_revalidated",
+      "joinFindingsStatus": "previous_revision_findings; not a final review of revised image"
+    },
+    {
+      "id": "popo",
+      "source": "popo-lumi.png",
+      "rect": [
+        4,
+        4,
+        2162,
+        350
+      ],
+      "sha256": "a7a7995bdb59b2ee89e025c448c1eea5321bea914312a9d96e7c1f370611f991",
+      "status": "partial_revision_needs_join_review",
+      "loopReady": false,
+      "joinFindings": [
+        "바위 덩어리와 가지 형태가 접합부에서 잘림.",
+        "눈더미 경사와 바위·꽃 배치, 벽돌 줄눈 불일치."
+      ],
+      "sourceSize": [
+        2169,
+        725
+      ],
+      "rectStatus": "previous_revision_crop_not_revalidated",
+      "joinFindingsStatus": "previous_revision_findings; not a final review of revised image"
+    },
+    {
+      "id": "lumi",
+      "source": "popo-lumi.png",
+      "rect": [
+        4,
+        366,
+        2162,
+        355
+      ],
+      "sha256": "a7a7995bdb59b2ee89e025c448c1eea5321bea914312a9d96e7c1f370611f991",
+      "status": "partial_revision_needs_join_review",
+      "loopReady": false,
+      "joinFindings": [
+        "수풀 명암과 나무뿌리 덩어리가 수직으로 바뀜.",
+        "큰 뿌리 단면과 식생이 이어지지 않음."
+      ],
+      "sourceSize": [
+        2169,
+        725
+      ],
+      "rectStatus": "previous_revision_crop_not_revalidated",
+      "joinFindingsStatus": "previous_revision_findings; not a final review of revised image"
+    },
+    {
+      "id": "nunu",
+      "source": "nunu-piko.png",
+      "rect": [
+        5,
+        4,
+        2162,
+        350
+      ],
+      "sha256": "fdc20fc630e0e9be64d7388e5a9fe09eabd1d7e069a526ef30b209fd31f99c89",
+      "status": "partial_revision_needs_join_review",
+      "loopReady": false,
+      "joinFindings": [
+        "안개·수풀 색면 및 바위 실루엣, 벽돌 줄눈 불일치.",
+        "수풀·바위 밝기와 크기 차이, 포장면 경계가 끊김."
+      ],
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "rectStatus": "previous_revision_crop_not_revalidated",
+      "joinFindingsStatus": "previous_revision_findings; not a final review of revised image"
+    },
+    {
+      "id": "piko",
+      "source": "nunu-piko.png",
+      "rect": [
+        5,
+        366,
+        2162,
+        354
+      ],
+      "sha256": "fdc20fc630e0e9be64d7388e5a9fe09eabd1d7e069a526ef30b209fd31f99c89",
+      "status": "partial_revision_needs_join_review",
+      "loopReady": false,
+      "joinFindings": [
+        "운하 물색·반사 무늬와 목재 기둥 배치가 불연속.",
+        "수국 크기와 잎 밀도가 다르고 벽돌·나무 데크가 끊김."
+      ],
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "rectStatus": "previous_revision_crop_not_revalidated",
+      "joinFindingsStatus": "previous_revision_findings; not a final review of revised image"
+    }
+  ],
+  "reviewImageStatus": "previous_revision_only; regeneration blocked by PowerShell execution policy"
+}

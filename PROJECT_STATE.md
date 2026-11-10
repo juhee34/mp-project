@@ -27,6 +27,13 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 배경·장애물 그림 적용 (2026-11-10, B)
+- A의 codex/character-screens 4커밋(배경 6종 연결 1429fe0, 장애물 18종 납품 f0d8bb0, 문서·대사 팩)을 main에 병합했다. 충돌 없음. 배경은 A가 연결한 StoryBackground(거리에 따라 한 번 지나가는 파노라마, 바닥선 고정)를 그대로 쓴다.
+- 장애물 18종 연결(B): PNG를 res/drawable-nodpi로 복사, game/ObstacleArt.kt가 친구별 3종을 한 번만 읽고 실제 그림 영역(불투명 경계)을 계산한다. BOX는 비율이 가장 가까운 소품으로, TOWER는 가장 상자 같은 소품을 쌓아 그린다. FLOAT는 기존 나뭇가지. 그림이 없으면 기존 상자 그림으로 돌아간다.
+- 엔진: 그림이 크게 늘어나지 않도록 BOX를 너비 44~64, 높이 = 너비×0.6~1.0으로 바꿨다(6명 같은 규칙). 최대 높이가 80→64로 낮아졌다.
+- 검사기: 소품 18개 존재·48×80·투명 PNG 확인 추가.
+- 검증: validate-content PASS(소품 18/18, 배경 6), assembleDebug 성공(APK 약 13MB, 배경 이미지 포함), 단위 테스트 52개 통과(상자 비율 테스트 추가, 자동 플레이 봇 20시드 3분 생존), lint 오류 0. 에뮬레이터 화면 확인은 사용자가 다른 앱을 쓰는 중이라 하지 않았다.
+
 ## main 통합: 캐릭터 그림 병합과 스킬 제거 (2026-11-10, B)
 - codex/character-screens(A의 승인 스프라이트 72장, CharacterSprites/RunnerAnimation, 선택·프로필 초상, 결과 화면의 실제 선택 화면 복귀)를 main에 병합했다. 충돌 2곳: RunnerView 터치 처리(2단 점프용 다중 손가락 + A의 결과 전환 중 재시작 방지 둘 다 유지), ResultActivity(이야기 달리기일 때는 "이야기 계속하기"만, 아니면 A의 선택 화면 복귀).
 - 스킬 제거: 기기에서 스킬 버튼이 장애물을 없애지 못했고 마감 일정상 범위에서 뺐다. 엔진 useSkill·쿨타임, 버튼·효과, skillName 필드, 검사기 규칙, 테스트 4개를 지웠다. 2단 점프는 유지한다.
@@ -249,3 +256,100 @@
 - API 37 Medium_Phone에서 6명 각각 선택→게임 시작·점프→달리기→충돌·실패→결과→동일 캐릭터 재시작→선택 복귀를 확인했다. 6명 점프·달리기·실패·재시작 캡처를 육안 확인했고 바닥에 선 발 위치와 선명한 도트를 확인했다. 개별 run 4장과 상승/하강 분기는 단위 테스트로 확인했으며 기기에서 모든 프레임을 따로 캡처한 것은 아니다.
 - 로그·캡처는 무시되는 .tools/sprite-runtime.log, .tools/sprite-runtime/와 빌드 로그 .tools/sprite-animation-build.log에 있다. 다운로드·인증 임시 파일은 커밋하지 않는다. 실기기, 다른 화면 크기·글꼴 확대, 장시간 프레임 성능 측정, 실제 Firebase 인증·원격 저장은 이번 검증 범위 밖이다.
 - 원격 재확인: main 8a0cb1f는 현재 브랜치에 포함되어 있다. 별도 feature/jump-skill-story의 eb7df1b는 이중 점프·능력·이야기 작업이며 이번 동일 물리 유지 요청과 별개라 병합하지 않았다. B가 게임 작업을 합칠 때 해당 브랜치와 RunnerView 등 변경을 함께 검토해야 한다.
+
+## 2026-11-10 A 승인 이야기 배경과 스크롤 검수 준비
+- 사용자가 최신 이야기 소품 추가본 6종을 승인하고 다음 단계를 요청했다. 승인 원본 3장의 파일명과 Library ID를 docs/art/BACKGROUND_HANDOFF.md에 고정했다. 디자인 재생성은 하지 않는다.
+- 최신 원본 목록은 확인했으나 다운로드 도구가 Library prepare_materialize is not available로 실패했다. 실제 배경 PNG 크롭·레이어 분리·반복 연결 검수는 수행하지 못했다.
+- docs/art/review/background-preview.html 제작: 승인 PNG 3장을 로컬 파일 선택으로 읽고 6명 각각 배경 이동, 진행 위치·속도·바닥 기준·크롭 범위, 반복 경계 확인을 지원한다. 승인 idle_0 6장을 포함한다. 기본 재생은 끝에서 정지한다. 원본 변경·외부 전송 없음.
+- scripts/build-background-preview.py와 템플릿으로 재생성 가능. Python 문법 검사와 git diff --check 통과. 원본 연결·브라우저 시각 검수와 기기 실행은 미검증이다.
+- B 소유 게임 코드, 기존 물리, assets.json planned/null은 유지했다. 다음: 원본 3장 확보 후 배경별 실제 크롭·바닥 검증, 검수 화면에서 가독성과 끝 연결 확인, 레이어 복원과 별도 연결 구간 제작. 완성 배경이나 앱 적용으로 표시하지 않는다.
+- JavaScript 동적 구문 검사도 실행 환경 제한으로 수행하지 못했다. 브라우저 동작·시각 검수와 함께 미검증으로 남긴다.
+
+
+## 2026-11-10 A 재연결 후 배경 검수 진행
+- 작업 폴더 정상 연결 확인. 현재 원본 가져오기는 Windows os.setxattr 미지원으로 실패한다. 원본이 없는 상태이며 다운로드/시각 검수 완료로 간주하지 않는다.
+- 배경 검수 HTML에 6명 idle_0/run_0~3 총 30프레임 연결. 이동 거리와 배율 기반으로 달리기 전환, 정지 자세 유지, 초기화 시 idle 복원.
+- Node VM 합성 DOM/이미지 검사 통과: 재생/정지/초기화, 끝 정지, 반복 순환, 탭 숨김 정지, 미입력 캐릭터 선택. 실제 브라우저 시각 검수는 미완료.
+- node scripts/validate-content.cjs 및 git diff --check 통과. 게임 런타임/JSON은 변경하지 않았다.
+- 다음: 승인된 배경 PNG 3장을 docs/art/background-source/에 확보하고 발 위치/가독성/연결부 검수 및 적용용 자산 준비.
+
+
+## 2026-11-10 A 승인 배경 원본 확보·브라우저 검수
+- 사용자가 Downloads에 저장한 최신 원본 3장 확보. docs/art/background-source/에 원본 그대로 복사, 2169×725 PNG 각 파일 SHA-256 일치 확인.
+- background-manifest.json: 6명 source rect/바닥 기준/해시 기록. 그림은 재생성·수정하지 않았다. loopReady=false/layered=false.
+- 검수 HTML에 배경 원본과 30개 캐릭터 프레임 내장. 별도 파일 입력 없이 미리보기 가능.
+- Chrome 960×540 Canvas에서 6명 시작/끝 장면 발 위치·가독성 확인. 라일 재생 이동도 관찰. 전체 프레임 또는 Android 게임 검수는 아님.
+- 좌우 끝은 직접 반복 연결 불가. 우선 단일 파노라마 적용용 좌표와 B 인수 규칙을 BACKGROUND_HANDOFF.md에 작성. 다음은 게임 바닥/HUD/장애물 동시 검수 및 무한 반복 연결 구간/원근 레이어 준비.
+- B 런타임과 앱 JSON 변경 없음.
+
+
+## 2026-11-10 승인 배경 게임 연결
+- 다음 단계 진행 요청에 따라 StoryBackground/BackgroundMotion 추가, RunnerView에 6명 승인 파노라마 연결. 원본 PNG/manifest를 app/src/main/assets/backgrounds에 포함했다.
+- 거리 기반 0.25배 단일 스크롤, 끝 clamp. 일시정지/재시작은 엔진 거리 상태를 따른다. 풍경 비율 유지 및 고정 바닥 정렬, 하단 띠만 화면 바닥 두께에 맞춰 표시한다. 물리/점수/진행 데이터는 변경하지 않았다.
+- HUD 대비 패널 추가. assets.json panorama_ready 및 DATA_CONTRACT에 의미 기록. 무한 반복/레이어 완성이 아니며 loopReady=false/layered=false.
+- 검증: 콘텐츠/영역/바닥/원본 해시 검사 통과. JDK17 + 로컬 SDK로 assembleDebug, testDebugUnitTest, lintDebug 성공. 단위 테스트 33개, 실패/오류 0. Kotlin daemon 임시파일 오류 뒤 fallback 컴파일 성공. 로그 .tools/background-build.log.
+- 이번 게임 코드 변경 후 기기 시각 검수는 미실시. 앞선 Chrome 검수는 별도 미리보기 대상이다. 다음: 실제 게임의 6명 HUD/점프/날씨 동시 검수, 끝 이후 무한 스크롤용 연결 아트 준비.
+
+
+## 2026-11-10 배경 Git 게시 시도
+- 콘텐츠/해시 검증 통과 후 지정 파일만 git add 시도. .git/index.lock 생성 Permission denied로 중단. 커밋/푸시 미실행.
+- scripts/publish-backgrounds.ps1 준비: 대상 브랜치 확인, 기존 staged 변경 차단, 검증 후 이번 파일만 add/commit/push. .kotlin/.tools 등 임시 파일 제외, 강제 push 없음. PowerShell 구문 검사 통과. 이 스크립트는 아직 실행하지 않았다.
+- 최신 APK를 emulator-5554에 설치했고 Success를 확인했다. 현재 제어 가능한 데스크톱 창에 에뮬레이터가 없어 게임 UI 시각 검수는 완료하지 못했다.
+
+
+## 2026-11-10 A 연결 배경 파일 확보 및 접합부 검수
+- 사용자 다운로드 최신 연결 PNG 3장을 docs/art/background-connectors/에 원본 그대로 보관했다. 게임 assets에는 추가하지 않았다.
+- 6명 양방향 접합부 12곳을 1:1 양끝 230px/하단 200px 발췌 비교판으로 육안 검수했다. docs/art/review/connector-seams.png 및 connector-review.html.
+- 결과: 모두 경계 보정 필요. 색면·뿌리·수풀·수면·벽돌 줄눈의 불연속을 docs/art/CONNECTOR_REVIEW.md에 기록했다. loopReady=false 유지.
+- 이후 작업은 A팀 양끝 아트 보정. B팀 게임 코드/렌더링/충돌은 변경하지 않았다. 소스 치수와 이번 비교용 rect 및 해시는 background-connectors/manifest.json에 기록했다.
+
+
+## 2026-11-10 A 연결 배경 부분 보정
+- 연결 PNG 3장 수정: 중복 화분/큰 나무 제거, 피코 수국 크기와 단차 수정. 원본 배경 및 게임 코드 변경 없음.
+- 정확한 접합은 아직 미완료. 검수판 재생성은 PowerShell 실행 정책에 막힘. 기존 비교판은 보정 전 자료이며 manifest에 명시했다.
+- Git add 실패: .git/index.lock Permission denied. 커밋/푸시 미완료.
+- 다음 A 작업: 라일·치즈 장애물 소품 콘셉트. 실제 게임용 규격/충돌/연결은 별도 작업.
+
+## 2026-11-10 A 장애물 소품 후속
+- 사용자 요청으로 Git 업로드는 별도 Codex에 인계한다. 이번 대화에서 푸시하지 않았다.
+- docs/art/obstacle-concepts/popo-lumi.png 제작: 포포·루미 각 3종 콘셉트. 라일·치즈와 합쳐 4명 12종 시안이며 최종 게임용 스프라이트는 아니다.
+- 투명 외곽·크기·분리·바닥선 검증 및 누누·피코 소품 제작이 남아 있다. 게임 코드 변경 없음.
+
+## 2026-11-10 A 아트 게시 검토
+- 게시 대상은 background-connectors, obstacle-concepts, CONNECTOR_REVIEW.md, connector-review.html, connector-seams.png와 이번 아트 작업 기록으로 한정했다. 기존 staged 변경은 없었으며 게임 코드·다른 팀원 파일·.tools/.kotlin은 제외한다.
+- 연결 PNG 3장의 실제 치수와 SHA-256이 manifest의 6명 항목과 일치하고 전원 loopReady=false임을 확인했다. 라일/치즈·누누/피코는 2172×724, 포포/루미는 2169×725이며 문서의 낡은 치수를 바로잡았다.
+- 부분 보정 PNG 3장, 장애물 콘셉트 시트 2장(1536×1024, 4명 12종), 보정 전 접합 비교판(960×1380)을 열어 문서와 대조했다. 비교판 이미지 자체는 유지하고 HTML·문서에 보정 전 자료임을 명확히 표시했다. manifest의 rect와 접합 지적은 최신 이미지에서 재검증되지 않은 과거 자료다.
+- 콘텐츠 검사 통과. 새 접합 비교판 생성, 최종 투명도·프레임 분리·바닥선·충돌 검수, Android 빌드·기기 검증은 수행하지 않았다. 연결 배경은 부분 보정, 장애물은 콘셉트 상태를 유지한다.
+- 원격 작업 브랜치는 게시 전 로컬 HEAD와 같았다. origin/main의 후속 게임 변경(d4e66ef)은 확인했으나 이번 아트 전용 게시에는 병합하지 않는다. 다음은 보정 후 12곳 접합 재검수와 장애물 자산 정리·누누/피코 제작이다.
+
+### 후속 갱신: 누누·피코
+- docs/art/obstacle-concepts/nunu-piko.png 제작. 6명 각 3종, 총 18종 콘셉트 확보.
+- 다음은 3개 시트의 외곽 잔상/투명도와 배경 대비 검수 및 최종 크기 정리. 게임용 자산 완료 또는 적용 완료 상태가 아니다.
+- 게임 코드 변경 및 Git 푸시 없음.
+
+### 후속 갱신: 18종 소품 검수
+- docs/art/review/obstacle-composite-check.png 생성 후 6명 배경 위 시각 검수. 콘셉트 색감 적합, 일부 배경 소품과 구분 및 돌출 장식 정리 필요.
+- 3장 알파 표본 검사: 빈 공간은 투명, 물체 내부 주요 알파 252~253, 극저알파 잔상 존재. 상세 수치는 docs/art/obstacle-concepts/REVIEW.md.
+- 다음: 최종 크기 후보·개별 분리·외곽 정리. 합성판은 임시 비율/크기의 비교 자료이며 실제 게임 테스트가 아니다. 원본·게임 코드 변경 및 Git 푸시 없음.
+
+### 후속 갱신: 장애물 아트 납품 완료
+- docs/art/obstacles/png/에 6명×3종=18개 RGBA PNG 납품. 48×80, 기준점(24,78), 불투명 마지막 행 y77, 이진 알파. 실제 그림 영역·출처·SHA-256은 manifest.json.
+- 라일 높은 가지와 누누 손잡이를 이미지 도구로 보정. 기술 내보내기로 투명 잔상 및 분리된 잡픽셀 정리. 콘셉트 원본 보존.
+- scripts/validate-obstacle-art.py의 전체 픽셀 검증 통과. 흰색/회색 및 6종 배경 위 시각 검수 완료. docs/art/OBSTACLE_HANDOFF.md에 B 연결 방법과 인수 기준 기록.
+- 상태 art_ready_for_integration / integrated=false. 현재 엔진의 임의 폭·높이에 따른 비율 왜곡 및 충돌 일치는 B의 실제 연결 검증 대상이다. 게임 실행 완료를 뜻하지 않는다.
+- Git 인덱스에 이미 다른 작업이 staged 상태임을 확인했다. 인덱스 변경·커밋·푸시를 수행하지 않았다. 사용자 요청대로 별도 Codex 업로드용 프롬프트를 제공한다.
+
+## 2026-11-10 장애물 납품 게시 검토
+- 업로드 담당이 현재 인덱스를 재확인한 결과 기존 staged 변경은 없었다. UPLOAD_OBSTACLE_PROMPT.txt의 지정 파일과 관련 A 기록만 게시 대상으로 검토했다. 연결 배경 자료는 5c254b6으로 이미 원격 작업 브랜치에 반영되어 별도 재커밋하지 않는다.
+- python scripts/validate-obstacle-art.py, node scripts/validate-content.cjs, git diff --check 통과. 최종 PNG 18장의 RGBA8·48×80·알파 0/255·투명 RGB 0·여백·바닥 y77·단일 연결 영역·manifest 그림 영역과 SHA-256을 검사했다.
+- 납품 검수판과 배경 합성 검수판을 열어 확인했다. 이전 콘셉트 기록의 미완료·알파 수치와 최종 납품 상태가 혼동되지 않도록 README와 검수 문서의 설명을 정리했다. PNG 디자인·게임 코드·app 리소스는 변경하지 않았다.
+- art_ready_for_integration / integrated=false 유지. 연결 배경은 loopReady=false이며 보정 전 접합 비교판을 최신 검증으로 취급하지 않는다. 실제 앱 연결·충돌·임의 비율 왜곡·기기 검증은 B팀 후속 작업이며 이번 게시에서는 Android 빌드와 기기 실행을 하지 않았다.
+- 현재 브랜치 codex/character-screens에 게시한다. 원격 main의 후속 게임 변경은 임의 병합하지 않으며, B팀 기준 문서는 docs/art/OBSTACLE_HANDOFF.md다. .tools/.kotlin, 빌드 결과, 개인 설정·비밀 파일은 제외한다.
+
+## 2026-11-10 A 짧은 캐릭터 대사 납품
+- 사용자 승인 범위인 선택·출발·넘어짐·재도전·완주·귀가·도감 미독·다시 읽기 8상황에 6명 각 3개, 총 144개 대사 작성. docs/dialogue/SHORT_LINES.md와 short-lines.json 제공.
+- 기존 캐릭터 말투·습관과 첫 이야기 대조 후 라일·치즈 / 포포·루미 / 누누·피코 쌍별 검토. 사용자 비난·재도전 강요·접속 및 완독 압박 없이 말투와 웃음의 방향을 구별했다. 후속 에피소드 본문은 계속 보류한다.
+- HANDOFF.md에 트리거, 상태 조건, 재추첨 방지, start/retry 및 clear/stumble 상호 배타, 조작 우선, 큰 글자·낭독 기준 기록. 준비 영역이 없으면 출발 대사 생략, 귀가 동선이 없으면 home은 예약 콘텐츠 유지.
+- 검증: 144개 ID·문구 유일성, 6×8×3 구성, 유효 캐릭터/event, 읽음 조건, 48자 제한(실제 최대 25), 원고/JSON 일치, git diff --check 통과.
+- 상태 content_ready_for_review / integrated=false. 사용자 최종 문안 승인·앱 연결·기기 검수 전. Android 코드·기존 stories.json·공동 데이터 계약·음원·후속 본문은 이번 대사 작업에서 수정하지 않았다. 콘텐츠 제작 단계에서는 빌드 및 stage/commit/push를 하지 않았다. 다음은 사용자 문안 확인 후 개발 담당의 선택/결과 영역 연결과 화면 검수다.
+- 게시 담당 재검수: JSON 파싱, 6명 ID·8상황·각 3개, ID·문구 중복 없음, 최대 25 Unicode 코드포인트(상한 48), Markdown ID·문구·상황 일치, requiresReadStoryIds 전부 빈 배열, 미연결 상태 및 git diff --check 통과. 기존 staged 변경은 없었고, 문서 3개와 이 기록만 게시 대상으로 분리했다. 기존 도감 수정과 이야기·음원 작업은 로컬에 보존하며 이번 커밋에서 제외한다.

@@ -23,11 +23,16 @@ data class RunnerConfig(
     /** Hitbox height from the feet; only floating obstacles can reach it. */
     val playerHitHeight: Float = 50f,
     val obstacleInset: Float = 3f,
-    /** Low box: one jump clears it at every speed. */
-    val obstacleMinWidth: Float = 30f,
-    val obstacleMaxWidth: Float = 56f,
-    val obstacleMinHeight: Float = 40f,
-    val obstacleMaxHeight: Float = 80f,
+    /**
+     * Low box: one jump clears it at every speed. Height is width x [0.6, 1.0], the same proportions as the hometown
+     * prop sprites (logs, crates, baskets), so the art is barely stretched. Same rule for every friend.
+     */
+    val obstacleMinWidth: Float = 44f,
+    val obstacleMaxWidth: Float = 64f,
+    val obstacleMinAspect: Float = 0.6f,
+    val obstacleMaxAspect: Float = 1.0f,
+    val obstacleMinHeight: Float = 30f,
+    val obstacleMaxHeight: Float = 64f,
     /** Tower: taller than the single-jump peak (140), so it needs the double jump. */
     val towerMinWidth: Float = 30f,
     val towerMaxWidth: Float = 40f,
@@ -227,8 +232,12 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         val c = config
         val kind = nextKind
         _obstacles += when (kind) {
-            ObstacleKind.BOX -> Obstacle(c.spawnX, between(c.obstacleMinWidth, c.obstacleMaxWidth),
-                between(c.obstacleMinHeight, c.obstacleMaxHeight))
+            ObstacleKind.BOX -> {
+                val width = between(c.obstacleMinWidth, c.obstacleMaxWidth)
+                val height = (width * between(c.obstacleMinAspect, c.obstacleMaxAspect))
+                    .coerceIn(c.obstacleMinHeight, c.obstacleMaxHeight)
+                Obstacle(c.spawnX, width, height)
+            }
             ObstacleKind.TOWER -> Obstacle(c.spawnX, between(c.towerMinWidth, c.towerMaxWidth),
                 between(c.towerMinHeight, c.towerMaxHeight), kind = ObstacleKind.TOWER)
             ObstacleKind.FLOAT -> Obstacle(c.spawnX, between(c.floatMinWidth, c.floatMaxWidth), c.floatThickness,
