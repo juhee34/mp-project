@@ -17,7 +17,7 @@ id, characterId, title, body, status, unlockDistance.
 ## 배경과 음악
 assets.json의 background/music에는 id, path, status, brief가 있다.
 path=null인 파일은 로드하지 않는다. planned 항목은 완료 통계에 포함하지 않는다.
-스프라이트는 확장 단계 시작 전 64x64 셀을 후보로 실물 검증한다. 프레임 규격을 확정하기 전 대량 생성하지 않는다.
+스프라이트 규격은 docs/SPRITE_SPEC.md로 확정했다(2026-11-10): 48×48 셀, 발 기준선 y45, 충돌 영역 x9~38, 필수 idle2·run4·jump2·fail1, `res/drawable-nodpi/sprite_<id>_<동작>_<번호>.png`. 필수 프레임이 다 있으면 spritePath="sprite_<id>", assetStatus="sprite_ready".
 최종 배경은 원경/중경/전경/바닥을 분리할 수 있어야 한다. 반복 이음새를 실제로 확인한다.
 음원은 60~90초 반복 기악곡을 목표로 하고 제작 출처 및 실제 파일을 기록한다.
 

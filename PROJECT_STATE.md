@@ -35,7 +35,14 @@
 ## 다음 작업
 1. 사용자: docs/FIREBASE_SETUP.md대로 Firebase 프로젝트를 만들고 app/google-services.json을 넣는다. 그 뒤 B가 실제 회원가입·로그인·Firestore 저장을 확인한다.
 2. A/사용자: 보고서(서비스 개요·타깃·경쟁 앱, 기능·화면, 구조·BaaS·외부 API, 예산표)와 발표 준비.
-3. 4단계 B: 스프라이트 규격 확정 후 CharacterPortrait 자리를 애니메이션 스프라이트로 교체한다.
+3. A: docs/SPRITE_SPEC.md대로 필수 프레임(캐릭터당 idle2·run4·jump2·fail1)을 만든다. 4단계 B: 필수 9장이 있는 캐릭터부터 CharacterPortrait 자리를 스프라이트로 교체한다.
+
+## 스프라이트 규격 확정 (2026-11-10, B)
+- A의 요청(프레임 크기·발 기준선·동작별 프레임 수·파일 이름·경로)에 docs/SPRITE_SPEC.md로 답했다. ART_DIRECTION의 64×64 후보 대신 48×48로 정했다. 근거: 받은 치즈·라일 시안(이미지 2장, 저장소 미포함)의 몸이 약 32×32 도트, 러너 충돌 폭 30.
+- 발바닥 마지막 줄 y45, 몸통 가운데 x24, 몸통·발은 x9~38(충돌 영역). 점프 프레임은 그림 속에서 몸을 띄우지 않는다.
+- 경로: app/src/main/res/drawable-nodpi/sprite_<id>_<동작>_<번호>.png, 콘셉트 원본은 docs/art/concepts/<id>_concept.png.
+- validate-content.cjs에 스프라이트 검사 추가: 이름·ID·동작·번호·48×48·투명 PNG, spritePath가 설정된 캐릭터는 필수 9장 강제, 캐릭터별 필수 프레임 수 출력. 임시 PNG로 통과 1건과 실패 3건(번호·크기·대문자 이름)을 확인한 뒤 지웠다.
+- 아직 스프라이트 파일은 없다. 게임 연결 코드(4단계 B)도 아직 없다.
 
 ## 과제 요건 대응: 로그인·저장·외부 API·화면 (2026-11-09, B)
 - 새 화면: auth/LoginActivity, auth/SignupActivity, result/ResultActivity, records/RecordsActivity, settings/SettingsActivity. 공통 UI는 ui/Page.kt. MainActivity는 세션이 없으면 로그인으로 보낸다. activity_main.xml 위에 내 기록·설정 메뉴를 추가했다(CharacterScreens는 변경 없음).
