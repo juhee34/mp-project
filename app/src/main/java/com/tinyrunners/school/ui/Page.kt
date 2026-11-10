@@ -26,7 +26,14 @@ class Page(private val activity: Activity) {
     val root = ScrollView(activity).apply {
         setBackgroundColor(BACKGROUND)
         isFillViewport = true
-        addView(body)
+        // On wide (landscape) screens keep a readable column in the middle instead of stretching fields edge to edge.
+        val wide = activity.resources.configuration.screenWidthDp > MAX_COLUMN_DP + 40
+        addView(android.widget.FrameLayout(activity).apply {
+            addView(body, android.widget.FrameLayout.LayoutParams(
+                if (wide) dp(MAX_COLUMN_DP) else android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+                android.view.Gravity.CENTER_HORIZONTAL))
+        })
         setOnApplyWindowInsetsListener { v, insets ->
             if (Build.VERSION.SDK_INT >= 30) {
                 val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout() or WindowInsets.Type.ime())
@@ -110,6 +117,7 @@ class Page(private val activity: Activity) {
     }
 
     companion object {
+        const val MAX_COLUMN_DP = 560
         val BACKGROUND = Color.rgb(250, 246, 236)
         val LEAF = Color.rgb(48, 83, 65)
         val MINT = Color.rgb(225, 239, 218)

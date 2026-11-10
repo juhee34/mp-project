@@ -1,1 +1,5 @@
-<resources><style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar"><item name="android:fontFamily">sans</item><item name="android:colorAccent">#42684D</item><item name="android:windowLightStatusBar">true</item><item name="android:statusBarColor">#FAF6EC</item><item name="android:navigationBarColor">#FAF6EC</item><item name="android:windowActionModeOverlay">true</item></style></resources>
+<resources><style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar"><item name="android:fontFamily">sans</item><item name="android:colorAccent">#42684D</item><item name="android:windowLightStatusBar">true</item><item name="android:statusBarColor">#FAF6EC</item><item name="android:navigationBarColor">#FAF6EC</item><item name="android:windowActionModeOverlay">true</item></style>
+    <!-- Title screen: full screen, cream window so launch shows no white flash before the artwork. -->
+    <style name="OpeningTheme" parent="AppTheme"><item name="android:windowFullscreen">true</item><item name="android:windowBackground">@color/opening_window</item></style>
+    <color name="opening_window">#FAF6EC</color>
+</resources>

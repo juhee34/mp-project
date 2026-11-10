@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="opening_login">로그인</string>
+    <string name="opening_start">시작하기</string>
+    <string name="opening_placeholder">오프닝 그림 준비 중 · 여섯 친구가 기다리고 있어요</string>
+</resources>

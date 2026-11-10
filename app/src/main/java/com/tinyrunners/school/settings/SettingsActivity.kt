@@ -8,7 +8,7 @@ import android.widget.RadioGroup
 import android.widget.Switch
 import com.tinyrunners.school.R
 import com.tinyrunners.school.auth.AuthService
-import com.tinyrunners.school.auth.LoginActivity
+import com.tinyrunners.school.opening.OpeningActivity
 import com.tinyrunners.school.game.OnboardingStore
 import com.tinyrunners.school.ui.Page
 import com.tinyrunners.school.weather.City
@@ -99,7 +99,7 @@ class SettingsActivity : Activity() {
 
         page.button(getString(R.string.settings_sign_out)) {
             AuthService.signOut(this)
-            startActivity(Intent(this, LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
+            startActivity(Intent(this, OpeningActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
         }
         page.button(getString(R.string.common_back)) { finish() }
     }
