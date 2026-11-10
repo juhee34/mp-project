@@ -27,6 +27,12 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 메뉴 화면에 오프닝 하늘·구름·언덕 (2026-11-10, B)
+- ui/Scenery.kt 신설: ScenePainter(하늘 그라데이션, 흐르는 픽셀 구름 5개, 이어진 계단 언덕, 땅)를 오프닝과 공유한다. SceneryView는 이를 전체 화면 배경으로 그린다.
+- 적용: 소개·선택·프로필(activity_main.xml 뒤 배경), Page 기반 화면(내 기록·설정·이야기·결과 등, Page.show() 기본값). 로그인·회원가입 팝업은 오프닝이 뒤에 보이므로 제외(show(scenery = false)). 게임 화면(RunnerView/StoryBackground)은 손대지 않았다.
+- 검증: assembleDebug·단위 테스트·lintDebug 성공, validate-content PASS. 에뮬레이터(가로)에서 소개·친구 고르기·내 기록·설정·이야기 화면에 언덕·구름 표시, crash 로그 0건. 결과 화면은 직접 보지 않았다.
+- 참고: 배경이 계속 다시 그려져 uiautomator dump가 idle을 기다리다 실패한다. 자동 화면 확인은 좌표 탭을 쓴다.
+
 ## 배경·장애물 그림 적용 (2026-11-10, B)
 - A의 codex/character-screens 4커밋(배경 6종 연결 1429fe0, 장애물 18종 납품 f0d8bb0, 문서·대사 팩)을 main에 병합했다. 충돌 없음. 배경은 A가 연결한 StoryBackground(거리에 따라 한 번 지나가는 파노라마, 바닥선 고정)를 그대로 쓴다.
 - 장애물 18종 연결(B): PNG를 res/drawable-nodpi로 복사, game/ObstacleArt.kt가 친구별 3종을 한 번만 읽고 실제 그림 영역(불투명 경계)을 계산한다. BOX는 비율이 가장 가까운 소품으로, TOWER는 가장 상자 같은 소품을 쌓아 그린다. FLOAT는 기존 나뭇가지. 그림이 없으면 기존 상자 그림으로 돌아간다.

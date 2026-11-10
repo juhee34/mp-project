@@ -10,7 +10,7 @@ import com.tinyrunners.school.ui.Page
 class SignupActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val page = Page(this).show()
+        val page = Page(this).show(scenery = false)
         LoginActivity.sizeAsPopup(this, page)
         page.eyebrow(getString(R.string.characters_brand))
         page.title(getString(R.string.signup_title))

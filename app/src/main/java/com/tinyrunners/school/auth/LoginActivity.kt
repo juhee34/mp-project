@@ -25,7 +25,7 @@ class LoginActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val page = Page(this).show()
+        val page = Page(this).show(scenery = false)
         sizeAsPopup(this, page)
         page.eyebrow(getString(R.string.characters_brand))
         page.title(getString(R.string.login_title))

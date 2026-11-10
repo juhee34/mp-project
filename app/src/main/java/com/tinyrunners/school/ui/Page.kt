@@ -47,7 +47,22 @@ class Page(private val activity: Activity) {
         }
     }
 
-    fun show(): Page { activity.setContentView(root); return this }
+    /**
+     * Shows the page over the opening's sky, clouds and hills. Popups pass [scenery] = false because the opening
+     * itself is visible behind them.
+     */
+    fun show(scenery: Boolean = true): Page {
+        if (!scenery) { activity.setContentView(root); return this }
+        root.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        activity.setContentView(android.widget.FrameLayout(activity).apply {
+            setBackgroundColor(BACKGROUND)
+            addView(SceneryView(activity), android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT, android.widget.FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(root, android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT, android.widget.FrameLayout.LayoutParams.MATCH_PARENT))
+        })
+        return this
+    }
 
     fun eyebrow(text: String) = label(text, 13f, LEAF, bold = true)
     fun title(text: String) = label(text, 28f, INK, top = 6, bold = true).apply { isAccessibilityHeading(this) }
