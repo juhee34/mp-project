@@ -33,6 +33,12 @@
 - 검증: validate-content PASS(6명 모두 필수 프레임 9/9, 대사 있는 이야기 1/6), assembleDebug 성공, 단위 테스트 40개 통과(A의 RunnerAnimationTest 포함), lint 오류 0·경고 25(대부분 아직 쓰지 않는 land/greet/home 프레임의 UnusedResources). 에뮬레이터(Firebase 로그인 상태): 선택 화면 6명 초상, 라일 달리기·2단 점프 스프라이트, 스킬 버튼 없음 확인. 다른 5명의 게임 화면과 이야기→달리기→이야기 흐름은 이번에 기기로 보지 않았다.
 - Firebase: 사용자가 프로젝트를 만들고 app/google-services.json을 넣었다. 에뮬레이터 결과 화면에서 "계정(Firebase)에 저장된 기록이에요"를 확인했다.
 
+## 공유용 APK v1.0.0 (2026-11-10, B)
+- 앱 아이콘 추가: 적응형 아이콘(배경 연초록 #DDE8D6, 전경 라일 idle 도트를 필터 없이 확대). lint MissingApplicationIcon 경고 해소.
+- versionCode 2, versionName 1.0.0. `dist/TinyRunners-v1.0.0.apk`(6.6MB, debug 서명) 생성. dist/는 .gitignore.
+- APK 안에 Firebase 연결 값(google_app_id·project_id)과 런처 OpeningActivity·아이콘이 들어 있음을 aapt2로 확인했다. 에뮬레이터에 설치 성공(versionName 1.0.0). 사용자가 에뮬레이터를 쓰는 중이라 런처 아이콘 모습은 화면으로 확인하지 않았다.
+- 설치·공유 안내와 복사용 문구: docs/INSTALL_GUIDE.md.
+
 ## 시작하기 → 로그인 팝업 (2026-11-10, B)
 - 오프닝 버튼은 항상 "시작하기"이고 누르면 오프닝 위에 로그인 팝업(AuthPopupTheme: 둥근 크림 카드, 뒤 오프닝은 어둡게)이 뜬다. 회원가입도 같은 팝업 모양이다. 로그인·가입 성공 시 친구 선택으로 가고 오프닝과 팝업은 닫힌다.
 - 이미 로그인된 경우 팝업 맨 위에 "지금 로그인한 계정: 닉네임 (이메일)"과 "이 계정으로 계속하기"를 보여 주고, 아래 입력란으로 다른 계정 로그인도 가능하다(매번 비밀번호 재입력은 요구하지 않음).

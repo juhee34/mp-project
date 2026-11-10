@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App icon: Lail's idle pixel sprite, scaled without smoothing, inside the adaptive-icon safe zone. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:inset="22%">
+    <bitmap
+        android:filter="false"
+        android:src="@drawable/sprite_mint_idle_0" />
+</inset>

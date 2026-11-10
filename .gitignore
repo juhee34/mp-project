@@ -18,3 +18,6 @@ Thumbs.db
 # Firebase project config: each teammate downloads it from the Firebase console
 app/google-services.json
 .kotlin/
+
+# Shareable APK builds (see docs/INSTALL_GUIDE.md)
+dist/
