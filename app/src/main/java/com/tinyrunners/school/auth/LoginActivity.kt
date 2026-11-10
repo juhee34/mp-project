@@ -85,10 +85,9 @@ class LoginActivity : Activity() {
     private fun showError(message: String) { error.text = message }
 
     companion object {
-        /** Shows the world's story, then the friend selection; closes the opening and any login popups behind it. */
+        /** First login: the world story, then the friend selection. Later logins go straight to the selection. */
         fun openMain(activity: Activity) {
-            activity.startActivity(PrologueActivity.intent(activity)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
+            activity.startActivity(PrologueActivity.afterLogin(activity))
             activity.finish()
         }
 

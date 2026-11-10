@@ -84,8 +84,8 @@ class PrologueActivity : Activity() {
     }
 
     private fun openSelection() {
-        startActivity(MainActivity.selectionIntent(this)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
+        TalkProgress(this).markPrologueSeen()
+        startActivity(selectionIntent(this))
         finish()
     }
 
@@ -100,7 +100,14 @@ class PrologueActivity : Activity() {
         private const val KEY_PAGE = "page"
         private const val FADE_MS = 450L
 
-        fun intent(context: Context) = Intent(context, PrologueActivity::class.java)
+        /** After login: the prologue for a player who has not seen it yet, otherwise straight to the selection. */
+        fun afterLogin(context: Context): Intent =
+            if (TalkProgress(context).shouldShowPrologue) Intent(context, PrologueActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            else selectionIntent(context)
+
+        private fun selectionIntent(context: Context) = MainActivity.selectionIntent(context)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
     }
 }
 

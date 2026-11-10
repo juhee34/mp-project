@@ -51,3 +51,11 @@ class TalkTest {
         assertTrue(p.isFinished)
     }
 }
+
+class TalkProgressKeysTest {
+    @Test fun keysAreSeparatePerAccountAndFriend() {
+        assertTrue(TalkProgress.prologueKey("a") != TalkProgress.prologueKey("b"))
+        assertTrue(TalkProgress.talkKey("a", "mint") != TalkProgress.talkKey("a", "cheese"))
+        assertTrue(TalkProgress.talkKey("a", "mint") != TalkProgress.talkKey("b", "mint"))
+    }
+}

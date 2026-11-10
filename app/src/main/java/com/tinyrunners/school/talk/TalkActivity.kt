@@ -83,6 +83,8 @@ class TalkActivity : Activity() {
     private fun startRun(characterId: String) {
         if (started) return
         started = true
+        // Finished or skipped: next time with this friend the run starts right away.
+        TalkProgress(this).markTalkSeen(characterId)
         startActivity(GameActivity.intent(this, characterId))
         finish()
     }

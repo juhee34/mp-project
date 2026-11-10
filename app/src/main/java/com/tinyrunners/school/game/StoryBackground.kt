@@ -9,6 +9,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.util.Log
 import org.json.JSONObject
+import kotlin.math.roundToInt
 
 /** Keeps the approved pixels intact; decodes only once per game view. */
 internal class StoryBackground private constructor(
@@ -23,15 +24,21 @@ internal class StoryBackground private constructor(
     fun draw(canvas: Canvas, width: Float, height: Float, groundY: Float, distance: Float, worldScale: Float) {
         val scale = BackgroundMotion.scale(width, groundY, region.width(), floorY)
         val artWidth = region.width() * scale
-        val offset = BackgroundMotion.offset(distance, worldScale, artWidth, width)
-        source.set(region.left, region.top, region.right, region.top + floorY)
-        destination.set(-offset, groundY - floorY * scale, artWidth - offset, groundY)
-        canvas.drawBitmap(bitmap, source, destination, paint)
-        // Only the underground band fills the engine's fixed ground thickness.
-        // Scenery keeps its aspect ratio; the physics floor never moves.
-        source.set(region.left, region.top + floorY, region.right, region.bottom)
-        destination.set(-offset, groundY, artWidth - offset, height)
-        canvas.drawBitmap(bitmap, source, destination, paint)
+        val offset = BackgroundMotion.offset(distance, worldScale, artWidth)
+        // When the picture's end scrolls in, the next copy follows it, so the scenery loops for the whole run.
+        for (left in BackgroundMotion.copies(offset, artWidth, width)) {
+            // Round to whole pixels so the two copies meet without a gap.
+            val l = left.roundToInt().toFloat()
+            val r = (left + artWidth).roundToInt().toFloat()
+            source.set(region.left, region.top, region.right, region.top + floorY)
+            destination.set(l, groundY - floorY * scale, r, groundY)
+            canvas.drawBitmap(bitmap, source, destination, paint)
+            // Only the underground band fills the engine's fixed ground thickness.
+            // Scenery keeps its aspect ratio; the physics floor never moves.
+            source.set(region.left, region.top + floorY, region.right, region.bottom)
+            destination.set(l, groundY, r, height)
+            canvas.drawBitmap(bitmap, source, destination, paint)
+        }
     }
 
     companion object {
