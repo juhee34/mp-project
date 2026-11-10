@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="game_ready_title">%1$s · 함께 달리기</string>
-    <string name="game_ready_hint">누르면 출발 · 한 번 더 누르면 점프 · 공중에서 한 번 더 누르면 2단 점프</string>
+    <string name="game_ready_hint">누르면 출발 · 상자는 점프 · 높은 탑은 공중에서 한 번 더 눌러 2단 점프 · 떠 있는 가지는 그냥 지나가요</string>
     <string name="game_paused">잠깐 쉬는 중</string>
     <string name="game_paused_hint">화면을 누르면 이어서 달려요</string>
     <string name="game_over_title">%1$s · %2$dm 함께 달렸어요</string>

@@ -93,7 +93,8 @@ class RunnerView(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         // Keep at least 640 world units visible across and 360 up, whatever the screen ratio.
         scale = min(h / WORLD_HEIGHT, w / MIN_WORLD_WIDTH)
-        spriteScale = scale.roundToInt().coerceAtLeast(1)
+        // One art pixel covers playerSize / 48 world units (1.75); round to whole screen pixels so the art stays sharp.
+        spriteScale = (scale * engine.config.playerSize / CharacterSprites.SIZE).roundToInt().coerceAtLeast(1)
         groundY = h - GROUND_THICKNESS * scale
         val size = 44f * resources.displayMetrics.density
         val margin = 12f * resources.displayMetrics.density
@@ -221,11 +222,38 @@ class RunnerView(
 
     private fun drawObstacle(canvas: Canvas, o: Obstacle) {
         val l = sx(o.x); val r = sx(o.x + o.width)
-        val t = sy(o.height); val b = groundY
-        fill.color = CRATE_EDGE; canvas.drawRect(l, t, r, b, fill)
+        val t = sy(o.top); val b = sy(o.bottom)
         val p = 3f * scale
-        fill.color = CRATE; canvas.drawRect(l + p, t + p, r - p, b, fill)
-        fill.color = CRATE_EDGE; canvas.drawRect(l + p, t + (b - t) * 0.45f, r - p, t + (b - t) * 0.45f + p, fill)
+        when (o.kind) {
+            ObstacleKind.BOX -> {
+                fill.color = CRATE_EDGE; canvas.drawRect(l, t, r, b, fill)
+                fill.color = CRATE; canvas.drawRect(l + p, t + p, r - p, b, fill)
+                fill.color = CRATE_EDGE; canvas.drawRect(l + p, t + (b - t) * 0.45f, r - p, t + (b - t) * 0.45f + p, fill)
+            }
+            ObstacleKind.TOWER -> {
+                // A stack of crates, one band every ~40 units, so it reads as "too tall for one jump".
+                fill.color = CRATE_EDGE; canvas.drawRect(l, t, r, b, fill)
+                fill.color = TOWER; canvas.drawRect(l + p, t + p, r - p, b, fill)
+                fill.color = CRATE_EDGE
+                val bands = (o.height / 40f).toInt().coerceAtLeast(2)
+                for (k in 1 until bands) {
+                    val y = t + (b - t) * k / bands
+                    canvas.drawRect(l + p, y, r - p, y + p, fill)
+                }
+            }
+            ObstacleKind.FLOAT -> {
+                // A floating leafy branch; the runner fits underneath it.
+                fill.color = BRANCH_EDGE; canvas.drawRect(l, t, r, b, fill)
+                fill.color = BRANCH; canvas.drawRect(l + p, t + p, r - p, b - p, fill)
+                fill.color = LEAF
+                val step = 18f * scale
+                var x = l + p
+                while (x < r - p) {
+                    canvas.drawRect(x, t - 2 * p, (x + 2 * p).coerceAtMost(r), t, fill)
+                    x += step
+                }
+            }
+        }
     }
 
     private fun drawRunner(canvas: Canvas) {
@@ -316,6 +344,10 @@ class RunnerView(
         val GRASS = Color.rgb(122, 160, 110)
         val CRATE = Color.rgb(201, 140, 90)
         val CRATE_EDGE = Color.rgb(120, 78, 50)
+        val TOWER = Color.rgb(183, 120, 76)
+        val BRANCH = Color.rgb(150, 112, 78)
+        val BRANCH_EDGE = Color.rgb(96, 66, 44)
+        val LEAF = Color.rgb(106, 150, 96)
         val INK = Color.rgb(43, 59, 47)
         val PANEL = Color.argb(200, 255, 248, 231)
         val SCRIM = Color.argb(170, 250, 246, 236)

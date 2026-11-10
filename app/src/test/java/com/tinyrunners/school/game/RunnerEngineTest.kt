@@ -13,13 +13,31 @@ class RunnerEngineTest {
         while (t < seconds) { onFrame(this); update(frame); t += frame }
     }
 
-    /** Taps when the next obstacle's centre is about half a jump away, like a steady player would. */
+    /**
+     * Plays like a steady player: one jump centred on a box, a double jump (second tap at the peak) centred on a
+     * tower, and no jump at all under a floating bar.
+     */
     private fun RunnerEngine.autoJump() {
         val c = config
         val next = obstacles.firstOrNull { it.x + it.width > c.playerX + c.playerInset } ?: return
         val obstacleCentre = next.x + next.width / 2
         val playerCentre = c.playerX + c.playerSize / 2
-        if (grounded && obstacleCentre - playerCentre <= speed * c.airTime / 2) tap()
+        val ahead = obstacleCentre - playerCentre
+        when (next.kind) {
+            ObstacleKind.BOX -> if (grounded && ahead <= speed * c.airTime / 2) tap()
+            ObstacleKind.TOWER -> {
+                val (enter, leave) = c.doubleJumpWindow(next.top)!!
+                if (grounded && ahead <= speed * (enter + leave) / 2) tap()
+                else if (!grounded && airJumpsUsed == 0 && playerVy <= 0f) tap()
+            }
+            ObstacleKind.FLOAT -> Unit
+        }
+    }
+
+    /** Clear gap needed between two neighbours, matching the engine's rule. */
+    private fun RunnerEngine.requiredGap(a: Obstacle, b: Obstacle): Float {
+        val nearTower = a.kind == ObstacleKind.TOWER || b.kind == ObstacleKind.TOWER
+        return speed * (if (nearTower) config.doubleAirTime else config.airTime) + config.playerSize
     }
 
     @Test fun readyUntilFirstTap() {
@@ -83,6 +101,56 @@ class RunnerEngineTest {
         assertTrue(c.apexHeight > c.obstacleMaxHeight)
     }
 
+    @Test fun towersNeedTheDoubleJumpAndItIsEnoughAtEverySpeed() {
+        val c = RunnerConfig()
+        assertTrue("a single jump must not clear a tower", c.apexHeight < c.towerMinHeight)
+        val (enter, leave) = c.doubleJumpWindow(c.towerMaxHeight)!!
+        val needed = c.towerMaxWidth + c.playerHitWidth
+        for (speed in listOf(c.startSpeed, c.maxSpeed)) {
+            val travelled = speed * (leave - enter)
+            assertTrue("speed $speed covers $travelled < $needed over a tower", travelled >= needed)
+        }
+    }
+
+    @Test fun floatingBarsLetTheRunnerPassUnderneath() {
+        val c = RunnerConfig()
+        assertTrue(c.playerHitHeight + 2 * c.obstacleInset < c.floatMinBottom)
+    }
+
+    @Test fun everyObstacleTypeAppearsAfterTheCalmStart() {
+        val e = RunnerEngine(seed = 4)
+        e.tap()
+        val seen = mutableSetOf<ObstacleKind>()
+        var firstNonBoxAt = Float.MAX_VALUE
+        e.run(120f) { engine ->
+            engine.autoJump()
+            for (o in engine.obstacles) {
+                seen += o.kind
+                if (o.kind != ObstacleKind.BOX) firstNonBoxAt = minOf(firstNonBoxAt, engine.elapsed)
+            }
+        }
+        assertEquals(ObstacleKind.entries.toSet(), seen)
+        assertTrue("towers and bars only after the calm start", firstNonBoxAt >= e.config.mixedAfterSeconds)
+    }
+
+    @Test fun jumpingIntoAFloatingBarEndsTheRun() {
+        val c = RunnerConfig()
+        val e = RunnerEngine(seed = 4)
+        e.tap()
+        // Play normally until a bar is just ahead, then jump straight into it.
+        var t = 0f
+        while (t < 120f && e.phase == RunnerEngine.Phase.RUNNING) {
+            val bar = e.obstacles.firstOrNull { it.kind == ObstacleKind.FLOAT && it.x > c.playerX + c.playerSize }
+            if (bar != null && bar.x - (c.playerX + c.playerSize) < 30f && e.grounded) {
+                e.tap()
+                e.run(0.6f)
+                break
+            }
+            e.autoJump(); e.update(frame); t += frame
+        }
+        assertEquals(RunnerEngine.Phase.OVER, e.phase)
+    }
+
     @Test fun obstacleGapsLeaveRoomToLandAndJumpAgain() {
         val e = RunnerEngine(seed = 11)
         e.tap()
@@ -92,7 +160,7 @@ class RunnerEngineTest {
             val list = engine.obstacles
             for (i in 1 until list.size) {
                 val gap = list[i].x - (list[i - 1].x + list[i - 1].width)
-                val required = engine.speed * engine.config.airTime + engine.config.playerSize
+                val required = engine.requiredGap(list[i - 1], list[i])
                 assertTrue("gap $gap < $required at speed ${engine.speed}", gap >= required)
                 checked++
             }
@@ -107,7 +175,8 @@ class RunnerEngineTest {
             e.run(180f) { it.autoJump() }
             assertEquals("seed $seed ended at ${e.meters}m", RunnerEngine.Phase.RUNNING, e.phase)
             assertEquals(e.config.maxSpeed, e.speed, 0.01f)
-            assertTrue(e.cleared > 100)
+            // About one obstacle every two seconds once towers widen some gaps (seed 1: 94 in 3 minutes).
+            assertTrue("seed $seed cleared only ${e.cleared}", e.cleared > 60)
         }
     }
 
