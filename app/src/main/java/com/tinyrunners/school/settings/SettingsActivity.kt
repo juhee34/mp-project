@@ -9,6 +9,7 @@ import android.widget.Switch
 import com.tinyrunners.school.R
 import com.tinyrunners.school.auth.AuthService
 import com.tinyrunners.school.auth.LoginActivity
+import com.tinyrunners.school.game.OnboardingStore
 import com.tinyrunners.school.ui.Page
 import com.tinyrunners.school.weather.City
 import com.tinyrunners.school.weather.WeatherClient
@@ -80,6 +81,21 @@ class SettingsActivity : Activity() {
         }
         page.text(getString(R.string.settings_weather_source), 12f)
         refreshPreview()
+
+        val guide = page.card(16)
+        page.line(guide, getString(R.string.settings_guide), 13f, Page.LEAF, bold = true, top = 0)
+        val guideStatus = page.line(guide, "")
+        guide.addView(android.widget.Button(this).apply {
+            text = getString(R.string.settings_guide_replay)
+            isAllCaps = false
+            setTextColor(Page.LEAF)
+            minHeight = page.dp(48)
+            background = page.shape(Page.MINT, 12)
+            setOnClickListener {
+                OnboardingStore(this@SettingsActivity).resetGameGuide()
+                guideStatus.text = getString(R.string.settings_guide_reset)
+            }
+        }, page.params(8))
 
         page.button(getString(R.string.settings_sign_out)) {
             AuthService.signOut(this)

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tutorial_counter">게임 안내 %1$d / %2$d</string>
+    <string name="tutorial_jump_title">화면을 누르면 점프</string>
+    <string name="tutorial_jump_body">첫 번째 누름으로 출발하고, 달리는 동안 누르면 상자를 뛰어넘어요. 상자는 한 번만 점프하면 넘을 수 있어요.</string>
+    <string name="tutorial_double_title">높은 탑은 2단 점프</string>
+    <string name="tutorial_double_body">공중에서 한 번 더 누르면 더 높이 뛰어요. 탑은 점프 꼭대기쯤에서 한 번 더 누르면 넘을 수 있어요.</string>
+    <string name="tutorial_float_title">떠 있는 가지는 그냥 지나가요</string>
+    <string name="tutorial_float_body">공중에 떠 있는 나뭇가지는 그대로 달리면 아래로 지나가요. 그 앞에서 점프하면 부딪혀요.</string>
+    <string name="tutorial_pause_title">잠깐 쉬고 싶을 때</string>
+    <string name="tutorial_pause_body">오른쪽 위 버튼으로 멈출 수 있고, 앱을 나가면 자동으로 멈춰요. 뒤로가기를 누르면 친구 선택으로 돌아가요. 부딪혀도 함께 달린 거리는 기록에 남아요.</string>
+    <string name="tutorial_skip">건너뛰기</string>
+    <string name="tutorial_next">다음</string>
+    <string name="tutorial_start">시작하기</string>
+    <string name="settings_guide">게임 안내</string>
+    <string name="settings_guide_replay">게임 안내 다시 보기</string>
+    <string name="settings_guide_reset">다음에 게임을 시작할 때 안내가 다시 나와요.</string>
+</resources>

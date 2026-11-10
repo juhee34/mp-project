@@ -46,8 +46,18 @@ class GameActivity : Activity() {
                 if (!isDestroyed) result.onSuccess { view.weather = it }
             }
         }
+        val onboarding = OnboardingStore(this)
         setContentView(FrameLayout(this).apply {
             addView(view, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            if (onboarding.shouldShowGameGuide) {
+                // The guide sits on top and absorbs taps; the run only starts with a tap after it closes.
+                lateinit var guide: TutorialOverlay
+                guide = TutorialOverlay(this@GameActivity) {
+                    onboarding.markGameGuideDone()
+                    removeView(guide)
+                }
+                addView(guide, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            }
             setOnApplyWindowInsetsListener { v, insets ->
                 if (Build.VERSION.SDK_INT >= 30) {
                     val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
