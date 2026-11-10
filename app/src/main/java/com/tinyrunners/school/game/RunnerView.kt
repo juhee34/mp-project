@@ -6,16 +6,19 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.view.Choreographer
 import android.view.MotionEvent
 import android.view.View
 import com.tinyrunners.school.R
 import com.tinyrunners.school.characters.CharacterPortrait
+import com.tinyrunners.school.characters.CharacterSprites
 import com.tinyrunners.school.data.CharacterDefinition
 import com.tinyrunners.school.weather.Sky
 import com.tinyrunners.school.weather.WeatherReport
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /** Draws a [RunnerEngine] and forwards touches. Holds no game rules of its own. */
 @SuppressLint("ViewConstructor")
@@ -26,6 +29,14 @@ class RunnerView(
 ) : View(context), Choreographer.FrameCallback {
 
     private val runnerArt = CharacterPortrait(character.color)
+    private val sprites = CharacterSprites.load(resources, character.id)
+    private val spritePaint = Paint().apply {
+        isFilterBitmap = false
+        isAntiAlias = false
+        isDither = false
+    }
+    private val spriteBounds = Rect()
+    private var spriteScale = 1
     private val fill = Paint()
     private val text = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK }
     private val pauseRect = RectF()
@@ -69,6 +80,7 @@ class RunnerView(
             if (engine.phase != RunnerEngine.Phase.PAUSED) animTime += min(dt, 0.05f)
         }
         lastFrameNanos = frameTimeNanos
+        if (engine.phase == RunnerEngine.Phase.READY && lastPhase != RunnerEngine.Phase.READY) animTime = 0f
         if (engine.phase == RunnerEngine.Phase.OVER && lastPhase != RunnerEngine.Phase.OVER) onRunOver?.invoke()
         lastPhase = engine.phase
         invalidate()
@@ -81,6 +93,7 @@ class RunnerView(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         // Keep at least 640 world units visible across and 360 up, whatever the screen ratio.
         scale = min(h / WORLD_HEIGHT, w / MIN_WORLD_WIDTH)
+        spriteScale = scale.roundToInt().coerceAtLeast(1)
         groundY = h - GROUND_THICKNESS * scale
         val size = 44f * resources.displayMetrics.density
         val margin = 12f * resources.displayMetrics.density
@@ -213,11 +226,19 @@ class RunnerView(
 
     private fun drawRunner(canvas: Canvas) {
         val c = engine.config
-        // Small two-frame bob while running on the ground; purely visual, hitbox is unchanged.
-        val bob = if (engine.phase == RunnerEngine.Phase.RUNNING && engine.grounded &&
-            (engine.distance / 24f).toInt() % 2 == 0) 2f else 0f
+        val art = sprites
+        if (art != null) {
+            val center = sx(c.playerX + c.playerSize / 2).roundToInt()
+            val feet = sy(engine.playerY).roundToInt()
+            val left = center - CharacterSprites.CENTER_X * spriteScale
+            val top = feet - CharacterSprites.FOOT_EDGE_Y * spriteScale
+            val size = CharacterSprites.SIZE * spriteScale
+            spriteBounds.set(left, top, left + size, top + size)
+            canvas.drawBitmap(art[RunnerAnimation.frame(engine, animTime)], null, spriteBounds, spritePaint)
+            return
+        }
         val l = sx(c.playerX).toInt()
-        val b = sy(engine.playerY + bob).toInt()
+        val b = sy(engine.playerY).toInt()
         val size = (c.playerSize * scale).toInt()
         runnerArt.setBounds(l, b - size, l + size, b)
         runnerArt.draw(canvas)
@@ -234,7 +255,9 @@ class RunnerView(
         canvas.drawText(context.getString(R.string.game_hud, engine.meters, engine.score), 16f * d, 54f * d, text)
         text.textSize = 11f * d
         text.alpha = 150
-        canvas.drawText(context.getString(R.string.game_placeholder_art), 16f * d, 72f * d, text)
+        if (sprites == null) {
+            canvas.drawText(context.getString(R.string.game_placeholder_art), 16f * d, 72f * d, text)
+        }
         weather?.let {
             text.textAlign = Paint.Align.RIGHT
             val right = if (engine.phase == RunnerEngine.Phase.RUNNING) pauseRect.left - 12f * d else w - 16f * d

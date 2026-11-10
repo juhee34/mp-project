@@ -191,17 +191,7 @@ internal class CharacterScreens(
     }
 
     private fun portraitArtwork(friend: CharacterDefinition): Drawable {
-        val resource = when (friend.id) {
-            "mint" -> R.drawable.sprite_mint_idle_0
-            "cheese" -> R.drawable.sprite_cheese_idle_0
-            "popo" -> R.drawable.sprite_popo_idle_0
-            "lumi" -> R.drawable.sprite_lumi_idle_0
-            "nunu" -> R.drawable.sprite_nunu_idle_0
-            "piko" -> R.drawable.sprite_piko_idle_0
-            else -> return CharacterPortrait(friend.color)
-        }
-        val bitmap = BitmapFactory.decodeResource(context.resources, resource,
-            BitmapFactory.Options().apply { inScaled = false })
+        val bitmap = CharacterSprites.load(context.resources, friend.id)?.get(SpriteFrame.IDLE_0)
             ?: return CharacterPortrait(friend.color)
         return BitmapDrawable(context.resources, bitmap).apply {
             isFilterBitmap = false
