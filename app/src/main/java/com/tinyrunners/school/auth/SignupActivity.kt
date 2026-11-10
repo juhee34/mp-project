@@ -6,11 +6,12 @@ import android.text.InputType
 import com.tinyrunners.school.R
 import com.tinyrunners.school.ui.Page
 
-/** Creates a Firebase account. On success it closes; the login screen sees the session and opens the app. */
+/** Sign-up popup over the opening. A new account goes straight to the friend selection. */
 class SignupActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val page = Page(this).show()
+        LoginActivity.sizeAsPopup(this, page)
         page.eyebrow(getString(R.string.characters_brand))
         page.title(getString(R.string.signup_title))
         page.text(getString(R.string.signup_body, AuthInput.MIN_PASSWORD))
@@ -32,7 +33,7 @@ class SignupActivity : Activity() {
             error.text = ""
             AuthService.signUp(this, n, e, p) { message ->
                 if (isDestroyed) return@signUp
-                if (message == null) { finish(); return@signUp }
+                if (message == null) { LoginActivity.openMain(this); return@signUp }
                 submit.isEnabled = true
                 submit.setText(R.string.signup_submit)
                 error.text = message

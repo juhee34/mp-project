@@ -65,6 +65,8 @@ class Page(private val activity: Activity) {
     fun field(hint: String, type: Int = InputType.TYPE_CLASS_TEXT): EditText = EditText(activity).apply {
         this.hint = hint
         inputType = type
+        // In landscape, keep the form visible while typing instead of Android's full-screen text editor.
+        imeOptions = android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI or android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
         textSize = 16f
         setTextColor(INK)
         setHintTextColor(MUTED)

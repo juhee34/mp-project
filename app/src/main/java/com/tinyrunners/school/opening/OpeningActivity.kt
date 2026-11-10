@@ -22,9 +22,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.Button
 import android.widget.FrameLayout
-import com.tinyrunners.school.MainActivity
 import com.tinyrunners.school.R
-import com.tinyrunners.school.auth.AuthService
 import com.tinyrunners.school.auth.LoginActivity
 import com.tinyrunners.school.characters.CharacterSprites
 import com.tinyrunners.school.characters.SpriteFrame
@@ -36,8 +34,7 @@ import kotlin.math.sin
 
 /**
  * Landscape title screen shown on every launch: the friends' artwork fills the screen and one button sits in the
- * centre. Signed out it says "로그인" and opens the login form; signed in (or guest) it says "시작하기" and opens
- * the friend selection.
+ * centre. "시작하기" always opens the login popup over this screen (see LoginActivity).
  *
  * The artwork is A's `res/drawable-nodpi/opening_background.png` when present (see docs/OPENING_SPEC.md);
  * until then a placeholder with all six friends' idle sprites is drawn.
@@ -61,6 +58,7 @@ class OpeningActivity : Activity() {
                 setStroke(dp(3), Color.WHITE)
             }
             stateListAnimator = null
+            setText(R.string.opening_start)
             setOnClickListener { onButton() }
         }
         root.addView(button, FrameLayout.LayoutParams(dp(220), FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
@@ -68,19 +66,9 @@ class OpeningActivity : Activity() {
         hideSystemBars()
     }
 
-    override fun onResume() {
-        super.onResume()
-        // Re-evaluated on return, e.g. after signing out from settings or backing out of the login form.
-        button.setText(if (AuthService.hasSession(this)) R.string.opening_start else R.string.opening_login)
-    }
-
+    /** Always the login popup first; it offers "continue with this account" when already signed in. */
     private fun onButton() {
-        if (AuthService.hasSession(this)) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        } else {
-            startActivity(Intent(this, LoginActivity::class.java))
-        }
+        startActivity(Intent(this, LoginActivity::class.java))
     }
 
     private fun hideSystemBars() {
