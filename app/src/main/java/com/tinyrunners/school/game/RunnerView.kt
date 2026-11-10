@@ -27,8 +27,12 @@ class RunnerView(
 
     private val runnerArt = CharacterPortrait(character.color)
     private val fill = Paint()
+    private val ring = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeCap = Paint.Cap.ROUND }
+    private val ringRect = RectF()
     private val text = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK }
     private val pauseRect = RectF()
+    private val skillRect = RectF()
+    private val skillLabel = character.skillName.ifBlank { context.getString(R.string.game_skill_default) }
     private var lastFrameNanos = 0L
     private var looping = false
 
@@ -85,15 +89,23 @@ class RunnerView(
         val size = 44f * resources.displayMetrics.density
         val margin = 12f * resources.displayMetrics.density
         pauseRect.set(w - margin - size, margin, w - margin, margin + size)
+        val skill = 72f * resources.displayMetrics.density
+        skillRect.set(w - margin - skill, h - margin - skill, w - margin, h - margin)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.actionMasked != MotionEvent.ACTION_DOWN) return true
-        if (engine.phase == RunnerEngine.Phase.RUNNING && pauseRect.contains(event.x, event.y)) {
-            engine.pause()
-        } else {
-            engine.tap()
+        // ACTION_POINTER_DOWN lets a second finger jump while the first rests on the screen.
+        val action = event.actionMasked
+        if (action != MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_POINTER_DOWN) return true
+        val i = event.actionIndex
+        val x = event.getX(i); val y = event.getY(i)
+        val running = engine.phase == RunnerEngine.Phase.RUNNING
+        when {
+            running && pauseRect.contains(x, y) -> engine.pause()
+            // The skill button never jumps, even while cooling down, so a mistimed press is harmless.
+            running && skillRect.contains(x, y) -> engine.useSkill()
+            else -> engine.tap()
         }
         performClick()
         return true
@@ -111,6 +123,7 @@ class RunnerView(
         drawGroundMarks(canvas, w)
 
         for (o in engine.obstacles) drawObstacle(canvas, o)
+        drawSkillEffect(canvas)
         drawRunner(canvas)
         drawWeather(canvas, w)
         drawHud(canvas, w)
@@ -128,6 +141,65 @@ class RunnerView(
                 if (onRunOver == null && engine.canRestart) context.getString(R.string.game_over_hint) else null)
             RunnerEngine.Phase.RUNNING -> Unit
         }
+    }
+
+    /**
+     * Shared placeholder effect until each friend's skill frames exist: the removed obstacle scatters into
+     * squares in the friend's colour, and the skill name floats up. The effect is the same for everyone.
+     */
+    private fun drawSkillEffect(canvas: Canvas) {
+        val target = engine.lastSkillTarget ?: return
+        val t = engine.sinceLastSkill
+        if (t > SKILL_EFFECT_SECONDS) return
+        val p = t / SKILL_EFFECT_SECONDS
+        val cx = sx(target.x + target.width / 2 - engine.speed * t)
+        val cy = sy(target.height / 2)
+        val accent = android.graphics.Color.parseColor(character.color)
+        fill.color = accent
+        fill.alpha = ((1f - p) * 255).toInt()
+        val size = 6f * scale * (1f - p * 0.5f)
+        val spread = 40f * scale * p
+        for (k in 0 until 8) {
+            val a = k * (Math.PI / 4).toFloat()
+            val px = cx + kotlin.math.cos(a) * spread
+            val py = cy + kotlin.math.sin(a) * spread
+            canvas.drawRect(px - size / 2, py - size / 2, px + size / 2, py + size / 2, fill)
+        }
+        fill.alpha = 255
+        val d = resources.displayMetrics.density
+        text.textAlign = Paint.Align.CENTER
+        text.typeface = Typeface.DEFAULT_BOLD
+        text.textSize = 16f * d
+        text.alpha = ((1f - p) * 255).toInt()
+        canvas.drawText(skillLabel, sx(engine.config.playerX + engine.config.playerSize / 2), sy(engine.playerY + 70f) - 20f * d * p, text)
+        text.alpha = 255
+        text.typeface = Typeface.DEFAULT
+        text.textAlign = Paint.Align.LEFT
+    }
+
+    private fun drawSkillButton(canvas: Canvas) {
+        val d = resources.displayMetrics.density
+        val ready = engine.skillReady
+        fill.color = if (ready) SKILL_READY else PANEL
+        canvas.drawOval(skillRect, fill)
+        if (!ready) {
+            // Ring fills back up as the rest ends.
+            val done = 1f - engine.skillCooldownLeft / engine.config.skillCooldown
+            ring.strokeWidth = 4f * d
+            ring.color = SKILL_READY
+            val inset = ring.strokeWidth / 2
+            ringRect.set(skillRect.left + inset, skillRect.top + inset, skillRect.right - inset, skillRect.bottom - inset)
+            canvas.drawArc(ringRect, -90f, 360f * done, false, ring)
+        }
+        text.textAlign = Paint.Align.CENTER
+        text.color = if (ready) android.graphics.Color.WHITE else INK
+        text.textSize = 12f * d
+        text.typeface = Typeface.DEFAULT_BOLD
+        val label = if (ready) skillLabel else context.getString(R.string.game_skill_rest, kotlin.math.ceil(engine.skillCooldownLeft).toInt())
+        canvas.drawText(label, skillRect.centerX(), skillRect.centerY() + 4f * d, text)
+        text.color = INK
+        text.typeface = Typeface.DEFAULT
+        text.textAlign = Paint.Align.LEFT
     }
 
     private fun skyColor(): Int {
@@ -245,6 +317,7 @@ class RunnerView(
         text.alpha = 255
 
         if (engine.phase == RunnerEngine.Phase.RUNNING) {
+            drawSkillButton(canvas)
             fill.color = PANEL; canvas.drawRoundRect(pauseRect, 8f * d, 8f * d, fill)
             fill.color = INK
             val bw = pauseRect.width() * 0.14f
@@ -275,6 +348,8 @@ class RunnerView(
         const val WORLD_HEIGHT = 360f
         const val MIN_WORLD_WIDTH = 640f
         const val GROUND_THICKNESS = 48f
+        const val SKILL_EFFECT_SECONDS = 0.45f
+        val SKILL_READY = Color.rgb(48, 83, 65)
         val SKY = Color.rgb(250, 246, 236)
         val SKY_CLOUDY = Color.rgb(232, 234, 228)
         val SKY_RAIN = Color.rgb(214, 222, 226)

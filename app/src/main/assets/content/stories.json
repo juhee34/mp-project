@@ -4,8 +4,82 @@
     "characterId": "mint",
     "title": "라일의 작은 바람",
     "body": "길을 완벽하게 그리려던 라일는 밤새 움직이는 고사리 때문에 지도를 여러 번 고친다. 친구들은 길 대신 냄새와 바람 소리를 그려 넣는다. 지도는 정확해지지 않지만 함께 기억하는 장소가 늘어난다.",
-    "status": "outline",
-    "unlockDistance": 0
+    "status": "draft",
+    "unlockDistance": 0,
+    "unlock": {
+      "afterStory": null
+    },
+    "lines": [
+      {
+        "speaker": "narrator",
+        "text": "고사리 언덕의 아침. 뿌리집 앞에서 라일이 천 지도를 펼쳐 놓고 고개를 갸웃한다."
+      },
+      {
+        "speaker": "mint",
+        "text": "이상하다… 어제 그린 길이 오늘은 고사리 밑으로 숨어 버렸어."
+      },
+      {
+        "speaker": "player",
+        "text": "지도를 또 고치는 중이야?"
+      },
+      {
+        "speaker": "mint",
+        "text": "응. 벌써 세 번째야. 고사리들이 밤마다 자리를 바꾸거든."
+      },
+      {
+        "speaker": "mint",
+        "text": "정확한 지도가 있으면 친구들이 길을 잃지 않을 텐데."
+      },
+      {
+        "choice": [
+          {
+            "text": "같이 걸으면서 다시 볼까?",
+            "reply": [
+              {
+                "speaker": "mint",
+                "text": "정말? 그럼 지도는 내가 들게. 너는 앞을 봐 줘!"
+              }
+            ]
+          },
+          {
+            "text": "길 말고 다른 걸 그려 보면 어때?",
+            "reply": [
+              {
+                "speaker": "mint",
+                "text": "다른 거…? 음, 일단 나가 보면 알겠지!"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "speaker": "narrator",
+        "text": "라일은 스카프를 고쳐 매고 언덕길로 달려 나간다."
+      },
+      {
+        "run": true
+      },
+      {
+        "speaker": "mint",
+        "text": "헉, 헉… 길은 또 바뀌었는데, 이상하게 하나도 안 헤맸어."
+      },
+      {
+        "speaker": "player",
+        "text": "바람이 불어오는 쪽이 늘 같았잖아."
+      },
+      {
+        "speaker": "mint",
+        "text": "맞아! 그리고 큰 고사리 옆에서는 꼭 달콤한 냄새가 났어."
+      },
+      {
+        "speaker": "narrator",
+        "text": "라일은 지도 한쪽에 작은 바람 표시와 냄새 표시를 그려 넣는다."
+      },
+      {
+        "speaker": "mint",
+        "text": "지도는 여전히 틀렸지만… 오늘 같이 다녀온 곳은 이제 안 잊어버릴 것 같아."
+      }
+    ]
   },
   {
     "id": "cheese_intro",

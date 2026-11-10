@@ -10,6 +10,7 @@ import com.tinyrunners.school.auth.AuthService
 import com.tinyrunners.school.auth.LoginActivity
 import com.tinyrunners.school.records.RecordsActivity
 import com.tinyrunners.school.settings.SettingsActivity
+import com.tinyrunners.school.story.StoryListActivity
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.tinyrunners.school.game.GameActivity
@@ -28,6 +29,7 @@ class MainActivity : Activity() {
             return
         }
         setContentView(R.layout.activity_main)
+        findViewById<View>(R.id.menu_stories).setOnClickListener { startActivity(Intent(this, StoryListActivity::class.java)) }
         findViewById<View>(R.id.menu_records).setOnClickListener { startActivity(Intent(this, RecordsActivity::class.java)) }
         findViewById<View>(R.id.menu_settings).setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
         val host = findViewById<FrameLayout>(R.id.screen_host)

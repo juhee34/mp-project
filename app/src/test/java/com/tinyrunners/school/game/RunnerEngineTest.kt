@@ -42,11 +42,92 @@ class RunnerEngineTest {
         assertTrue(e.grounded)
     }
 
-    @Test fun cannotDoubleJump() {
+    @Test fun oneAirJumpThenNoMoreUntilLanding() {
         val e = RunnerEngine(seed = 3)
         e.tap()
         e.run(0.1f)
-        assertFalse(e.tap())
+        assertTrue("second tap in the air jumps", e.tap())
+        assertEquals(e.config.airJumpVelocity, e.playerVy, 0.01f)
+        e.run(0.05f)
+        assertFalse("third tap does nothing", e.tap())
+        e.run(2f)
+        assertTrue(e.grounded)
+        assertEquals(0, e.airJumpsUsed)
+        assertTrue("jumps reset after landing", e.tap())
+    }
+
+    @Test fun doubleJumpGoesHigherThanSingle() {
+        val single = RunnerEngine(seed = 3).apply { tap() }
+        var singleApex = 0f
+        single.run(1.5f) { singleApex = maxOf(singleApex, it.playerY) }
+        val double = RunnerEngine(seed = 3).apply { tap() }
+        var doubleApex = 0f
+        var tapped = false
+        double.run(1.5f) {
+            if (!tapped && it.playerVy <= 0f && it.playerY > 0f) { it.tap(); tapped = true }
+            doubleApex = maxOf(doubleApex, it.playerY)
+        }
+        val c = RunnerConfig()
+        // The tap lands one 60 fps frame after the apex, so allow a few units below the ideal sum.
+        assertEquals(c.apexHeight + c.airJumpVelocity * c.airJumpVelocity / (2 * c.gravity), doubleApex, 10f)
+        assertTrue(doubleApex > singleApex)
+    }
+
+    /** Runs until an obstacle is on screen ahead of the player. */
+    private fun RunnerEngine.runUntilObstacleAhead() {
+        tap()
+        var t = 0f
+        while (obstacles.none { it.x > config.playerX + config.playerSize && it.x < config.playerX + config.skillRange } && t < 20f) {
+            update(frame); t += frame
+        }
+        assertTrue("an obstacle appeared", t < 20f)
+    }
+
+    @Test fun skillRemovesNearestObstacleAheadAndCountsIt() {
+        val e = RunnerEngine(seed = 7)
+        e.runUntilObstacleAhead()
+        val target = e.obstacles.filter { it.x + it.width > e.config.playerX }.minBy { it.x }
+        val clearedBefore = e.cleared
+        assertTrue(e.useSkill())
+        assertFalse(target in e.obstacles)
+        assertEquals(clearedBefore + 1, e.cleared)
+        assertEquals(target, e.lastSkillTarget)
+        assertEquals(e.config.skillCooldown, e.skillCooldownLeft, 0f)
+    }
+
+    @Test fun skillRestsTenSecondsAndPauseDoesNotCount() {
+        val e = RunnerEngine(seed = 7)
+        e.runUntilObstacleAhead()
+        assertTrue(e.useSkill())
+        assertFalse("cooling down", e.useSkill())
+        e.pause(); e.run(30f); e.resume()
+        assertEquals("paused time does not count", e.config.skillCooldown, e.skillCooldownLeft, 0.01f)
+        e.run(e.config.skillCooldown - 0.5f) { it.autoJump() }
+        assertFalse(e.skillReady)
+        e.run(0.6f) { it.autoJump() }
+        assertTrue(e.skillReady)
+    }
+
+    @Test fun skillWithNothingAheadKeepsCooldown() {
+        val e = RunnerEngine(seed = 7)
+        e.tap()
+        assertTrue(e.obstacles.isEmpty())
+        assertFalse(e.useSkill())
+        assertEquals(0f, e.skillCooldownLeft, 0f)
+        assertEquals(0, e.skillUses)
+    }
+
+    @Test fun skillOnlyWhileRunningAndResetsOnRestart() {
+        val e = RunnerEngine(seed = 7)
+        assertFalse("not before start", e.useSkill())
+        e.runUntilObstacleAhead()
+        assertTrue(e.useSkill())
+        while (e.phase != RunnerEngine.Phase.OVER) e.update(frame)
+        e.run(1f)
+        e.tap()
+        assertEquals(0f, e.skillCooldownLeft, 0f)
+        assertEquals(0, e.skillUses)
+        assertEquals(null, e.lastSkillTarget)
     }
 
     @Test fun everyObstacleSizeIsClearableAtEverySpeed() {

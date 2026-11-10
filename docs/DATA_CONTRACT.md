@@ -14,6 +14,20 @@ storyIds는 stories.json에 존재하는 ID만 참조한다. assetStatus=planned
 id, characterId, title, body, status, unlockDistance.
 현재 status=outline은 서사 개요이며 완성 에피소드가 아니다. 첫 소개 unlockDistance=0.
 
+## 이야기 대사 (2026-11-10, IDEA_GUIDE 권장안 확정)
+- `stories.json`의 이야기에 선택 필드 `lines`, `unlock`을 더한다. `body`는 도감 요약으로 남긴다.
+- `lines`의 한 줄: `{speaker, text}` / 선택지 `{choice:[{text, reply:[{speaker,text}]}]}`(2~3개, 이야기당 최대 2번, 바로 다음 대사만 달라짐) / 달리기 `{run:true}`(이야기당 최대 1번, 결과와 상관없이 이어짐).
+- `speaker`: 캐릭터 ID, `player`(회원가입 닉네임, 없으면 "나그네"), `narrator`(이름 없이 표시).
+- `unlock.afterStory`: 같은 친구의 앞 이야기 ID. 그 이야기를 보면 열린다. 없거나 null이면 처음부터 열린다.
+- `lines`가 없는 이야기는 `body`의 문장을 해설 줄로 바꾸고 마지막 문장 앞에서 달린다(대사 작성 전 임시 재생).
+- 현재 `mint_intro`에만 B가 쓴 샘플 대사(status=draft)가 있다. A가 고쳐 쓴다.
+- 본 이야기: CharacterProgress.readStoryIds. 끝까지 보거나 건너뛰면 기록한다. Firestore는 progress 문서에 arrayUnion으로 더한다.
+
+## 스킬
+- `characters.json`의 `skillName`(1~8자): 스킬 버튼과 효과에 표시하는 이름. A가 확정한다. 지금 값은 IDEA_GUIDE 제안이다.
+- 효과는 6명 같다: 앞 600단위 안의 가장 가까운 장애물 1개를 없애고 넘은 장애물로 센다. 쉬는 시간 10초(달리는 중에만 줄어듦). 앞에 장애물이 없으면 쓰이지 않는다.
+- 2단 점프: 공중에서 1회, 속도 700(추가 높이 약 102). 6명 같다.
+
 ## 배경과 음악
 assets.json의 background/music에는 id, path, status, brief가 있다.
 path=null인 파일은 로드하지 않는다. planned 항목은 완료 통계에 포함하지 않는다.

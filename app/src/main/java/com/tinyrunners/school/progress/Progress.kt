@@ -19,11 +19,15 @@ data class CharacterProgress(
     val totalMeters: Long = 0,
     val bestMeters: Int = 0,
     val bestScore: Int = 0,
+    /** Stories seen to the end (or skipped). Order of first reading. */
+    val readStoryIds: List<String> = emptyList(),
 ) {
     fun toMap(): Map<String, Any> = mapOf(
         "characterId" to characterId, "runs" to runs, "totalMeters" to totalMeters,
-        "bestMeters" to bestMeters, "bestScore" to bestScore,
+        "bestMeters" to bestMeters, "bestScore" to bestScore, "readStoryIds" to readStoryIds,
     )
+
+    fun withRead(storyId: String) = if (storyId in readStoryIds) this else copy(readStoryIds = readStoryIds + storyId)
 
     companion object {
         fun fromMap(id: String, m: Map<String, Any?>) = CharacterProgress(
@@ -32,6 +36,11 @@ data class CharacterProgress(
             totalMeters = (m["totalMeters"] as? Number)?.toLong() ?: 0L,
             bestMeters = (m["bestMeters"] as? Number)?.toInt() ?: 0,
             bestScore = (m["bestScore"] as? Number)?.toInt() ?: 0,
+            readStoryIds = when (val r = m["readStoryIds"]) {
+                is List<*> -> r.filterIsInstance<String>()
+                is JSONArray -> List(r.length()) { r.optString(it) }.filter { it.isNotEmpty() }
+                else -> emptyList()
+            },
         )
     }
 }
@@ -74,8 +83,16 @@ class ProgressBook(
         return outcome
     }
 
+    fun markRead(characterId: String, storyId: String): CharacterProgress {
+        val next = (progress[characterId] ?: CharacterProgress(characterId)).withRead(storyId)
+        progress[characterId] = next
+        return next
+    }
+
     fun toJson(): String = JSONObject().apply {
-        put("progress", JSONObject().apply { progress.forEach { (id, p) -> put(id, JSONObject(p.toMap())) } })
+        put("progress", JSONObject().apply {
+            progress.forEach { (id, p) -> put(id, JSONObject(p.toMap() - "readStoryIds").put("readStoryIds", JSONArray(p.readStoryIds))) }
+        })
         put("runIds", JSONArray(seenRunIds.toList()))
     }.toString()
 

@@ -34,7 +34,8 @@ class GameActivity : Activity() {
             view.postDelayed({
                 if (!isFinishing) {
                     startActivity(ResultActivity.intent(this,
-                        RunResult(runId, character.id, engine.meters, engine.score, engine.cleared)))
+                        RunResult(runId, character.id, engine.meters, engine.score, engine.cleared))
+                        .putExtra(EXTRA_STORY_ID, intent.getStringExtra(EXTRA_STORY_ID)))
                     finish()
                 }
             }, RESULT_DELAY_MS)
@@ -75,6 +76,8 @@ class GameActivity : Activity() {
 
     companion object {
         const val EXTRA_CHARACTER_ID = "characterId"
+        /** Set when a story started this run; the result screen then offers to continue the story. */
+        const val EXTRA_STORY_ID = "storyId"
         private const val RESULT_DELAY_MS = 900L
         fun intent(context: Context, characterId: String) =
             Intent(context, GameActivity::class.java).putExtra(EXTRA_CHARACTER_ID, characterId)

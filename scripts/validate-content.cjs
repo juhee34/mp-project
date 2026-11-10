@@ -9,6 +9,30 @@ for(const a of assets)for(const kind of ['background','music']){assert.equal(a[k
 const research=['andersen','grimm','aesop','modern','world'].flatMap(n=>read('research/'+n+'.json'));assert.equal(research.length,205);assert.equal(new Set(research.map(r=>r.id)).size,205);
 for(const r of research)assert(r.source_url.startsWith('http')&&r.verified_content);
 const p=fs.readFileSync(path.join(root,'docs/PROMPTS.md'),'utf8');assert.equal((p.match(/^## \d+단계 [AB] /gm)||[]).length,20);
+// Skills: same effect for everyone, each friend only has its own display name (docs/IDEA_GUIDE.md).
+for(const c of chars)assert(typeof c.skillName==='string'&&c.skillName.trim().length>0&&c.skillName.length<=8,`${c.id}: skillName needs 1-8 characters`);
+
+// Story dialogue (DATA_CONTRACT "이야기 대사"): speakers, at most 2 choices with replies, at most 1 run, unlock refs.
+const SPEAKERS=new Set([...expected,'player','narrator']);
+const checkLine=(l,where)=>{assert(SPEAKERS.has(l.speaker),`${where}: unknown speaker "${l.speaker}"`);assert(typeof l.text==='string'&&l.text.trim(),`${where}: empty text`);};
+let scripted=0;
+for(const s of stories){
+  if(s.unlock?.afterStory!=null){const prev=stories.find(x=>x.id===s.unlock.afterStory);assert(prev&&prev.characterId===s.characterId,`${s.id}: afterStory must be an earlier story of the same friend`);}
+  if(!s.lines)continue;
+  scripted++;
+  assert(Array.isArray(s.lines)&&s.lines.length>0,`${s.id}: lines must be a non-empty array`);
+  let choices=0,runs=0;
+  s.lines.forEach((l,i)=>{
+    const where=`${s.id} line ${i}`;
+    if(l.run===true){runs++;return;}
+    if(l.choice){choices++;assert(Array.isArray(l.choice)&&l.choice.length>=2&&l.choice.length<=3,`${where}: a choice needs 2-3 options`);
+      for(const o of l.choice){assert(o.text&&o.text.trim(),`${where}: option text`);(o.reply||[]).forEach((r,k)=>checkLine(r,`${where} reply ${k}`));}return;}
+    checkLine(l,where);
+  });
+  assert(choices<=2,`${s.id}: at most 2 choices per story`);
+  assert(runs<=1,`${s.id}: at most 1 run per story`);
+}
+
 // Sprites (docs/SPRITE_SPEC.md): 48x48 PNG with alpha, sprite_<id>_<motion>_<n>.png in res/drawable-nodpi.
 const SPRITE_DIR='app/src/main/res/drawable-nodpi';
 const MOTIONS={idle:2,run:4,jump:2,fail:1,land:1,greet:2,home:2},REQUIRED=['idle','run','jump','fail'];
@@ -38,6 +62,7 @@ for(const c of chars){
 
 console.log('PASS: 6 characters; story/asset references; planned assets honest; 205 research records; 20 role prompts.');
 console.log(`Sprites (required frames): ${spriteSummary.join(', ')}`);
+console.log(`Stories with dialogue: ${scripted}/${stories.length} (others play from their outline)`);
 
 assert.deepEqual(read('docs/CHARACTER_BIBLE.json').map(c=>c.id),expected);
 assert.deepEqual(assets.map(a=>a.characterId),expected);

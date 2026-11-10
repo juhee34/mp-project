@@ -16,6 +16,16 @@
         android:paddingTop="4dp">
 
         <Button
+            android:id="@+id/menu_stories"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/menu_stories"
+            android:textAllCaps="false"
+            android:textColor="#305341" />
+
+        <Button
             android:id="@+id/menu_records"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
