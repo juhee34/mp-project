@@ -9,6 +9,7 @@
         <activity android:name=".auth.SignupActivity" android:exported="false" android:screenOrientation="sensorLandscape" android:theme="@style/AuthPopupTheme" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".result.ResultActivity" android:exported="false" />
         <activity android:name=".records.RecordsActivity" android:exported="false" />
+        <activity android:name=".stories.StoryActivity" android:exported="false" />
         <activity android:name=".settings.SettingsActivity" android:exported="false" />
         <activity android:name=".story.StoryListActivity" android:exported="false" />
         <activity android:name=".story.StoryActivity" android:exported="false" />

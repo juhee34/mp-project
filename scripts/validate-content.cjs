@@ -3,18 +3,41 @@ const root=path.resolve(__dirname,'..');
 const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
 const chars=read('app/src/main/assets/content/characters.json'),stories=read('app/src/main/assets/content/stories.json'),assets=read('app/src/main/assets/content/assets.json');
 const expected=["mint", "cheese", "popo", "lumi", "nunu", "piko"];
-assert.deepEqual(chars.map(c=>c.id),expected);assert.equal(new Set(stories.map(s=>s.id)).size,6);
+assert.deepEqual(chars.map(c=>c.id),expected);
+assert.equal(stories.length,24);assert.equal(new Set(stories.map(s=>s.id)).size,24);
+for(const id of expected){
+  const own=stories.filter(s=>s.characterId===id);
+  assert.deepEqual(own.map(s=>s.id),[`${id}_intro`,`${id}_episode_1`,`${id}_episode_2`,`${id}_episode_3`]);
+  assert.deepEqual(own.map(s=>s.status),['ready','ready','outline','outline']);
+  assert.deepEqual(chars.find(c=>c.id===id).storyIds,own.map(s=>s.id));
+}
+for(const s of stories){
+  assert(s.title&&s.body&&s.summary);
+  assert(Number.isInteger(s.unlockDistance)&&s.unlockDistance>=0);
+  if(s.status==='ready'){
+    assert(s.pages.length>0);
+    for(const p of s.pages){assert(p.title&&p.blocks.length>0);for(const b of p.blocks){
+      assert(b.text.trim());assert(b.speaker===null||chars.some(c=>c.name===b.speaker));
+      assert(!/\*\*|^####/m.test(b.text),'Unconverted markdown');
+    }}
+    const reconstructed=s.pages.flatMap(p=>p.blocks).map(b=>(b.speaker?b.speaker+': ':'')+b.text).join('\n\n');
+    assert.equal(reconstructed,s.body,'Full text and paginated text diverged');
+  }else assert.deepEqual(s.pages,[],'Outlines must not be readable as finished stories');
+}
 for(const c of chars){assert(c.name&&c.home&&c.personality);assert(/^#[0-9A-F]{6}$/i.test(c.color));for(const id of c.storyIds)assert(stories.some(s=>s.id===id&&s.characterId===c.id));assert(assets.some(a=>a.characterId===c.id));}
 for(const a of assets)for(const kind of ['background','music']){assert(a[kind].brief);if(a[kind].status==='planned'){assert.equal(a[kind].path,null);}else{assert.equal(kind,'background');assert.equal(a[kind].status,'panorama_ready');assert.equal(a[kind].loopReady,false);assert.equal(a[kind].layered,false);assert(fs.existsSync(path.join(root,'app/src/main/assets',a[kind].path)));const manifest=read('app/src/main/assets/'+a[kind].manifest);assert(manifest.characters.some(c=>c.id===a.characterId && 'backgrounds/'+c.source===a[kind].path));}}
 const research=['andersen','grimm','aesop','modern','world'].flatMap(n=>read('research/'+n+'.json'));assert.equal(research.length,205);assert.equal(new Set(research.map(r=>r.id)).size,205);
 for(const r of research)assert(r.source_url.startsWith('http')&&r.verified_content);
 const p=fs.readFileSync(path.join(root,'docs/PROMPTS.md'),'utf8');assert.equal((p.match(/^## \d+단계 [AB] /gm)||[]).length,20);
+// Village stories (B, content/village_stories.json; DATA_CONTRACT "이야기 대사")
+const village=read("app/src/main/assets/content/village_stories.json");
+assert.equal(new Set(village.map(s=>s.id)).size,village.length);assert(village.every(s=>expected.includes(s.characterId)));
 // Story dialogue (DATA_CONTRACT "이야기 대사"): speakers, at most 2 choices with replies, at most 1 run, unlock refs.
 const SPEAKERS=new Set([...expected,'player','narrator']);
 const checkLine=(l,where)=>{assert(SPEAKERS.has(l.speaker),`${where}: unknown speaker "${l.speaker}"`);assert(typeof l.text==='string'&&l.text.trim(),`${where}: empty text`);};
 let scripted=0;
-for(const s of stories){
-  if(s.unlock?.afterStory!=null){const prev=stories.find(x=>x.id===s.unlock.afterStory);assert(prev&&prev.characterId===s.characterId,`${s.id}: afterStory must be an earlier story of the same friend`);}
+for(const s of village){
+  if(s.unlock?.afterStory!=null){const prev=village.find(x=>x.id===s.unlock.afterStory);assert(prev&&prev.characterId===s.characterId,`${s.id}: afterStory must be an earlier story of the same friend`);}
   if(!s.lines)continue;
   scripted++;
   assert(Array.isArray(s.lines)&&s.lines.length>0,`${s.id}: lines must be a non-empty array`);
@@ -72,7 +95,7 @@ for(const id of expected)for(const prop of OBSTACLE_PROPS[id]){
 console.log('PASS: 6 characters; story/asset references; asset readiness honest; 205 research records; 20 role prompts.');
 console.log(`Sprites (required frames): ${spriteSummary.join(', ')}`);
 console.log(`Obstacle props in app: ${obstacleCount}/18`);
-console.log(`Stories with dialogue: ${scripted}/${stories.length} (others play from their outline)`);
+console.log(`Village stories with dialogue: ${scripted}/${village.length} (others play from their outline)`);
 
 assert.deepEqual(read('docs/CHARACTER_BIBLE.json').map(c=>c.id),expected);
 assert.deepEqual(assets.map(a=>a.characterId),expected);

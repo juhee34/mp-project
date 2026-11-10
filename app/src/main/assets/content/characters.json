@@ -12,7 +12,10 @@
     "backgroundId": "mint",
     "musicId": "mint",
     "storyIds": [
-      "mint_intro"
+      "mint_intro",
+      "mint_episode_1",
+      "mint_episode_2",
+      "mint_episode_3"
     ],
     "assetStatus": "sprite_ready",
     "habits": [
@@ -45,7 +48,10 @@
     "backgroundId": "cheese",
     "musicId": "cheese",
     "storyIds": [
-      "cheese_intro"
+      "cheese_intro",
+      "cheese_episode_1",
+      "cheese_episode_2",
+      "cheese_episode_3"
     ],
     "assetStatus": "sprite_ready",
     "habits": [
@@ -78,7 +84,10 @@
     "backgroundId": "popo",
     "musicId": "popo",
     "storyIds": [
-      "popo_intro"
+      "popo_intro",
+      "popo_episode_1",
+      "popo_episode_2",
+      "popo_episode_3"
     ],
     "assetStatus": "sprite_ready",
     "habits": [
@@ -111,7 +120,10 @@
     "backgroundId": "lumi",
     "musicId": "lumi",
     "storyIds": [
-      "lumi_intro"
+      "lumi_intro",
+      "lumi_episode_1",
+      "lumi_episode_2",
+      "lumi_episode_3"
     ],
     "assetStatus": "sprite_ready",
     "habits": [
@@ -144,7 +156,10 @@
     "backgroundId": "nunu",
     "musicId": "nunu",
     "storyIds": [
-      "nunu_intro"
+      "nunu_intro",
+      "nunu_episode_1",
+      "nunu_episode_2",
+      "nunu_episode_3"
     ],
     "assetStatus": "sprite_ready",
     "habits": [
@@ -177,7 +192,10 @@
     "backgroundId": "piko",
     "musicId": "piko",
     "storyIds": [
-      "piko_intro"
+      "piko_intro",
+      "piko_episode_1",
+      "piko_episode_2",
+      "piko_episode_3"
     ],
     "assetStatus": "sprite_ready",
     "habits": [

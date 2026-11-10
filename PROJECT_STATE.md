@@ -27,6 +27,12 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## A 이야기 도감 병합, 두 이야기 기능 유지 (2026-11-10, B)
+- codex/character-screens ba5a2ec(이야기 12편·이야기 도감·읽기 기록)를 main에 병합했다. 사용자 결정: 두 기능 모두 유지.
+- 충돌 해결: stories.json은 A의 도감 형식(24편)을 그대로 쓰고, B의 대사형 "마을 이야기"는 content/village_stories.json으로 옮겼다(story/StoryActivity의 StoryRepository). story_strings.xml은 양쪽 문자열을 모두 두고 상단 메뉴 이름을 "이야기" → "마을 이야기"로 바꿨다. 검사기는 두 파일을 각각 검사한다. DATA_CONTRACT에 분리 규칙 기록.
+- 검증: validate-content PASS(마을 이야기 대사 1/6), assembleDebug·testDebugUnitTest(67개, 실패 0)·lintDebug 성공. 에뮬레이터에서 소개 화면의 "이야기 도감" 버튼 → 도감(6명 탭·라일의 책장) 열림, 상단 "마을 이야기" → 목록·라일 이야기 대사 표시, crash 0건.
+- 아직 안 함: STORY_HANDOFF.md의 도감 기기 검수 6항목(99/100m 경계, 이어 읽기, 읽음 저장, 회전, 큰 글자, 계정 분리), ProgressStore의 book 타입 오류 처리, 짧은 대사 144개 연결. 도감 화면은 아직 하늘·언덕 배경과 Page 버튼 모양을 쓰지 않는다(A 소유 화면).
+
 ## 메뉴 화면에 오프닝 하늘·구름·언덕 (2026-11-10, B)
 - ui/Scenery.kt 신설: ScenePainter(하늘 그라데이션, 흐르는 픽셀 구름 5개, 이어진 계단 언덕, 땅)를 오프닝과 공유한다. SceneryView는 이를 전체 화면 배경으로 그린다.
 - 적용: 소개·선택·프로필(activity_main.xml 뒤 배경), Page 기반 화면(내 기록·설정·이야기·결과 등, Page.show() 기본값). 로그인·회원가입 팝업은 오프닝이 뒤에 보이므로 제외(show(scenery = false)). 게임 화면(RunnerView/StoryBackground)은 손대지 않았다.
@@ -361,3 +367,19 @@
 - 검증: 144개 ID·문구 유일성, 6×8×3 구성, 유효 캐릭터/event, 읽음 조건, 48자 제한(실제 최대 25), 원고/JSON 일치, git diff --check 통과.
 - 상태 content_ready_for_review / integrated=false. 사용자 최종 문안 승인·앱 연결·기기 검수 전. Android 코드·기존 stories.json·공동 데이터 계약·음원·후속 본문은 이번 대사 작업에서 수정하지 않았다. 콘텐츠 제작 단계에서는 빌드 및 stage/commit/push를 하지 않았다. 다음은 사용자 문안 확인 후 개발 담당의 선택/결과 영역 연결과 화면 검수다.
 - 게시 담당 재검수: JSON 파싱, 6명 ID·8상황·각 3개, ID·문구 중복 없음, 최대 25 Unicode 코드포인트(상한 48), Markdown ID·문구·상황 일치, requiresReadStoryIds 전부 빈 배열, 미연결 상태 및 git diff --check 통과. 기존 staged 변경은 없었고, 문서 3개와 이 기록만 게시 대상으로 분리했다. 기존 도감 수정과 이야기·음원 작업은 로컬에 보존하며 이번 커밋에서 제외한다.
+
+## 2026-11-10 A 이야기 6명 및 도감 구현
+- 205편 조사 기록의 원리를 선택 적용하고 라일·치즈 / 포포·루미 / 누누·피코 순서로 본문을 검토했다. 캐릭터 고유의 배경 이야기 6편·첫 에피소드 6편 완성, 후속 개요 12편 준비. 사건·대사·상징 묶음 복제 대신 생활 소품과 성격에서 새 사건을 구성했다. docs/STORY_MANUSCRIPT_01~03.md와 STORY_HANDOFF.md 참조.
+- stories.json 24개와 characters.json storyIds 연결. 소개/1편 ready, 2·3편 outline. scripts/build-story-content.py로 원고에서 재생성하며 콘텐츠 검사기가 참조·상태·본문/페이지를 검사한다.
+- StoryActivity 도감과 소개·선택·프로필 진입 구현. 미독/읽음·다시 읽기/잠김/준비 중 구분. 1편은 캐릭터 누적 100m 또는 사용자의 수동 감상으로 개방. 소개는 무료. 고정 ‘나중에 읽기/바로 달리기’로 완독 없이 진행한다.
+- 읽던 페이지와 읽음·열림은 계정별 기기에 저장하며 클라우드 동기화는 없다. 마지막 페이지에서 명시적으로 저장할 때만 읽음 처리. B의 ProgressStore를 거리 조회에만 사용하고 게임 물리·충돌·음악·서버 저장 스키마는 변경하지 않았다.
+- 콘텐츠 검사, assembleDebug, testDebugUnitTest, lintDebug 성공. 테스트 43개(신규 이야기 10개) 실패/오류 0. Lint 오류 0/경고 25. Kotlin daemon 임시파일 오류 후 fallback 컴파일 성공.
+- 제어 가능한 에뮬레이터 창 부재로 기기 UI·터치·재실행 검수 미완료. 상세 수동 검수 항목은 STORY_HANDOFF.md. 이번 작업에서 stage/commit/push하지 않았다. 음악 검수 작업과 .kotlin/.tools는 별도 보존한다.
+
+## 2026-11-10 A 도감 검토 및 B팀 기기 검수 인계
+- 사용자 지시로 범위를 A팀 도감 내부로 한정했다. StoryActivity의 목록·본문 스크롤 복원, 계정이 달라진 화면 복원 방지와 늦은 콜백 보호, 거리 조회 예외 안내, 책갈피 저장 실패 안내를 수정했다. StoryStore는 도감 전용 저장 결과를 반환하도록 보완했으며 기존 저장 이름·읽음·열림 계약은 유지한다.
+- 공용 AuthService·ProgressStore, 게임·물리·충돌·음악 및 클라우드 동기화는 변경하지 않았다. 공용 거리 조회의 SharedPreferences book 타입 오류 조건은 코드 검토로 확인하여 STORY_HANDOFF.md에 B팀 재현 절차로 기록했으며 기기에서 재현하지 않았다.
+- python scripts/build-story-content.py, node scripts/validate-content.cjs, git diff --check 통과. 다른 소개 개편·음원 작업을 제외한 게시용 사본에서 JDK17/SDK35로 assembleDebug·testDebugUnitTest·lintDebug 성공. 테스트 48개 실패/오류 0, Lint 오류 0/경고 24. 도감 전용 저장 단위 테스트 5개를 추가했다.
+- 실제 기기 UI 검수는 사용자 지시에 따라 B팀 할 일로 넘겼다. 별도 테스트 에뮬레이터만 준비했다가 종료했고 앱 설치·터치·계정 전환·작은 화면/큰 글자·실제 저장 오류 검수는 수행하지 않았다. 기존 기기와 실제 계정 기록은 변경하지 않았다.
+- 이번 게시에는 원고 3개·이야기 데이터·도감 패키지와 테스트·진입 버튼·스토리 문자열·Manifest 등록·생성/검증 스크립트·계약/인계 문서와 해당 기록만 포함한다. CharacterScreens.kt의 별도 소개 개편 및 PROJECT_STATE의 음원·소개 기록은 로컬에 보존하고 제외한다. audio, website, .tools/.kotlin, 빌드 산출물과 개인 설정도 제외한다.
+- B팀의 다음 작업: STORY_HANDOFF.md의 6개 기기 인수 항목 수행 및 공용 저장소 오류 정책 검토. A가 화면·저장소 코드를 작성했다는 사실을 실제 UI 검수 통과로 간주하지 않는다.
