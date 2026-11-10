@@ -1,6 +1,6 @@
 # 6명 픽셀 아트·동작 변경 명세
 
-라일(기존 민트), 치즈, 포포, 루미, 누누, 피코를 유지한다. 라일의 내부 ID는 기존 저장과 참조를 위해 mint로 유지하며 표시 이름만 바꾼다. 라일은 라벤더 몸·크림 배·자주색 등판·주황 스카프·천 지도, 루미는 황갈색 몸·크림 꼬리 끝·빨간 망토·솔방울 마이크다.
+라일(기존 민트), 치즈, 포포, 루미, 누누, 피코를 유지한다. 라일의 내부 ID는 기존 저장과 참조를 위해 mint로 유지하며 표시 이름만 바꾼다. 라일은 라벤더 몸·크림 배·자주색 등판·파란 망토·천 지도, 루미는 황갈색 몸·크림 꼬리 끝·빨간 망토·솔방울 마이크다.
 
 ## 공통 제작 규칙
 
@@ -9,7 +9,7 @@
 - 공룡 주둥이·고양이 줄무늬 꼬리·펭귄 둥근 몸·여우 큰 꼬리·유령 물결 밑단·오리 부리를 유지한다.
 - 눈썹·눈·입뿐 아니라 몸 기울기, 귀·꼬리, 소품을 잡는 힘으로 감정을 표현한다. 모든 캐릭터를 같은 웃는 얼굴로 만들지 않는다.
 - 생성 선택보드는 검토용 콘셉트다. 연속 프레임·투명 PNG·정확한 도트 격자를 충족한 제작 완료 자산이 아니다.
-- 64×64 셀은 여전히 후보이며 B와 확정 전이다. 발 기준선과 여백, 프레임 수·속도를 실제 러너에서 검증한 후 확정한다. 점프의 화면 이동과 그림 속 여백을 중복 적용하지 않는다.
+- 프레임 크기·발 기준선·필수 동작 수는 B가 확정한 `SPRITE_SPEC.md`를 따른다. 기존 64×64 후보는 사용하지 않는다. 점프의 화면 이동과 그림 속 여백을 중복 적용하지 않는다.
 
 ## 일곱 가지 대표 동작
 
@@ -29,3 +29,6 @@
 현재 최신 생성 이미지 원본은 저장소 로컬 파일로 확보되지 않아 이 커밋에는 포함하지 않는다. portraitPath/spritePath=null 및 assetStatus=planned를 유지한다. 보드를 PNG로 확보하면 검토용 경로에 넣고, 잘라낸 게임용 프레임은 별도 검증 후 연결한다.
 
 감정 표현 참고: https://www.animationmentor.com/blog/tutorial-animating-emotion-through-body-language/ — 자세·실루엣·움직임의 리듬을 얼굴과 함께 사용한다. 위 동작과 이야기는 프로젝트 캐릭터에 맞춘 창작 설계다.
+
+## Current delivery status (2026-11-10)
+This supersedes earlier planned/pending status above: 72 approved-design PNGs are imported and pixel-validated. All six JSON entries are sprite_ready with sprite_<id> prefixes. Selection/profile display idle_0. Runtime animation and device visual verification remain pending.

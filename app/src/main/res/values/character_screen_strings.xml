@@ -8,8 +8,8 @@
     <string name="characters_choose">친구 고르기</string>
     <string name="characters_select_title">오늘 함께할 친구</string>
     <string name="characters_select_hint">%1$d명 모두 선택할 수 있어요. 친구를 선택한 뒤 아래 시작 버튼을 눌러 주세요.</string>
-    <string name="characters_placeholder_notice">캐릭터 초상은 임시 픽셀 이미지예요.</string>
-    <string name="characters_placeholder_portrait">임시 픽셀 초상</string>
+    <string name="characters_placeholder_notice">여섯 친구의 픽셀 모습을 만나 보세요.</string>
+    <string name="characters_placeholder_portrait">픽셀 캐릭터</string>
     <string name="characters_name_and_species">%1$s · %2$s</string>
     <string name="characters_selected_name">%1$s · 선택됨</string>
     <string name="characters_home">사는 곳</string>

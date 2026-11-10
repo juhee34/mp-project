@@ -1,0 +1,1707 @@
+{
+  "frames": [
+    {
+      "character": "mint",
+      "pose": "greet_0",
+      "required": false,
+      "sourceBox": [
+        21,
+        48,
+        239,
+        269
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        14,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "idle_0",
+      "required": true,
+      "sourceBox": [
+        279,
+        48,
+        495,
+        269
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        14,
+        37,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "idle_1",
+      "required": true,
+      "sourceBox": [
+        536,
+        48,
+        751,
+        269
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        14,
+        37,
+        46
+      ],
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "run_0",
+      "required": true,
+      "sourceBox": [
+        781,
+        48,
+        1007,
+        267
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        5,
+        14,
+        38,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "run_1",
+      "required": true,
+      "sourceBox": [
+        21,
+        305,
+        239,
+        534
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        13,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "run_2",
+      "required": true,
+      "sourceBox": [
+        275,
+        305,
+        495,
+        527
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        14,
+        38,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "run_3",
+      "required": true,
+      "sourceBox": [
+        536,
+        305,
+        751,
+        524
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        14,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "jump_0",
+      "required": true,
+      "sourceBox": [
+        795,
+        298,
+        1005,
+        514
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        7,
+        15,
+        37,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "jump_1",
+      "required": true,
+      "sourceBox": [
+        22,
+        560,
+        239,
+        779
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        14,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "land_0",
+      "required": false,
+      "sourceBox": [
+        276,
+        564,
+        495,
+        785
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        14,
+        38,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "fail_0",
+      "required": true,
+      "sourceBox": [
+        532,
+        564,
+        750,
+        785
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        14,
+        38,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "mint",
+      "pose": "home_0",
+      "required": false,
+      "sourceBox": [
+        792,
+        566,
+        1005,
+        785
+      ],
+      "scale": 0.14479638009049775,
+      "bbox": [
+        6,
+        14,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "greet_0",
+      "required": false,
+      "sourceBox": [
+        31,
+        833,
+        226,
+        1013
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        3,
+        14,
+        38,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "idle_0",
+      "required": true,
+      "sourceBox": [
+        287,
+        833,
+        477,
+        1013
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        4,
+        14,
+        38,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "idle_1",
+      "required": true,
+      "sourceBox": [
+        543,
+        833,
+        734,
+        1013
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        4,
+        14,
+        38,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "run_0",
+      "required": true,
+      "sourceBox": [
+        799,
+        833,
+        990,
+        1010
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        4,
+        15,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "run_1",
+      "required": true,
+      "sourceBox": [
+        31,
+        1059,
+        222,
+        1242
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        4,
+        13,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "run_2",
+      "required": true,
+      "sourceBox": [
+        286,
+        1059,
+        477,
+        1234
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        4,
+        15,
+        38,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "run_3",
+      "required": true,
+      "sourceBox": [
+        543,
+        1059,
+        734,
+        1244
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        4,
+        13,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "jump_0",
+      "required": true,
+      "sourceBox": [
+        800,
+        1052,
+        991,
+        1221
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        4,
+        16,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "jump_1",
+      "required": true,
+      "sourceBox": [
+        31,
+        1299,
+        222,
+        1466
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        4,
+        16,
+        38,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "land_0",
+      "required": false,
+      "sourceBox": [
+        284,
+        1301,
+        488,
+        1479
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        2,
+        14,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "fail_0",
+      "required": true,
+      "sourceBox": [
+        539,
+        1299,
+        731,
+        1479
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        4,
+        14,
+        38,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "cheese",
+      "pose": "home_0",
+      "required": false,
+      "sourceBox": [
+        793,
+        1300,
+        996,
+        1488
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        2,
+        13,
+        38,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "greet_0",
+      "required": false,
+      "sourceBox": [
+        35,
+        49,
+        222,
+        246
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        8,
+        14,
+        38,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "idle_0",
+      "required": true,
+      "sourceBox": [
+        292,
+        49,
+        459,
+        246
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        9,
+        14,
+        36,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "idle_1",
+      "required": true,
+      "sourceBox": [
+        543,
+        49,
+        717,
+        246
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        9,
+        14,
+        37,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "run_0",
+      "required": true,
+      "sourceBox": [
+        783,
+        49,
+        973,
+        244
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        7,
+        14,
+        38,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "run_1",
+      "required": true,
+      "sourceBox": [
+        23,
+        306,
+        205,
+        498
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        8,
+        15,
+        38,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "run_2",
+      "required": true,
+      "sourceBox": [
+        271,
+        306,
+        462,
+        502
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        7,
+        14,
+        38,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "run_3",
+      "required": true,
+      "sourceBox": [
+        522,
+        306,
+        718,
+        500
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        6,
+        14,
+        38,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "jump_0",
+      "required": true,
+      "sourceBox": [
+        787,
+        297,
+        972,
+        492
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        8,
+        14,
+        38,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "jump_1",
+      "required": true,
+      "sourceBox": [
+        25,
+        562,
+        206,
+        748
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        8,
+        16,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "land_0",
+      "required": false,
+      "sourceBox": [
+        271,
+        562,
+        459,
+        756
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        7,
+        14,
+        38,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "fail_0",
+      "required": true,
+      "sourceBox": [
+        532,
+        562,
+        712,
+        756
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        8,
+        14,
+        37,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "popo",
+      "pose": "home_0",
+      "required": false,
+      "sourceBox": [
+        797,
+        562,
+        973,
+        755
+      ],
+      "scale": 0.16243654822335024,
+      "bbox": [
+        8,
+        15,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "greet_0",
+      "required": false,
+      "sourceBox": [
+        14,
+        807,
+        224,
+        1003
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        4,
+        14,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "idle_0",
+      "required": true,
+      "sourceBox": [
+        270,
+        809,
+        474,
+        1005
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        4,
+        14,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "idle_1",
+      "required": true,
+      "sourceBox": [
+        527,
+        810,
+        728,
+        1005
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        4,
+        14,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "run_0",
+      "required": true,
+      "sourceBox": [
+        784,
+        809,
+        995,
+        1005
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        4,
+        14,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "run_1",
+      "required": true,
+      "sourceBox": [
+        17,
+        1062,
+        225,
+        1257
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        4,
+        14,
+        38,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "run_2",
+      "required": true,
+      "sourceBox": [
+        270,
+        1062,
+        475,
+        1256
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        4,
+        14,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "run_3",
+      "required": true,
+      "sourceBox": [
+        520,
+        1062,
+        737,
+        1249
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        3,
+        15,
+        38,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "jump_0",
+      "required": true,
+      "sourceBox": [
+        778,
+        1054,
+        991,
+        1242
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        3,
+        15,
+        38,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "jump_1",
+      "required": true,
+      "sourceBox": [
+        14,
+        1316,
+        222,
+        1503
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        4,
+        15,
+        38,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "land_0",
+      "required": false,
+      "sourceBox": [
+        263,
+        1332,
+        467,
+        1511
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        4,
+        17,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "fail_0",
+      "required": true,
+      "sourceBox": [
+        524,
+        1334,
+        719,
+        1511
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        5,
+        17,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "lumi",
+      "pose": "home_0",
+      "required": false,
+      "sourceBox": [
+        775,
+        1320,
+        981,
+        1511
+      ],
+      "scale": 0.16326530612244897,
+      "bbox": [
+        4,
+        15,
+        38,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "greet_0",
+      "required": false,
+      "sourceBox": [
+        33,
+        46,
+        211,
+        227
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        7,
+        14,
+        39,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "idle_0",
+      "required": true,
+      "sourceBox": [
+        291,
+        47,
+        467,
+        227
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        8,
+        14,
+        39,
+        46
+      ],
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "idle_1",
+      "required": true,
+      "sourceBox": [
+        544,
+        46,
+        723,
+        227
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        7,
+        14,
+        39,
+        46
+      ],
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "run_0",
+      "required": true,
+      "sourceBox": [
+        785,
+        47,
+        986,
+        227
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        5,
+        14,
+        41,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "run_1",
+      "required": true,
+      "sourceBox": [
+        19,
+        302,
+        219,
+        481
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        5,
+        14,
+        41,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "run_2",
+      "required": true,
+      "sourceBox": [
+        282,
+        302,
+        473,
+        479
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        6,
+        15,
+        40,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "run_3",
+      "required": true,
+      "sourceBox": [
+        528,
+        302,
+        733,
+        481
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        5,
+        14,
+        41,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "jump_0",
+      "required": true,
+      "sourceBox": [
+        793,
+        294,
+        988,
+        467
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        6,
+        15,
+        41,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "jump_1",
+      "required": true,
+      "sourceBox": [
+        24,
+        551,
+        220,
+        732
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        6,
+        14,
+        41,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "land_0",
+      "required": false,
+      "sourceBox": [
+        294,
+        571,
+        471,
+        738
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        8,
+        16,
+        39,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "fail_0",
+      "required": true,
+      "sourceBox": [
+        539,
+        563,
+        732,
+        740
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        6,
+        15,
+        40,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "nunu",
+      "pose": "home_0",
+      "required": false,
+      "sourceBox": [
+        804,
+        557,
+        982,
+        738
+      ],
+      "scale": 0.17777777777777778,
+      "bbox": [
+        7,
+        14,
+        39,
+        46
+      ],
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "greet_0",
+      "required": false,
+      "sourceBox": [
+        22,
+        794,
+        212,
+        1000
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        8,
+        14,
+        37,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "idle_0",
+      "required": true,
+      "sourceBox": [
+        282,
+        794,
+        463,
+        1001
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        14,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "idle_1",
+      "required": true,
+      "sourceBox": [
+        538,
+        794,
+        717,
+        1000
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        14,
+        37,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "run_0",
+      "required": true,
+      "sourceBox": [
+        796,
+        793,
+        972,
+        999
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        14,
+        36,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "run_1",
+      "required": true,
+      "sourceBox": [
+        29,
+        1050,
+        204,
+        1255
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        14,
+        36,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "run_2",
+      "required": true,
+      "sourceBox": [
+        285,
+        1050,
+        462,
+        1253
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        15,
+        36,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "run_3",
+      "required": true,
+      "sourceBox": [
+        541,
+        1050,
+        717,
+        1253
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        15,
+        36,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "jump_0",
+      "required": true,
+      "sourceBox": [
+        794,
+        1046,
+        976,
+        1243
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        16,
+        37,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "jump_1",
+      "required": true,
+      "sourceBox": [
+        23,
+        1308,
+        200,
+        1509
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        15,
+        36,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "land_0",
+      "required": false,
+      "sourceBox": [
+        277,
+        1323,
+        459,
+        1509
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        17,
+        37,
+        46
+      ],
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "fail_0",
+      "required": true,
+      "sourceBox": [
+        528,
+        1323,
+        705,
+        1509
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        9,
+        17,
+        36,
+        46
+      ],
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "character": "piko",
+      "pose": "home_0",
+      "required": false,
+      "sourceBox": [
+        776,
+        1328,
+        999,
+        1509
+      ],
+      "scale": 0.15458937198067632,
+      "bbox": [
+        6,
+        18,
+        40,
+        46
+      ],
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "file": "청키 픽셀 라일과 치즈 24포즈 시트(1).png",
+      "sha256": "409108a2d15a6178b3e395ce55422efdfc68a32e4aa41bb4cd1d73a94253697f",
+      "size": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "file": "포포와 루미의 24포즈 픽셀 시트(2).png",
+      "sha256": "33677ef3ba2b95ce4a628f9a6554636da7971ae99d1457beb909401641b0c1d7",
+      "size": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "file": "누누와 피코의 24포즈 픽셀 시트(1).png",
+      "sha256": "6b456986bd1b5511e886cda8d682214ba59b98dfdc46427493509e7e97ca88ae",
+      "size": [
+        1024,
+        1536
+      ]
+    }
+  ],
+  "notes": [
+    "Source expressions and poses retained. Detached motion marks excluded from gameplay silhouettes.",
+    "Uniform scale within each character; y45 bottom alignment includes jumps.",
+    "Optional greet/home contain one frame only; they are not complete two-frame animations.",
+    "App integration and collision-body alignment require engine review."
+  ],
+  "validation": {
+    "characters": 6,
+    "required_frames": 54,
+    "optional_single_pose_frames": 18,
+    "total_frames": 72,
+    "size": "48x48 RGBA",
+    "alpha": "0 or 255",
+    "bottom_pixel_y": 45,
+    "empty_rows": [
+      46,
+      47
+    ],
+    "palette": "16 colors or fewer per character",
+    "runtime_tested": false
+  }
+}

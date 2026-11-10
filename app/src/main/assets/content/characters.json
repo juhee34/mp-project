@@ -8,13 +8,13 @@
     "summary": "길을 완벽하게 그리려던 라일는 밤새 움직이는 고사리 때문에 지도를 여러 번 고친다. 친구들은 길 대신 냄새와 바람 소리를 그려 넣는다. 지도는 정확해지지 않지만 함께 기억하는 장소가 늘어난다.",
     "color": "#B6A0D8",
     "portraitPath": null,
-    "spritePath": null,
+    "spritePath": "sprite_mint",
     "backgroundId": "mint",
     "musicId": "mint",
     "storyIds": [
       "mint_intro"
     ],
-    "assetStatus": "planned",
+    "assetStatus": "sprite_ready",
     "habits": [
       "아침마다 문 앞 고사리의 방향을 지도에 표시한다.",
       "처음 맡은 풀 냄새는 이름 대신 작은 그림으로 기록한다."
@@ -41,13 +41,13 @@
     "summary": "치즈는 햇볕을 통에 담아 누누에게 가져가지만 뚜껑을 열면 아무것도 없다. 여러 장치를 써도 빛은 남지 않는다. 누누는 통을 버리지 않고 치즈가 방문할 때마다 나는 소리를 모으는 장난감으로 쓴다. 치즈는 다음에는 빈손으로 찾아온다.",
     "color": "#E4A65F",
     "portraitPath": null,
-    "spritePath": null,
+    "spritePath": "sprite_cheese",
     "backgroundId": "cheese",
     "musicId": "cheese",
     "storyIds": [
       "cheese_intro"
     ],
-    "assetStatus": "planned",
+    "assetStatus": "sprite_ready",
     "habits": [
       "햇살이 옮겨 갈 때마다 창가의 방석을 조금씩 밀어 둔다.",
       "선물 포장을 여러 번 고르고는 우연히 가져온 것처럼 건넨다."
@@ -74,13 +74,13 @@
     "summary": "포포는 여름을 뜨겁고 시끄러운 계절이라고 상상한다. 여행에서 만난 친구들은 전부 다른 여름을 이야기한다. 하나의 정확한 여름 대신 서로 다른 소리를 담아 돌아와 눈밭에 작은 듣는 자리를 만든다. 포포의 집은 여전히 차갑고, 조금 더 풍부해진다.",
     "color": "#7295B0",
     "portraitPath": null,
-    "spritePath": null,
+    "spritePath": "sprite_popo",
     "backgroundId": "popo",
     "musicId": "popo",
     "storyIds": [
       "popo_intro"
     ],
-    "assetStatus": "planned",
+    "assetStatus": "sprite_ready",
     "habits": [
       "조개 상자를 열기 전에 주변 소리를 잠깐 듣는다.",
       "처음 간 곳에서도 집으로 돌아오는 방향을 먼저 살핀다."
@@ -107,13 +107,13 @@
     "summary": "루미가 소리를 더 크게 낼수록 숲은 조용해진다. 메아리를 찾는 길에서 포포가 아무 말 없이 함께 걷는다. 둘이 잠깐 멈추자 나뭇잎과 숨소리가 들린다. 공연에는 웃기는 이야기뿐 아니라 아무 소리도 내지 않는 한 장면이 생긴다.",
     "color": "#D29359",
     "portraitPath": null,
-    "spritePath": null,
+    "spritePath": "sprite_lumi",
     "backgroundId": "lumi",
     "musicId": "lumi",
     "storyIds": [
       "lumi_intro"
     ],
-    "assetStatus": "planned",
+    "assetStatus": "sprite_ready",
     "habits": [
       "나무 그루터기에 올라 짧은 인사를 연습한다.",
       "새 농담이 떠오르면 꼬리로 박자를 세다가 혼자 웃는다."
@@ -140,13 +140,13 @@
     "summary": "발자국을 남기려 여러 물건을 들고 뛰지만 누누의 자국은 금방 사라진다. 치즈가 웃음소리를 흉내 내고 라일가 누누가 자주 머물던 자리를 비워 두면서, 누누는 흔적의 다른 모습을 발견한다. 보이지 않는 장난은 여전히 즐기고, 필요할 때는 리본을 흔들어 위치를 알린다.",
     "color": "#C9C5E2",
     "portraitPath": null,
-    "spritePath": null,
+    "spritePath": "sprite_nunu",
     "backgroundId": "nunu",
     "musicId": "nunu",
     "storyIds": [
       "nunu_intro"
     ],
-    "assetStatus": "planned",
+    "assetStatus": "sprite_ready",
     "habits": [
       "책장 뒤에 숨었다가 웃음소리 때문에 먼저 들킨다.",
       "읽던 자리에 반투명 책갈피를 놓고 리본이 잘 보이는지 확인한다."
@@ -173,13 +173,13 @@
     "summary": "피코는 가장 빠른 물길을 만들지만 배가 모퉁이를 너무 빨리 돌아 아무도 풍경을 보지 못한다. 친구들의 작은 정박지를 하나씩 잇자 길은 더 길어지고 여행은 더 즐거워진다. 피코는 신나게 앞서가다가도 다음 모퉁이에 자기 배를 묶어 두고 기다린다.",
     "color": "#E7CA69",
     "portraitPath": null,
-    "spritePath": null,
+    "spritePath": "sprite_piko",
     "backgroundId": "piko",
     "musicId": "piko",
     "storyIds": [
       "piko_intro"
     ],
-    "assetStatus": "planned",
+    "assetStatus": "sprite_ready",
     "habits": [
       "빗방울이 떨어지면 장화로 물웅덩이의 깊이를 가늠한다.",
       "종이배마다 다른 접는 방법을 시험하고 모퉁이에 잠깐 묶어 둔다."

@@ -2,6 +2,8 @@ package com.tinyrunners.school.characters
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
@@ -188,7 +190,24 @@ internal class CharacterScreens(
         importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
     }
 
-    private fun portraitArtwork(friend: CharacterDefinition): Drawable = CharacterPortrait(friend.color)
+    private fun portraitArtwork(friend: CharacterDefinition): Drawable {
+        val resource = when (friend.id) {
+            "mint" -> R.drawable.sprite_mint_idle_0
+            "cheese" -> R.drawable.sprite_cheese_idle_0
+            "popo" -> R.drawable.sprite_popo_idle_0
+            "lumi" -> R.drawable.sprite_lumi_idle_0
+            "nunu" -> R.drawable.sprite_nunu_idle_0
+            "piko" -> R.drawable.sprite_piko_idle_0
+            else -> return CharacterPortrait(friend.color)
+        }
+        val bitmap = BitmapFactory.decodeResource(context.resources, resource,
+            BitmapFactory.Options().apply { inScaled = false })
+            ?: return CharacterPortrait(friend.color)
+        return BitmapDrawable(context.resources, bitmap).apply {
+            isFilterBitmap = false
+            setAntiAlias(false)
+        }
+    }
 
     private fun LinearLayout.detail(title: Int, value: String, top: Int = 0) {
         label(context.getString(title), 15f, LEAF, top, bold = true, heading = true)
