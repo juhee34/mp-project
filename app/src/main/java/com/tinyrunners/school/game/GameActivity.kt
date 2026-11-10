@@ -3,44 +3,57 @@ package com.tinyrunners.school.game
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.os.Build
+import android.os.Bundle
 import android.view.WindowInsets
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.FrameLayout
 import com.tinyrunners.school.data.CharacterRepository
+import com.tinyrunners.school.progress.RunResult
+import com.tinyrunners.school.result.ResultActivity
+import com.tinyrunners.school.weather.WeatherClient
+import com.tinyrunners.school.weather.WeatherSettings
+import java.util.UUID
 
-/** B's game entry point. Replace the pending body with the runner; keep the ID contract. */
+/** Game entry point. Receives a validated character ID and runs the shared runner. */
 class GameActivity : Activity() {
+    private var runnerView: RunnerView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val characterId = intent.getStringExtra(EXTRA_CHARACTER_ID)
         val character = CharacterRepository(this).find(characterId.orEmpty())
         if (character == null) { finish(); return }
-        val body = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            val padding = (24 * resources.displayMetrics.density).toInt()
-            setPadding(padding, padding, padding, padding)
-            addView(TextView(this@GameActivity).apply {
-                text = "${character.name}와 달리기\n게임 진입 ID: ${character.id}\n\n러닝 엔진 연결 준비 중\n선택한 친구의 ID는 전달되었습니다. 실제 달리기는 B의 엔진 연결 후 가능합니다."
-                textSize = 20f
-            })
-            addView(Button(this@GameActivity).apply {
-                text = "친구 선택으로 돌아가기"
-                setOnClickListener { finish() }
-            })
+
+        // Physics never depends on the character; only the drawing does.
+        val engine = RunnerEngine(seed = System.nanoTime())
+        val view = RunnerView(this, character, engine)
+        runnerView = view
+        // One ID per run; the result screen saves with it, so a recreated result screen cannot double count.
+        val runId = UUID.randomUUID().toString()
+        view.onRunOver = {
+            view.postDelayed({
+                if (!isFinishing) {
+                    startActivity(ResultActivity.intent(this,
+                        RunResult(runId, character.id, engine.meters, engine.score, engine.cleared)))
+                    finish()
+                }
+            }, RESULT_DELAY_MS)
         }
-        setContentView(ScrollView(this).apply {
-            addView(body)
-            setOnApplyWindowInsetsListener { view, insets ->
+        val weatherSettings = WeatherSettings(this)
+        if (weatherSettings.enabled) {
+            WeatherClient.fetch(weatherSettings.city) { result ->
+                if (!isDestroyed) result.onSuccess { view.weather = it }
+            }
+        }
+        setContentView(FrameLayout(this).apply {
+            addView(view, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            setOnApplyWindowInsetsListener { v, insets ->
                 if (Build.VERSION.SDK_INT >= 30) {
                     val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
-                    view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+                    v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
                 } else {
                     @Suppress("DEPRECATION")
-                    view.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop,
+                    v.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop,
                         insets.systemWindowInsetRight, insets.systemWindowInsetBottom)
                 }
                 insets
@@ -48,8 +61,21 @@ class GameActivity : Activity() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        runnerView?.startLoop()
+    }
+
+    override fun onPause() {
+        // Leaving the app or a dialog on top always pauses; the player resumes with a tap.
+        runnerView?.engine?.pause()
+        runnerView?.stopLoop()
+        super.onPause()
+    }
+
     companion object {
         const val EXTRA_CHARACTER_ID = "characterId"
+        private const val RESULT_DELAY_MS = 900L
         fun intent(context: Context, characterId: String) =
             Intent(context, GameActivity::class.java).putExtra(EXTRA_CHARACTER_ID, characterId)
     }

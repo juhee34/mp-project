@@ -1,2 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/screen_host" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#FAF6EC" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAF6EC"
+    android:orientation="vertical">
+
+    <!-- B-owned menu: records and settings stay one tap away from every character screen. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="4dp">
+
+        <Button
+            android:id="@+id/menu_records"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/menu_records"
+            android:textAllCaps="false"
+            android:textColor="#305341" />
+
+        <Button
+            android:id="@+id/menu_settings"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/menu_settings"
+            android:textAllCaps="false"
+            android:textColor="#305341" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/screen_host"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>

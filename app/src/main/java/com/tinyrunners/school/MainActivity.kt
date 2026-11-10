@@ -1,9 +1,16 @@
 package com.tinyrunners.school
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.WindowInsets
+import com.tinyrunners.school.auth.AuthService
+import com.tinyrunners.school.auth.LoginActivity
+import com.tinyrunners.school.records.RecordsActivity
+import com.tinyrunners.school.settings.SettingsActivity
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.tinyrunners.school.game.GameActivity
@@ -15,9 +22,17 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Login gate: the launcher stays MainActivity so the existing screen flow is unchanged.
+        if (!AuthService.hasSession(this)) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
         setContentView(R.layout.activity_main)
+        findViewById<View>(R.id.menu_records).setOnClickListener { startActivity(Intent(this, RecordsActivity::class.java)) }
+        findViewById<View>(R.id.menu_settings).setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
         val host = findViewById<FrameLayout>(R.id.screen_host)
-        host.setOnApplyWindowInsetsListener { view, insets ->
+        findViewById<View>(R.id.main_root).setOnApplyWindowInsetsListener { view, insets ->
             if (Build.VERSION.SDK_INT >= 30) {
                 val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
                 view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
@@ -41,6 +56,20 @@ class MainActivity : Activity() {
         characterScreens = CharacterScreens(host, repository, ::onStartRun).also {
             it.restore(savedInstanceState)
         }
+        openRequestedSelection()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        openRequestedSelection()
+    }
+
+    private fun openRequestedSelection() {
+        if (intent.getBooleanExtra(EXTRA_SHOW_SELECTION, false)) {
+            intent.removeExtra(EXTRA_SHOW_SELECTION)
+            characterScreens?.showSelection()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -55,5 +84,13 @@ class MainActivity : Activity() {
     @Deprecated("Uses the Activity back callback for the character screen stack.")
     override fun onBackPressed() {
         if (characterScreens?.goBack() != true) super.onBackPressed()
+    }
+
+    companion object {
+        private const val EXTRA_SHOW_SELECTION = "showCharacterSelection"
+
+        fun selectionIntent(context: Context) = Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            .putExtra(EXTRA_SHOW_SELECTION, true)
     }
 }

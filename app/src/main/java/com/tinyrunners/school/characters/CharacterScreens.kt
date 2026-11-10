@@ -84,7 +84,7 @@ internal class CharacterScreens(
         body.action(R.string.characters_choose, primary = true) { showSelection() }
     }
 
-    private fun showSelection() {
+    fun showSelection() {
         if (repository.find(selectedId.orEmpty()) == null) selectedId = repository.characters.first().id
         val body = screen(Route.SELECT)
         body.label(context.getString(R.string.characters_select_title), 28f, top = 8, bold = true, heading = true)

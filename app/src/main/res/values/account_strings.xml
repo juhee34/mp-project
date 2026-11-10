@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_back">돌아가기</string>
+    <string name="menu_records">내 기록</string>
+    <string name="menu_settings">설정</string>
+
+    <!-- Login / sign-up (Firebase Authentication) -->
+    <string name="login_title">다시 만나서 반가워요</string>
+    <string name="login_body">로그인하면 친구들과 달린 기록이 계정에 남아서 다른 기기에서도 이어져요.</string>
+    <string name="login_submit">로그인</string>
+    <string name="login_to_signup">처음이라면 회원가입</string>
+    <string name="signup_title">함께 달릴 준비</string>
+    <string name="signup_body">닉네임과 이메일, 비밀번호(%1$d자 이상)를 정해 주세요.</string>
+    <string name="signup_submit">가입하고 시작하기</string>
+    <string name="auth_name">닉네임 (최대 %1$d자)</string>
+    <string name="auth_email">이메일</string>
+    <string name="auth_password">비밀번호</string>
+    <string name="auth_password_confirm">비밀번호 확인</string>
+    <string name="auth_working">잠시만요…</string>
+    <string name="auth_not_configured">Firebase 설정 파일(google-services.json)이 아직 없어 로그인할 수 없어요.</string>
+    <string name="auth_guest_hint">개발용: 설정 전에는 이 기기에만 기록을 저장하는 임시 모드로 둘러볼 수 있어요.</string>
+    <string name="auth_guest">설정 전 임시로 둘러보기</string>
+    <string name="auth_error_email_format">이메일 형식을 확인해 주세요.</string>
+    <string name="auth_error_password_empty">비밀번호를 입력해 주세요.</string>
+    <string name="auth_error_password_mismatch">비밀번호 확인이 일치하지 않아요.</string>
+    <string name="auth_error_name_empty">닉네임을 입력해 주세요.</string>
+    <string name="auth_error_name_long">닉네임이 너무 길어요.</string>
+    <string name="auth_error_weak_password">비밀번호는 6자 이상이어야 해요.</string>
+    <string name="auth_error_email_in_use">이미 가입된 이메일이에요. 로그인해 주세요.</string>
+    <string name="auth_error_wrong_login">이메일 또는 비밀번호가 맞지 않아요.</string>
+    <string name="auth_error_network">인터넷 연결을 확인한 뒤 다시 시도해 주세요.</string>
+    <string name="auth_error_unknown">잠시 문제가 생겼어요. 다시 시도해 주세요.</string>
+
+    <!-- Result -->
+    <string name="result_eyebrow">오늘의 달리기</string>
+    <string name="result_title">%1$s · 함께 %2$dm</string>
+    <string name="result_score">점수 %1$d</string>
+    <string name="result_cleared">넘은 장애물 %1$d개</string>
+    <string name="result_saving">기록을 저장하는 중…</string>
+    <string name="result_new_best">새 최고 점수예요!</string>
+    <string name="result_progress">%1$s · 지금까지 %2$d번, 모두 %3$dm 함께 달렸어요. 최고 점수 %4$d</string>
+    <string name="result_save_failed">기록을 저장하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
+    <string name="result_again">한 번 더 달리기</string>
+    <string name="result_records">내 기록 보기</string>
+    <string name="result_choose_friend">친구 선택으로</string>
+
+    <!-- Records -->
+    <string name="records_eyebrow">함께 달린 기록</string>
+    <string name="records_title">내 기록</string>
+    <string name="records_where_cloud">계정(Firebase)에 저장된 기록이에요.</string>
+    <string name="records_where_device">이 기기에만 저장된 기록이에요.</string>
+    <string name="records_loading">기록을 불러오는 중…</string>
+    <string name="records_total">모두 %1$d번, %2$dm를 함께 달렸어요.</string>
+    <string name="records_none">아직 함께 달리지 않았어요. 언제든 함께할 수 있어요.</string>
+    <string name="records_line_runs">%1$d번 · 누적 %2$dm</string>
+    <string name="records_line_best">최고 %1$dm · 최고 점수 %2$d</string>
+    <string name="records_load_failed">기록을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">설정</string>
+    <string name="settings_account">계정</string>
+    <string name="settings_guest">임시 모드 (이 기기에만 저장)</string>
+    <string name="settings_no_name">닉네임 없음</string>
+    <string name="settings_weather">오늘의 하늘</string>
+    <string name="settings_weather_hint">고른 도시의 실제 날씨에 따라 달리기 하늘에 비나 눈이 내려요. 게임 규칙은 그대로예요.</string>
+    <string name="settings_weather_toggle">날씨 효과 켜기</string>
+    <string name="settings_weather_off">날씨 효과를 껐어요.</string>
+    <string name="settings_weather_loading">날씨를 불러오는 중…</string>
+    <string name="settings_weather_failed">날씨를 불러오지 못했어요. 기본 하늘로 달려요.</string>
+    <string name="settings_weather_source">날씨 정보: Open-Meteo.com (CC BY 4.0)</string>
+    <string name="settings_sign_out">로그아웃</string>
+
+    <!-- Weather -->
+    <string name="weather_hud">%1$s · %2$s %3$.0f°C</string>
+    <string name="city_seoul">서울</string>
+    <string name="city_incheon">인천</string>
+    <string name="city_daejeon">대전</string>
+    <string name="city_daegu">대구</string>
+    <string name="city_gwangju">광주</string>
+    <string name="city_busan">부산</string>
+    <string name="city_jeju">제주</string>
+    <string name="sky_clear">맑음</string>
+    <string name="sky_cloudy">흐림</string>
+    <string name="sky_fog">안개</string>
+    <string name="sky_rain">비</string>
+    <string name="sky_snow">눈</string>
+    <string name="sky_storm">뇌우</string>
+</resources>
