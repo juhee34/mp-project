@@ -23,6 +23,7 @@ import android.widget.TextView
 import com.tinyrunners.school.R
 import com.tinyrunners.school.data.CharacterDefinition
 import com.tinyrunners.school.data.CharacterRepository
+import com.tinyrunners.school.game.GameActivity
 import com.tinyrunners.school.stories.StoryActivity
 import kotlin.math.roundToInt
 
@@ -133,6 +134,11 @@ internal class CharacterScreens(
             body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context, friend.id)) }
         }
         body.action(R.string.characters_back_intro) { showIntro() }
+        // Demo button: always opens the game guide first, with the chosen friend (라일 if none is chosen yet).
+        body.action(R.string.characters_tutorial) {
+            val friendId = selectedId?.takeIf { repository.find(it) != null } ?: repository.characters.first().id
+            context.startActivity(GameActivity.intent(context, friendId).putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
+        }
         restoreScroll(selectionScroll)
     }
 

@@ -19,6 +19,7 @@
     <string name="characters_run_pending">달리기 화면은 연결 준비 중이에요.</string>
     <string name="characters_load_error">캐릭터 정보를 읽을 수 없어요.</string>
     <string name="characters_back_intro">소개로 돌아가기</string>
+    <string name="characters_tutorial">튜토리얼하기</string>
     <string name="characters_back_selection">다른 친구 고르기</string>
     <string name="characters_profile">이 친구 이야기 보기</string>
 </resources>

@@ -49,7 +49,7 @@ class GameActivity : Activity() {
         val onboarding = OnboardingStore(this)
         setContentView(FrameLayout(this).apply {
             addView(view, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            if (onboarding.shouldShowGameGuide) {
+            if (onboarding.shouldShowGameGuide || intent.getBooleanExtra(EXTRA_SHOW_GUIDE, false)) {
                 // The guide sits on top and absorbs taps; the run only starts with a tap after it closes.
                 lateinit var guide: TutorialOverlay
                 guide = TutorialOverlay(this@GameActivity) {
@@ -88,6 +88,8 @@ class GameActivity : Activity() {
         const val EXTRA_CHARACTER_ID = "characterId"
         /** Set when a story started this run; the result screen then offers to continue the story. */
         const val EXTRA_STORY_ID = "storyId"
+        /** Set by the "튜토리얼하기" button: show the game guide even if this account has already seen it. */
+        const val EXTRA_SHOW_GUIDE = "showGuide"
         private const val RESULT_DELAY_MS = 900L
         fun intent(context: Context, characterId: String) =
             Intent(context, GameActivity::class.java).putExtra(EXTRA_CHARACTER_ID, characterId)
