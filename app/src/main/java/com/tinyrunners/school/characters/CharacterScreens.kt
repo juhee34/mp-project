@@ -23,6 +23,7 @@ import android.widget.TextView
 import com.tinyrunners.school.R
 import com.tinyrunners.school.data.CharacterDefinition
 import com.tinyrunners.school.data.CharacterRepository
+import com.tinyrunners.school.stories.StoryActivity
 import kotlin.math.roundToInt
 
 internal class CharacterScreens(
@@ -84,6 +85,7 @@ internal class CharacterScreens(
         }
         body.label(context.getString(R.string.characters_placeholder_notice), 14f, MUTED, 8)
         body.action(R.string.characters_choose, primary = true) { showSelection() }
+        body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context)) }
     }
 
     fun showSelection() {
@@ -128,6 +130,7 @@ internal class CharacterScreens(
             body.label(context.getString(R.string.characters_selected_name, friend.name), 18f, top = 16, bold = true)
             body.action(R.string.characters_run, primary = true) { onStartRun(friend.id) }
             body.action(R.string.characters_profile) { selectionScroll = scroll.scrollY; showProfile(friend.id) }
+            body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context, friend.id)) }
         }
         body.action(R.string.characters_back_intro) { showIntro() }
         restoreScroll(selectionScroll)
@@ -157,6 +160,7 @@ internal class CharacterScreens(
         body.addView(details, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(14) })
 
         body.action(R.string.characters_run, primary = true) { onStartRun(friend.id) }
+        body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context, friend.id)) }
         body.action(R.string.characters_back_selection) { showSelection() }
         restoreScroll(scrollY)
     }

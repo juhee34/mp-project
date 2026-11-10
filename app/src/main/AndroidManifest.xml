@@ -8,6 +8,7 @@
         <activity android:name=".auth.SignupActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".result.ResultActivity" android:exported="false" />
         <activity android:name=".records.RecordsActivity" android:exported="false" />
+        <activity android:name=".stories.StoryActivity" android:exported="false" />
         <activity android:name=".settings.SettingsActivity" android:exported="false" />
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>

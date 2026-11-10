@@ -11,8 +11,16 @@ storyIds는 stories.json에 존재하는 ID만 참조한다. assetStatus=planned
 현재 Kotlin 모델은 시작 화면에 필요한 필드만 읽는다. 게임 구현 시 추가 필드를 명시적으로 파싱한다.
 
 ## 이야기
-id, characterId, title, body, status, unlockDistance.
-현재 status=outline은 서사 개요이며 완성 에피소드가 아니다. 첫 소개 unlockDistance=0.
+2026-11-10 도감 구현 기준. `stories.json`은 6명 × 4편 = 24개다.
+
+- 기존 `<characterId>_intro` 유지. 추가 ID는 `<characterId>_episode_1`, `_episode_2`, `_episode_3`.
+- `id`, `characterId`, `title`, `body`, `status`, `unlockDistance` 유지. `kind`(background/episode), `order`(0~3), `summary`, `afterReading`, `pages` 추가.
+- 소개와 첫 에피소드는 `status=ready`(12개). 2·3편은 `status=outline`(12개)이며 `body`는 제작용 개요다. 도감에서는 개요 본문을 표시하지 않는다.
+- ready의 `pages`는 `{title, blocks:[{speaker:null 또는 캐릭터 표시 이름, text}]}` 배열이다. `body`는 페이지 블록을 순서대로 합친 전체 본문이다. outline은 `pages=[]`.
+- 소개는 `unlockDistance=0`, 첫 에피소드는 해당 캐릭터의 `totalMeters >= 100`으로 열린다. 한 판 최고 거리와 혼동하지 않는다. 실패한 판의 누적 거리도 유효하다.
+- 잠긴 첫 에피소드에도 사용자가 선택하는 ‘거리와 관계없이 감상하기’를 제공한다. 이 선택은 해당 이야기만 영구 개방하며 달리기 기록을 변경하지 않는다.
+- outline은 거리·읽음 기록보다 우선하여 항상 준비 중이다. 거리 조건으로 개요를 열지 않는다.
+- 생성: `python scripts/build-story-content.py`. 검증: `node scripts/validate-content.cjs`. 원문은 `docs/STORY_MANUSCRIPT_01~03.md`이며 JSON만 직접 수정하면 재생성 시 덮어써진다.
 
 ## 배경과 음악
 assets.json의 background/music에는 id, path, status, brief가 있다.
@@ -30,12 +38,21 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - RunResult(runId, characterId, meters, score, cleared). runId는 GameActivity가 판마다 UUID로 만든다.
 - CharacterProgress(characterId, runs, totalMeters, bestMeters, bestScore). 실패한 판도 runs·totalMeters에 더한다. 감소·만료 없음.
 - 같은 runId는 한 번만 반영한다. 로그인 사용자는 Firestore(`users/{uid}/runs/{runId}`, `users/{uid}/progress/{characterId}`) 트랜잭션, 임시 모드는 기기 SharedPreferences.
-- A의 도감은 `ProgressStore.forCurrentUser(context).loadAll { }`로 읽는다. readStoryIds는 아직 저장하지 않는다(도감 구현 때 필드 추가 합의).
+- A의 도감은 `ProgressStore.forCurrentUser(context).loadAll { }`로 거리만 읽는다. B의 진행 저장 스키마는 변경하지 않는다. 읽음 표시는 아래 별도 로컬 저장 계약을 따른다.
 - 상세 설정·보안 규칙: docs/FIREBASE_SETUP.md.
 
 ## 화면 계약
 (로그인/회원가입) → 소개 → 6명 선택 → game(characterId) → 결과(runId 저장) → 다시 달리기 / 내 기록 / 친구 선택. 소개·선택 화면 위 메뉴에서 내 기록·설정.
 정의되지 않은 ID는 선택 화면으로 복귀한다. 원시 JSON과 Activity 사이의 의존을 Repository로 제한한다.
+
+### 도감 화면·읽음 저장 (A, 2026-11-10)
+- 소개·친구 선택·프로필 → `StoryActivity`. `StoryParser`가 JSON을 모델로 변환한다. 선택/프로필 진입은 현재 캐릭터를 전달한다.
+- 도감 표시: 아직 읽지 않음 / 읽은 이야기·다시 읽기 / 아직 열리지 않음 / 후속편 준비 중. 6명 탭과 4개 카드 제공.
+- `StoryStore`의 계정별 기기 SharedPreferences(`story_reading_v1_user_<uid>` 또는 guest)에 읽은 ID, 열린 ID, 페이지 번호를 저장한다. Firestore와 다른 기기 동기화는 하지 않는다. UI에도 이 제한을 알린다.
+- 중간 종료는 읽던 페이지만 저장한다. 마지막 페이지의 ‘읽음으로 저장’을 선택해야 읽음이 된다. ‘다시 읽기’는 처음부터 시작하며 기존 읽음 표시는 유지한다.
+- 이미 열린 이야기는 거리 조회 실패로 다시 잠기지 않는다. 조회 실패 시 안내하고 수동 감상 진입은 계속 제공한다. 읽음 저장 실패 시 성공으로 표시하지 않는다.
+- ‘나중에 읽기’, ‘바로 달리기’를 고정 하단에 배치한다. 본문 스크롤·완독·도감 방문은 게임 진행 조건이 아니다. 미완성 개요는 감상 버튼이 없다.
+- 기기 삭제/앱 데이터 초기화 시 읽음·열림·책갈피는 사라진다. 계정 간 상태를 공유하지 않는다. 향후 서버 동기화는 B와 별도 합의한다.
 
 ## 기획 합의
 상세 필드 제안은 PROJECT_PLAN.md를 따른다. 기존 JSON 키 id는 유지하며 화면 전달값 characterId와 같은 식별값이다. 전체 키 변경은 B와 합의 후 진행한다.
