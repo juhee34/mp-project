@@ -1,0 +1,32 @@
+mp-project의 A팀 아트 납품 변경을 검토하고 Git에 커밋·푸시해줘. 이번 요청은 업로드이며 게임 연결 구현은 별도 B팀 작업이야.
+
+1. AGENTS.md, PROJECT_STATE.md, docs/art/OBSTACLE_HANDOFF.md를 읽고 git status와 git diff --cached를 먼저 확인해줘. 인계 당시에는 staged 변경이 있었으므로 현재 상태를 다시 확인하고, 무조건 git add . 하거나 인덱스를 reset하지 마. 다른 작업과 충돌하면 해당 항목을 남겨두고 정확히 보고해줘.
+
+2. 최종 장애물 자산은 docs/art/obstacles/png/의 18개 PNG야. 6명×3종, 48×80, anchor(24,78), 이진 알파. manifest.json에 파일명·그림 영역·해시가 있어. art_ready_for_integration이고 integrated=false야. 예전 obstacle-concepts 시트를 최종 PNG로 착각하지 마.
+
+3. 검증:
+   python scripts/validate-obstacle-art.py
+   node scripts/validate-content.cjs
+   git diff --check
+   실패하면 원인을 확인하고 아트/문서 범위에서 수정 후 다시 검사해줘. 게임 로직은 이번 업로드 작업에서 변경하지 마.
+
+4. 아래 대상의 실제 변경만 검토해 커밋에 포함해줘. 기존 staged 변경도 목록과 일치하는지 확인하고, PROJECT_STATE.md에 다른 팀 기록이 섞였으면 해당 부분을 임의로 덮어쓰거나 삭제하지 마.
+   - docs/art/obstacles/ 전체(정리 PNG, source, manifest, export.csv, 검수판)
+   - docs/art/OBSTACLE_HANDOFF.md
+   - docs/art/UPLOAD_OBSTACLE_PROMPT.txt
+   - scripts/ExportObstacleArt.cs
+   - scripts/validate-obstacle-art.py
+   - docs/art/obstacle-concepts/ 전체(콘셉트 기록 및 검수 문서)
+   - docs/art/review/obstacle-composite-check.png
+   - PROJECT_STATE.md의 해당 A 작업 기록
+   이전 업로드가 아직 안 됐다면 아래 연결 배경 기록도 별도 아트 커밋으로 함께 올려줘:
+   - docs/art/background-connectors/
+   - docs/art/CONNECTOR_REVIEW.md
+   - docs/art/review/connector-review.html
+   - docs/art/review/connector-seams.png
+
+5. 연결 배경은 부분 보정 상태로 loopReady=false이며, 기존 connector-seams 비교판은 보정 전 자료야. 장애물 아트 납품 완료와 배경 무한 반복 완료를 혼동하지 마. 두 상태를 구분한 커밋 메시지를 작성해줘.
+
+6. .tools/, .kotlin/, 빌드 결과, 개인 경로/설정/비밀 파일, 다른 팀원 게임 코드는 제외해줘. 현재 브랜치와 origin을 확인한 뒤 정상 커밋·푸시하고, 강제 푸시나 임의 main 병합은 하지 마. Git 쓰기 권한 문제는 정상 권한 환경에서 해결하고 우회하지 마.
+
+7. 완료 후 브랜치명, 커밋 해시, 푸시 결과, 검증 결과를 알려줘. B팀에게 전달할 기준 문서는 docs/art/OBSTACLE_HANDOFF.md야. 실제 앱 연결·충돌·왜곡·기기 검증은 B팀에 남아 있다는 점을 명시해줘.

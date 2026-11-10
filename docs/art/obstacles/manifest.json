@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 1,
+  "status": "art_ready_for_integration",
+  "integrated": false,
+  "coordinates": "zero-based; opaqueRect=[x,y,width,height]; anchor is pixel edge",
+  "alpha": "binary 0/255",
+  "sampling": "nearest; no mipmaps",
+  "sprites": [
+    {
+      "id": "obstacle_mint_fern_log",
+      "characterId": "mint",
+      "variant": 0,
+      "file": "png/obstacle_mint_fern_log.png",
+      "androidResource": "obstacle_mint_fern_log",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        56,
+        44,
+        22
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "da58666ce5a88225f401e2c1c0e8180fdfd36e904f423224f528da84a9af3370",
+      "opaquePixels": 724,
+      "source": "source/mint-cheese.png",
+      "sourceCrop": [
+        64,
+        256,
+        444,
+        225
+      ]
+    },
+    {
+      "id": "obstacle_mint_ribbon_rock",
+      "characterId": "mint",
+      "variant": 1,
+      "file": "png/obstacle_mint_ribbon_rock.png",
+      "androidResource": "obstacle_mint_ribbon_rock",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        45,
+        44,
+        33
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "e1decb147acacabc2367e235baa91ddd24c5fdebca662e974b14b34d5639b83c",
+      "opaquePixels": 1127,
+      "source": "source/mint-cheese.png",
+      "sourceCrop": [
+        595,
+        237,
+        325,
+        245
+      ]
+    },
+    {
+      "id": "obstacle_mint_map_crate",
+      "characterId": "mint",
+      "variant": 2,
+      "file": "png/obstacle_mint_map_crate.png",
+      "androidResource": "obstacle_mint_map_crate",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        46,
+        44,
+        32
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "b8277478422382836cb64b4b45d5b3ea55010aabc804528a3a8bf91ab9c26c01",
+      "opaquePixels": 1219,
+      "source": "source/mint-cheese.png",
+      "sourceCrop": [
+        1091,
+        228,
+        350,
+        255
+      ]
+    },
+    {
+      "id": "obstacle_cheese_plant_pot",
+      "characterId": "cheese",
+      "variant": 0,
+      "file": "png/obstacle_cheese_plant_pot.png",
+      "androidResource": "obstacle_cheese_plant_pot",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        24,
+        44,
+        54
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "06a16e73ec28f4587a3b2d65af3d1e98942747fbba18cfd2a89c19348a0f9bfe",
+      "opaquePixels": 1975,
+      "source": "source/mint-cheese.png",
+      "sourceCrop": [
+        175,
+        673,
+        204,
+        251
+      ]
+    },
+    {
+      "id": "obstacle_cheese_cushions",
+      "characterId": "cheese",
+      "variant": 1,
+      "file": "png/obstacle_cheese_cushions.png",
+      "androidResource": "obstacle_cheese_cushions",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        52,
+        44,
+        26
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "1b39308d91e4faceb9cf592d1cd9e754e4a786b8677ee337e8200189475c4ea4",
+      "opaquePixels": 950,
+      "source": "source/mint-cheese.png",
+      "sourceCrop": [
+        560,
+        687,
+        408,
+        239
+      ]
+    },
+    {
+      "id": "obstacle_cheese_sun_tin",
+      "characterId": "cheese",
+      "variant": 2,
+      "file": "png/obstacle_cheese_sun_tin.png",
+      "androidResource": "obstacle_cheese_sun_tin",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        43,
+        44,
+        35
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "099ac07cdc305acc90a0a4e8387596dbfbfa6621111b49d4bfa2fbf97f15f038",
+      "opaquePixels": 1399,
+      "source": "source/mint-cheese.png",
+      "sourceCrop": [
+        1116,
+        705,
+        282,
+        224
+      ]
+    },
+    {
+      "id": "obstacle_popo_snow_rock",
+      "characterId": "popo",
+      "variant": 0,
+      "file": "png/obstacle_popo_snow_rock.png",
+      "androidResource": "obstacle_popo_snow_rock",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        52,
+        44,
+        26
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "8a43d1d0de78733be9c28e8577d3a60b514300a1f052065d5e83d06d3dde487a",
+      "opaquePixels": 844,
+      "source": "source/popo-lumi.png",
+      "sourceCrop": [
+        51,
+        217,
+        461,
+        277
+      ]
+    },
+    {
+      "id": "obstacle_popo_shell_basket",
+      "characterId": "popo",
+      "variant": 1,
+      "file": "png/obstacle_popo_shell_basket.png",
+      "androidResource": "obstacle_popo_shell_basket",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        7,
+        46,
+        39,
+        32
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "d01dc12df62dcd386a0d8412f2d73679b36ab564aaac85d08b24a607b152c813",
+      "opaquePixels": 978,
+      "source": "source/popo-lumi.png",
+      "sourceCrop": [
+        512,
+        172,
+        449,
+        325
+      ]
+    },
+    {
+      "id": "obstacle_popo_harbor_crate",
+      "characterId": "popo",
+      "variant": 2,
+      "file": "png/obstacle_popo_harbor_crate.png",
+      "androidResource": "obstacle_popo_harbor_crate",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        39,
+        44,
+        39
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "92a557a8ac5ab0a0d099791b731fb72e0bd3faff4248b93b2636962465cba864",
+      "opaquePixels": 1412,
+      "source": "source/popo-lumi.png",
+      "sourceCrop": [
+        1038,
+        129,
+        410,
+        363
+      ]
+    },
+    {
+      "id": "obstacle_lumi_moss_stump",
+      "characterId": "lumi",
+      "variant": 0,
+      "file": "png/obstacle_lumi_moss_stump.png",
+      "androidResource": "obstacle_lumi_moss_stump",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        52,
+        44,
+        26
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "cacf2320f54813a0a94f18fa23ee1927e76cf6676d74ec7c61172a723bf51a0b",
+      "opaquePixels": 827,
+      "source": "source/popo-lumi.png",
+      "sourceCrop": [
+        47,
+        654,
+        460,
+        273
+      ]
+    },
+    {
+      "id": "obstacle_lumi_pinecone_basket",
+      "characterId": "lumi",
+      "variant": 1,
+      "file": "png/obstacle_lumi_pinecone_basket.png",
+      "androidResource": "obstacle_lumi_pinecone_basket",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        42,
+        44,
+        36
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "8e3e708d3517cbe905acde39de49d73e76092378b5513fcb0abfb86be801a594",
+      "opaquePixels": 1187,
+      "source": "source/popo-lumi.png",
+      "sourceCrop": [
+        544,
+        589,
+        413,
+        337
+      ]
+    },
+    {
+      "id": "obstacle_lumi_music_box",
+      "characterId": "lumi",
+      "variant": 2,
+      "file": "png/obstacle_lumi_music_box.png",
+      "androidResource": "obstacle_lumi_music_box",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        46,
+        44,
+        32
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "ffaa68f4f440d9a12b530b47c204709d557bc4099425be7506cb9bb5d37a0bf2",
+      "opaquePixels": 1125,
+      "source": "source/popo-lumi.png",
+      "sourceCrop": [
+        1033,
+        589,
+        448,
+        328
+      ]
+    },
+    {
+      "id": "obstacle_nunu_books",
+      "characterId": "nunu",
+      "variant": 0,
+      "file": "png/obstacle_nunu_books.png",
+      "androidResource": "obstacle_nunu_books",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        44,
+        44,
+        34
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "30ff00164c43e73fc09b700fefbb4f3d6749e5ae349cc2c87a43bfc773533c27",
+      "opaquePixels": 1220,
+      "source": "source/nunu-piko.png",
+      "sourceCrop": [
+        43,
+        147,
+        416,
+        325
+      ]
+    },
+    {
+      "id": "obstacle_nunu_return_crate",
+      "characterId": "nunu",
+      "variant": 1,
+      "file": "png/obstacle_nunu_return_crate.png",
+      "androidResource": "obstacle_nunu_return_crate",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        38,
+        44,
+        40
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "7857e3a5a3c7ad79c7be239684855e3a13e79df4825610ce6447fe71d5731f8b",
+      "opaquePixels": 1436,
+      "source": "source/nunu-piko.png",
+      "sourceCrop": [
+        560,
+        137,
+        374,
+        339
+      ]
+    },
+    {
+      "id": "obstacle_nunu_letter_basket",
+      "characterId": "nunu",
+      "variant": 2,
+      "file": "png/obstacle_nunu_letter_basket.png",
+      "androidResource": "obstacle_nunu_letter_basket",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        47,
+        44,
+        31
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "fc12d68717d40b07d885a18dd6a3afb03166c3ba08493745c782b7dd8c825eee",
+      "opaquePixels": 1074,
+      "source": "source/nunu-piko.png",
+      "sourceCrop": [
+        1046,
+        162,
+        439,
+        314
+      ]
+    },
+    {
+      "id": "obstacle_piko_paper_crate",
+      "characterId": "piko",
+      "variant": 0,
+      "file": "png/obstacle_piko_paper_crate.png",
+      "androidResource": "obstacle_piko_paper_crate",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        48,
+        44,
+        30
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "569cdc0fd8e8bd14a8f6b333f4b585b95100bae0d5b55bcfb36b5282661bc3f0",
+      "opaquePixels": 1116,
+      "source": "source/nunu-piko.png",
+      "sourceCrop": [
+        29,
+        629,
+        443,
+        300
+      ]
+    },
+    {
+      "id": "obstacle_piko_rope_spool",
+      "characterId": "piko",
+      "variant": 1,
+      "file": "png/obstacle_piko_rope_spool.png",
+      "androidResource": "obstacle_piko_rope_spool",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        47,
+        34,
+        31
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "71ed5acee69fa4368f95a938df3212b2125869e0e74871f354ff8d97ceb3eeaf",
+      "opaquePixels": 791,
+      "source": "source/nunu-piko.png",
+      "sourceCrop": [
+        560,
+        608,
+        464,
+        328
+      ]
+    },
+    {
+      "id": "obstacle_piko_toolbox",
+      "characterId": "piko",
+      "variant": 2,
+      "file": "png/obstacle_piko_toolbox.png",
+      "androidResource": "obstacle_piko_toolbox",
+      "frame": [
+        48,
+        80
+      ],
+      "opaqueRect": [
+        2,
+        51,
+        44,
+        27
+      ],
+      "anchor": [
+        24,
+        78
+      ],
+      "lastOpaqueRow": 77,
+      "sha256": "da6c1d232ac4a61e8e69c5f333fc3e4a2dd931c2ab3db0015f2bb6a163f76e00",
+      "opaquePixels": 973,
+      "source": "source/nunu-piko.png",
+      "sourceCrop": [
+        1024,
+        639,
+        471,
+        284
+      ]
+    }
+  ]
+}
