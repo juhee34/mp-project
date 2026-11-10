@@ -60,3 +60,11 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 
 ## 이름 변경 호환성
 표시 이름 민트 → 라일(LAIL), 몸 색상은 라벤더로 변경한다. 기존 저장·이야기·게임 연결을 보존하기 위해 내부 ID mint와 mint_intro, backgroundId/musicId는 유지한다. 루미의 망토는 빨간색이다.
+
+
+## 배경 파노라마 연결 (2026-11-10)
+- background.status=panorama_ready는 승인된 단일 파노라마의 앱 연결 상태다. 원근 레이어 및 무한 반복 완성을 뜻하지 않는다.
+- background.path는 assets 기준 원본 PNG 경로, manifest는 backgrounds/manifest.json이다. characterId로 해당 rect/floorY를 찾는다.
+- rect=[x,y,width,height], floorY는 표시 영역 상단에서 충돌 바닥까지의 이미지 픽셀 거리다. 원본은 그대로 보존한다.
+- loopReady=false, layered=false. 거리 기반 0.25배 카메라는 끝에서 clamp한다. 엔진 거리/점프/충돌/점수는 바꾸지 않는다.
+- 바닥 위 그림은 비율을 유지하며 화면을 덮는다. 바닥 아래 띠만 기존 엔진 바닥 두께에 맞춰 세로 표시한다.

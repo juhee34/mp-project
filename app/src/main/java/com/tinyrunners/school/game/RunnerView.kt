@@ -30,6 +30,7 @@ class RunnerView(
 
     private val runnerArt = CharacterPortrait(character.color)
     private val sprites = CharacterSprites.load(resources, character.id)
+    private val storyBackground = StoryBackground.load(context, character.id)
     private val spritePaint = Paint().apply {
         isFilterBitmap = false
         isAntiAlias = false
@@ -118,10 +119,15 @@ class RunnerView(
         val w = width.toFloat()
         val h = height.toFloat()
         canvas.drawColor(skyColor())
-        drawHills(canvas, w)
-        fill.color = GROUND; canvas.drawRect(0f, groundY, w, h, fill)
-        fill.color = GRASS; canvas.drawRect(0f, groundY, w, groundY + 6f * scale, fill)
-        drawGroundMarks(canvas, w)
+        val background = storyBackground
+        if (background != null) {
+            background.draw(canvas, w, h, groundY, engine.distance, scale)
+        } else {
+            drawHills(canvas, w)
+            fill.color = GROUND; canvas.drawRect(0f, groundY, w, h, fill)
+            fill.color = GRASS; canvas.drawRect(0f, groundY, w, groundY + 6f * scale, fill)
+            drawGroundMarks(canvas, w)
+        }
 
         for (o in engine.obstacles) drawObstacle(canvas, o)
         drawRunner(canvas)
@@ -246,6 +252,9 @@ class RunnerView(
 
     private fun drawHud(canvas: Canvas, w: Float) {
         val d = resources.displayMetrics.density
+        // Stable contrast over detailed scenery, including snowy and dusk scenes.
+        fill.color = PANEL
+        canvas.drawRect(0f, 0f, w, 80f * d, fill)
         text.textSize = 18f * d
         text.typeface = Typeface.DEFAULT_BOLD
         text.textAlign = Paint.Align.LEFT

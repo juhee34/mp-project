@@ -195,3 +195,42 @@
 - API 37 Medium_Phone에서 6명 각각 선택→게임 시작·점프→달리기→충돌·실패→결과→동일 캐릭터 재시작→선택 복귀를 확인했다. 6명 점프·달리기·실패·재시작 캡처를 육안 확인했고 바닥에 선 발 위치와 선명한 도트를 확인했다. 개별 run 4장과 상승/하강 분기는 단위 테스트로 확인했으며 기기에서 모든 프레임을 따로 캡처한 것은 아니다.
 - 로그·캡처는 무시되는 .tools/sprite-runtime.log, .tools/sprite-runtime/와 빌드 로그 .tools/sprite-animation-build.log에 있다. 다운로드·인증 임시 파일은 커밋하지 않는다. 실기기, 다른 화면 크기·글꼴 확대, 장시간 프레임 성능 측정, 실제 Firebase 인증·원격 저장은 이번 검증 범위 밖이다.
 - 원격 재확인: main 8a0cb1f는 현재 브랜치에 포함되어 있다. 별도 feature/jump-skill-story의 eb7df1b는 이중 점프·능력·이야기 작업이며 이번 동일 물리 유지 요청과 별개라 병합하지 않았다. B가 게임 작업을 합칠 때 해당 브랜치와 RunnerView 등 변경을 함께 검토해야 한다.
+
+## 2026-11-10 A 승인 이야기 배경과 스크롤 검수 준비
+- 사용자가 최신 이야기 소품 추가본 6종을 승인하고 다음 단계를 요청했다. 승인 원본 3장의 파일명과 Library ID를 docs/art/BACKGROUND_HANDOFF.md에 고정했다. 디자인 재생성은 하지 않는다.
+- 최신 원본 목록은 확인했으나 다운로드 도구가 Library prepare_materialize is not available로 실패했다. 실제 배경 PNG 크롭·레이어 분리·반복 연결 검수는 수행하지 못했다.
+- docs/art/review/background-preview.html 제작: 승인 PNG 3장을 로컬 파일 선택으로 읽고 6명 각각 배경 이동, 진행 위치·속도·바닥 기준·크롭 범위, 반복 경계 확인을 지원한다. 승인 idle_0 6장을 포함한다. 기본 재생은 끝에서 정지한다. 원본 변경·외부 전송 없음.
+- scripts/build-background-preview.py와 템플릿으로 재생성 가능. Python 문법 검사와 git diff --check 통과. 원본 연결·브라우저 시각 검수와 기기 실행은 미검증이다.
+- B 소유 게임 코드, 기존 물리, assets.json planned/null은 유지했다. 다음: 원본 3장 확보 후 배경별 실제 크롭·바닥 검증, 검수 화면에서 가독성과 끝 연결 확인, 레이어 복원과 별도 연결 구간 제작. 완성 배경이나 앱 적용으로 표시하지 않는다.
+- JavaScript 동적 구문 검사도 실행 환경 제한으로 수행하지 못했다. 브라우저 동작·시각 검수와 함께 미검증으로 남긴다.
+
+
+## 2026-11-10 A 재연결 후 배경 검수 진행
+- 작업 폴더 정상 연결 확인. 현재 원본 가져오기는 Windows os.setxattr 미지원으로 실패한다. 원본이 없는 상태이며 다운로드/시각 검수 완료로 간주하지 않는다.
+- 배경 검수 HTML에 6명 idle_0/run_0~3 총 30프레임 연결. 이동 거리와 배율 기반으로 달리기 전환, 정지 자세 유지, 초기화 시 idle 복원.
+- Node VM 합성 DOM/이미지 검사 통과: 재생/정지/초기화, 끝 정지, 반복 순환, 탭 숨김 정지, 미입력 캐릭터 선택. 실제 브라우저 시각 검수는 미완료.
+- node scripts/validate-content.cjs 및 git diff --check 통과. 게임 런타임/JSON은 변경하지 않았다.
+- 다음: 승인된 배경 PNG 3장을 docs/art/background-source/에 확보하고 발 위치/가독성/연결부 검수 및 적용용 자산 준비.
+
+
+## 2026-11-10 A 승인 배경 원본 확보·브라우저 검수
+- 사용자가 Downloads에 저장한 최신 원본 3장 확보. docs/art/background-source/에 원본 그대로 복사, 2169×725 PNG 각 파일 SHA-256 일치 확인.
+- background-manifest.json: 6명 source rect/바닥 기준/해시 기록. 그림은 재생성·수정하지 않았다. loopReady=false/layered=false.
+- 검수 HTML에 배경 원본과 30개 캐릭터 프레임 내장. 별도 파일 입력 없이 미리보기 가능.
+- Chrome 960×540 Canvas에서 6명 시작/끝 장면 발 위치·가독성 확인. 라일 재생 이동도 관찰. 전체 프레임 또는 Android 게임 검수는 아님.
+- 좌우 끝은 직접 반복 연결 불가. 우선 단일 파노라마 적용용 좌표와 B 인수 규칙을 BACKGROUND_HANDOFF.md에 작성. 다음은 게임 바닥/HUD/장애물 동시 검수 및 무한 반복 연결 구간/원근 레이어 준비.
+- B 런타임과 앱 JSON 변경 없음.
+
+
+## 2026-11-10 승인 배경 게임 연결
+- 다음 단계 진행 요청에 따라 StoryBackground/BackgroundMotion 추가, RunnerView에 6명 승인 파노라마 연결. 원본 PNG/manifest를 app/src/main/assets/backgrounds에 포함했다.
+- 거리 기반 0.25배 단일 스크롤, 끝 clamp. 일시정지/재시작은 엔진 거리 상태를 따른다. 풍경 비율 유지 및 고정 바닥 정렬, 하단 띠만 화면 바닥 두께에 맞춰 표시한다. 물리/점수/진행 데이터는 변경하지 않았다.
+- HUD 대비 패널 추가. assets.json panorama_ready 및 DATA_CONTRACT에 의미 기록. 무한 반복/레이어 완성이 아니며 loopReady=false/layered=false.
+- 검증: 콘텐츠/영역/바닥/원본 해시 검사 통과. JDK17 + 로컬 SDK로 assembleDebug, testDebugUnitTest, lintDebug 성공. 단위 테스트 33개, 실패/오류 0. Kotlin daemon 임시파일 오류 뒤 fallback 컴파일 성공. 로그 .tools/background-build.log.
+- 이번 게임 코드 변경 후 기기 시각 검수는 미실시. 앞선 Chrome 검수는 별도 미리보기 대상이다. 다음: 실제 게임의 6명 HUD/점프/날씨 동시 검수, 끝 이후 무한 스크롤용 연결 아트 준비.
+
+
+## 2026-11-10 배경 Git 게시 시도
+- 콘텐츠/해시 검증 통과 후 지정 파일만 git add 시도. .git/index.lock 생성 Permission denied로 중단. 커밋/푸시 미실행.
+- scripts/publish-backgrounds.ps1 준비: 대상 브랜치 확인, 기존 staged 변경 차단, 검증 후 이번 파일만 add/commit/push. .kotlin/.tools 등 임시 파일 제외, 강제 push 없음. PowerShell 구문 검사 통과. 이 스크립트는 아직 실행하지 않았다.
+- 최신 APK를 emulator-5554에 설치했고 Success를 확인했다. 현재 제어 가능한 데스크톱 창에 에뮬레이터가 없어 게임 UI 시각 검수는 완료하지 못했다.

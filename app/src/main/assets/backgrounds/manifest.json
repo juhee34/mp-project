@@ -1,0 +1,96 @@
+{
+  "status": "review_ready",
+  "loopReady": false,
+  "layered": false,
+  "sourceSize": [
+    2169,
+    725
+  ],
+  "characters": [
+    {
+      "id": "mint",
+      "source": "mint-cheese.png",
+      "sha256": "f3129e3b92a29baca77d9604bb9162b26146f40f77774610fdc075da1c22e88d",
+      "rect": [
+        0,
+        4,
+        2169,
+        319
+      ],
+      "floorY": 278,
+      "floorStatus": "preview_checked",
+      "loopReady": false
+    },
+    {
+      "id": "cheese",
+      "source": "mint-cheese.png",
+      "sha256": "f3129e3b92a29baca77d9604bb9162b26146f40f77774610fdc075da1c22e88d",
+      "rect": [
+        0,
+        336,
+        2169,
+        385
+      ],
+      "floorY": 355,
+      "floorStatus": "preview_checked",
+      "loopReady": false
+    },
+    {
+      "id": "popo",
+      "source": "popo-lumi.png",
+      "sha256": "595807e0edb5263361bdf9a3304fd2dd91a6f337ce33bef757ba9ea6674dda7b",
+      "rect": [
+        4,
+        4,
+        2161,
+        352
+      ],
+      "floorY": 324,
+      "floorStatus": "preview_checked",
+      "loopReady": false
+    },
+    {
+      "id": "lumi",
+      "source": "popo-lumi.png",
+      "sha256": "595807e0edb5263361bdf9a3304fd2dd91a6f337ce33bef757ba9ea6674dda7b",
+      "rect": [
+        4,
+        368,
+        2161,
+        353
+      ],
+      "floorY": 329,
+      "floorStatus": "preview_checked",
+      "loopReady": false
+    },
+    {
+      "id": "nunu",
+      "source": "nunu-piko.png",
+      "sha256": "45421bfc3d3ae0680dde06502ac16cfddad7139c1246e462e7ae47062129be1d",
+      "rect": [
+        4,
+        4,
+        2161,
+        352
+      ],
+      "floorY": 323,
+      "floorStatus": "preview_checked",
+      "loopReady": false
+    },
+    {
+      "id": "piko",
+      "source": "nunu-piko.png",
+      "sha256": "45421bfc3d3ae0680dde06502ac16cfddad7139c1246e462e7ae47062129be1d",
+      "rect": [
+        4,
+        368,
+        2161,
+        353
+      ],
+      "floorY": 329,
+      "floorStatus": "preview_checked",
+      "loopReady": false
+    }
+  ],
+  "visualReview": "Chrome 960x540 canvas: all six start/end views; mint scrolling observed. Not Android device QA."
+}

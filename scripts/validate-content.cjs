@@ -5,7 +5,7 @@ const chars=read('app/src/main/assets/content/characters.json'),stories=read('ap
 const expected=["mint", "cheese", "popo", "lumi", "nunu", "piko"];
 assert.deepEqual(chars.map(c=>c.id),expected);assert.equal(new Set(stories.map(s=>s.id)).size,6);
 for(const c of chars){assert(c.name&&c.home&&c.personality);assert(/^#[0-9A-F]{6}$/i.test(c.color));for(const id of c.storyIds)assert(stories.some(s=>s.id===id&&s.characterId===c.id));assert(assets.some(a=>a.characterId===c.id));}
-for(const a of assets)for(const kind of ['background','music']){assert.equal(a[kind].status,'planned');assert.equal(a[kind].path,null);assert(a[kind].brief);}
+for(const a of assets)for(const kind of ['background','music']){assert(a[kind].brief);if(a[kind].status==='planned'){assert.equal(a[kind].path,null);}else{assert.equal(kind,'background');assert.equal(a[kind].status,'panorama_ready');assert.equal(a[kind].loopReady,false);assert.equal(a[kind].layered,false);assert(fs.existsSync(path.join(root,'app/src/main/assets',a[kind].path)));const manifest=read('app/src/main/assets/'+a[kind].manifest);assert(manifest.characters.some(c=>c.id===a.characterId && 'backgrounds/'+c.source===a[kind].path));}}
 const research=['andersen','grimm','aesop','modern','world'].flatMap(n=>read('research/'+n+'.json'));assert.equal(research.length,205);assert.equal(new Set(research.map(r=>r.id)).size,205);
 for(const r of research)assert(r.source_url.startsWith('http')&&r.verified_content);
 const p=fs.readFileSync(path.join(root,'docs/PROMPTS.md'),'utf8');assert.equal((p.match(/^## \d+단계 [AB] /gm)||[]).length,20);
@@ -36,9 +36,21 @@ for(const c of chars){
   for(const k of REQUIRED)assert.equal(have[c.id]?.[k]||0,MOTIONS[k],`${c.id}: spritePath is set but ${k} frames are missing`);
 }
 
-console.log('PASS: 6 characters; story/asset references; planned assets honest; 205 research records; 20 role prompts.');
+console.log('PASS: 6 characters; story/asset references; asset readiness honest; 205 research records; 20 role prompts.');
 console.log(`Sprites (required frames): ${spriteSummary.join(', ')}`);
 
 assert.deepEqual(read('docs/CHARACTER_BIBLE.json').map(c=>c.id),expected);
 assert.deepEqual(assets.map(a=>a.characterId),expected);
 assert(stories.every(s=>expected.includes(s.characterId)));
+
+// The runtime manifest must stay within the unchanged approved source images.
+const bgManifest=read('app/src/main/assets/backgrounds/manifest.json');
+assert.equal(new Set(bgManifest.characters.map(c=>c.id)).size,6);
+for(const c of bgManifest.characters){
+ const bytes=fs.readFileSync(path.join(root,'app/src/main/assets/backgrounds',c.source));
+ const w=bytes.readUInt32BE(16),h=bytes.readUInt32BE(20),[x,y,rw,rh]=c.rect;
+ assert(x>=0&&y>=0&&rw>0&&rh>0&&x+rw<=w&&y+rh<=h);
+ assert(c.floorY>0&&c.floorY<rh);
+ assert.equal(require('crypto').createHash('sha256').update(bytes).digest('hex'),c.sha256);
+}
+console.log('PASS: 6 background regions, floor anchors and approved source hashes.');
