@@ -59,7 +59,7 @@ class ResultActivity : Activity() {
         val left = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(18), dp(14), dp(18), dp(14))
-            background = GradientDrawable().apply { setColor(Color.argb(238, 255, 253, 246)); cornerRadius = dp(22).toFloat() }
+            background = GradientDrawable().apply { setColor(Color.argb(170, 255, 253, 246)); cornerRadius = dp(22).toFloat() }
         }
         // The friend and a word from them about the run.
         val head = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }

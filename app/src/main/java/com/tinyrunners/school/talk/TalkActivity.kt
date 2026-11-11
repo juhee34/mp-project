@@ -535,7 +535,10 @@ internal class TalkView(
             contentDescription = who + line.text
             announceForAccessibility(contentDescription)
         }
-        postInvalidateOnAnimation()
+        // Every frame only while letters are typing; otherwise a few times a second is enough for the idle pose
+        // and the blinking marker (less work for the phone, and for a software-drawn emulator whose sound crackles
+        // when it is busy).
+        if (player.isTyping) postInvalidateOnAnimation() else postInvalidateDelayed(IDLE_REDRAW_MS)
     }
 
     private fun drawFriend(canvas: Canvas, bitmap: android.graphics.Bitmap?, centerX: Float, feet: Float, px: Float, paint: Paint, flip: Boolean) {
@@ -557,6 +560,7 @@ internal class TalkView(
         private const val GROUND_THICKNESS = 48f
         private const val CHAR_MS = 33f
         private const val IDLE_FRAME_MS = 500L
+        private const val IDLE_REDRAW_MS = 120L
         private const val BLINK_MS = 450L
         private val PAPER = Color.argb(240, 255, 253, 246)
         private val NARRATOR_BOX = Color.argb(225, 38, 52, 43)
