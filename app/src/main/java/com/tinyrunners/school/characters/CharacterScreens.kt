@@ -87,7 +87,7 @@ internal class CharacterScreens(
 
         // Title row: back to the intro, title, and which friend of six this is.
         val top = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(smallButton(context.getString(R.string.characters_back_hub)) { (context as? android.app.Activity)?.finish() })
+        top.addView(com.tinyrunners.school.ui.HomeButton.create(context))
         top.addView(TextView(context).apply {
             text = context.getString(R.string.characters_select_title)
             textSize = 22f; setTextColor(INK); setTypeface(typeface, Typeface.BOLD)
@@ -256,18 +256,6 @@ internal class CharacterScreens(
             shape = GradientDrawable.OVAL; setColor(PAPER); setStroke(dp(1), LINE)
         }, null)
         stateListAnimator = null
-    }
-
-    private fun smallButton(label: String, click: () -> Unit) = Button(context).apply {
-        text = label
-        textSize = 14f
-        isAllCaps = false
-        setTextColor(LEAF)
-        minHeight = dp(40); minimumHeight = dp(40)
-        setPadding(dp(12), 0, dp(12), 0)
-        background = ripple(PAPER, LINE)
-        stateListAnimator = null
-        setOnClickListener { click() }
     }
 
     private fun rowButton(label: Int, primary: Boolean = false, click: () -> Unit) = Button(context).apply {

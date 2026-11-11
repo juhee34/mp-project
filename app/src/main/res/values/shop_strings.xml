@@ -16,7 +16,6 @@
     <string name="shop_bought">%1$s을(를) 샀어요. 다음 달리기부터 보여요.</string>
     <string name="shop_not_enough">코인이 %1$d개 모자라요. 조금 더 달려 볼까요?</string>
     <string name="shop_failed">저장하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
-    <string name="shop_back">◀ 돌아가기</string>
     <string name="shop_item_none">꾸미기 없음</string>
     <string name="shop_blurb_none">처음 모습 그대로</string>
     <string name="shop_item_stars">반짝 별</string>

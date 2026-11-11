@@ -21,6 +21,7 @@ class SettingsActivity : Activity() {
         super.onCreate(savedInstanceState)
         val settings = WeatherSettings(this)
         val page = Page(this).show()
+        page.backPill()
         page.eyebrow(getString(R.string.characters_brand))
         page.title(getString(R.string.settings_title))
 

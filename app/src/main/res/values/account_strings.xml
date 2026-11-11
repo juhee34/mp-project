@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="common_back">돌아가기</string>
-    <string name="common_back_short">◀ 돌아가기</string>
+    <string name="common_to_menu">◀ 처음으로</string>
     <string name="menu_records">내 기록</string>
     <string name="menu_settings">설정</string>
 

@@ -56,7 +56,7 @@ class ShopActivity : Activity() {
             setPadding(dp(16), dp(8), dp(16), dp(12))
         }
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(pill(getString(R.string.shop_back), Page.PAPER, Page.LEAF) { finish() })
+        top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
         top.addView(TextView(this).apply {
             setText(R.string.shop_title)
             textSize = 24f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD)
