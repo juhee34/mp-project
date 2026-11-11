@@ -10,13 +10,12 @@ import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
-import com.tinyrunners.school.MainActivity
 import com.tinyrunners.school.R
 import kotlin.math.roundToInt
 
 /**
- * The world's story right after login: white text on black, one short page per tap, then the friend selection.
- * "건너뛰기" jumps straight to the selection.
+ * The world story ("스토리 진행하기" on the hub): white text on black, one short page per tap, then the village
+ * residents. "건너뛰기" jumps straight to the residents.
  */
 class PrologueActivity : Activity() {
     private lateinit var pages: List<String>
@@ -27,7 +26,7 @@ class PrologueActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pages = TalkRepository.load(this)?.prologue.orEmpty()
-        if (pages.isEmpty()) { openSelection(); return }
+        if (pages.isEmpty()) { openResidents(); return }
         page = savedInstanceState?.getInt(KEY_PAGE)?.coerceIn(0, pages.lastIndex) ?: 0
 
         text = TextView(this).apply {
@@ -51,7 +50,7 @@ class PrologueActivity : Activity() {
             minHeight = dp(48)
             gravity = Gravity.CENTER
             setPadding(dp(20), 0, dp(20), 0)
-            setOnClickListener { openSelection() }
+            setOnClickListener { openResidents() }
         }
         setContentView(FrameLayout(this).apply {
             setBackgroundColor(Color.BLACK)
@@ -66,7 +65,7 @@ class PrologueActivity : Activity() {
     }
 
     private fun next() {
-        if (page >= pages.lastIndex) { openSelection(); return }
+        if (page >= pages.lastIndex) { openResidents(); return }
         page++
         showPage(animate = true)
     }
@@ -75,7 +74,7 @@ class PrologueActivity : Activity() {
         text.text = pages[page]
         text.contentDescription = pages[page]
         text.announceForAccessibility(pages[page])
-        // The last page asks "who will you go with?", so the hint changes to say the selection comes next.
+        // On the last page the hint says the village residents come next.
         hint.setText(if (page == pages.lastIndex) R.string.talk_prologue_choose else R.string.talk_tap_hint)
         if (animate) {
             text.alpha = 0f
@@ -83,9 +82,13 @@ class PrologueActivity : Activity() {
         }
     }
 
-    private fun openSelection() {
+    /**
+     * After the world story the player meets the village residents. Their talks are still being written, so for now
+     * this opens the village story list (talks with the six friends); swap the target here when the new talks land.
+     */
+    private fun openResidents() {
         TalkProgress(this).markPrologueSeen()
-        startActivity(selectionIntent(this))
+        startActivity(Intent(this, com.tinyrunners.school.story.StoryListActivity::class.java))
         finish()
     }
 
@@ -100,14 +103,8 @@ class PrologueActivity : Activity() {
         private const val KEY_PAGE = "page"
         private const val FADE_MS = 450L
 
-        /** After login: the prologue for a player who has not seen it yet, otherwise straight to the selection. */
-        fun afterLogin(context: Context): Intent =
-            if (TalkProgress(context).shouldShowPrologue) Intent(context, PrologueActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            else selectionIntent(context)
-
-        private fun selectionIntent(context: Context) = MainActivity.selectionIntent(context)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        /** "스토리 진행하기" on the hub: the world story every time, then the residents. */
+        fun forStory(context: Context): Intent = Intent(context, PrologueActivity::class.java)
     }
 }
 

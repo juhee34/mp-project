@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hub_title">Tiny Runners</string>
+    <string name="hub_subtitle">오늘은 무엇을 할까요?</string>
+    <string name="hub_story">스토리 진행하기</string>
+    <string name="hub_story_body">세계 이야기를 듣고 주민들을 만나요</string>
+    <string name="hub_game">게임하기</string>
+    <string name="hub_game_body">친구를 골라 함께 달려요</string>
+    <string name="hub_tutorial">튜토리얼 하기</string>
+    <string name="hub_tutorial_body">점프와 장애물 피하는 법을 배워요</string>
+</resources>

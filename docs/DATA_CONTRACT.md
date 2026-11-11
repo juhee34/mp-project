@@ -64,7 +64,7 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - 상세 설정·보안 규칙: docs/FIREBASE_SETUP.md.
 
 ## 화면 계약
-(로그인/회원가입) → 세계 이야기(PrologueActivity, 검은 화면) → 6명 선택 → 친구와 대화(TalkActivity) → game(characterId) → 결과(runId 저장) → 다시 달리기 / 내 기록 / 친구 선택. 소개·선택 화면 위 메뉴에서 내 기록·설정.
+(로그인/회원가입) → 시작 화면(HubActivity: 스토리 진행하기 → 세계 이야기 → 마을 주민 대화 / 게임하기 → 6명 선택 → 친구와 대화(TalkActivity) → game(characterId) / 튜토리얼 하기 → 게임 안내) → 결과(runId 저장) → 다시 달리기 / 내 기록 / 친구 선택. 소개·선택 화면 위 메뉴에서 내 기록·설정.
 정의되지 않은 ID는 선택 화면으로 복귀한다. 원시 JSON과 Activity 사이의 의존을 Repository로 제한한다.
 
 ### 출발 전 대화 (B, 2026-11-10)

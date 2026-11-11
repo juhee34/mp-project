@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.widget.Button
 import android.widget.TextView
-import com.tinyrunners.school.talk.PrologueActivity
+import com.tinyrunners.school.hub.HubActivity
 import com.tinyrunners.school.R
 import com.tinyrunners.school.ui.Page
 import kotlin.math.min
@@ -85,9 +85,9 @@ class LoginActivity : Activity() {
     private fun showError(message: String) { error.text = message }
 
     companion object {
-        /** First login: the world story, then the friend selection. Later logins go straight to the selection. */
+        /** After login: the hub with 스토리 진행하기 / 게임하기 / 튜토리얼 하기. Closes the opening and login popups. */
         fun openMain(activity: Activity) {
-            activity.startActivity(PrologueActivity.afterLogin(activity))
+            activity.startActivity(HubActivity.intent(activity))
             activity.finish()
         }
 

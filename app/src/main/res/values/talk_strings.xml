@@ -2,7 +2,7 @@
 <resources>
     <string name="talk_skip">건너뛰기 ▶▶</string>
     <string name="talk_tap_hint">화면을 누르면 다음으로</string>
-    <string name="talk_prologue_choose">화면을 누르면 친구를 고를 수 있어요</string>
+    <string name="talk_prologue_choose">화면을 누르면 마을 주민들을 만나러 가요</string>
     <string name="talk_player_default">나</string>
     <string name="talk_stumble_narration">쿵! 함께 %1$dm를 달렸어요.</string>
 </resources>

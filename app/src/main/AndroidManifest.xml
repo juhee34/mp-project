@@ -15,6 +15,7 @@
         <activity android:name=".story.StoryListActivity" android:screenOrientation="sensorLandscape" android:exported="false" />
         <activity android:name=".story.StoryActivity" android:screenOrientation="sensorLandscape" android:exported="false" />
         <activity android:name=".MainActivity" android:screenOrientation="sensorLandscape" android:exported="false" />
+        <activity android:name=".hub.HubActivity" android:exported="false" android:screenOrientation="sensorLandscape" />
         <activity android:name=".talk.PrologueActivity" android:exported="false" android:screenOrientation="sensorLandscape" android:theme="@style/PrologueTheme" />
         <activity android:name=".talk.TalkActivity" android:exported="false" android:screenOrientation="sensorLandscape" android:theme="@style/OpeningTheme" />
         <!-- Landscape title screen on every launch; the friend designs it, the button sits in the centre. -->
