@@ -20,4 +20,4 @@ app/google-services.json
 .kotlin/
 
 # Shareable APK builds (see docs/INSTALL_GUIDE.md)
-dist/
+/dist/
