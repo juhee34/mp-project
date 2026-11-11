@@ -65,7 +65,6 @@ class StoryCollectionActivity : Activity() {
         val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(8), dp(16), dp(12)) }
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         back = com.tinyrunners.school.ui.HomeButton.create(this, getString(R.string.collection_back)) { goBack() }
-        top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         top.addView(back)
         title = TextView(this).apply {
             textSize = 24f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD)
@@ -73,6 +72,7 @@ class StoryCollectionActivity : Activity() {
             setPadding(dp(12), 0, 0, 0)
         }
         top.addView(title, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         content.addView(top)
         subtitle = TextView(this).apply { textSize = 15f; setTextColor(Page.MUTED); setPadding(0, dp(6), 0, 0) }
         content.addView(subtitle)

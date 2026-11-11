@@ -14,7 +14,7 @@ import com.tinyrunners.school.quest.BagActivity
 import kotlin.math.roundToInt
 
 /**
- * The bag (가방) button: a small drawstring pouch at the top-left of most screens (not the menu or settings).
+ * The bag (가방) button: a small drawstring pouch at the top-right of most screens (not the menu or settings).
  * Opens [BagActivity] with the coins and the friends' items.
  */
 object BagButton {
@@ -27,13 +27,13 @@ object BagButton {
         }
         setOnClickListener { context.startActivity(BagActivity.intent(context)) }
         val size = (40 * d).roundToInt()
-        layoutParams = LinearLayout.LayoutParams(size, size).apply { marginEnd = (8 * d).roundToInt() }
+        // It goes last in a top row, at the right end.
+        layoutParams = LinearLayout.LayoutParams(size, size).apply { marginStart = (10 * d).roundToInt() }
     }
 
-    /** Puts the bag button in front of [first] inside its parent row (for rows built from XML). */
-    fun insertBefore(first: View) {
-        val parent = first.parent as? ViewGroup ?: return
-        parent.addView(create(first.context), parent.indexOfChild(first))
+    /** Puts the bag button at the right end of [row] (for rows built from XML). */
+    fun appendTo(row: ViewGroup) {
+        row.addView(create(row.context))
     }
 }
 

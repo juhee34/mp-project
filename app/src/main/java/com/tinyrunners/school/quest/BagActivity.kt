@@ -49,7 +49,7 @@ class BagActivity : Activity() {
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
         top.addView(TextView(this).apply {
-            setText(R.string.bag_title); textSize = 24f; setTextColor(CREAM); setTypeface(typeface, Typeface.BOLD)
+            setText(R.string.bag_title); textSize = 24f; setTextColor(TITLE_INK); setTypeface(typeface, Typeface.BOLD)
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
             setPadding(dp(12), 0, 0, 0)
         }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
@@ -67,7 +67,7 @@ class BagActivity : Activity() {
         }
         top.addView(coins)
         content.addView(top)
-        message = TextView(this).apply { setText(R.string.bag_body); textSize = 15f; setTextColor(CREAM_SOFT); setPadding(0, dp(6), 0, 0) }
+        message = TextView(this).apply { setText(R.string.bag_body); textSize = 15f; setTextColor(TITLE_SOFT); setPadding(0, dp(6), 0, 0) }
         content.addView(message)
         grid = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         content.addView(grid, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(8) })
@@ -101,7 +101,7 @@ class BagActivity : Activity() {
         }
         ItemBagStore.forCurrentUser(this).load { result ->
             if (isDestroyed) return@load
-            result.onSuccess { bag = it; render() }.onFailure { message.setTextColor(Color.rgb(255, 200, 190)); message.setText(R.string.quest_error) }
+            result.onSuccess { bag = it; render() }.onFailure { message.setTextColor(Page.ERROR); message.setText(R.string.quest_error) }
         }
         ProgressStore.forCurrentUser(this).loadAll { result ->
             if (isDestroyed) return@loadAll
@@ -191,11 +191,11 @@ class BagActivity : Activity() {
         private val COIN = Color.rgb(246, 200, 80)
         private val COIN_BG = Color.rgb(255, 247, 220)
         private val COIN_INK = Color.rgb(140, 96, 20)
-        private val LEATHER = Color.rgb(170, 112, 64)
-        private val CANVAS = Color.rgb(246, 232, 204)
+        private val LEATHER = Color.rgb(220, 186, 140)
+        private val CANVAS = Color.rgb(252, 244, 228)
         private val STITCH = Color.rgb(140, 92, 50)
-        private val CREAM = Color.rgb(255, 246, 226)
-        private val CREAM_SOFT = Color.rgb(246, 226, 196)
+        private val TITLE_INK = Color.rgb(78, 48, 26)
+        private val TITLE_SOFT = Color.rgb(104, 70, 42)
         private val BROWN_INK = Color.rgb(78, 48, 26)
         private val BROWN_SOFT = Color.rgb(128, 90, 58)
         fun intent(context: Context) = Intent(context, BagActivity::class.java)
@@ -203,7 +203,7 @@ class BagActivity : Activity() {
 }
 
 /**
- * The inside of a leather pouch: a woven texture, the gathered neck with a drawstring and bow along the top, and
+ * The inside of a light leather pouch: a woven texture, the gathered neck with a drawstring along the top, and
  * a row of stitches around the edge.
  */
 private class PouchBackground(context: Context) : View(context) {
@@ -215,7 +215,7 @@ private class PouchBackground(context: Context) : View(context) {
         val d = resources.displayMetrics.density
         // Leather with a soft lighter middle.
         paint.shader = android.graphics.RadialGradient(w / 2f, h * 0.55f, maxOf(w, h) * 0.7f,
-            Color.rgb(196, 138, 86), Color.rgb(150, 96, 52), android.graphics.Shader.TileMode.CLAMP)
+            Color.rgb(234, 204, 162), Color.rgb(206, 166, 118), android.graphics.Shader.TileMode.CLAMP)
         canvas.drawRect(0f, 0f, w, h, paint)
         paint.shader = null
         // Grain: faint crossing threads.
@@ -224,7 +224,7 @@ private class PouchBackground(context: Context) : View(context) {
         var y = 0f; while (y < h) { canvas.drawLine(0f, y, w, y, paint); y += 6 * d }
         // Gathered neck: a darker band with folds.
         val neck = 22 * d
-        paint.color = Color.rgb(120, 74, 40); canvas.drawRect(0f, 0f, w, neck, paint)
+        paint.color = Color.rgb(186, 140, 94); canvas.drawRect(0f, 0f, w, neck, paint)
         paint.color = Color.argb(70, 40, 20, 8); paint.strokeWidth = 2 * d
         x = 10 * d; while (x < w) { canvas.drawLine(x, 0f, x + 4 * d, neck, paint); x += 18 * d }
         // Drawstring: a red cord along the neck, tied in a bow in the middle with two loose ends.
@@ -234,17 +234,9 @@ private class PouchBackground(context: Context) : View(context) {
         var px = 0f
         while (px < w) { path.quadTo(px + 20 * d, neck * 0.35f, px + 40 * d, neck * 0.7f); px += 40 * d }
         canvas.drawPath(path, paint)
-        val cx = w / 2f
-        paint.strokeWidth = 5 * d
-        canvas.drawOval(cx - 26 * d, neck * 0.2f, cx - 2 * d, neck * 1.1f, paint)
-        canvas.drawOval(cx + 2 * d, neck * 0.2f, cx + 26 * d, neck * 1.1f, paint)
-        canvas.drawLine(cx - 2 * d, neck, cx - 12 * d, neck + 22 * d, paint)
-        canvas.drawLine(cx + 2 * d, neck, cx + 14 * d, neck + 20 * d, paint)
-        paint.style = Paint.Style.FILL; paint.color = Color.rgb(150, 50, 44)
-        canvas.drawCircle(cx, neck * 0.7f, 5 * d, paint)
         // Stitches around the edge, below the neck.
         paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.strokeCap = Paint.Cap.BUTT
-        paint.color = Color.argb(200, 250, 232, 196)
+        paint.color = Color.argb(220, 150, 104, 62)
         paint.pathEffect = android.graphics.DashPathEffect(floatArrayOf(8 * d, 6 * d), 0f)
         canvas.drawRoundRect(8 * d, neck + 4 * d, w - 8 * d, h - 8 * d, 18 * d, 18 * d, paint)
         paint.pathEffect = null; paint.style = Paint.Style.FILL

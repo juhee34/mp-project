@@ -33,8 +33,8 @@ class MainActivity : Activity() {
         findViewById<View>(R.id.menu_shop).setOnClickListener {
             startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, characterScreens?.currentFriendId))
         }
-        // The bag (pouch) sits at the top-left, in front of the coin badge.
-        com.tinyrunners.school.ui.BagButton.insertBefore(findViewById(R.id.coin_badge))
+        // The bag (pouch) sits at the top-right, after the shop/story/records/settings links.
+        (findViewById<View>(R.id.coin_badge).parent as? android.view.ViewGroup)?.let { com.tinyrunners.school.ui.BagButton.appendTo(it) }
         findViewById<TextView>(R.id.coin_badge).apply {
             background = coinBackground()
             setCompoundDrawablesRelative(coinIcon(), null, null, null)

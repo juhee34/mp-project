@@ -56,7 +56,6 @@ class ShopActivity : Activity() {
             setPadding(dp(16), dp(8), dp(16), dp(12))
         }
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
         top.addView(TextView(this).apply {
             setText(R.string.shop_title)
@@ -75,6 +74,7 @@ class ShopActivity : Activity() {
             }, null, null, null)
         }
         top.addView(coins)
+        top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         content.addView(top)
         content.addView(TextView(this).apply {
             text = getString(R.string.shop_body, ShopRules.METERS_PER_COIN); textSize = 15f; setTextColor(Page.MUTED); setPadding(0, dp(6), 0, 0)

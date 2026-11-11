@@ -2,10 +2,10 @@
 <resources>
     <string name="menu_shop">꾸미기 상점</string>
     <string name="shop_title">꾸미기 상점</string>
-    <string name="shop_body">%1$dm 달릴 때마다 1코인이 모여요. 꾸미기는 달리는 모습만 바꾸고, 점프와 속도는 6명 모두 그대로예요.</string>
+    <string name="shop_body">%1$dm 달릴 때마다 1코인, 길 위 코인을 주우면 1코인 더 모여요. 꾸미기는 달리는 모습만 바꾸고, 점프와 속도는 6명 모두 그대로예요.</string>
     <string name="shop_coins">코인 %1$d</string>
     <string name="coin_badge_loading">코인 …</string>
-    <string name="coin_badge_description">가진 코인 %1$d개. 누르면 꾸미기 상점이 열려요.</string>
+    <string name="coin_badge_description">가진 코인 %1$d개. 누르면 가방이 열려요.</string>
     <string name="shop_loading">코인을 세는 중…</string>
     <string name="shop_load_failed">상점 정보를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</string>
     <string name="shop_price">%1$d코인</string>

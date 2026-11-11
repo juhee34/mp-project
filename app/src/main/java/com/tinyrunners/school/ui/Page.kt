@@ -23,6 +23,9 @@ class Page(private val activity: Activity) {
         orientation = LinearLayout.VERTICAL
         setPadding(dp(20), dp(20), dp(20), dp(28))
     }
+    /** The screen frame [show] puts the page in; floating buttons go here. */
+    private var frame: android.widget.FrameLayout? = null
+
     val root = ScrollView(activity).apply {
         setBackgroundColor(BACKGROUND)
         isFillViewport = true
@@ -54,7 +57,7 @@ class Page(private val activity: Activity) {
     fun show(scenery: Boolean = true): Page {
         if (!scenery) { activity.setContentView(root); return this }
         root.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-        activity.setContentView(android.widget.FrameLayout(activity).apply {
+        activity.setContentView(android.widget.FrameLayout(activity).also { frame = it }.apply {
             setBackgroundColor(BACKGROUND)
             addView(SceneryView(activity), android.widget.FrameLayout.LayoutParams(
                 android.widget.FrameLayout.LayoutParams.MATCH_PARENT, android.widget.FrameLayout.LayoutParams.MATCH_PARENT))
@@ -71,9 +74,28 @@ class Page(private val activity: Activity) {
             body.addView(it, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(6) })
         }
 
-    /** The pouch button that opens the bag, at the top-left of the page. */
+    /** The pouch button that opens the bag, floating in the screen's top-right corner (below the status bar). */
     fun bagButton(): android.view.View = BagButton.create(activity).also { b ->
-        body.addView(b, LinearLayout.LayoutParams(dp(40), dp(40)).apply { bottomMargin = dp(6) })
+        val host = frame
+        if (host == null) {
+            body.addView(b, LinearLayout.LayoutParams(dp(40), dp(40)).apply { bottomMargin = dp(6) })
+            return@also
+        }
+        host.addView(b, android.widget.FrameLayout.LayoutParams(dp(40), dp(40), android.view.Gravity.TOP or android.view.Gravity.END).apply {
+            topMargin = dp(12); marginEnd = dp(16)
+        })
+        b.setOnApplyWindowInsetsListener { v, insets ->
+            val (top, right) = if (android.os.Build.VERSION.SDK_INT >= 30) {
+                insets.getInsets(android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout()).let { it.top to it.right }
+            } else {
+                @Suppress("DEPRECATION")
+                insets.systemWindowInsetTop to insets.systemWindowInsetRight
+            }
+            (v.layoutParams as android.widget.FrameLayout.LayoutParams).apply { topMargin = top + dp(12); marginEnd = right + dp(16) }
+            v.requestLayout()
+            insets
+        }
+        b.requestApplyInsets()
     }
 
     fun eyebrow(text: String) = label(text, 13f, LEAF, bold = true)
