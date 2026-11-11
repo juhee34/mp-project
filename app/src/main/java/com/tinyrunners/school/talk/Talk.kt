@@ -64,8 +64,11 @@ class TalkPlayer(private val lines: List<TalkLine>) {
     }
 }
 
-/** Why the talk scene is shown: before a run from the selection, before "한 번 더", or right after a crash. */
-enum class TalkMode { START, RETRY, STUMBLE }
+/**
+ * Why the talk scene is shown: before a run from the selection, before "한 번 더", right after a crash, or REPLAY of a
+ * friend's long first talk from 이야기 모음 (no run afterwards).
+ */
+enum class TalkMode { START, RETRY, STUMBLE, REPLAY }
 
 /** Which lines a talk scene shows. Pure, so the choice is unit tested. */
 object TalkPlan {
@@ -87,6 +90,7 @@ object TalkPlan {
             TalkMode.START -> if (firstTime && fullTalk.isNotEmpty()) fullTalk else listOfNotNull(friend("select"), friend("start"))
             TalkMode.RETRY -> listOfNotNull(friend("retry"))
             TalkMode.STUMBLE -> listOfNotNull(narration?.let { TalkLine(TalkScript.NARRATOR, it) }, friend("stumble"))
+            TalkMode.REPLAY -> fullTalk
         }
     }
 }

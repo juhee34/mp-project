@@ -119,6 +119,6 @@ class SettingsActivity : Activity() {
             AuthService.signOut(this)
             startActivity(Intent(this, OpeningActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
         }
-        page.button(getString(R.string.common_back)) { finish() }
+        // The way out is the "◀ 처음으로" button at the top.
     }
 }

@@ -156,7 +156,15 @@ class StoryListActivity : Activity() {
         super.onResume()
         com.tinyrunners.school.audio.Music.playStory(this)
         val page = Page(this).show()
-        page.backPill()
+        // Top row: "◀ 처음으로" on the left, "이야기 모음" (everything heard so far) on the right.
+        page.body.addView(LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            addView(com.tinyrunners.school.ui.HomeButton.create(this@StoryListActivity))
+            addView(android.view.View(this@StoryListActivity), LinearLayout.LayoutParams(0, 1, 1f))
+            addView(com.tinyrunners.school.ui.HomeButton.create(this@StoryListActivity, getString(R.string.collection_open)) {
+                startActivity(android.content.Intent(this@StoryListActivity, StoryCollectionActivity::class.java))
+            })
+        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = page.dp(6) })
         page.eyebrow(getString(R.string.characters_brand))
         page.title(getString(R.string.story_list_title))
         page.text(getString(R.string.story_list_body))

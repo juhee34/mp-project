@@ -22,6 +22,18 @@
     <string name="story_save_failed">기록하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
     <string name="story_back_to_list">이야기 목록으로</string>
     <string name="story_back_to_list_short">◀ 목록으로</string>
+    <string name="collection_open">이야기 모음 ▶</string>
+    <string name="collection_back">◀ 마을 이야기로</string>
+    <string name="collection_title">이야기 모음</string>
+    <string name="collection_body">지금까지 들은 이야기를 차례대로 모아 두었어요. 언제든 다시 볼 수 있어요.</string>
+    <string name="collection_world">세계 이야기</string>
+    <string name="collection_world_body">여섯 고향이 작은 길로 이어진 세계, 그리고 밤마다 바뀌는 길 이야기</string>
+    <string name="collection_talks">친구와의 첫 대화</string>
+    <string name="collection_talk">%1$s · 처음 함께 나눈 이야기</string>
+    <string name="collection_talk_locked">%1$s · 아직 함께 달리지 않았어요</string>
+    <string name="collection_village">다 본 마을 이야기</string>
+    <string name="collection_village_empty">아직 끝까지 본 마을 이야기가 없어요.</string>
+    <string name="collection_replay">다시 보기</string>
     <string name="result_continue_story">이야기 계속하기</string>
     <string name="characters_story_book">이야기 도감</string>
 </resources>

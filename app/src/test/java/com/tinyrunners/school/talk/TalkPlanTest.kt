@@ -23,6 +23,10 @@ class TalkPlanTest {
             TalkPlan.lines(TalkMode.STUMBLE, "mint", false, full, "쿵!", pick))
     }
 
+    @Test fun replayShowsTheLongTalkAgain() {
+        assertEquals(full, TalkPlan.lines(TalkMode.REPLAY, "mint", firstTime = false, full, null, pick))
+    }
+
     @Test fun missingLinesAreSkippedNotShownEmpty() {
         assertEquals(emptyList<TalkLine>(), TalkPlan.lines(TalkMode.RETRY, "mint", false, full, null) { null })
     }

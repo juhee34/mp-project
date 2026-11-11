@@ -45,7 +45,9 @@ class TalkActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        com.tinyrunners.school.audio.Music.playGame(this)
+        // Replays from 이야기 모음 are part of the story, so they get the story music.
+        if (intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.REPLAY.ordinal) com.tinyrunners.school.audio.Music.playStory(this)
+        else com.tinyrunners.school.audio.Music.playGame(this)
     }
 
     private var view: TalkView? = null
@@ -104,6 +106,7 @@ class TalkActivity : Activity() {
     private fun finishTalk(characterId: String, firstTime: Boolean) {
         if (done) return
         done = true
+        if (intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.REPLAY.ordinal) { finish(); return }
         // The long first talk is shown once per friend; later runs get short lines instead.
         if (firstTime) TalkProgress(this).markTalkSeen(characterId)
         @Suppress("DEPRECATION")
@@ -127,6 +130,9 @@ class TalkActivity : Activity() {
         /** Before a run chosen on the selection screen. */
         fun intent(context: Context, characterId: String) =
             Intent(context, TalkActivity::class.java).putExtra(GameActivity.EXTRA_CHARACTER_ID, characterId)
+
+        /** A friend's long first talk again, from 이야기 모음; closes at the end without a run. */
+        fun replay(context: Context, characterId: String) = intent(context, characterId).putExtra(EXTRA_MODE, TalkMode.REPLAY.ordinal)
 
         /** Before "한 번 더 달리기"; [next] is the run to start afterwards. */
         fun retry(context: Context, characterId: String, next: Intent) = intent(context, characterId)

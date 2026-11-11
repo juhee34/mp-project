@@ -90,7 +90,8 @@ class PrologueActivity : Activity() {
         text.contentDescription = pages[page]
         text.announceForAccessibility(pages[page])
         // On the last page the hint says the village residents come next.
-        hint.setText(if (page == pages.lastIndex) R.string.talk_prologue_choose else R.string.talk_tap_hint)
+        val replaying = intent.getBooleanExtra(EXTRA_REPLAY, false)
+        hint.setText(if (page == pages.lastIndex && !replaying) R.string.talk_prologue_choose else R.string.talk_tap_hint)
         if (animate) {
             text.alpha = 0f
             text.animate().alpha(1f).setDuration(FADE_MS).start()
@@ -102,6 +103,8 @@ class PrologueActivity : Activity() {
      * this opens the village story list (talks with the six friends); swap the target here when the new talks land.
      */
     private fun openResidents() {
+        // A replay from 이야기 모음 just goes back there.
+        if (intent.getBooleanExtra(EXTRA_REPLAY, false)) { finish(); return }
         TalkProgress(this).markPrologueSeen()
         startActivity(Intent(this, com.tinyrunners.school.story.StoryListActivity::class.java))
         finish()
@@ -120,8 +123,18 @@ class PrologueActivity : Activity() {
         /** Black at about 92%: the scenery is only a faint outline and the white text stands out. */
         private val SHADE = Color.argb(235, 0, 0, 0)
 
-        /** "스토리 진행하기" on the hub: the world story every time, then the residents. */
-        fun forStory(context: Context): Intent = Intent(context, PrologueActivity::class.java)
+        private const val EXTRA_REPLAY = "replay"
+
+        /**
+         * "스토리 진행하기" on the menu: the world story only the first time for this account, then the residents.
+         * Later it goes straight to the residents (the village story list); the world story stays in 이야기 모음.
+         */
+        fun forStory(context: Context): Intent =
+            if (TalkProgress(context).shouldShowPrologue) Intent(context, PrologueActivity::class.java)
+            else Intent(context, com.tinyrunners.school.story.StoryListActivity::class.java)
+
+        /** Watch the world story again from 이야기 모음; it returns there at the end. */
+        fun replay(context: Context): Intent = Intent(context, PrologueActivity::class.java).putExtra(EXTRA_REPLAY, true)
     }
 }
 
