@@ -58,7 +58,7 @@ class ShopActivity : Activity() {
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             // Clear of the curtains on both sides.
-            setPadding(dp(52), dp(20), dp(52), dp(12))
+            setPadding(dp(62), dp(20), dp(62), dp(12))
         }
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
@@ -426,9 +426,9 @@ private class TrailPreview(context: Context, friendId: String, private val style
 }
 
 /**
- * The shop, in the colours of the menu and the bag: a cream wallpaper (the menu's sky) with soft green stripes (its
- * hills), curtains of light leather like the bag with pleats, stitched hems and gold tie-backs, a scalloped valance,
- * and a tall brown wooden counter (the menu's ground) the item cards stand in front of. Drawn once (no animation).
+ * The shop: a white wallpaper with light grey stripes, wine-red velvet curtains with pleats and gold tie-backs, a
+ * scalloped wine valance, a little shelf of potions on the right wall, and a tall brown wooden counter the item
+ * cards stand in front of. Drawn once (no animation).
  */
 private class ShopBackground(context: Context) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -437,11 +437,10 @@ private class ShopBackground(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         val w = width.toFloat(); val h = height.toFloat()
         val d = resources.displayMetrics.density
-        // Wallpaper: the menu's sky colours, with soft hill-green stripes.
-        paint.shader = android.graphics.LinearGradient(0f, 0f, 0f, h, Color.rgb(250, 246, 236), Color.rgb(236, 240, 226), android.graphics.Shader.TileMode.CLAMP)
+        // Wallpaper: white with light grey stripes.
+        paint.color = Color.rgb(252, 252, 250)
         canvas.drawRect(0f, 0f, w, h, paint)
-        paint.shader = null
-        paint.color = Color.argb(150, 221, 232, 214)
+        paint.color = Color.rgb(239, 239, 236)
         val stripe = 46 * d
         var x = stripe / 2
         while (x < w) { canvas.drawRect(x, 0f, x + stripe * 0.45f, h, paint); x += stripe }
@@ -449,6 +448,7 @@ private class ShopBackground(context: Context) : View(context) {
         for ((fx, fy, size) in listOf(Triple(0.24f, 0.32f, 6f), Triple(0.6f, 0.12f, 7f), Triple(0.82f, 0.4f, 5f), Triple(0.43f, 0.42f, 5f))) {
             sparkle(canvas, w * fx, h * fy, size * d)
         }
+        potionShelf(canvas, w, h, d)
         // The counter: tall, brown wood like the menu's ground, with a lighter top and carved front panels.
         val top = h * 0.7f
         paint.color = Color.rgb(150, 104, 64); canvas.drawRect(0f, top, w, h, paint)
@@ -466,11 +466,11 @@ private class ShopBackground(context: Context) : View(context) {
         valance(canvas, w, d)
     }
 
-    /** Light leather drape: full at the top, tied back with a gold band, flaring out again to the counter. */
+    /** Wine velvet drape: full at the top, tied back with a gold band, flaring out again to the counter. */
     private fun curtain(canvas: Canvas, w: Float, h: Float, d: Float, left: Boolean) {
         val edge = if (left) 0f else w
         val dir = if (left) 1f else -1f
-        val full = w * 0.085f
+        val full = w * 0.065f
         val tieY = h * 0.5f
         val bottom = h * 0.7f
         path.reset()
@@ -483,14 +483,9 @@ private class ShopBackground(context: Context) : View(context) {
         path.close()
         // Pleats: a soft light/dark pattern across the fabric.
         paint.shader = android.graphics.LinearGradient(edge, 0f, edge + dir * 14 * d, 0f,
-            Color.rgb(234, 204, 162), Color.rgb(206, 166, 118), android.graphics.Shader.TileMode.MIRROR)
+            WINE_LIGHT, WINE, android.graphics.Shader.TileMode.MIRROR)
         canvas.drawPath(path, paint)
         paint.shader = null
-        // Stitched hem along the inner edge, like the bag.
-        paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.color = Color.rgb(150, 104, 62)
-        paint.pathEffect = android.graphics.DashPathEffect(floatArrayOf(6 * d, 4 * d), 0f)
-        canvas.drawPath(path, paint)
-        paint.pathEffect = null; paint.style = Paint.Style.FILL
         // Gold tie-back with a tassel.
         val tx = edge + dir * full * 0.38f
         paint.color = Color.rgb(232, 186, 90)
@@ -500,17 +495,84 @@ private class ShopBackground(context: Context) : View(context) {
         canvas.drawRoundRect(tx + dir * 4 * d - 4 * d, tieY + 9 * d, tx + dir * 4 * d + 4 * d, tieY + 26 * d, 3 * d, 3 * d, paint)
     }
 
-    /** A scalloped band of the same leather across the top, with a stitched line. */
+    /** A scalloped band of the same wine velvet across the top, with a thin gold edge. */
     private fun valance(canvas: Canvas, w: Float, d: Float) {
         val band = 8 * d; val scallop = 26 * d
-        paint.color = Color.rgb(220, 186, 140)
+        paint.color = WINE
         canvas.drawRect(0f, 0f, w, band, paint)
         var x = 0f
         while (x < w) { canvas.drawCircle(x + scallop / 2, band, scallop / 2, paint); x += scallop }
-        paint.style = Paint.Style.STROKE; paint.strokeWidth = 1.5f * d; paint.color = Color.rgb(150, 104, 62)
-        paint.pathEffect = android.graphics.DashPathEffect(floatArrayOf(5 * d, 4 * d), 0f)
-        canvas.drawLine(0f, band * 0.6f, w, band * 0.6f, paint)
-        paint.pathEffect = null; paint.style = Paint.Style.FILL
+        paint.color = Color.rgb(232, 186, 90)
+        canvas.drawRect(0f, 0f, w, 1.5f * d, paint)
+    }
+
+    /**
+     * A small wooden shelf on the right wall, between the shelf buttons and the cards, with potion bottles on it:
+     * a round flask, a tall bottle and a heart-shaped one, each with coloured liquid, a cork and a shine.
+     */
+    private fun potionShelf(canvas: Canvas, w: Float, h: Float, d: Float) {
+        val board = h * 0.43f
+        val left = w * 0.56f; val right = w * 0.9f
+        // Brackets and the board.
+        paint.color = Color.rgb(150, 104, 64)
+        canvas.drawRect(left + 14 * d, board, left + 18 * d, board + 12 * d, paint)
+        canvas.drawRect(right - 18 * d, board, right - 14 * d, board + 12 * d, paint)
+        paint.color = Color.rgb(176, 126, 80); canvas.drawRect(left, board - 5 * d, right, board + 2 * d, paint)
+        paint.color = Color.rgb(206, 160, 108); canvas.drawRect(left, board - 5 * d, right, board - 3.5f * d, paint)
+        // Bottles in a row, a little uneven.
+        val step = (right - left) / 6f
+        val kinds = listOf(0, 1, 2, 1, 0)
+        val colours = listOf(Color.rgb(236, 96, 128), Color.rgb(104, 180, 230), Color.rgb(150, 210, 110), Color.rgb(184, 132, 226), Color.rgb(250, 196, 72))
+        kinds.forEachIndexed { i, kind -> potion(canvas, left + step * (i + 1), board - 5 * d, d, kind, colours[i]) }
+    }
+
+    private fun potion(canvas: Canvas, cx: Float, base: Float, d: Float, kind: Int, liquid: Int) {
+        // Faintly blue glass so the bottles show on the white wall.
+        val glass = Color.rgb(208, 226, 236)
+        when (kind) {
+            0 -> { // round flask
+                val r = 11 * d; val cy = base - r
+                paint.color = glass; canvas.drawCircle(cx, cy, r, paint)
+                paint.color = liquid; canvas.drawArc(cx - r, cy - r, cx + r, cy + r, 20f, 140f, false, paint)
+                canvas.drawRect(cx - r * 0.8f, cy + r * 0.2f, cx + r * 0.8f, cy + r * 0.5f, paint)
+                paint.color = glass; canvas.drawRect(cx - 3.5f * d, cy - r - 9 * d, cx + 3.5f * d, cy - r + 2 * d, paint)
+                cork(canvas, cx, cy - r - 9 * d, d)
+                shine(canvas, cx - r * 0.45f, cy - r * 0.35f, d)
+            }
+            1 -> { // tall bottle
+                val bw = 9 * d; val bh = 28 * d
+                paint.color = glass; canvas.drawRoundRect(cx - bw, base - bh, cx + bw, base, 4 * d, 4 * d, paint)
+                paint.color = liquid; canvas.drawRoundRect(cx - bw, base - bh * 0.6f, cx + bw, base, 4 * d, 4 * d, paint)
+                paint.color = glass; canvas.drawRect(cx - 3.5f * d, base - bh - 7 * d, cx + 3.5f * d, base - bh + 1 * d, paint)
+                cork(canvas, cx, base - bh - 7 * d, d)
+                shine(canvas, cx - bw * 0.5f, base - bh * 0.75f, d)
+            }
+            else -> { // heart bottle
+                val s = 11 * d; val cy = base - s * 1.1f
+                path.reset()
+                path.moveTo(cx, base)
+                path.cubicTo(cx - s * 1.6f, cy, cx - s * 0.9f, cy - s * 1.3f, cx, cy - s * 0.5f)
+                path.cubicTo(cx + s * 0.9f, cy - s * 1.3f, cx + s * 1.6f, cy, cx, base)
+                paint.color = liquid; canvas.drawPath(path, paint)
+                paint.color = glass; canvas.drawRect(cx - 3 * d, cy - s * 0.9f - 6 * d, cx + 3 * d, cy - s * 0.5f, paint)
+                cork(canvas, cx, cy - s * 0.9f - 6 * d, d)
+                shine(canvas, cx - s * 0.5f, cy - s * 0.4f, d)
+            }
+        }
+    }
+
+    private fun cork(canvas: Canvas, cx: Float, top: Float, d: Float) {
+        paint.color = Color.rgb(176, 126, 80); canvas.drawRoundRect(cx - 4.5f * d, top - 5 * d, cx + 4.5f * d, top + 1 * d, 2 * d, 2 * d, paint)
+    }
+
+    private fun shine(canvas: Canvas, x: Float, y: Float, d: Float) {
+        paint.color = Color.argb(190, 255, 255, 255); canvas.drawCircle(x, y, 2.2f * d, paint)
+    }
+
+    private companion object {
+        /** Wine-red velvet. */
+        val WINE = Color.rgb(116, 26, 46)
+        val WINE_LIGHT = Color.rgb(150, 40, 64)
     }
 
     private fun sparkle(canvas: Canvas, x: Float, y: Float, s: Float) {
