@@ -3,11 +3,11 @@
     "characterId": "mint",
     "background": {
       "id": "mint",
-      "path": "backgrounds/mint-cheese.png",
-      "status": "panorama_ready",
+      "path": "backgrounds/running/mint-intro.png",
+      "status": "running_loop_ready",
       "brief": "크림색 아침 하늘, 둥근 고사리 언덕, 작은 뿌리집, 길가의 접히는 이정표. 세이지·민트·살구색.",
       "manifest": "backgrounds/manifest.json",
-      "loopReady": false,
+      "loopReady": true,
       "layered": false
     },
     "music": {
@@ -21,11 +21,11 @@
     "characterId": "cheese",
     "background": {
       "id": "cheese",
-      "path": "backgrounds/mint-cheese.png",
-      "status": "panorama_ready",
+      "path": "backgrounds/running/cheese-intro.png",
+      "status": "running_loop_ready",
       "brief": "복숭아색 기와, 좁은 옥상 정원, 빨래 사이를 움직이는 햇살. 살구·크림·잎초록.",
       "manifest": "backgrounds/manifest.json",
-      "loopReady": false,
+      "loopReady": true,
       "layered": false
     },
     "music": {
@@ -39,11 +39,11 @@
     "characterId": "popo",
     "background": {
       "id": "popo",
-      "path": "backgrounds/popo-lumi.png",
-      "status": "panorama_ready",
+      "path": "backgrounds/running/popo-intro.png",
+      "status": "running_loop_ready",
       "brief": "분홍빛 극야 하늘, 푸른 눈언덕, 조개지붕 항구, 낮게 뜬 작은 달. 얼음파랑·복숭아·아이보리.",
       "manifest": "backgrounds/manifest.json",
-      "loopReady": false,
+      "loopReady": true,
       "layered": false
     },
     "music": {
@@ -57,11 +57,11 @@
     "characterId": "lumi",
     "background": {
       "id": "lumi",
-      "path": "backgrounds/popo-lumi.png",
-      "status": "panorama_ready",
+      "path": "backgrounds/running/lumi-intro.png",
+      "status": "running_loop_ready",
       "brief": "호박빛 숲, 구멍 난 나무 무대, 바람에 흔들리는 솔방울 종. 꿀색·녹청·짙은 이끼색.",
       "manifest": "backgrounds/manifest.json",
-      "loopReady": false,
+      "loopReady": true,
       "layered": false
     },
     "music": {
@@ -75,11 +75,11 @@
     "characterId": "nunu",
     "background": {
       "id": "nunu",
-      "path": "backgrounds/nunu-piko.png",
-      "status": "panorama_ready",
+      "path": "backgrounds/running/nunu-intro.png",
+      "status": "running_loop_ready",
       "brief": "낮은 안개, 둥근 책장 언덕, 떠 있는 책갈피와 따뜻한 창문빛. 연보라·크림·민트.",
       "manifest": "backgrounds/manifest.json",
-      "loopReady": false,
+      "loopReady": true,
       "layered": false
     },
     "music": {
@@ -93,11 +93,11 @@
     "characterId": "piko",
     "background": {
       "id": "piko",
-      "path": "backgrounds/nunu-piko.png",
-      "status": "panorama_ready",
+      "path": "backgrounds/running/piko-intro.png",
+      "status": "running_loop_ready",
       "brief": "작은 아치 다리, 잔잔한 운하, 떠 있는 종이배 집, 물방울 등불. 연노랑·하늘색·청록.",
       "manifest": "backgrounds/manifest.json",
-      "loopReady": false,
+      "loopReady": true,
       "layered": false
     },
     "music": {
