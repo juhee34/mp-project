@@ -35,3 +35,9 @@ GitHub 원격 조회는 연결 reset, 별도 checkout 준비는 Git config 쓰�
 위 실패 기록은 이전 환경의 결과다. 후속 작업에서는 최신 main `157831a`를 가져와 `codex/story-expansion-episodes-2` 전용 사본을 준비했다. 원고 3개와 대사 JSON 3개는 ZIP 원본 바이트를 유지했고, 이 문서/해당 PROJECT_STATE 기록만 추가했다.
 
 ZIP CRC와 원본 해시, JSON 구조, 144+96=240개 ID/문구 중복 없음, 6명×8상황×5개, 48 코드포인트 제한, 읽음 조건 빈 배열 및 기존 episode_2 ID/제3편 개요 유지 검사를 통과했다. 기존 콘텐츠 검사와 커밋 공백 검사도 게시 전에 수행한다. 앱 연결/생성기/해금/저장 정책 변경 및 Android 실행 검증은 이번 게시 범위가 아니다. 원격 push 결과와 PR은 후속 게시 기록에 구분한다.
+
+## 게시 완료 — 2026-11-11
+- 콘텐츠 커밋: 70efecfe1428f0ba37ac3613c93d839b23502a2f. origin의 codex/story-expansion-episodes-2와 로컬 해시 일치 확인.
+- PR: https://github.com/juhee34/mp-project/pull/5 . main 직접 push/병합 및 강제 push 없음. main 반영은 팀원 검토 대기.
+- node scripts/validate-content.cjs 및 staged/전체 diff 공백 검사 통과. 추가 96개와 기존 144개 합계 240개, 6명×8상황×5개, ID/문구 중복 없음, 최대 25 코드포인트, 읽음 조건 빈 배열 확인.
+- 원고 3개·JSON 3개 원문 유지. 총 8파일만 게시하며 ZIP 자체/중복 풀기 폴더/다른 A·B 작업은 포함하지 않았다. 앱 연결·빌드·테스트·기기 검수는 수행하지 않았다. 사용자 승인/integrated=false 유지.

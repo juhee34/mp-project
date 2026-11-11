@@ -517,3 +517,9 @@
 - 원고 3개·JSON 3개는 ZIP 및 로컬 승인본과 바이트 동일하다. 후속 6편(기존 episode_2 ID), 추가 대사 96개, 사용자 승인/integrated=false 상태 유지. 제3편과 앱 JSON·생성기·해금·저장·게임 코드는 변경하지 않았다.
 - ZIP CRC/해시, JSON 구조, 240개 ID/문구 중복 없음, 6명×8상황×5대안, 48 Unicode 코드포인트 이하, requiresReadStoryIds 빈 배열, 6개 기존 원고 대상 ID·24장면 검사 통과. 기존 콘텐츠 및 diff 공백 검사 결과는 게시 커밋 검증 기록으로 확인한다.
 - 이번 범위는 콘텐츠 납품 게시다. 앱 빌드·단위 테스트·Lint·기기 실행 및 웹 배포는 수행하지 않는다. 앱 연결은 B팀이 기존 생성기/ID/트리거 계약에 맞춰 별도 진행한다. 원고 승인과 앱 연결 완료를 혼동하지 않는다.
+
+## 게시 완료 — 2026-11-11
+- 콘텐츠 커밋: 70efecfe1428f0ba37ac3613c93d839b23502a2f. origin의 codex/story-expansion-episodes-2와 로컬 해시 일치 확인.
+- PR: https://github.com/juhee34/mp-project/pull/5 . main 직접 push/병합 및 강제 push 없음. main 반영은 팀원 검토 대기.
+- node scripts/validate-content.cjs 및 staged/전체 diff 공백 검사 통과. 추가 96개와 기존 144개 합계 240개, 6명×8상황×5개, ID/문구 중복 없음, 최대 25 코드포인트, 읽음 조건 빈 배열 확인.
+- 원고 3개·JSON 3개 원문 유지. 총 8파일만 게시하며 ZIP 자체/중복 풀기 폴더/다른 A·B 작업은 포함하지 않았다. 앱 연결·빌드·테스트·기기 검수는 수행하지 않았다. 사용자 승인/integrated=false 유지.
