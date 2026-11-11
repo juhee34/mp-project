@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "status": "user_approved",
+  "integrated": false,
+  "maxTextCodePoints": 48,
+  "baseFile": "short-lines.json",
+  "mergeMode": "append_by_unique_id",
+  "notes": "누누·피코 8상황별 독립 대안 2개 추가. 기존 HANDOFF.md 조건 유지. 미구현 clear/home 예약 상태 유지. 선택창 확정 인사 교체 없음.",
+  "lines": [
+    {
+      "id": "nunu_select_04",
+      "characterId": "nunu",
+      "event": "select",
+      "text": "이번엔 안 숨었어. 리본까지 다 보여.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_select_05",
+      "characterId": "nunu",
+      "event": "select",
+      "text": "나 여기 있어. 조금 가까이 와도 돼.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_start_04",
+      "characterId": "nunu",
+      "event": "start",
+      "text": "리본 끝만 넣고 갈게. 자꾸 삐져나와.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_start_05",
+      "characterId": "nunu",
+      "event": "start",
+      "text": "출발 인사는 작게 할래. 안녕.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_stumble_04",
+      "characterId": "nunu",
+      "event": "stumble",
+      "text": "앗. 책갈피는 잘 있나 볼게.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_stumble_05",
+      "characterId": "nunu",
+      "event": "stumble",
+      "text": "조금 놀라서 리본을 꼭 잡았어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_retry_04",
+      "characterId": "nunu",
+      "event": "retry",
+      "text": "이번에는 내가 먼저 준비됐다고 할게.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_retry_05",
+      "characterId": "nunu",
+      "event": "retry",
+      "text": "다시 가 볼래. 숨는 건 나중에 하고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_clear_04",
+      "characterId": "nunu",
+      "event": "clear",
+      "text": "끝났다고 하니까 웃음이 나네. 히히.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_clear_05",
+      "characterId": "nunu",
+      "event": "clear",
+      "text": "돌아가면 이 얘기부터 해 볼까.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_home_04",
+      "characterId": "nunu",
+      "event": "home",
+      "text": "책장 뒤 말고 의자부터 가 볼래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_home_05",
+      "characterId": "nunu",
+      "event": "home",
+      "text": "읽던 책은 어디 뒀더라. 리본 밑인가.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_story_unread_04",
+      "characterId": "nunu",
+      "event": "story_unread",
+      "text": "책 뒤에 숨기 전에 한 장만 볼까?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_story_unread_05",
+      "characterId": "nunu",
+      "event": "story_unread",
+      "text": "내가 말한 것도 글자가 됐네.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_story_reread_04",
+      "characterId": "nunu",
+      "event": "story_reread",
+      "text": "아는 장면인데 벌써 웃음이 나.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "nunu_story_reread_05",
+      "characterId": "nunu",
+      "event": "story_reread",
+      "text": "여기서는 안 숨을게. 같이 읽자.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_select_04",
+      "characterId": "piko",
+      "event": "select",
+      "text": "장화는 신었고! 배는… 접으면서 생각할래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_select_05",
+      "characterId": "piko",
+      "event": "select",
+      "text": "할 얘기 있어! 아, 인사부터. 안녕!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_start_04",
+      "characterId": "piko",
+      "event": "start",
+      "text": "출발 준비 끝! 이번엔 설명도 했나?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_start_05",
+      "characterId": "piko",
+      "event": "start",
+      "text": "장화 끈은 없지만 발은 한번 확인!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_stumble_04",
+      "characterId": "piko",
+      "event": "stumble",
+      "text": "앗, 잠깐! 날개부터 가지런히 놓고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_stumble_05",
+      "characterId": "piko",
+      "event": "stumble",
+      "text": "마음은 달리는데 발은 좀 쉬고 싶대.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_retry_04",
+      "characterId": "piko",
+      "event": "retry",
+      "text": "한 번 더! 아, 준비할 시간은 있어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_retry_05",
+      "characterId": "piko",
+      "event": "retry",
+      "text": "이번에도 신나게! 서두르는 건 빼고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_clear_04",
+      "characterId": "piko",
+      "event": "clear",
+      "text": "다녀온 얘기부터 할까, 장화부터 벗을까?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_clear_05",
+      "characterId": "piko",
+      "event": "clear",
+      "text": "돌아가면 배 하나 접을래. 조금 넓은 걸로!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_home_04",
+      "characterId": "piko",
+      "event": "home",
+      "text": "장화는 문 앞! 물기는 밖에서 털고!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_home_05",
+      "characterId": "piko",
+      "event": "home",
+      "text": "종이는 아직 있겠지? 새로 접고 싶어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_story_unread_04",
+      "characterId": "piko",
+      "event": "story_unread",
+      "text": "이번엔 배 대신 책장을 넘기는 거네!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_story_unread_05",
+      "characterId": "piko",
+      "event": "story_unread",
+      "text": "내가 빠뜨린 설명도 여기엔 있을까?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_story_reread_04",
+      "characterId": "piko",
+      "event": "story_reread",
+      "text": "다시 읽자! 이번엔 모퉁이도 잘 보고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "piko_story_reread_05",
+      "characterId": "piko",
+      "event": "story_reread",
+      "text": "이 장면 알아! 그래도 먼저 말 안 할게.",
+      "requiresReadStoryIds": []
+    }
+  ]
+}

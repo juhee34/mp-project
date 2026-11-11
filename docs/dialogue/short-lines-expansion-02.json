@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "status": "user_approved",
+  "integrated": false,
+  "maxTextCodePoints": 48,
+  "baseFile": "short-lines.json",
+  "mergeMode": "append_by_unique_id",
+  "notes": "포포·루미 8상황별 2개 추가. 기존 HANDOFF.md 이벤트 조건 유지. clear/home 미구현이면 예약 콘텐츠. 독립 대안이며 연속 대사가 아님. 확정 선택창 인사 교체 없음.",
+  "lines": [
+    {
+      "id": "popo_select_04",
+      "characterId": "popo",
+      "event": "select",
+      "text": "목도리 끝만 여미고. 이제 됐어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_select_05",
+      "characterId": "popo",
+      "event": "select",
+      "text": "새로운 곳에 가면 잠깐 귀 기울일래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_start_04",
+      "characterId": "popo",
+      "event": "start",
+      "text": "가방 안에서 쪽지가 사각거려.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_start_05",
+      "characterId": "popo",
+      "event": "start",
+      "text": "오늘은 돌아와서 뭘 그리게 될까.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_stumble_04",
+      "characterId": "popo",
+      "event": "stumble",
+      "text": "조금 놀랐어. 잠깐만 앉아 있을게.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_stumble_05",
+      "characterId": "popo",
+      "event": "stumble",
+      "text": "상자 뚜껑부터 살펴볼래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_retry_04",
+      "characterId": "popo",
+      "event": "retry",
+      "text": "다시 가 보고 싶어. 이번에도 같이.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_retry_05",
+      "characterId": "popo",
+      "event": "retry",
+      "text": "목도리 끝은 넣었어. 준비됐어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_clear_04",
+      "characterId": "popo",
+      "event": "clear",
+      "text": "생각나는 게 있어. 잊기 전에 그릴래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_clear_05",
+      "characterId": "popo",
+      "event": "clear",
+      "text": "발은 쉬고 싶은가 봐. 나는 조금 신나.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_home_04",
+      "characterId": "popo",
+      "event": "home",
+      "text": "문 앞에서 발부터 털어야지.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_home_05",
+      "characterId": "popo",
+      "event": "home",
+      "text": "가방 내려놓고 익숙한 자리에 앉을래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_story_unread_04",
+      "characterId": "popo",
+      "event": "story_unread",
+      "text": "글자 사이에 내가 머뭇거린 곳도 있어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_story_unread_05",
+      "characterId": "popo",
+      "event": "story_unread",
+      "text": "궁금한 만큼만 펼쳐 봐도 좋아.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_story_reread_04",
+      "characterId": "popo",
+      "event": "story_reread",
+      "text": "전에 지나친 말을 이번엔 발견할까.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "popo_story_reread_05",
+      "characterId": "popo",
+      "event": "story_reread",
+      "text": "조개 상자 열듯이 천천히 펼쳐 볼래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_select_04",
+      "characterId": "lumi",
+      "event": "select",
+      "text": "반가워! 인사는 했고, 이름도 말할까?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_select_05",
+      "characterId": "lumi",
+      "event": "select",
+      "text": "망토는 뒤로! 나는 네 옆으로!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_start_04",
+      "characterId": "lumi",
+      "event": "start",
+      "text": "발부터 출발! 꼬리는 알아서 따라와.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_start_05",
+      "characterId": "lumi",
+      "event": "start",
+      "text": "오늘 인사말은 두 글자! 안녕!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_stumble_04",
+      "characterId": "lumi",
+      "event": "stumble",
+      "text": "앗, 놀랐네. 멋진 말은 좀 이따 할래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_stumble_05",
+      "characterId": "lumi",
+      "event": "stumble",
+      "text": "망토 정리 시간! 나도 숨 좀 고르고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_retry_04",
+      "characterId": "lumi",
+      "event": "retry",
+      "text": "다시 가 볼래! 긴 인사말은 접어 두고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_retry_05",
+      "characterId": "lumi",
+      "event": "retry",
+      "text": "이번 출발은 내가 먼저 웃고 시작할래!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_clear_04",
+      "characterId": "lumi",
+      "event": "clear",
+      "text": "인사 전에 숨부터! 후우, 이제 꾸벅.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_clear_05",
+      "characterId": "lumi",
+      "event": "clear",
+      "text": "오늘 이야기는 앉아서 떠올려 볼래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_home_04",
+      "characterId": "lumi",
+      "event": "home",
+      "text": "방석 털 때 꼬리도 같이 털릴까?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_home_05",
+      "characterId": "lumi",
+      "event": "home",
+      "text": "커튼은 닫고, 간식 이야기는 열어 둘래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_story_unread_04",
+      "characterId": "lumi",
+      "event": "story_unread",
+      "text": "내가 못 들은 대답도 적혀 있을까?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_story_unread_05",
+      "characterId": "lumi",
+      "event": "story_unread",
+      "text": "내 이야기 펼칠래? 무대는 이 종이야!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_story_reread_04",
+      "characterId": "lumi",
+      "event": "story_reread",
+      "text": "이번에는 네가 웃은 부분도 궁금해!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "lumi_story_reread_05",
+      "characterId": "lumi",
+      "event": "story_reread",
+      "text": "앗, 이 말 기억나! 다음 말은 책에 맡길게.",
+      "requiresReadStoryIds": []
+    }
+  ]
+}
