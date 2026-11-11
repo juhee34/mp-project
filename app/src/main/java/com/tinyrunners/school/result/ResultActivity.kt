@@ -37,7 +37,7 @@ class ResultActivity : Activity() {
         val card = page.card(16)
         page.line(card, getString(R.string.result_score, run.score), 20f, Page.INK, bold = true, top = 0)
         page.line(card, getString(R.string.result_cleared, run.cleared))
-        // 10 m = 1 coin; the shop works the balance out from the saved total distance.
+        // One coin per ShopRules.METERS_PER_COIN metres; the shop works the balance out from the saved total distance.
         page.line(card, getString(R.string.result_coins, com.tinyrunners.school.shop.ShopRules.coinsForRun(run.meters)), 16f, Page.LEAF, bold = true)
         val status = page.text(getString(R.string.result_saving), 15f)
 

@@ -48,7 +48,7 @@ data class ShopState(val owned: Set<String> = emptySet(), val equipped: String =
  * coin. The balance is worked out from the saved total distance minus what was spent, so it cannot be counted twice.
  */
 object ShopRules {
-    const val METERS_PER_COIN = 10
+    const val METERS_PER_COIN = 25
 
     fun coinsForRun(meters: Int): Int = meters.coerceAtLeast(0) / METERS_PER_COIN
     fun earned(totalMeters: Long): Int = (totalMeters.coerceAtLeast(0) / METERS_PER_COIN).toInt()

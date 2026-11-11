@@ -31,7 +31,7 @@ import com.tinyrunners.school.ui.SceneryView
 import kotlin.math.roundToInt
 
 /**
- * Decoration shop. Coins come from distance run (10 m = 1 coin); items only change the trail drawn behind the
+ * Decoration shop. Coins come from distance run (ShopRules.METERS_PER_COIN metres = 1 coin); items only change the trail drawn behind the
  * friend while running. Cards sit in one row that scrolls sideways, so the whole shop fits a landscape screen.
  */
 class ShopActivity : Activity() {
@@ -73,7 +73,7 @@ class ShopActivity : Activity() {
         top.addView(coins)
         content.addView(top)
         content.addView(TextView(this).apply {
-            setText(R.string.shop_body); textSize = 15f; setTextColor(Page.MUTED); setPadding(0, dp(6), 0, 0)
+            text = getString(R.string.shop_body, ShopRules.METERS_PER_COIN); textSize = 15f; setTextColor(Page.MUTED); setPadding(0, dp(6), 0, 0)
         })
         message = TextView(this).apply { textSize = 15f; setTextColor(Page.LEAF); setTypeface(typeface, Typeface.BOLD) }
         content.addView(message, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
