@@ -33,8 +33,6 @@
     <string name="quest_error">가방을 열지 못했어요. 잠시 후 다시 해 주세요.</string>
 
     <!-- Result screen after a run. -->
-    <string name="result_items">%1$s %2$d개 주웠어요</string>
-    <string name="result_items_bag">%1$s %2$d개 주웠어요 · 가방에 %3$d개</string>
     <string name="result_to_village">마을 이야기로</string>
     <string name="result_give_items">%1$s에게 %2$s 전하러 가기</string>
 
@@ -47,6 +45,5 @@
     <string name="bag_ready">건넬 수 있어요 · %1$s</string>
     <string name="bag_all_told">이야기를 모두 봤어요</string>
     <string name="bag_give">전하러 가기</string>
-    <string name="hub_bag">가방</string>
     <string name="bag_open">가방 열기</string>
 </resources>

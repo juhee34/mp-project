@@ -279,6 +279,9 @@ internal class CharacterScreens(
         }
         selectedId = friend.id
         val body = screen(Route.PROFILE)
+        // Back to the selection at the top-left, not at the bottom of the scrolling page.
+        body.addView(com.tinyrunners.school.ui.HomeButton.create(context, context.getString(R.string.characters_back_selection_pill)) { showSelection() },
+            0, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(6) })
         val profile = panel()
         profile.background = shape(MINT, 22)
         profile.addView(portrait(friend), LinearLayout.LayoutParams(dp(96), dp(96)))
@@ -296,7 +299,6 @@ internal class CharacterScreens(
 
         body.action(R.string.characters_run, primary = true) { onStartRun(friend.id) }
         body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context, friend.id)) }
-        body.action(R.string.characters_back_selection) { showSelection() }
         restoreScroll(scrollY)
     }
 

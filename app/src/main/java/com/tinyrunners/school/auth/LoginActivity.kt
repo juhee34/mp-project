@@ -27,6 +27,7 @@ class LoginActivity : Activity() {
         super.onCreate(savedInstanceState)
         val page = Page(this).show(scenery = false)
         sizeAsPopup(this, page)
+        page.backPill(getString(R.string.common_back_pill)) { finish() }
         page.eyebrow(getString(R.string.characters_brand))
         page.title(getString(R.string.login_title))
 
@@ -73,7 +74,6 @@ class LoginActivity : Activity() {
                 openMain(this)
             }
         }
-        page.button(getString(R.string.common_back)) { finish() }
     }
 
     private fun busy(on: Boolean) {

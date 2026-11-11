@@ -98,6 +98,8 @@ internal class OpeningBackground(
     private val showTitle: Boolean = true,
     /** Title baseline as a fraction of the height; the hub raises it to make room for four buttons. */
     private val titleY: Float = 0.2f,
+    /** Title text height as a fraction of the screen height: large on the opening, smaller above the menu buttons. */
+    private val titleSize: Float = 0.14f,
 ) : View(context) {
     private val art: Bitmap? = loadArt(context)
     private val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false; isDither = false }
@@ -132,11 +134,11 @@ internal class OpeningBackground(
 
     private fun drawTitle(canvas: Canvas, w: Int, h: Int) {
         text.color = INK
-        text.textSize = h * 0.09f
+        text.textSize = h * titleSize
         canvas.drawText(context.getString(R.string.app_name), w / 2f, h * titleY, text)
-        text.textSize = h * 0.035f
+        text.textSize = h * (0.035f + (titleSize - 0.09f) * 0.25f)
         text.color = MUTED
-        canvas.drawText(context.getString(R.string.opening_tagline), w / 2f, h * (titleY + 0.07f), text)
+        canvas.drawText(context.getString(R.string.opening_tagline), w / 2f, h * (titleY + titleSize * 0.8f), text)
     }
 
     private fun drawFriends(canvas: Canvas, w: Int, h: Int, ground: Float) {

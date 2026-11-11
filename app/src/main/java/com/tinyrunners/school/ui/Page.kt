@@ -75,27 +75,9 @@ class Page(private val activity: Activity) {
         }
 
     /** The pouch button that opens the bag, floating in the screen's top-right corner (below the status bar). */
-    fun bagButton(): android.view.View = BagButton.create(activity).also { b ->
-        val host = frame
-        if (host == null) {
-            body.addView(b, LinearLayout.LayoutParams(dp(40), dp(40)).apply { bottomMargin = dp(6) })
-            return@also
-        }
-        host.addView(b, android.widget.FrameLayout.LayoutParams(dp(40), dp(40), android.view.Gravity.TOP or android.view.Gravity.END).apply {
-            topMargin = dp(12); marginEnd = dp(16)
-        })
-        b.setOnApplyWindowInsetsListener { v, insets ->
-            val (top, right) = if (android.os.Build.VERSION.SDK_INT >= 30) {
-                insets.getInsets(android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout()).let { it.top to it.right }
-            } else {
-                @Suppress("DEPRECATION")
-                insets.systemWindowInsetTop to insets.systemWindowInsetRight
-            }
-            (v.layoutParams as android.widget.FrameLayout.LayoutParams).apply { topMargin = top + dp(12); marginEnd = right + dp(16) }
-            v.requestLayout()
-            insets
-        }
-        b.requestApplyInsets()
+    fun bagButton(): android.view.View {
+        val host = frame ?: return BagButton.create(activity).also { body.addView(it, LinearLayout.LayoutParams(dp(40), dp(40))) }
+        return BagButton.floatIn(host)
     }
 
     fun eyebrow(text: String) = label(text, 13f, LEAF, bold = true)

@@ -45,7 +45,6 @@ class HubActivity : Activity() {
         buttons.addView(button(R.string.hub_story) { startActivity(PrologueActivity.forStory(this)) }, slot(first = true))
         buttons.addView(button(R.string.hub_game) { startActivity(MainActivity.selectionIntent(this)) }, slot())
         buttons.addView(button(R.string.hub_shop) { startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null)) }, slot())
-        buttons.addView(button(R.string.hub_bag) { startActivity(com.tinyrunners.school.quest.BagActivity.intent(this)) }, slot())
         buttons.addView(button(R.string.hub_tutorial) {
             // A practice run with 라일 that always starts with the game guide.
             startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
@@ -55,21 +54,20 @@ class HubActivity : Activity() {
         }, slot())
 
         setContentView(FrameLayout(this).apply {
-            addView(OpeningBackground(this@HubActivity, titleY = 0.13f), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            addView(buttons, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER).apply { topMargin = dp(30) })
+            addView(OpeningBackground(this@HubActivity, titleY = 0.13f, titleSize = 0.09f), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(buttons, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER).apply { topMargin = dp(16) })
         })
         hideSystemBars()
     }
 
-    /** White pill with a green border and bold green text (all six buttons the same). */
+    /** White pill with a green border and bold green text (all five buttons the same). */
     private fun button(label: Int, click: () -> Unit) = Button(this).apply {
         setText(label)
         textSize = 17f
         isAllCaps = false
         setTextColor(LEAF)
         typeface = Typeface.DEFAULT_BOLD
-        // Six buttons fit under the title and subtitle at 36dp each.
-        minHeight = dp(36); minimumHeight = dp(36)
+        minHeight = dp(40); minimumHeight = dp(40)
         setPadding(dp(16), 0, dp(16), 0)
         background = GradientDrawable().apply {
             setColor(Color.WHITE)
@@ -81,7 +79,7 @@ class HubActivity : Activity() {
     }
 
     private fun slot(first: Boolean = false) = LinearLayout.LayoutParams(dp(200), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-        if (!first) topMargin = dp(6)
+        if (!first) topMargin = dp(7)
     }
 
     private fun hideSystemBars() {

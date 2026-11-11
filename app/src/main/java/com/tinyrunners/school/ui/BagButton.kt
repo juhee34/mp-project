@@ -31,6 +31,27 @@ object BagButton {
         layoutParams = LinearLayout.LayoutParams(size, size).apply { marginStart = (10 * d).roundToInt() }
     }
 
+    /** Floats the bag button in [frame]'s top-right corner, below the status bar. */
+    fun floatIn(frame: android.widget.FrameLayout): View = create(frame.context).also { b ->
+        val d = frame.resources.displayMetrics.density
+        fun dp(v: Int) = (v * d).roundToInt()
+        frame.addView(b, android.widget.FrameLayout.LayoutParams(dp(40), dp(40), android.view.Gravity.TOP or android.view.Gravity.END).apply {
+            topMargin = dp(12); marginEnd = dp(16)
+        })
+        b.setOnApplyWindowInsetsListener { v, insets ->
+            val (top, right) = if (android.os.Build.VERSION.SDK_INT >= 30) {
+                insets.getInsets(android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.displayCutout()).let { it.top to it.right }
+            } else {
+                @Suppress("DEPRECATION")
+                insets.systemWindowInsetTop to insets.systemWindowInsetRight
+            }
+            (v.layoutParams as android.widget.FrameLayout.LayoutParams).apply { topMargin = top + dp(12); marginEnd = right + dp(16) }
+            v.requestLayout()
+            insets
+        }
+        b.requestApplyInsets()
+    }
+
     /** Puts the bag button at the right end of [row] (for rows built from XML). */
     fun appendTo(row: ViewGroup) {
         row.addView(create(row.context))

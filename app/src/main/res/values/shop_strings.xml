@@ -51,7 +51,5 @@
     <string name="shop_music_piko_blurb">Boots in the Current</string>
     <string name="settings_music">배경 음악</string>
     <string name="settings_music_toggle">달리기와 이야기에서 음악 켜기</string>
-    <string name="result_coins">+%1$d코인 모았어요</string>
-    <string name="result_coins_bonus">+%1$d코인 모았어요 (길에서 주운 %2$d개 포함)</string>
     <string name="result_shop">꾸미기 상점</string>
 </resources>

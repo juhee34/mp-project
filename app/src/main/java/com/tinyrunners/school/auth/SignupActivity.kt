@@ -12,6 +12,7 @@ class SignupActivity : Activity() {
         super.onCreate(savedInstanceState)
         val page = Page(this).show(scenery = false)
         LoginActivity.sizeAsPopup(this, page)
+        page.backPill(getString(R.string.common_back_pill)) { finish() }
         page.eyebrow(getString(R.string.characters_brand))
         page.title(getString(R.string.signup_title))
         page.text(getString(R.string.signup_body, AuthInput.MIN_PASSWORD))
@@ -43,6 +44,5 @@ class SignupActivity : Activity() {
             submit.isEnabled = false
             page.text(getString(R.string.auth_not_configured), 14f, Page.ERROR)
         }
-        page.button(getString(R.string.common_back)) { finish() }
     }
 }

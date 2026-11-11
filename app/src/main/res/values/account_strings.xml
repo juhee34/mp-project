@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="common_back">돌아가기</string>
+    <string name="common_back_pill">◀ 돌아가기</string>
     <string name="common_to_menu">◀ 처음으로</string>
     <string name="menu_records">내 기록</string>
     <string name="menu_settings">설정</string>
@@ -38,12 +39,11 @@
 
     <!-- Result -->
     <string name="result_eyebrow">오늘의 달리기</string>
-    <string name="result_title">%1$s · 함께 %2$dm</string>
-    <string name="result_score">점수 %1$d</string>
-    <string name="result_cleared">넘은 장애물 %1$d개</string>
+    <string name="result_distance_label">함께 달린 거리</string>
+    <string name="result_score_label">점수</string>
+    <string name="result_meters">%1$dm</string>
     <string name="result_saving">기록을 저장하는 중…</string>
     <string name="result_new_best">새 최고 점수예요!</string>
-    <string name="result_progress">%1$s · 지금까지 %2$d번, 모두 %3$dm 함께 달렸어요. 최고 점수 %4$d</string>
     <string name="result_save_failed">기록을 저장하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
     <string name="result_again">한 번 더 달리기</string>
     <string name="result_records">내 기록 보기</string>

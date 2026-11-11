@@ -14,6 +14,7 @@ class RecordsActivity : Activity() {
         val characters = CharacterRepository(this).characters
         val page = Page(this).show()
         page.bagButton()
+        page.backPill(getString(R.string.common_back_pill)) { finish() }
         page.eyebrow(getString(R.string.records_eyebrow))
         page.title(getString(R.string.records_title))
         val store = ProgressStore.forCurrentUser(this)
@@ -35,11 +36,9 @@ class RecordsActivity : Activity() {
                         page.line(card, getString(R.string.records_line_best, p.bestMeters, p.bestScore))
                     }
                 }
-                page.button(getString(R.string.common_back)) { finish() }
             }.onFailure {
                 status.setTextColor(Page.ERROR)
                 status.text = getString(R.string.records_load_failed)
-                page.button(getString(R.string.common_back)) { finish() }
             }
         }
     }
