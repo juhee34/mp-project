@@ -451,11 +451,12 @@ private class ShopBackground(context: Context) : View(context) {
         potionShelf(canvas, w, h, d)
         // The counter: tall, brown wood like the menu's ground, with a lighter top and carved front panels.
         val top = h * 0.7f
-        paint.color = Color.rgb(150, 104, 64); canvas.drawRect(0f, top, w, h, paint)
-        paint.color = Color.rgb(176, 126, 80); canvas.drawRect(0f, top, w, top + 14 * d, paint)
-        paint.color = Color.rgb(206, 160, 108); canvas.drawRect(0f, top, w, top + 4 * d, paint)
-        paint.color = Color.argb(70, 70, 40, 16); canvas.drawRect(0f, top + 14 * d, w, top + 19 * d, paint)
-        paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.color = Color.rgb(122, 82, 48)
+        // Darker walnut wood.
+        paint.color = Color.rgb(98, 62, 36); canvas.drawRect(0f, top, w, h, paint)
+        paint.color = Color.rgb(124, 82, 48); canvas.drawRect(0f, top, w, top + 14 * d, paint)
+        paint.color = Color.rgb(156, 108, 66); canvas.drawRect(0f, top, w, top + 4 * d, paint)
+        paint.color = Color.argb(80, 40, 20, 8); canvas.drawRect(0f, top + 14 * d, w, top + 19 * d, paint)
+        paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.color = Color.rgb(74, 44, 24)
         val panel = 120 * d
         x = 10 * d
         while (x < w) { canvas.drawRoundRect(x, top + 26 * d, x + panel - 20 * d, h - 10 * d, 8 * d, 8 * d, paint); x += panel }
