@@ -28,6 +28,11 @@ object StoryRunSignal {
  * The player has no picture; their lines are shown with their nickname.
  */
 class StoryActivity : Activity() {
+    override fun onPause() {
+        com.tinyrunners.school.audio.Music.pauseSoon()
+        super.onPause()
+    }
+
     private lateinit var player: StoryPlayer
     private lateinit var page: Page
     private var waitingForRun = false
@@ -48,6 +53,7 @@ class StoryActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        com.tinyrunners.school.audio.Music.playStory(this)
         if (!::player.isInitialized) return
         if (waitingForRun && StoryRunSignal.finishedFor == player.story.id) {
             StoryRunSignal.finishedFor = null
@@ -140,8 +146,14 @@ class StoryActivity : Activity() {
 
 /** Every friend's stories with read / new / locked state. A's collection screen can replace this later. */
 class StoryListActivity : Activity() {
+    override fun onPause() {
+        com.tinyrunners.school.audio.Music.pauseSoon()
+        super.onPause()
+    }
+
     override fun onResume() {
         super.onResume()
+        com.tinyrunners.school.audio.Music.playStory(this)
         val page = Page(this).show()
         page.eyebrow(getString(R.string.characters_brand))
         page.title(getString(R.string.story_list_title))

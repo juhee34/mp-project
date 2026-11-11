@@ -34,8 +34,12 @@ interface ShopStore {
         fun equippedStyle(context: Context): TrailStyle =
             ShopCatalog.style(cache(context).getString(cacheKey(context), ShopCatalog.NONE_ID))
 
+        /** The run music chosen in the shop for the current account (item id), read synchronously by the player. */
+        fun equippedMusic(context: Context): String =
+            cache(context).getString(cacheKey(context) + "_music", ShopCatalog.MAIN_MUSIC_ID) ?: ShopCatalog.MAIN_MUSIC_ID
+
         internal fun remember(context: Context, state: ShopState) {
-            cache(context).edit().putString(cacheKey(context), state.equipped).apply()
+            cache(context).edit().putString(cacheKey(context), state.equipped).putString(cacheKey(context) + "_music", state.music).apply()
         }
 
         private fun cache(context: Context) = context.applicationContext.getSharedPreferences("shop_equipped", Context.MODE_PRIVATE)
@@ -52,12 +56,12 @@ class LocalShopStore(context: Context) : ShopStore {
         prefs.getString(KEY, null)?.let { text ->
             val o = org.json.JSONObject(text)
             val owned = o.optJSONArray("owned")?.let { a -> List(a.length()) { a.getString(it) } }.orEmpty()
-            ShopState.fromMap(mapOf("owned" to owned, "equipped" to o.optString("equipped"), "spent" to o.optInt("spent")))
+            ShopState.fromMap(mapOf("owned" to owned, "equipped" to o.optString("equipped"), "spent" to o.optInt("spent"), "music" to o.optString("music")))
         } ?: ShopState()
     } catch (_: Exception) { ShopState() }
 
     private fun save(s: ShopState) {
-        val json = org.json.JSONObject().put("owned", org.json.JSONArray(s.owned.sorted())).put("equipped", s.equipped).put("spent", s.spent)
+        val json = org.json.JSONObject().put("owned", org.json.JSONArray(s.owned.sorted())).put("equipped", s.equipped).put("spent", s.spent).put("music", s.music)
         prefs.edit().putString(KEY, json.toString()).apply()
         ShopStore.remember(app, s)
     }

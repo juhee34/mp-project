@@ -38,6 +38,16 @@ import kotlin.math.roundToInt
  * after a crash. When the talk ends (or "건너뛰기" is pressed) the next screen opens.
  */
 class TalkActivity : Activity() {
+    override fun onPause() {
+        com.tinyrunners.school.audio.Music.pauseSoon()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        com.tinyrunners.school.audio.Music.playGame(this)
+    }
+
     private var view: TalkView? = null
     private var done = false
 

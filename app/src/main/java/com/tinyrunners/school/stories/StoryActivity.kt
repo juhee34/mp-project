@@ -22,6 +22,11 @@ import com.tinyrunners.school.progress.ProgressStore
 import com.tinyrunners.school.ui.Page
 
 class StoryActivity : Activity() {
+    override fun onPause() {
+        com.tinyrunners.school.audio.Music.pauseSoon()
+        super.onPause()
+    }
+
     private lateinit var characters: CharacterRepository
     private lateinit var store: StoryStore
     private var stories = emptyList<Story>()
@@ -66,6 +71,7 @@ class StoryActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        com.tinyrunners.school.audio.Music.playStory(this)
         if (!ready) return
         if (!AuthService.hasSession(this) || owner != AuthService.currentUid(this)) { finish(); return }
         val request = ++generation

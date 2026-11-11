@@ -53,9 +53,33 @@ class ShopRulesTest {
         assertEquals(read, ShopState.fromMap(read.toMap()))
     }
 
-    @Test fun decorationsDoNotChangeTheFreeStart() {
-        assertEquals(0, ShopCatalog.find(ShopCatalog.NONE_ID)!!.price)
-        assertTrue(ShopCatalog.items.drop(1).all { it.price > 0 })
+    @Test fun eachShelfStartsWithOneFreeItemAndIdsAreUnique() {
+        for (kind in ItemKind.entries) {
+            val shelf = ShopCatalog.of(kind)
+            assertEquals(1, shelf.count { it.price == 0 })
+            assertTrue(shelf.filter { it.price > 0 }.isNotEmpty())
+        }
+        assertEquals(6, ShopCatalog.of(ItemKind.MUSIC).count { it.price > 0 })
         assertEquals(ShopCatalog.items.size, ShopCatalog.items.map { it.id }.toSet().size)
+    }
+
+    @Test fun musicIsBoughtAndChosenSeparatelyFromTrails() {
+        val start = ShopState(owned = setOf("stars"), equipped = "stars")
+        val bought = ShopRules.buy(start, "music_lumi", totalMeters = 5000L) as ShopRules.Purchase.Bought
+        assertEquals("music_lumi", bought.state.music)
+        assertEquals("stars", bought.state.equipped)   // the trail stays on
+        assertEquals(ShopCatalog.MUSIC_PRICE, bought.state.spent)
+        // Back to the free main theme at any time.
+        assertEquals(ShopCatalog.MAIN_MUSIC_ID, ShopRules.equip(bought.state, ShopCatalog.MAIN_MUSIC_ID).music)
+        // A trail id never ends up as the music, and the other way round.
+        assertEquals("music_lumi", ShopRules.equip(bought.state, "stars").music)
+    }
+
+    @Test fun savedMusicMustBeOwned() {
+        val read = ShopState.fromMap(mapOf("owned" to listOf("stars"), "music" to "music_piko", "equipped" to "stars"))
+        assertEquals(ShopCatalog.MAIN_MUSIC_ID, read.music)
+        val ok = ShopState.fromMap(mapOf("owned" to listOf("music_piko"), "music" to "music_piko"))
+        assertEquals("music_piko", ok.music)
+        assertEquals(ok, ShopState.fromMap(ok.toMap()))
     }
 }

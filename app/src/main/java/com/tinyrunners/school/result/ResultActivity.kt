@@ -19,6 +19,16 @@ import com.tinyrunners.school.ui.Page
  * returning from the background) never counts the same run twice.
  */
 class ResultActivity : Activity() {
+    override fun onPause() {
+        com.tinyrunners.school.audio.Music.pauseSoon()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        com.tinyrunners.school.audio.Music.playGame(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val run = RunResult(

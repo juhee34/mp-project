@@ -18,6 +18,16 @@ import kotlin.math.roundToInt
  * residents. "건너뛰기" jumps straight to the residents.
  */
 class PrologueActivity : Activity() {
+    override fun onPause() {
+        com.tinyrunners.school.audio.Music.pauseSoon()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        com.tinyrunners.school.audio.Music.playStory(this)
+    }
+
     private lateinit var pages: List<String>
     private lateinit var text: TextView
     private lateinit var hint: TextView

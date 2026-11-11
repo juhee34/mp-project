@@ -41,6 +41,9 @@ class ShopActivity : Activity() {
     private lateinit var row: LinearLayout
     private var wallet: Wallet? = null
     private var busy = false
+    /** Which shelf is shown: trails behind the runner, or music for runs. */
+    private var shelf = ItemKind.TRAIL
+    private lateinit var tabs: LinearLayout
     private lateinit var friendId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +78,9 @@ class ShopActivity : Activity() {
         content.addView(TextView(this).apply {
             text = getString(R.string.shop_body, ShopRules.METERS_PER_COIN); textSize = 15f; setTextColor(Page.MUTED); setPadding(0, dp(6), 0, 0)
         })
+        tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        if (intent.getBooleanExtra(EXTRA_MUSIC, false)) shelf = ItemKind.MUSIC
+        content.addView(tabs, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
         message = TextView(this).apply { textSize = 15f; setTextColor(Page.LEAF); setTypeface(typeface, Typeface.BOLD) }
         content.addView(message, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
 
@@ -107,13 +113,19 @@ class ShopActivity : Activity() {
     private fun render() {
         val w = wallet
         if (w != null) coins.text = getString(R.string.shop_coins, w.coins)
+        tabs.removeAllViews()
+        tabs.addView(tab(R.string.shop_tab_trails, ItemKind.TRAIL))
+        tabs.addView(tab(R.string.shop_tab_music, ItemKind.MUSIC), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(8) })
         row.removeAllViews()
-        for (item in ShopCatalog.items) row.addView(card(item, w), LinearLayout.LayoutParams(dp(178), LinearLayout.LayoutParams.MATCH_PARENT).apply { marginEnd = dp(10) })
+        for (item in ShopCatalog.of(shelf)) row.addView(card(item, w), LinearLayout.LayoutParams(dp(178), LinearLayout.LayoutParams.MATCH_PARENT).apply { marginEnd = dp(10) })
     }
 
     private fun card(item: ShopItem, w: Wallet?): View {
         val owned = w?.state?.owns(item.id) == true
-        val wearing = w?.state?.equipped == item.id
+        val music = item.kind == ItemKind.MUSIC
+        val wearing = if (music) w?.state?.music == item.id else w?.state?.equipped == item.id
+        // A song whose file has not been added to the app yet is on the shelf as "준비 중".
+        val ready = !music || trackExists(item)
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(12), dp(10), dp(12), dp(10))
@@ -122,16 +134,18 @@ class ShopActivity : Activity() {
                 setStroke(dp(if (wearing) 3 else 1), if (wearing) Page.LEAF else Page.LINE)
             }
         }
-        card.addView(TrailPreview(this, friendId, item.style).apply {
+        val previewFriend = if (music) item.id.removePrefix("music_").takeIf { it in FRIENDS } ?: friendId else friendId
+        card.addView(TrailPreview(this, previewFriend, if (music) TrailStyle.NOTES else item.style).apply {
+            if (!ready) alpha = 0.45f
             contentDescription = getString(R.string.shop_preview_description, getString(item.name))
         }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
         card.addView(TextView(this).apply { setText(item.name); textSize = 17f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD) })
         card.addView(TextView(this).apply { setText(item.blurb); textSize = 13f; setTextColor(Page.MUTED); maxLines = 2 })
         card.addView(TextView(this).apply {
-            text = if (item.price == 0) getString(R.string.shop_free) else getString(R.string.shop_price, item.price)
+            text = if (item.price == 0) getString(R.string.shop_free) else if (!ready) getString(R.string.shop_coming_soon) else getString(R.string.shop_price, item.price)
             textSize = 14f; setTextColor(COIN_INK); setTypeface(typeface, Typeface.BOLD); setPadding(0, dp(4), 0, 0)
         })
-        val label = when { wearing -> R.string.shop_wearing; owned -> R.string.shop_wear; else -> R.string.shop_buy }
+        val label = when { wearing -> R.string.shop_wearing; owned -> R.string.shop_wear; !ready -> R.string.shop_coming_soon; else -> R.string.shop_buy }
         card.addView(Button(this).apply {
             setText(label)
             textSize = 15f; isAllCaps = false; stateListAnimator = null
@@ -141,7 +155,7 @@ class ShopActivity : Activity() {
             background = RippleDrawable(ColorStateList.valueOf(Page.MINT), GradientDrawable().apply {
                 setColor(if (primary) Page.LEAF else Page.MINT); cornerRadius = dp(14).toFloat()
             }, null)
-            isEnabled = w != null && !wearing
+            isEnabled = w != null && !wearing && (owned || ready)
             alpha = if (isEnabled) 1f else 0.6f
             setOnClickListener { if (owned) wear(item) else buy(item) }
         }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
@@ -158,7 +172,7 @@ class ShopActivity : Activity() {
                 wallet = w
                 message.setTextColor(Page.LEAF)
                 message.text = when (outcome) {
-                    is ShopRules.Purchase.Bought -> getString(R.string.shop_bought, getString(item.name))
+                    is ShopRules.Purchase.Bought -> getString(if (item.kind == ItemKind.MUSIC) R.string.shop_bought_music else R.string.shop_bought, getString(item.name))
                     is ShopRules.Purchase.NotEnough -> { message.setTextColor(Page.ERROR); getString(R.string.shop_not_enough, outcome.missing) }
                     else -> ""
                 }
@@ -178,6 +192,14 @@ class ShopActivity : Activity() {
         }
     }
 
+    /** Shelf switch: the chosen shelf is filled green. */
+    private fun tab(label: Int, kind: ItemKind) = pill(getString(label), if (shelf == kind) Page.LEAF else Page.PAPER,
+        if (shelf == kind) Color.WHITE else Page.LEAF) { if (shelf != kind) { shelf = kind; message.text = ""; render() } }
+
+    @android.annotation.SuppressLint("DiscouragedApi")
+    private fun trackExists(item: ShopItem) =
+        item.track != null && resources.getIdentifier(item.track, "raw", packageName) != 0
+
     private fun pill(text: String, fill: Int, ink: Int, click: () -> Unit) = Button(this).apply {
         this.text = text
         textSize = 14f; isAllCaps = false; stateListAnimator = null
@@ -194,6 +216,8 @@ class ShopActivity : Activity() {
 
     companion object {
         const val EXTRA_FRIEND = "friendId"
+        const val EXTRA_MUSIC = "openMusic"
+        private val FRIENDS = setOf("mint", "cheese", "popo", "lumi", "nunu", "piko")
         private val COIN = Color.rgb(246, 200, 80)
         private val COIN_BG = Color.rgb(255, 247, 220)
         private val COIN_INK = Color.rgb(140, 96, 20)
