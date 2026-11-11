@@ -28,6 +28,7 @@ class GameActivity : Activity() {
         val engine = RunnerEngine(seed = System.nanoTime())
         val view = RunnerView(this, character, engine)
         runnerView = view
+        view.trail = com.tinyrunners.school.shop.ShopStore.equippedStyle(this)
         // One ID per run; the result screen saves with it, so a recreated result screen cannot double count.
         val runId = UUID.randomUUID().toString()
         view.onRunOver = {

@@ -59,6 +59,7 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - CharacterProgress(characterId, runs, totalMeters, bestMeters, bestScore). 실패한 판도 runs·totalMeters에 더한다. 감소·만료 없음.
 - 같은 runId는 한 번만 반영한다. 로그인 사용자는 Firestore(`users/{uid}/runs/{runId}`, `users/{uid}/progress/{characterId}`) 트랜잭션, 임시 모드는 기기 SharedPreferences.
 - A의 도감은 `ProgressStore.forCurrentUser(context).loadAll { }`로 거리만 읽는다. B의 진행 저장 스키마는 변경하지 않는다. 읽음 표시는 아래 별도 로컬 저장 계약을 따른다.
+- 꾸미기 상점(B, 2026-11-11): 코인 = 모든 친구 totalMeters 합 ÷ 10(버림) − 쓴 코인. 로그인 사용자는 `users/{uid}/shop/state` {owned: [itemId], equipped: itemId, spent: Int}, 구매는 진행 문서 6개와 같은 트랜잭션에서 잔액 확인. 임시 모드는 기기 SharedPreferences(shop_guest). 아이템은 달릴 때 뒤에 그려지는 모양(TrailStyle)뿐이며 물리·충돌과 무관하다. 기존 보안 규칙(users/{uid}/**)으로 충분하다.
 - 상세 설정·보안 규칙: docs/FIREBASE_SETUP.md.
 
 ## 화면 계약

@@ -37,6 +37,8 @@ class ResultActivity : Activity() {
         val card = page.card(16)
         page.line(card, getString(R.string.result_score, run.score), 20f, Page.INK, bold = true, top = 0)
         page.line(card, getString(R.string.result_cleared, run.cleared))
+        // 10 m = 1 coin; the shop works the balance out from the saved total distance.
+        page.line(card, getString(R.string.result_coins, com.tinyrunners.school.shop.ShopRules.coinsForRun(run.meters)), 16f, Page.LEAF, bold = true)
         val status = page.text(getString(R.string.result_saving), 15f)
 
         val storyId = intent.getStringExtra(GameActivity.EXTRA_STORY_ID)
@@ -48,6 +50,9 @@ class ResultActivity : Activity() {
         page.button(getString(R.string.result_again), primary = storyId == null) {
             startActivity(GameActivity.intent(this, character.id).putExtra(GameActivity.EXTRA_STORY_ID, storyId))
             finish()
+        }
+        page.button(getString(R.string.result_shop)) {
+            startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, character.id))
         }
         page.button(getString(R.string.result_records)) {
             startActivity(Intent(this, RecordsActivity::class.java))

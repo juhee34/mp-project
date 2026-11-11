@@ -55,6 +55,8 @@ class RunnerView(
 
     /** Current weather from Open-Meteo, or null to draw the default sky. Visual only. */
     var weather: WeatherReport? = null
+    /** Shop decoration drawn behind the friend; looks only, never touches the physics. */
+    var trail: com.tinyrunners.school.shop.TrailStyle = com.tinyrunners.school.shop.TrailStyle.NONE
         set(value) { field = value; invalidate() }
 
     /** Called once each time a run ends. */
@@ -288,6 +290,8 @@ class RunnerView(
             val top = feet - CharacterSprites.FOOT_EDGE_Y * spriteScale
             val size = CharacterSprites.SIZE * spriteScale
             spriteBounds.set(left, top, left + size, top + size)
+            if (engine.phase != RunnerEngine.Phase.READY) com.tinyrunners.school.shop.TrailPainter.draw(
+                canvas, trail, left + spriteScale * 10f, top + size * 0.55f, spriteScale.toFloat(), engine.distance / 40f)
             canvas.drawBitmap(art[RunnerAnimation.frame(engine, animTime)], null, spriteBounds, spritePaint)
             return
         }
