@@ -23,6 +23,7 @@ enum class TutorialStep(val title: Int, val body: Int) {
     JUMP(R.string.tutorial_jump_title, R.string.tutorial_jump_body),
     DOUBLE_JUMP(R.string.tutorial_double_title, R.string.tutorial_double_body),
     FLOATING(R.string.tutorial_float_title, R.string.tutorial_float_body),
+    PLANK(R.string.tutorial_plank_title, R.string.tutorial_plank_body),
     PAUSE(R.string.tutorial_pause_title, R.string.tutorial_pause_body),
 }
 
@@ -143,6 +144,17 @@ private class TutorialPicture(context: Context) : View(context) {
         pathEffect = DashPathEffect(floatArrayOf(14f, 10f), 0f)
     }
     private val curve = Path()
+    private val tri = Path()
+
+    /** One triangle tooth from (x0..x1, baseY) to a tip at tipY, with a thin dark edge. */
+    private fun teeth(canvas: Canvas, x0: Float, baseY: Float, x1: Float, tipY: Float, color: Int) {
+        tri.reset(); tri.moveTo(x0, baseY); tri.lineTo((x0 + x1) / 2f, tipY); tri.lineTo(x1, baseY); tri.close()
+        fill.color = Color.rgb(70, 56, 76); canvas.drawPath(tri, fill)
+        val inset = (x1 - x0) * 0.18f
+        val tipIn = if (tipY < baseY) tipY + inset else tipY - inset
+        tri.reset(); tri.moveTo(x0 + inset, baseY); tri.lineTo((x0 + x1) / 2f, tipIn); tri.lineTo(x1 - inset, baseY); tri.close()
+        fill.color = color; canvas.drawPath(tri, fill)
+    }
 
     override fun onDraw(canvas: Canvas) {
         val w = width.toFloat(); val h = height.toFloat()
@@ -189,13 +201,32 @@ private class TutorialPicture(context: Context) : View(context) {
             }
             TutorialStep.FLOATING -> {
                 runner(runnerX)
-                fill.color = Color.rgb(96, 66, 44); canvas.drawRect(objX - 10 * u, ground - 60 * u, objX + 60 * u, ground - 44 * u, fill)
-                fill.color = Color.rgb(150, 112, 78); canvas.drawRect(objX - 7 * u, ground - 57 * u, objX + 57 * u, ground - 47 * u, fill)
-                fill.color = Color.rgb(106, 150, 96)
-                var x = objX - 7 * u
-                while (x < objX + 57 * u) { canvas.drawRect(x, ground - 66 * u, x + 6 * u, ground - 60 * u, fill); x += 16 * u }
+                // Thin thorny bar, the same look as in the game.
+                var x = objX - 10 * u
+                while (x < objX + 60 * u) {
+                    teeth(canvas, x, ground - 56 * u, x + 7 * u, ground - 62 * u, Color.rgb(246, 240, 226))
+                    teeth(canvas, x, ground - 50 * u, x + 7 * u, ground - 44 * u, Color.rgb(246, 240, 226))
+                    x += 7 * u
+                }
+                fill.color = Color.rgb(96, 66, 44); canvas.drawRect(objX - 10 * u, ground - 56 * u, objX + 60 * u, ground - 50 * u, fill)
                 curve.moveTo(runnerX + 22 * u, ground - 12 * u)
                 curve.lineTo(w * 0.86f, ground - 12 * u)
+                canvas.drawPath(curve, path)
+            }
+            TutorialStep.PLANK -> {
+                runner(runnerX)
+                // Spikes on the ground, a hanging plank above; jump up and run across the plank.
+                var x = w * 0.32f
+                while (x < w * 0.78f) { teeth(canvas, x, ground, x + 9 * u, ground - 14 * u, Color.rgb(196, 202, 220)); x += 9 * u }
+                fill.color = Color.rgb(150, 112, 74)
+                canvas.drawRect(w * 0.31f, ground - 100 * u, w * 0.31f + 2 * u, ground - 50 * u, fill)
+                canvas.drawRect(w * 0.79f - 2 * u, ground - 100 * u, w * 0.79f, ground - 50 * u, fill)
+                fill.color = Color.rgb(98, 64, 42); canvas.drawRect(w * 0.29f, ground - 50 * u, w * 0.81f, ground - 42 * u, fill)
+                fill.color = Color.rgb(196, 146, 94); canvas.drawRect(w * 0.29f + 2 * u, ground - 48 * u, w * 0.81f - 2 * u, ground - 44 * u, fill)
+                curve.moveTo(runnerX + 22 * u, ground - 26 * u)
+                curve.quadTo(w * 0.3f, ground - 100 * u, w * 0.4f, ground - 76 * u)
+                curve.lineTo(w * 0.8f, ground - 76 * u)
+                curve.quadTo(w * 0.86f, ground - 70 * u, w * 0.9f, ground - 26 * u)
                 canvas.drawPath(curve, path)
             }
             TutorialStep.PAUSE -> {

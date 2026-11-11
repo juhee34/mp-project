@@ -45,10 +45,13 @@ data class RunnerConfig(
     val towerMaxWidth: Float = 40f,
     val towerMinHeight: Float = 150f,
     val towerMaxHeight: Float = 170f,
-    /** Floating bar at a random height: running under it is always safe; jumping into it is not. */
+    /**
+     * Floating thorny bar at a random height: running under it is always safe; jumping into it is not.
+     * Thin (thorns above and below are part of the hit box) so it reads as a bar, not a block to land on.
+     */
     val floatMinWidth: Float = 60f,
     val floatMaxWidth: Float = 100f,
-    val floatThickness: Float = 28f,
+    val floatThickness: Float = 18f,
     val floatMinBottom: Float = 80f,
     val floatMaxBottom: Float = 120f,
     /** Only boxes for the first seconds; afterwards each spawn picks a type at random. */
@@ -56,6 +59,18 @@ data class RunnerConfig(
     val mixedAfterMeters: Int = 100,
     val towerChance: Float = 0.25f,
     val floatChance: Float = 0.2f,
+    val spikeChance: Float = 0.15f,
+    /**
+     * Spike field on the ground with a plank above it. The field is wider than the longest double-jump flight, so
+     * the only way across is to jump onto the plank (one jump reaches it) and run along it. The plank can be
+     * passed through from below and is landed on from above.
+     */
+    val spikeHeight: Float = 26f,
+    val spikeExtra: Float = 30f,
+    val plankMinTop: Float = 85f,
+    val plankMaxTop: Float = 105f,
+    val plankThickness: Float = 14f,
+    val plankOverhang: Float = 50f,
     val spawnX: Float = 1000f,
     /** Seconds of reaction time added to every gap, on top of one full jump. */
     val reactionTime: Float = 0.35f,
@@ -111,11 +126,14 @@ data class RunnerConfig(
     fun targetSpeed(meters: Int): Float =
         kotlin.math.min(maxSpeed, startSpeed + stageSpeedUp * (meters.coerceAtLeast(0) / stageMeters))
 
+    /** Spike field width at [speed]: always longer than a full double jump travels, so it cannot be jumped over. */
+    fun spikeWidth(speed: Float): Float = speed * doubleAirTime + spikeExtra
+
     fun minGap(speed: Float, nearTower: Boolean = false): Float =
         speed * ((if (nearTower) doubleAirTime else airTime) + reactionTime) + playerSize
 }
 
-enum class ObstacleKind { BOX, TOWER, FLOAT }
+enum class ObstacleKind { BOX, TOWER, FLOAT, SPIKES }
 
 data class Obstacle(
     var x: Float,
@@ -125,8 +143,13 @@ data class Obstacle(
     /** Height of the obstacle's underside; 0 for anything standing on the ground. */
     val bottom: Float = 0f,
     val kind: ObstacleKind = ObstacleKind.BOX,
+    /** SPIKES only: height of the plank's walking surface (0 = no plank) and how far it reaches past the spikes. */
+    val plankTop: Float = 0f,
+    val plankOverhang: Float = 0f,
 ) {
     val top: Float get() = bottom + height
+    val plankLeft: Float get() = x - plankOverhang
+    val plankRight: Float get() = x + width + plankOverhang
 }
 
 class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
@@ -150,7 +173,9 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     private val _obstacles = mutableListOf<Obstacle>()
     val obstacles: List<Obstacle> get() = _obstacles
 
-    val grounded: Boolean get() = playerY <= 0f && playerVy <= 0f
+    /** Height the runner is standing on: 0 on the ground, or a plank's top. */
+    var floorY = 0f; private set
+    val grounded: Boolean get() = playerY <= floorY && playerVy <= 0f
     val meters: Int get() = (distance / config.unitsPerMeter).toInt()
     val score: Int get() = meters + cleared * config.pointsPerCleared
     val canRestart: Boolean get() = phase == Phase.OVER && overTime >= config.restartDelay
@@ -198,7 +223,7 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
 
     private fun reset() {
         phase = Phase.READY
-        playerY = 0f; playerVy = 0f
+        playerY = 0f; playerVy = 0f; floorY = 0f
         speed = config.startSpeed
         distance = 0f; cleared = 0; elapsed = 0f
         accumulator = 0f; overTime = 0f
@@ -214,14 +239,18 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         // Speed steps up every 100 m (eased, not instant); the first 100 m stay at the calm start speed.
         speed = min(config.targetSpeed(meters), speed + config.acceleration * dt)
 
+        val previousY = playerY
         playerVy -= config.gravity * dt
         playerY += playerVy * dt
-        if (playerY <= 0f) { playerY = 0f; playerVy = 0f; airJumpsUsed = 0 }
 
         val dx = speed * dt
         distance += dx
         for (o in _obstacles) o.x -= dx
-        _obstacles.removeAll { it.x + it.width < -config.playerSize }
+        _obstacles.removeAll { it.plankRight < -config.playerSize && it.x + it.width < -config.playerSize }
+
+        // Land on the ground or on a plank the feet were above a moment ago; walking off a plank's end falls.
+        floorY = supportBelow(previousY)
+        if (playerY <= floorY) { playerY = floorY; playerVy = 0f; airJumpsUsed = 0 }
 
         val last = _obstacles.lastOrNull()
         val clearSinceLast = if (last == null) Float.MAX_VALUE else config.spawnX - (last.x + last.width)
@@ -241,6 +270,18 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         }
     }
 
+    /** Highest surface under the runner that their feet were at or above before this step (planks are one-way). */
+    private fun supportBelow(previousY: Float): Float {
+        val pl = config.playerX + config.playerInset
+        val pr = config.playerX + config.playerSize - config.playerInset
+        var best = 0f
+        for (o in _obstacles) {
+            if (o.plankTop <= 0f) continue
+            if (pr > o.plankLeft && pl < o.plankRight && previousY >= o.plankTop - LANDING_TOLERANCE) best = maxOf(best, o.plankTop)
+        }
+        return best
+    }
+
     private fun spawn() {
         val c = config
         val kind = nextKind
@@ -255,19 +296,29 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
                 between(c.towerMinHeight, c.towerMaxHeight), kind = ObstacleKind.TOWER)
             ObstacleKind.FLOAT -> Obstacle(c.spawnX, between(c.floatMinWidth, c.floatMaxWidth), c.floatThickness,
                 bottom = between(c.floatMinBottom, c.floatMaxBottom), kind = ObstacleKind.FLOAT)
+            ObstacleKind.SPIKES -> Obstacle(c.spawnX, c.spikeWidth(speed), c.spikeHeight, kind = ObstacleKind.SPIKES,
+                plankTop = between(c.plankMinTop, c.plankMaxTop), plankOverhang = c.plankOverhang)
         }
         nextKind = if (meters < c.mixedAfterMeters) ObstacleKind.BOX else {
             val r = random.nextFloat()
             when {
                 r < c.towerChance -> ObstacleKind.TOWER
                 r < c.towerChance + c.floatChance -> ObstacleKind.FLOAT
+                r < c.towerChance + c.floatChance + c.spikeChance -> ObstacleKind.SPIKES
                 else -> ObstacleKind.BOX
             }
         }
         val nearTower = kind == ObstacleKind.TOWER || nextKind == ObstacleKind.TOWER
         nextGap = c.minGap(speed, nearTower) + random.nextFloat() * c.gapVariance * speed +
-            (if (meters < c.stageMeters) c.calmExtraReaction * speed else 0f)
+            (if (meters < c.stageMeters) c.calmExtraReaction * speed else 0f) +
+            // After spikes the runner first walks off the plank's far end and drops to the ground.
+            (if (kind == ObstacleKind.SPIKES) c.plankOverhang + speed * kotlin.math.sqrt(2f * c.plankMaxTop / c.gravity) else 0f)
     }
 
     private fun between(min: Float, max: Float) = random.nextFloat() * (max - min) + min
+
+    private companion object {
+        /** Feet within this distance above a plank's top still count as landing on it (one physics step). */
+        const val LANDING_TOLERANCE = 0.5f
+    }
 }

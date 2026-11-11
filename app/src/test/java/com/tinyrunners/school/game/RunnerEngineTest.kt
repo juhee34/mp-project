@@ -31,6 +31,11 @@ class RunnerEngineTest {
                 else if (!grounded && airJumpsUsed == 0 && playerVy <= 0f) tap()
             }
             ObstacleKind.FLOAT -> Unit
+            // Jump just before the spikes, onto the plank; never jump again while walking along it.
+            ObstacleKind.SPIKES -> {
+                val pr = c.playerX + c.playerSize - c.playerInset
+                if (grounded && floorY == 0f && next.x - pr <= speed * 0.08f) tap()
+            }
         }
     }
 
@@ -169,6 +174,51 @@ class RunnerEngineTest {
         }
         assertEquals("no speed-up before 100 m", c.startSpeed, maxBefore100, 0.01f)
         assertTrue("faster after 100 m", e.speed > c.startSpeed)
+    }
+
+    @Test fun spikeFieldsAreTooWideToJumpButThePlankIsReachable() {
+        val c = RunnerConfig()
+        for (speed in listOf(c.startSpeed, (c.startSpeed + c.maxSpeed) / 2, c.maxSpeed)) {
+            // Even a perfect double jump lands before the far end of the spikes.
+            assertTrue("speed $speed", speed * c.doubleAirTime < c.spikeWidth(speed))
+        }
+        // One jump rises above the highest plank, and the runner fits under a plank's overhang.
+        assertTrue(c.apexHeight > c.plankMaxTop + 10f)
+        assertTrue(c.plankMinTop - c.plankThickness > c.playerHitHeight)
+        // The floating bar is now a thin bar.
+        assertTrue(c.floatThickness <= 20f)
+    }
+
+    @Test fun runnerStandsOnThePlankToCrossSpikes() {
+        var crossed = 0
+        for (seed in 1L..10L) {
+            val e = RunnerEngine(seed)
+            e.tap()
+            var onPlank = false
+            e.run(120f) { engine ->
+                engine.autoJump()
+                if (engine.grounded && engine.floorY > 0f) onPlank = true
+            }
+            assertEquals("seed $seed ended at ${e.meters}m", RunnerEngine.Phase.RUNNING, e.phase)
+            if (onPlank) crossed++
+        }
+        assertTrue("planks were used on $crossed seeds", crossed >= 5)
+    }
+
+    @Test fun walkingIntoSpikesEndsTheRun() {
+        val c = RunnerConfig()
+        val e = RunnerEngine(seed = 5)
+        e.tap()
+        var t = 0f
+        // Play normally, but never jump at spikes.
+        while (t < 240f && e.phase == RunnerEngine.Phase.RUNNING) {
+            val next = e.obstacles.firstOrNull { it.x + it.width > c.playerX + c.playerInset }
+            if (next?.kind != ObstacleKind.SPIKES) e.autoJump()
+            e.update(frame); t += frame
+        }
+        assertEquals(RunnerEngine.Phase.OVER, e.phase)
+        val hit = e.obstacles.first { it.x < c.playerX + c.playerSize && it.x + it.width > c.playerX }
+        assertEquals(ObstacleKind.SPIKES, hit.kind)
     }
 
     @Test fun jumpingIntoAFloatingBarEndsTheRun() {

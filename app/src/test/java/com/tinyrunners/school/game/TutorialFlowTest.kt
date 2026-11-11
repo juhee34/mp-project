@@ -8,15 +8,15 @@ import org.junit.Test
 class TutorialFlowTest {
     @Test fun walksThroughFourPagesInOrderThenFinishes() {
         val flow = TutorialFlow()
-        assertEquals(4, flow.count)
+        assertEquals(5, flow.count)
         val seen = mutableListOf<TutorialStep>()
         while (!flow.finished) { seen += flow.current; flow.next() }
-        assertEquals(listOf(TutorialStep.JUMP, TutorialStep.DOUBLE_JUMP, TutorialStep.FLOATING, TutorialStep.PAUSE), seen)
+        assertEquals(listOf(TutorialStep.JUMP, TutorialStep.DOUBLE_JUMP, TutorialStep.FLOATING, TutorialStep.PLANK, TutorialStep.PAUSE), seen)
     }
 
     @Test fun onlyTheLastPageIsLast() {
         val flow = TutorialFlow()
-        repeat(3) { assertFalse(flow.isLast); flow.next() }
+        repeat(4) { assertFalse(flow.isLast); flow.next() }
         assertTrue(flow.isLast)
         assertFalse(flow.finished)
     }
@@ -30,9 +30,10 @@ class TutorialFlowTest {
 
     @Test fun guideCoversEveryObstacleKind() {
         // If a new obstacle type is added, the guide should get a page for it too.
-        assertEquals(3, ObstacleKind.entries.size)
+        assertEquals(4, ObstacleKind.entries.size)
         assertTrue(TutorialStep.JUMP in TutorialStep.entries)
         assertTrue(TutorialStep.DOUBLE_JUMP in TutorialStep.entries)
         assertTrue(TutorialStep.FLOATING in TutorialStep.entries)
+        assertTrue(TutorialStep.PLANK in TutorialStep.entries)
     }
 }

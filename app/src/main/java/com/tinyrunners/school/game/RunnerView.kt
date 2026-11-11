@@ -265,19 +265,67 @@ class RunnerView(
                     canvas.drawRect(l + p, y, r - p, y + p, fill)
                 }
             }
-            ObstacleKind.FLOAT -> {
-                // A floating leafy branch; the runner fits underneath it.
-                fill.color = BRANCH_EDGE; canvas.drawRect(l, t, r, b, fill)
-                fill.color = BRANCH; canvas.drawRect(l + p, t + p, r - p, b - p, fill)
-                fill.color = LEAF
-                val step = 18f * scale
-                var x = l + p
-                while (x < r - p) {
-                    canvas.drawRect(x, t - 2 * p, (x + 2 * p).coerceAtMost(r), t, fill)
-                    x += step
-                }
-            }
+            ObstacleKind.FLOAT -> drawThornBar(canvas, l, t, r, b)
+            ObstacleKind.SPIKES -> drawSpikeField(canvas, o)
         }
+    }
+
+    private val shape = android.graphics.Path()
+
+    private fun Canvas.tooth(x0: Float, baseY: Float, x1: Float, tipY: Float, color: Int) {
+        shape.reset(); shape.moveTo(x0, baseY); shape.lineTo((x0 + x1) / 2f, tipY); shape.lineTo(x1, baseY); shape.close()
+        fill.color = color
+        drawPath(shape, fill)
+    }
+
+    /** A thin branch with pale thorns above and below: clearly not something to land on. Thorns are in the hit box. */
+    private fun drawThornBar(canvas: Canvas, l: Float, t: Float, r: Float, b: Float) {
+        val thorn = (b - t) * 0.3f
+        val barTop = t + thorn; val barBottom = b - thorn
+        val toothW = 10f * scale
+        var x = l
+        while (x < r - 1f) {
+            val x1 = (x + toothW).coerceAtMost(r)
+            val o = 1.2f * scale
+            canvas.tooth(x - o, barTop + o, x1 + o, t - o, THORN_EDGE)
+            canvas.tooth(x - o, barBottom - o, x1 + o, b + o, THORN_EDGE)
+            canvas.tooth(x, barTop, x1, t, THORN)
+            canvas.tooth(x, barBottom, x1, b, THORN)
+            x += toothW
+        }
+        fill.color = BRANCH_EDGE; canvas.drawRect(l, barTop, r, barBottom, fill)
+        val p = 1.5f * scale
+        fill.color = BRANCH; canvas.drawRect(l + p, barTop + p, r - p, barBottom - p, fill)
+    }
+
+    /** Spikes along the ground with a hanging plank above them; the plank is the only way across. */
+    private fun drawSpikeField(canvas: Canvas, o: Obstacle) {
+        val l = sx(o.x); val r = sx(o.x + o.width)
+        val ground = sy(0f); val tip = sy(o.top)
+        fill.color = SPIKE_BASE; canvas.drawRect(l, ground - 5f * scale, r, ground, fill)
+        val toothW = 14f * scale
+        var x = l
+        while (x < r - 1f) {
+            val x1 = (x + toothW).coerceAtMost(r)
+            val o2 = 1.2f * scale
+            canvas.tooth(x - o2, ground, x1 + o2, tip - o2 * 1.5f, SPIKE_EDGE)
+            canvas.tooth(x, ground, x1, tip, SPIKE)
+            canvas.tooth(x, ground, (x + x1) / 2f, tip, SPIKE_SHINE)
+            x += toothW
+        }
+        // Plank hanging on two ropes.
+        val pl = sx(o.plankLeft); val pr = sx(o.plankRight)
+        val pt = sy(o.plankTop); val pb = sy(o.plankTop - engine.config.plankThickness)
+        fill.color = ROPE
+        val rope = 2f * scale
+        for (rx in floatArrayOf(pl + 10f * scale, pr - 10f * scale - rope)) canvas.drawRect(rx, sy(o.plankTop + 90f), rx + rope, pt, fill)
+        fill.color = PLANK_EDGE; canvas.drawRect(pl, pt, pr, pb, fill)
+        val p = 2f * scale
+        fill.color = PLANK; canvas.drawRect(pl + p, pt + p, pr - p, pb - p, fill)
+        fill.color = PLANK_TOP; canvas.drawRect(pl + p, pt + p, pr - p, pt + p * 2f, fill)
+        fill.color = PLANK_EDGE
+        var seam = pl + 40f * scale
+        while (seam < pr - 10f * scale) { canvas.drawRect(seam, pt + p, seam + p, pb - p, fill); seam += 40f * scale }
     }
 
     private fun drawRunner(canvas: Canvas) {
@@ -406,6 +454,16 @@ class RunnerView(
         val LEAF = Color.rgb(106, 150, 96)
         val INK = Color.rgb(43, 59, 47)
         val PANEL = Color.argb(200, 255, 248, 231)
+        val THORN = Color.rgb(246, 240, 226)
+        val THORN_EDGE = Color.rgb(92, 58, 70)
+        val SPIKE = Color.rgb(196, 202, 220)
+        val SPIKE_SHINE = Color.rgb(232, 236, 246)
+        val SPIKE_EDGE = Color.rgb(58, 52, 78)
+        val SPIKE_BASE = Color.rgb(84, 74, 100)
+        val PLANK = Color.rgb(196, 146, 94)
+        val PLANK_TOP = Color.rgb(230, 186, 126)
+        val PLANK_EDGE = Color.rgb(98, 64, 42)
+        val ROPE = Color.rgb(150, 112, 74)
         val BUTTON_ON = Color.rgb(48, 83, 65)
         val SCRIM = Color.argb(170, 250, 246, 236)
     }

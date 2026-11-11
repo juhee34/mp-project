@@ -5,8 +5,10 @@
     <string name="tutorial_jump_body">첫 번째 누름으로 출발하고, 달리는 동안 누르면 상자를 뛰어넘어요. 상자는 한 번만 점프하면 넘을 수 있어요.</string>
     <string name="tutorial_double_title">높은 탑은 2단 점프</string>
     <string name="tutorial_double_body">공중에서 한 번 더 누르면 더 높이 뛰어요. 탑은 점프 꼭대기쯤에서 한 번 더 누르면 넘을 수 있어요.</string>
-    <string name="tutorial_float_title">떠 있는 가지는 그냥 지나가요</string>
-    <string name="tutorial_float_body">공중에 떠 있는 나뭇가지는 그대로 달리면 아래로 지나가요. 그 앞에서 점프하면 부딪혀요.</string>
+    <string name="tutorial_float_title">가시 막대는 아래로 지나가요</string>
+    <string name="tutorial_float_body">공중에 떠 있는 가시 막대는 위도 아래도 뾰족해서 밟을 수 없어요. 그대로 달리면 아래로 지나가요. 그 앞에서 점프하면 부딪혀요.</string>
+    <string name="tutorial_plank_title">바닥 가시는 발판으로 건너요</string>
+    <string name="tutorial_plank_body">바닥에 가시가 길게 깔려 있으면 점프로는 다 못 넘어요. 위에 매달린 발판으로 점프해 올라가 끝까지 달리면 안전하게 건널 수 있어요.</string>
     <string name="tutorial_pause_title">잠깐 쉬고 싶을 때</string>
     <string name="tutorial_pause_body">오른쪽 위 버튼으로 멈출 수 있고, 앱을 나가면 자동으로 멈춰요. 뒤로가기를 누르면 친구 선택으로 돌아가요. 부딪혀도 함께 달린 거리는 기록에 남아요.</string>
     <string name="tutorial_skip">건너뛰기</string>
