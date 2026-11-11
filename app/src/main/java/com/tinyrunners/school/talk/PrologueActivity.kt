@@ -117,8 +117,8 @@ class PrologueActivity : Activity() {
     companion object {
         private const val KEY_PAGE = "page"
         private const val FADE_MS = 450L
-        /** Black at about 80%: the scenery is only faintly visible and the white text stands out. */
-        private val SHADE = Color.argb(204, 0, 0, 0)
+        /** Black at about 92%: the scenery is only a faint outline and the white text stands out. */
+        private val SHADE = Color.argb(235, 0, 0, 0)
 
         /** "스토리 진행하기" on the hub: the world story every time, then the residents. */
         fun forStory(context: Context): Intent = Intent(context, PrologueActivity::class.java)
