@@ -1,0 +1,166 @@
+{
+  "integrated": false,
+  "releaseTag": "a-content-review-20261111",
+  "archives": [
+    {
+      "file": "Tiny_Runners_6_music_edits.zip",
+      "bytes": 72847972,
+      "sha256": "aa32f5a2eff78197da316972dffec3f1c0b60f2275ab4caca823710ae383c0ad",
+      "status": "unapproved_listening_candidates",
+      "entries": [
+        {
+          "path": "README.md",
+          "bytes": 1938,
+          "sha256": "5b2b85bded5b2ac56cd59c8247c6356724a6d29ba94c8348f9daccebd44bc24a",
+          "localMatches": [
+            "docs/audio/all-music-drafts/README.md"
+          ]
+        },
+        {
+          "path": "measurements.json",
+          "bytes": 13019,
+          "sha256": "8a5989ad50ad540b830b47112bc7e67e81ef431d6d7d3f5244b0123c05491dc0",
+          "localMatches": [
+            "docs/audio/all-music-drafts/measurements.json"
+          ]
+        },
+        {
+          "path": "loops/mint_loop_draft.wav",
+          "bytes": 5362604,
+          "sha256": "9c4e6f7d810d8af125468d361242ba64e5dfa54a314ff7bdb80d9d1d33dd2a9d",
+          "localMatches": [
+            "docs/audio/all-music-drafts/loops/mint_loop_draft.wav"
+          ]
+        },
+        {
+          "path": "trimmed/mint_trimmed.wav",
+          "bytes": 10734596,
+          "sha256": "a77a6284344c342ec5405f31f7d2947eecfdbf5a33cfa03e9fc042cd1e22a1af",
+          "localMatches": [
+            "docs/audio/all-music-drafts/trimmed/mint_trimmed.wav"
+          ]
+        },
+        {
+          "path": "loops/cheese_loop_draft.wav",
+          "bytes": 5009804,
+          "sha256": "316a6dfdf6fe89514f7d96691a3e374466dd7c723d00dc1412d6ba32cd31a08c",
+          "localMatches": [
+            "docs/audio/all-music-drafts/loops/cheese_loop_draft.wav"
+          ]
+        },
+        {
+          "path": "trimmed/cheese_trimmed.wav",
+          "bytes": 15303096,
+          "sha256": "da2a386fafb30e6a28dc0dd1120f7f19218f89c7745c718d92dac0b07b494965",
+          "localMatches": [
+            "docs/audio/all-music-drafts/trimmed/cheese_trimmed.wav"
+          ]
+        },
+        {
+          "path": "loops/popo_loop_draft.wav",
+          "bytes": 3552740,
+          "sha256": "34ddcb97ec7738f4df8f7a58b394499ce8e6e37127cefadb87279cea5c82d63d",
+          "localMatches": [
+            "docs/audio/all-music-drafts/loops/popo_loop_draft.wav"
+          ]
+        },
+        {
+          "path": "trimmed/popo_trimmed.wav",
+          "bytes": 5308996,
+          "sha256": "42d7a8c82fc3c15b7a90ec916328214d5cd1c3493a7857789c01b72608ec59bf",
+          "localMatches": [
+            "docs/audio/all-music-drafts/trimmed/popo_trimmed.wav"
+          ]
+        },
+        {
+          "path": "loops/lumi_loop_draft.wav",
+          "bytes": 4833404,
+          "sha256": "08a344747dc32a73a14d93d7d9df3ed3df5e3c0b339295d39cefad1a0af65220",
+          "localMatches": [
+            "docs/audio/all-music-drafts/loops/lumi_loop_draft.wav"
+          ]
+        },
+        {
+          "path": "trimmed/lumi_trimmed.wav",
+          "bytes": 6893744,
+          "sha256": "47298e574d7492ace73fce6b5b9e8b083de3c1590f17ad9994c22f26725e6f03",
+          "localMatches": [
+            "docs/audio/all-music-drafts/trimmed/lumi_trimmed.wav"
+          ]
+        },
+        {
+          "path": "loops/nunu_loop_draft.wav",
+          "bytes": 5539004,
+          "sha256": "34acb60e902fbfed7311080a270ebb8dd990e19733a962bbaf456664800301d1",
+          "localMatches": [
+            "docs/audio/all-music-drafts/loops/nunu_loop_draft.wav"
+          ]
+        },
+        {
+          "path": "trimmed/nunu_trimmed.wav",
+          "bytes": 6351016,
+          "sha256": "79126570cb2911992119fc12f07bf146882c009573cfc0c16b18dde1bef8e557",
+          "localMatches": [
+            "docs/audio/all-music-drafts/trimmed/nunu_trimmed.wav"
+          ]
+        },
+        {
+          "path": "loops/piko_loop_draft.wav",
+          "bytes": 4762844,
+          "sha256": "30c02291d6939e6365bf9c6d61cdc8618292c838ee7a81c3921848e0c71fe933",
+          "localMatches": [
+            "docs/audio/all-music-drafts/loops/piko_loop_draft.wav"
+          ]
+        },
+        {
+          "path": "trimmed/piko_trimmed.wav",
+          "bytes": 6091940,
+          "sha256": "acc2b10eff0a40e56fc2eea5272f03f70c5e0265e84f0c538efa7598398194fa",
+          "localMatches": [
+            "docs/audio/all-music-drafts/trimmed/piko_trimmed.wav"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "Puddle_Jumpers_edit_drafts.zip",
+      "bytes": 10462167,
+      "sha256": "f8f80b56fc3595bc8b6ada3d54933113de63bda92241f24778f5a06e1d902b25",
+      "status": "unapproved_listening_candidates",
+      "entries": [
+        {
+          "path": "measurements.json",
+          "bytes": 1798,
+          "sha256": "036bd4c02280d9948a65975cb990fcc6b53f16b4a15ba907cb95397d3041dd72",
+          "localMatches": [
+            "docs/audio/piko-drafts/measurements.json"
+          ]
+        },
+        {
+          "path": "Puddle_Jumpers_loop_draft.wav",
+          "bytes": 5059196,
+          "sha256": "96dcecf7277d75359ca12d7b91eee9a8aa7cca90ef1e749e6fce62d9d9338560",
+          "localMatches": [
+            "docs/audio/piko-drafts/Puddle_Jumpers_loop_draft.wav"
+          ]
+        },
+        {
+          "path": "Puddle_Jumpers_trimmed_draft.wav",
+          "bytes": 6091940,
+          "sha256": "cf72249fb9c50a87c26a197a0327b5ed9608112b09305c68c955d5b7704966b9",
+          "localMatches": [
+            "docs/audio/piko-drafts/Puddle_Jumpers_trimmed_draft.wav"
+          ]
+        },
+        {
+          "path": "README.txt",
+          "bytes": 915,
+          "sha256": "5b99163ef8c43d20f8695416e5001802696e87a60fa83ef2d57c757e11e0199f",
+          "localMatches": [
+            "docs/audio/piko-drafts/README.txt"
+          ]
+        }
+      ]
+    }
+  ]
+}
