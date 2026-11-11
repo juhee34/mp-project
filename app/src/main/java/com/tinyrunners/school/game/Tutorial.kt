@@ -24,6 +24,7 @@ enum class TutorialStep(val title: Int, val body: Int) {
     DOUBLE_JUMP(R.string.tutorial_double_title, R.string.tutorial_double_body),
     FLOATING(R.string.tutorial_float_title, R.string.tutorial_float_body),
     PLANK(R.string.tutorial_plank_title, R.string.tutorial_plank_body),
+    PICKUPS(R.string.tutorial_pickups_title, R.string.tutorial_pickups_body),
     PAUSE(R.string.tutorial_pause_title, R.string.tutorial_pause_body),
 }
 
@@ -227,6 +228,20 @@ private class TutorialPicture(context: Context) : View(context) {
                 curve.quadTo(w * 0.3f, ground - 100 * u, w * 0.4f, ground - 76 * u)
                 curve.lineTo(w * 0.8f, ground - 76 * u)
                 curve.quadTo(w * 0.86f, ground - 70 * u, w * 0.9f, ground - 26 * u)
+                canvas.drawPath(curve, path)
+            }
+            TutorialStep.PICKUPS -> {
+                runner(runnerX)
+                // A coin and the friend's item on the ground (just run through), a coin up high (jump to it).
+                val bob = 8 * u
+                CoinArt.draw(canvas, w * 0.36f, ground - 12 * u, 9 * u, spin = 0f)
+                com.tinyrunners.school.quest.QuestItems.of("mint")?.let { item ->
+                    com.tinyrunners.school.quest.ItemArt.draw(canvas, item, w * 0.52f - 11 * u, ground - 24 * u, 22 * u)
+                }
+                CoinArt.draw(canvas, w * 0.74f, ground - 64 * u - bob, 9 * u, spin = 0f)
+                curve.moveTo(runnerX + 22 * u, ground - 12 * u)
+                curve.lineTo(w * 0.6f, ground - 12 * u)
+                curve.quadTo(w * 0.72f, ground - 120 * u, w * 0.88f, ground - 26 * u)
                 canvas.drawPath(curve, path)
             }
             TutorialStep.PAUSE -> {

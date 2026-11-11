@@ -6,17 +6,17 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TutorialFlowTest {
-    @Test fun walksThroughFourPagesInOrderThenFinishes() {
+    @Test fun walksThroughAllPagesInOrderThenFinishes() {
         val flow = TutorialFlow()
-        assertEquals(5, flow.count)
+        assertEquals(6, flow.count)
         val seen = mutableListOf<TutorialStep>()
         while (!flow.finished) { seen += flow.current; flow.next() }
-        assertEquals(listOf(TutorialStep.JUMP, TutorialStep.DOUBLE_JUMP, TutorialStep.FLOATING, TutorialStep.PLANK, TutorialStep.PAUSE), seen)
+        assertEquals(listOf(TutorialStep.JUMP, TutorialStep.DOUBLE_JUMP, TutorialStep.FLOATING, TutorialStep.PLANK, TutorialStep.PICKUPS, TutorialStep.PAUSE), seen)
     }
 
     @Test fun onlyTheLastPageIsLast() {
         val flow = TutorialFlow()
-        repeat(4) { assertFalse(flow.isLast); flow.next() }
+        repeat(5) { assertFalse(flow.isLast); flow.next() }
         assertTrue(flow.isLast)
         assertFalse(flow.finished)
     }
@@ -35,5 +35,7 @@ class TutorialFlowTest {
         assertTrue(TutorialStep.DOUBLE_JUMP in TutorialStep.entries)
         assertTrue(TutorialStep.FLOATING in TutorialStep.entries)
         assertTrue(TutorialStep.PLANK in TutorialStep.entries)
+        // Coins and the friends' items on the road are explained too.
+        assertTrue(TutorialStep.PICKUPS in TutorialStep.entries)
     }
 }

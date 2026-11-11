@@ -9,6 +9,8 @@
     <string name="tutorial_float_body">공중에 떠 있는 가시 막대는 위도 아래도 뾰족해서 밟을 수 없어요. 그대로 달리면 아래로 지나가요. 그 앞에서 점프하면 부딪혀요.</string>
     <string name="tutorial_plank_title">바닥 가시는 발판으로 건너요</string>
     <string name="tutorial_plank_body">바닥에 가시가 길게 깔려 있으면 점프로는 다 못 넘어요. 위에 매달린 발판으로 점프해 올라가 끝까지 달리면 안전하게 건널 수 있어요.</string>
+    <string name="tutorial_pickups_title">코인과 물품은 닿으면 주워요</string>
+    <string name="tutorial_pickups_body">반짝이는 금화와 친구의 물품(라일은 고사리 잎)은 장애물이 아니에요. 지나가며 닿기만 하면 주워요. 높이 떠 있으면 점프해서 닿으세요. 코인은 꾸미기 상점에서 쓰고, 물품은 3개 모아 마을 이야기에서 친구에게 건네요. 모은 것은 오른쪽 위 주머니(가방)에서 볼 수 있어요.</string>
     <string name="tutorial_pause_title">잠깐 쉬고 싶을 때</string>
     <string name="tutorial_pause_body">오른쪽 위 버튼으로 멈출 수 있고, 앱을 나가면 자동으로 멈춰요. 뒤로가기를 누르면 친구 선택으로 돌아가요. 부딪혀도 함께 달린 거리는 기록에 남아요.</string>
     <string name="tutorial_skip">건너뛰기</string>
