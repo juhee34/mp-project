@@ -42,13 +42,17 @@ class ResultActivity : Activity() {
         if (character == null || run.runId.isEmpty()) { finish(); return }
 
         val page = Page(this).show()
+        page.bagButton()
         page.eyebrow(getString(R.string.result_eyebrow))
         page.title(getString(R.string.result_title, character.name, run.meters))
         val card = page.card(16)
         page.line(card, getString(R.string.result_score, run.score), 20f, Page.INK, bold = true, top = 0)
         page.line(card, getString(R.string.result_cleared, run.cleared))
         // One coin per ShopRules.METERS_PER_COIN metres; the shop works the balance out from the saved total distance.
-        page.line(card, getString(R.string.result_coins, com.tinyrunners.school.shop.ShopRules.coinsForRun(run.meters)), 16f, Page.LEAF, bold = true)
+        val bonus = intent.getIntExtra(EXTRA_COINS, 0)
+        val runCoins = com.tinyrunners.school.shop.ShopRules.coinsForRun(run.meters) + bonus
+        page.line(card, if (bonus > 0) getString(R.string.result_coins_bonus, runCoins, bonus) else getString(R.string.result_coins, runCoins),
+            16f, Page.LEAF, bold = true)
         // The friend's items picked up on this run; the bag count follows once it is loaded.
         val item = com.tinyrunners.school.quest.QuestItems.of(character.id)
         val itemLine = item?.let {
@@ -133,6 +137,8 @@ class ResultActivity : Activity() {
     companion object {
         /** Items of the friend picked up on this run. */
         const val EXTRA_ITEMS = "items"
+        /** Bonus coins picked up on the road in this run. */
+        const val EXTRA_COINS = "bonusCoins"
         const val EXTRA_RUN_ID = "runId"
         const val EXTRA_METERS = "meters"
         const val EXTRA_SCORE = "score"

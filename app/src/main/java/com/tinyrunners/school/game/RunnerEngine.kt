@@ -67,6 +67,8 @@ data class RunnerConfig(
      */
     /** Chance an obstacle gap holds an item, how often it floats up high, and the two heights. */
     val pickupChance: Float = 0.45f,
+    /** Chance a gap also holds a bonus coin. */
+    val coinChance: Float = 0.35f,
     val pickupHighChance: Float = 0.4f,
     val pickupGroundBottom: Float = 6f,
     val pickupHighBottom: Float = 80f,
@@ -157,8 +159,11 @@ data class Obstacle(
     val plankRight: Float get() = x + width + plankOverhang
 }
 
-/** A friend's item lying on the road (see quest/Quest.kt): touching it picks it up; it never ends the run. */
-data class Pickup(var x: Float, val bottom: Float, val size: Float = PICKUP_SIZE, var taken: Boolean = false) {
+/**
+ * Something lying on the road: a friend's item (see quest/Quest.kt) or, with [coin], a bonus coin. Touching it picks
+ * it up; it never ends the run.
+ */
+data class Pickup(var x: Float, val bottom: Float, val size: Float = PICKUP_SIZE, var taken: Boolean = false, val coin: Boolean = false) {
     companion object { const val PICKUP_SIZE = 34f }
 }
 
@@ -190,6 +195,8 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     val pickups: List<Pickup> get() = _pickups
     /** Items picked up in this run. */
     var collected = 0; private set
+    /** Bonus coins picked up on the road in this run (distance coins are counted separately, see ShopRules). */
+    var coins = 0; private set
 
     /** Height the runner is standing on: 0 on the ground, or a plank's top. */
     var floorY = 0f; private set
@@ -248,7 +255,7 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         accumulator = 0f; overTime = 0f
         airJumpsUsed = 0
         _obstacles.clear()
-        _pickups.clear(); collected = 0
+        _pickups.clear(); collected = 0; coins = 0
         // First obstacle spawns after about one second of running, then needs a few more seconds to arrive.
         nextGap = config.startSpeed
         nextKind = ObstacleKind.BOX
@@ -283,7 +290,10 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         val pb = playerY
         val pt = playerY + config.playerHitHeight
         for (p in _pickups) {
-            if (!p.taken && pr > p.x && pl < p.x + p.size && pb < p.bottom + p.size && pt > p.bottom) { p.taken = true; collected++ }
+            if (!p.taken && pr > p.x && pl < p.x + p.size && pb < p.bottom + p.size && pt > p.bottom) {
+                p.taken = true
+                if (p.coin) coins++ else collected++
+            }
         }
         for (o in _obstacles) {
             val ol = o.x + config.obstacleInset
@@ -341,15 +351,28 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         placePickup(_obstacles.last())
     }
 
-    /** Sometimes leaves an item in the middle of the gap after [o]: on the ground, or up where a jump reaches it. */
+    /**
+     * Sometimes leaves an item in the middle of the gap after [o], and sometimes a bonus coin in its first quarter:
+     * on the ground, or up where a jump reaches it.
+     */
     private fun placePickup(o: Obstacle) {
-        if (!pickupsOn || pickupRandom.nextFloat() >= config.pickupChance) return
-        val high = pickupRandom.nextFloat() < config.pickupHighChance
+        if (!pickupsOn) return
         val gapStart = maxOf(o.x + o.width, o.plankRight)
         val gapEnd = o.x + o.width + nextGap
-        if (gapEnd - gapStart < Pickup.PICKUP_SIZE * 3) return
-        val x = (gapStart + gapEnd) / 2f - Pickup.PICKUP_SIZE / 2f
-        _pickups += Pickup(x, if (high) config.pickupHighBottom else config.pickupGroundBottom)
+        val gap = gapEnd - gapStart
+        val size = Pickup.PICKUP_SIZE
+        // Both rolls always happen, so the item pattern does not depend on the coins.
+        val item = pickupRandom.nextFloat() < config.pickupChance
+        val itemHigh = pickupRandom.nextFloat() < config.pickupHighChance
+        val coin = pickupRandom.nextFloat() < config.coinChance
+        val coinHigh = pickupRandom.nextFloat() < config.pickupHighChance
+        if (item && gap >= size * 3) {
+            _pickups += Pickup((gapStart + gapEnd) / 2f - size / 2f, if (itemHigh) config.pickupHighBottom else config.pickupGroundBottom)
+        }
+        // The coin goes a quarter of the way in, never on top of the item.
+        if (coin && gap >= size * 6) {
+            _pickups += Pickup(gapStart + gap * 0.22f - size / 2f, if (coinHigh) config.pickupHighBottom else config.pickupGroundBottom, coin = true)
+        }
     }
 
     private fun between(min: Float, max: Float) = random.nextFloat() * (max - min) + min

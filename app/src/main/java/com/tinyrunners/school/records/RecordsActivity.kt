@@ -13,6 +13,7 @@ class RecordsActivity : Activity() {
         super.onCreate(savedInstanceState)
         val characters = CharacterRepository(this).characters
         val page = Page(this).show()
+        page.bagButton()
         page.eyebrow(getString(R.string.records_eyebrow))
         page.title(getString(R.string.records_title))
         val store = ProgressStore.forCurrentUser(this)

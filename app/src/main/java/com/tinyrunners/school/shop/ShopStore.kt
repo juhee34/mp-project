@@ -22,6 +22,8 @@ interface ShopStore {
     fun load(done: (Result<Wallet>) -> Unit)
     fun buy(itemId: String, done: (Result<Pair<ShopRules.Purchase, Wallet>>) -> Unit)
     fun equip(itemId: String, done: (Result<Wallet>) -> Unit)
+    /** Saves bonus coins picked up on a run. */
+    fun addFound(count: Int, done: (Result<Unit>) -> Unit)
 
     companion object {
         fun forCurrentUser(context: Context): ShopStore {
@@ -56,12 +58,13 @@ class LocalShopStore(context: Context) : ShopStore {
         prefs.getString(KEY, null)?.let { text ->
             val o = org.json.JSONObject(text)
             val owned = o.optJSONArray("owned")?.let { a -> List(a.length()) { a.getString(it) } }.orEmpty()
-            ShopState.fromMap(mapOf("owned" to owned, "equipped" to o.optString("equipped"), "spent" to o.optInt("spent"), "music" to o.optString("music")))
+            ShopState.fromMap(mapOf("owned" to owned, "equipped" to o.optString("equipped"), "spent" to o.optInt("spent"),
+                "music" to o.optString("music"), "found" to o.optInt("found")))
         } ?: ShopState()
     } catch (_: Exception) { ShopState() }
 
     private fun save(s: ShopState) {
-        val json = org.json.JSONObject().put("owned", org.json.JSONArray(s.owned.sorted())).put("equipped", s.equipped).put("spent", s.spent).put("music", s.music)
+        val json = org.json.JSONObject().put("owned", org.json.JSONArray(s.owned.sorted())).put("equipped", s.equipped).put("spent", s.spent).put("music", s.music).put("found", s.found)
         prefs.edit().putString(KEY, json.toString()).apply()
         ShopStore.remember(app, s)
     }
@@ -90,6 +93,11 @@ class LocalShopStore(context: Context) : ShopStore {
         save(next)
         val wallet = Wallet(next, totalMeters())
         main.post { done(Result.success(wallet)) }
+    }
+
+    override fun addFound(count: Int, done: (Result<Unit>) -> Unit) {
+        save(ShopRules.addFound(state(), count))
+        main.post { done(Result.success(Unit)) }
     }
 
     private companion object { const val KEY = "state" }
@@ -126,6 +134,13 @@ class FirestoreShopStore(context: Context, private val uid: String, private val 
             ShopStore.remember(app, result.second.state)
             done(Result.success(result))
         }.addOnFailureListener { done(Result.failure(it)) }
+    }
+
+    override fun addFound(count: Int, done: (Result<Unit>) -> Unit) {
+        db.runTransaction { tx ->
+            tx.set(stateRef, ShopRules.addFound(ShopState.fromMap(tx.get(stateRef).data), count).toMap())
+            Unit
+        }.addOnSuccessListener { done(Result.success(Unit)) }.addOnFailureListener { done(Result.failure(it)) }
     }
 
     override fun equip(itemId: String, done: (Result<Wallet>) -> Unit) {

@@ -64,6 +64,7 @@ class StoryListActivity : Activity() {
         val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(6), dp(16), dp(12)) }
 
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         top.addView(HomeButton.create(this))
         top.addView(TextView(this).apply {
             setText(R.string.story_list_title); textSize = 22f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD)

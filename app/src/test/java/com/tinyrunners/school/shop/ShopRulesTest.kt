@@ -82,4 +82,13 @@ class ShopRulesTest {
         assertEquals("music_piko", ok.music)
         assertEquals(ok, ShopState.fromMap(ok.toMap()))
     }
+
+    @Test fun roadCoinsAddToTheDistanceCoinsAndAreSaved() {
+        val state = ShopRules.addFound(ShopState(spent = 10), 7)
+        assertEquals(7, state.found)
+        assertEquals(500 / ShopRules.METERS_PER_COIN + 7 - 10, ShopRules.balance(500L, state))
+        assertEquals(state, ShopRules.addFound(state, 0))
+        assertEquals(state, ShopState.fromMap(state.toMap()))
+        assertEquals(0, ShopState.fromMap(mapOf("found" to -3L)).found)
+    }
 }

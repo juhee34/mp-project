@@ -60,10 +60,12 @@ data class ShopState(
     val equipped: String = ShopCatalog.NONE_ID,
     val spent: Int = 0,
     val music: String = ShopCatalog.MAIN_MUSIC_ID,
+    /** Bonus coins picked up on the road, on top of the distance coins. */
+    val found: Int = 0,
 ) {
     fun owns(id: String) = ShopCatalog.find(id)?.price == 0 || id in owned
 
-    fun toMap(): Map<String, Any> = mapOf("owned" to owned.sorted(), "equipped" to equipped, "spent" to spent, "music" to music)
+    fun toMap(): Map<String, Any> = mapOf("owned" to owned.sorted(), "equipped" to equipped, "spent" to spent, "music" to music, "found" to found)
 
     companion object {
         fun fromMap(m: Map<String, Any?>?): ShopState {
@@ -74,21 +76,26 @@ data class ShopState(
             val equipped = wearable(m["equipped"] as? String, ItemKind.TRAIL, ShopCatalog.NONE_ID)
             val music = wearable(m["music"] as? String, ItemKind.MUSIC, ShopCatalog.MAIN_MUSIC_ID)
             val spent = ((m["spent"] as? Number)?.toInt() ?: 0).coerceAtLeast(0)
-            return ShopState(owned, equipped, spent, music)
+            val found = ((m["found"] as? Number)?.toInt() ?: 0).coerceAtLeast(0)
+            return ShopState(owned, equipped, spent, music, found)
         }
     }
 }
 
 /**
  * Coins come from distance: every [METERS_PER_COIN] metres run (all friends together, failed runs included) is one
- * coin. The balance is worked out from the saved total distance minus what was spent, so it cannot be counted twice.
+ * coin, plus bonus coins picked up on the road ([ShopState.found]). The balance is worked out from the saved total
+ * distance plus the found coins minus what was spent, so distance coins cannot be counted twice.
  */
 object ShopRules {
     const val METERS_PER_COIN = 25
 
     fun coinsForRun(meters: Int): Int = meters.coerceAtLeast(0) / METERS_PER_COIN
     fun earned(totalMeters: Long): Int = (totalMeters.coerceAtLeast(0) / METERS_PER_COIN).toInt()
-    fun balance(totalMeters: Long, state: ShopState): Int = (earned(totalMeters) - state.spent).coerceAtLeast(0)
+    fun balance(totalMeters: Long, state: ShopState): Int = (earned(totalMeters) + state.found - state.spent).coerceAtLeast(0)
+
+    /** Adds bonus coins picked up on a run. */
+    fun addFound(state: ShopState, count: Int): ShopState = if (count <= 0) state else state.copy(found = state.found + count)
 
     sealed interface Purchase {
         data class Bought(val state: ShopState) : Purchase

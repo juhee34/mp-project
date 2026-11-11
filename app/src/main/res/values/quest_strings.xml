@@ -48,4 +48,5 @@
     <string name="bag_all_told">이야기를 모두 봤어요</string>
     <string name="bag_give">전하러 가기</string>
     <string name="hub_bag">가방</string>
+    <string name="bag_open">가방 열기</string>
 </resources>

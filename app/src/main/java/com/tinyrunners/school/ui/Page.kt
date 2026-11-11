@@ -71,6 +71,11 @@ class Page(private val activity: Activity) {
             body.addView(it, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(6) })
         }
 
+    /** The pouch button that opens the bag, at the top-left of the page. */
+    fun bagButton(): android.view.View = BagButton.create(activity).also { b ->
+        body.addView(b, LinearLayout.LayoutParams(dp(40), dp(40)).apply { bottomMargin = dp(6) })
+    }
+
     fun eyebrow(text: String) = label(text, 13f, LEAF, bold = true)
     fun title(text: String) = label(text, 28f, INK, top = 6, bold = true).apply { isAccessibilityHeading(this) }
     fun text(text: String, size: Float = 16f, color: Int = MUTED, top: Int = 8) = label(text, size, color, top)

@@ -381,4 +381,21 @@ class RunnerEngineTest {
         assertEquals(0, e.collected)
         assertTrue(e.pickups.isEmpty())
     }
+
+    @Test fun bonusCoinsLieOnTheRoadApartFromItemsAndAreCounted() {
+        var coins = 0
+        for (seed in 1L..10L) {
+            val e = RunnerEngine(seed)
+            e.tap()
+            e.run(90f) { eng ->
+                eng.autoJump()
+                val onRoad = eng.pickups.filter { !it.taken }
+                for (c in onRoad.filter { it.coin }) for (i in onRoad.filter { !it.coin })
+                    assertFalse("seed $seed coin overlaps item", c.x + c.size > i.x && c.x < i.x + i.size)
+            }
+            assertEquals(RunnerEngine.Phase.RUNNING, e.phase)
+            coins += e.coins
+        }
+        assertTrue("steady runs pick up some coins ($coins)", coins > 10)
+    }
 }

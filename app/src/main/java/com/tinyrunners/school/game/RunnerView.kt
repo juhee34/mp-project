@@ -54,6 +54,9 @@ class RunnerView(
     private var groundY = 0f
     private var animTime = 0f
     private var lastPhase = engine.phase
+    /** Coins earned so far this run (distance + road) and the "+1" coins rising above the friend. */
+    private var shownCoins = 0
+    private val coinPops = ArrayDeque<Float>()
 
     /** Current weather from Open-Meteo, or null to draw the default sky. Visual only. */
     var weather: WeatherReport? = null
@@ -148,6 +151,7 @@ class RunnerView(
         for (o in engine.obstacles) drawObstacle(canvas, o)
         drawPickups(canvas)
         drawRunner(canvas)
+        drawCoinPops(canvas)
         drawWeather(canvas, w)
         drawHud(canvas, w)
 
@@ -355,12 +359,38 @@ class RunnerView(
 
     /** Items bob gently and glow, so they read as something to collect rather than something to avoid. */
     private fun drawPickups(canvas: Canvas) {
-        val item = questItem ?: return
         for (p in engine.pickups) {
             if (p.taken) continue
             val bob = kotlin.math.sin(animTime * 4f + p.x * 0.02f) * 4f
             val size = p.size * scale
+            if (p.coin) { CoinArt.draw(canvas, sx(p.x) + size / 2f, sy(p.bottom + p.size / 2f + bob), size * 0.42f, spin = animTime + p.x * 0.01f); continue }
+            val item = questItem ?: continue
             com.tinyrunners.school.quest.ItemArt.draw(canvas, item, sx(p.x), sy(p.bottom + p.size + bob), size)
+        }
+    }
+
+    /** Coins this run: one per 25 m (as the shop counts them) plus coins picked up on the road. */
+    private fun runCoins() = com.tinyrunners.school.shop.ShopRules.coinsForRun(engine.meters) + engine.coins
+
+    /** Every coin earned rises from the friend's head as "+1" and fades, so earning is visible while running. */
+    private fun drawCoinPops(canvas: Canvas) {
+        val now = runCoins()
+        if (engine.phase == RunnerEngine.Phase.READY) { shownCoins = 0; coinPops.clear() }
+        while (shownCoins < now) { shownCoins++; coinPops.addLast(animTime) }
+        while (coinPops.isNotEmpty() && animTime - coinPops.first() > POP_SECONDS) coinPops.removeFirst()
+        val c = engine.config
+        val cx = sx(c.playerX + c.playerSize / 2f)
+        val head = sy(engine.playerY + c.playerSize)
+        val d = resources.displayMetrics.density
+        coinPops.forEachIndexed { i, start ->
+            val t = ((animTime - start) / POP_SECONDS).coerceIn(0f, 1f)
+            val y = head - (14f + 56f * t) * d - i * 6f * d
+            val alpha = (255 * (1f - t * t * t)).toInt()
+            CoinArt.draw(canvas, cx - 12f * d, y, 13f * d, spin = animTime * 3f, alpha = alpha)
+            text.textSize = 20f * d; text.typeface = Typeface.DEFAULT_BOLD; text.textAlign = Paint.Align.LEFT
+            text.color = COIN_INK; text.alpha = alpha
+            canvas.drawText("+1", cx + 4f * d, y + 7f * d, text)
+            text.color = INK; text.alpha = 255; text.typeface = Typeface.DEFAULT
         }
     }
 
@@ -382,6 +412,14 @@ class RunnerView(
             val x = 16f * d + text.measureText(hud) + 14f * d
             com.tinyrunners.school.quest.ItemArt.draw(canvas, item, x, 40f * d, 18f * d, withGlow = false)
             canvas.drawText(context.getString(R.string.item_hud, engine.collected), x + 22f * d, 54f * d, text)
+        }
+        // Coins earned this run, after the items.
+        run {
+            val itemsText = questItem?.let { context.getString(R.string.item_hud, engine.collected) }
+            var x = 16f * d + text.measureText(hud) + 14f * d
+            if (itemsText != null) x += 22f * d + text.measureText(itemsText) + 14f * d
+            CoinArt.draw(canvas, x + 9f * d, 49f * d, 9f * d, spin = 0f)
+            canvas.drawText(context.getString(R.string.item_hud, runCoins()), x + 22f * d, 54f * d, text)
         }
         text.textSize = 11f * d
         text.alpha = 150
@@ -452,6 +490,8 @@ class RunnerView(
     }
 
     private companion object {
+        private const val POP_SECONDS = 1.1f
+        private val COIN_INK = Color.rgb(140, 96, 20)
         const val WORLD_HEIGHT = 360f
         const val MIN_WORLD_WIDTH = 640f
         const val GROUND_THICKNESS = 48f
@@ -487,5 +527,23 @@ class RunnerView(
         val ROPE = Color.rgb(150, 112, 74)
         val BUTTON_ON = Color.rgb(48, 83, 65)
         val SCRIM = Color.argb(170, 250, 246, 236)
+    }
+}
+
+/** A gold coin that turns slowly (its width shrinks and grows), with a darker rim and a small shine. */
+internal object CoinArt {
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val oval = android.graphics.RectF()
+
+    fun draw(canvas: Canvas, cx: Float, cy: Float, radius: Float, spin: Float, alpha: Int = 255) {
+        val squeeze = 0.35f + 0.65f * kotlin.math.abs(kotlin.math.cos(spin * 2.2f))
+        val rx = radius * squeeze
+        paint.style = Paint.Style.FILL
+        paint.color = Color.rgb(196, 140, 30); paint.alpha = alpha
+        oval.set(cx - rx, cy - radius, cx + rx, cy + radius); canvas.drawOval(oval, paint)
+        paint.color = Color.rgb(250, 204, 72); paint.alpha = alpha
+        oval.set(cx - rx * 0.78f, cy - radius * 0.78f, cx + rx * 0.78f, cy + radius * 0.78f); canvas.drawOval(oval, paint)
+        paint.color = Color.rgb(255, 244, 190); paint.alpha = alpha
+        oval.set(cx - rx * 0.45f, cy - radius * 0.6f, cx - rx * 0.1f, cy - radius * 0.1f); canvas.drawOval(oval, paint)
     }
 }

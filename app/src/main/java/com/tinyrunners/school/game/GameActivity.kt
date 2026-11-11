@@ -35,12 +35,15 @@ class GameActivity : Activity() {
             // Items picked up on the road go into the bag right away, so leaving the talk early keeps them.
             val picked = engine.collected
             if (picked > 0) com.tinyrunners.school.quest.ItemBagStore.forCurrentUser(this).add(character.id, picked) { }
+            val bonus = engine.coins
+            if (bonus > 0) com.tinyrunners.school.shop.ShopStore.forCurrentUser(this).addFound(bonus) { }
             view.postDelayed({
                 if (!isFinishing) {
                     val result = ResultActivity.intent(this,
                         RunResult(runId, character.id, engine.meters, engine.score, engine.cleared))
                         .putExtra(EXTRA_STORY_ID, intent.getStringExtra(EXTRA_STORY_ID))
                         .putExtra(ResultActivity.EXTRA_ITEMS, picked)
+                        .putExtra(ResultActivity.EXTRA_COINS, bonus)
                     // The friend says a few words where they fell, then the result screen opens.
                     startActivity(com.tinyrunners.school.talk.TalkActivity.stumble(this, character.id, engine.meters, engine.distance, result, picked))
                     finish()
