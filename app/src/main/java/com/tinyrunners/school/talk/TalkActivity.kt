@@ -77,8 +77,15 @@ class TalkActivity : Activity() {
         if (mode == TalkMode.VILLAGE) {
             val item = com.tinyrunners.school.quest.QuestItems.of(character.id)
                 ?.takeIf { intent.getBooleanExtra(EXTRA_ASK, false) }
+            val story = villageStory()
+            // Dialogue HANDOFF: story_unread opens an unread written story, story_reread one seen again.
+            val greeting = when {
+                story?.scripted != true -> "select"
+                intent.getBooleanExtra(EXTRA_ASK, false) -> "story_unread"
+                else -> "story_reread"
+            }
             village = TalkPlan.village(character.id, item?.let { getString(it.request) }, item?.let { getString(it.thanks) },
-                villageStory()?.steps.orEmpty()) { event -> ShortLineRepository.pick(this, character.id, event) }
+                story?.steps.orEmpty(), greeting) { event -> ShortLineRepository.pick(this, character.id, event) }
         }
         // A restored visit that was past the hand-over starts the story again from its beginning.
         val lines = village?.let { if (handedOver) TalkPlan.segment(it.after, 0).first else it.before } ?: TalkPlan.lines(

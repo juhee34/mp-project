@@ -62,6 +62,28 @@ class TalkPlanTest {
         assertTrue(all.all { it.text.isNotBlank() })
     }
 
+    @Test fun additionsGiveFiveLinesPerFriendAndEventWithoutDuplicates() {
+        val files = listOf("short_lines.json", "short_lines_expansion_01.json", "short_lines_expansion_02.json", "short_lines_expansion_03.json")
+        val packs = files.map { ShortLineParser.parse(File("src/main/assets/content/$it").readText()) }
+        val all = ShortLineParser.merge(packs)
+        assertEquals(240, all.size)
+        for (id in listOf("mint", "cheese", "popo", "lumi", "nunu", "piko"))
+            for (event in listOf("select", "start", "retry", "stumble", "home", "story_unread", "story_reread"))
+                assertEquals("$id/$event", 5, all.count { it.characterId == id && it.event == event })
+        // Appending the same pack again changes nothing (merge by unique id).
+        assertEquals(all, ShortLineParser.merge(packs + listOf(packs[1])))
+        // The deck now goes through all five before repeating.
+        val deck = LineDeck(Random(3))
+        assertEquals(5, List(5) { deck.draw(all, "piko", "retry")!!.id }.toSet().size)
+    }
+
+    @Test fun writtenStoryOpensWithTheNewOrAgainLineAndFallsBackToAGreeting() {
+        assertEquals(TalkLine("lumi", "line:story_unread"), TalkPlan.village("lumi", "솔방울!", "고마워!", story, "story_unread", pick).before.first())
+        assertEquals(TalkLine("lumi", "line:story_reread"), TalkPlan.village("lumi", null, null, story, "story_reread", pick).before.first())
+        val onlyGreeting: (String) -> String? = { if (it == "select") "안녕" else null }
+        assertEquals(listOf(TalkLine("lumi", "안녕")), TalkPlan.village("lumi", null, null, emptyList(), "story_reread", onlyGreeting).before)
+    }
+
     private val story = listOf(
         Step.Line(TalkScript.NARRATOR, "숲이 열렸다."),
         Step.Line("piko", "여기야!"),
@@ -71,14 +93,14 @@ class TalkPlanTest {
     )
 
     @Test fun villageWithItemsAsksFirstThenThanksTellsTheStoryAndSaysGoodbye() {
-        val parts = TalkPlan.village("lumi", "솔방울 3개!", "고마워!", story, pick)
+        val parts = TalkPlan.village("lumi", "솔방울 3개!", "고마워!", story, pick = pick)
         assertTrue(parts.askItems)
         assertEquals(listOf(TalkLine("lumi", "line:select"), TalkLine("lumi", "솔방울 3개!")), parts.before)
         assertEquals(listOf(Step.Line("lumi", "고마워!")) + story.filter { it !is Step.Run } + Step.Line("lumi", "line:home"), parts.after)
     }
 
     @Test fun seeingAStoryAgainSkipsTheRequest() {
-        val again = TalkPlan.village("lumi", null, null, story, pick)
+        val again = TalkPlan.village("lumi", null, null, story, pick = pick)
         assertEquals(VillageParts(listOf(TalkLine("lumi", "line:select")),
             story.filter { it !is Step.Run } + Step.Line("lumi", "line:home"), askItems = false), again)
     }

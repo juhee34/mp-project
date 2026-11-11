@@ -27,13 +27,19 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## A의 추가 짧은 대사 96개 연결 (2026-11-11, B)
+- docs/dialogue/short-lines-expansion-01~03.json을 app/src/main/assets/content/short_lines_expansion_01~03.json으로 그대로 복사하고, 앱이 기존 144개와 함께 읽는다(같은 id는 한 번만). 친구×상황마다 3개 → 5개, 다섯 개가 한 번씩 나온 뒤에 다시 섞인다.
+- story_unread/story_reread(HANDOFF: 이야기를 열 때 1회)를 마을 이야기 첫 인사로 쓴다. 처음 보는 대사 있는 이야기는 story_unread, 다시 보기는 story_reread, 개요만 있는 이야기는 select. clear는 이 게임에 완주가 없어 예약 그대로.
+- validate-content: 앱 복사본이 문서와 같은지, 240개 id·문구 중복 없음, 친구×8상황×5개 확인 추가.
+- 검증: 빌드·테스트(109개, 실패 0)·lint 성공, validate-content 통과(240개). 에뮬레이터: 라일 1편 첫 대사 "이야기 펼칠 자리는 비워 놨어."(추가분 story_unread), 치즈 1편 "나중에 봐도 돼. 책은 안 도망가."(story_unread). 둘 다 뒤로 가기로 나와 읽음 처리 안 됨.
+
 ## 마을 이야기를 RPG 대화 장면으로 통일 + A의 1·2편 원고 연결 (2026-11-11, B)
 - A의 PR #5(두 번째 이야기 6편·추가 짧은 대사 96개 문서)를 main에 병합했다.
 - 마을 이야기 순서(친구마다): 소개(작은 바람) → 1편(STORY_MANUSCRIPT 첫 에피소드) → 2편(STORY_EXPANSION) → 3편(개요). 앞 이야기를 봐야 다음이 열리고, 처음 볼 때마다 물품 3개를 건네야 이어진다.
 - 모든 마을 이야기(라일 포함)를 달리기 전 대화처럼 그 친구의 달리기 배경 첫 장면 + 큰 캐릭터 + 아래 대사 칸으로 보여 준다. 다른 친구가 말하면 오른쪽에 마주 보고 나타나고, 듣는 쪽은 조금 어둡게. 장면 제목은 "— 화살표가 둘 —" 해설 카드. 라일 소개의 선택지는 버튼으로, 달리기 단계는 대화에서는 건너뛴다(물품을 이미 달리며 모았으므로). 이야기 모음 다시 보기도 같은 대화 장면.
 - 생성기: scripts/build-story-content.cjs(Node). 이 PC에 Python이 없어 build-story-content.py를 Node로 옮겼고, 기존 stories.json 항목이 바이트 단위로 같게 나오는 것을 확인했다. 2편은 STORY_EXPANSION 본문으로 ready가 되었다(ID·제목·해금 거리 그대로). village_stories.json의 1~3편도 이 스크립트가 만든다(긴 해설은 80자 안쪽으로 나눔).
 - 검증: assembleDebug·testDebugUnitTest(107개, 실패 0)·lintDebug 성공, validate-content 통과(2편 ready로 갱신). 에뮬레이터: 이야기 목록 "새 이야기 · 지도의 접힌 쪽", 라일 1편에서 피코가 오른쪽에 등장(확인 동안만 부탁을 끄는 임시 수정, 되돌림), 실제 흐름에서 부탁 → 고사리 잎 0/3 창, 이야기 모음에서 라일 소개 선택지 버튼 → 답 대사. crash 0건. 듣는 친구를 어둡게 바꾼 뒤의 화면은 다시 찍어 보지 않았다.
-- 미완료: 추가 짧은 대사 96개(docs/dialogue/short-lines-expansion-0n.json)는 아직 앱에 연결하지 않았다. build-story-content.py는 2편·마을 대화를 만들지 않는 옛 버전으로 남아 있다(Node 판을 쓴다). story/StoryActivity(대사 화면)는 마을 이야기에서 더 쓰지 않는다.
+- 미완료: build-story-content.py는 2편·마을 대화를 만들지 않는 옛 버전으로 남아 있다(Node 판을 쓴다). story/StoryActivity(대사 화면)는 마을 이야기에서 더 쓰지 않는다.
 
 ## 친구 도와주기: 달리며 물품 줍고 대화에서 건네기 (2026-11-11, B)
 - 변경: 친구마다 필요한 물품(라일 고사리 잎, 치즈 햇빛 조각, 포포 조개껍데기, 루미 솔방울, 누누 책갈피, 피코 종이배). 그 친구와 달리면 장애물 사이 빈 곳에 물품이 땅 위나 점프 높이에 놓이고(약 45%), 닿으면 줍는다(부딪혀도 끝나지 않음). 위 HUD에 물품 아이콘 × 개수, 부딪힌 뒤 대화에 "고사리 잎 3개를 주웠어요". 판이 끝나면 가방에 저장(로그인 users/{uid}/items/bag 트랜잭션, 임시 모드 기기).

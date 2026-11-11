@@ -5,12 +5,16 @@ import org.json.JSONObject
 import kotlin.random.Random
 
 /**
- * One line from A's short dialogue pack (assets/content/short_lines.json, copied from docs/dialogue/short-lines.json).
+ * One line from A's short dialogue pack (assets/content/short_lines.json, copied from docs/dialogue/short-lines.json)
+ * and its approved additions (short_lines_expansion_0n.json, copies of docs/dialogue/short-lines-expansion-0n.json).
  * Events used by the run flow: select (friend chosen), start (first departure), retry (one more run), stumble (crash).
  */
 data class ShortLine(val id: String, val characterId: String, val event: String, val text: String)
 
 object ShortLineParser {
+    /** The base pack plus additions, appended by unique id (an id already seen is ignored). */
+    fun merge(packs: List<List<ShortLine>>): List<ShortLine> = packs.flatten().distinctBy { it.id }
+
     fun parse(json: String): List<ShortLine> {
         val lines = JSONObject(json).getJSONArray("lines")
         return List(lines.length()) { i ->
@@ -44,15 +48,19 @@ class LineDeck(private val random: Random = Random.Default) {
 object ShortLineRepository {
     private var cache: List<ShortLine>? = null
     private val deck = LineDeck()
+    private val FILES = listOf("short_lines.json", "short_lines_expansion_01.json",
+        "short_lines_expansion_02.json", "short_lines_expansion_03.json")
 
     /** A friend's line for [event], or null when the pack is missing (the scene then skips that line). */
     fun pick(context: Context, characterId: String, event: String): String? {
-        val all = cache ?: try {
-            context.assets.open("content/short_lines.json").bufferedReader().use { ShortLineParser.parse(it.readText()) }
-        } catch (e: Exception) {
-            android.util.Log.w("ShortLines", "short_lines.json could not be read", e)
-            emptyList()
-        }.also { cache = it }
+        val all = cache ?: ShortLineParser.merge(FILES.map { file ->
+            try {
+                context.assets.open("content/$file").bufferedReader().use { ShortLineParser.parse(it.readText()) }
+            } catch (e: Exception) {
+                android.util.Log.w("ShortLines", "$file could not be read", e)
+                emptyList()
+            }
+        }).also { cache = it }
         return deck.draw(all, characterId, event)?.text
     }
 }

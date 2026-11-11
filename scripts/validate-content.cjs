@@ -79,6 +79,16 @@ const packApp=norm(fs.readFileSync(path.join(root,"app/src/main/assets/content/s
 assert.equal(packApp,packDoc,"app/src/main/assets/content/short_lines.json must be a copy of docs/dialogue/short-lines.json");
 const pack=JSON.parse(packApp);
 for(const id of expected)for(const ev of ["select","start","retry","stumble"])assert.equal(pack.lines.filter(l=>l.characterId===id&&l.event===ev).length,3,`short lines: ${id}/${ev} needs 3`);
+// Approved additions (A, 2026-11-11): app copies match docs, 2 more per friend and event, ids and texts unique overall.
+const extra=['01','02','03'].map(n=>{
+  const doc=norm(fs.readFileSync(path.join(root,`docs/dialogue/short-lines-expansion-${n}.json`),'utf8'));
+  const app=norm(fs.readFileSync(path.join(root,`app/src/main/assets/content/short_lines_expansion_${n}.json`),'utf8'));
+  assert.equal(app,doc,`short_lines_expansion_${n}.json must be a copy of docs/dialogue/short-lines-expansion-${n}.json`);
+  return JSON.parse(app).lines;}).flat();
+const allLines=[...pack.lines,...extra];
+assert.equal(new Set(allLines.map(l=>l.id)).size,allLines.length,'short lines: duplicate id');
+assert.equal(new Set(allLines.map(l=>l.text)).size,allLines.length,'short lines: duplicate text');
+for(const id of expected)for(const ev of pack.events.map(e=>e.id))assert.equal(allLines.filter(l=>l.characterId===id&&l.event===ev).length,5,`short lines: ${id}/${ev} needs 5 with additions`);
 
 // Sprites (docs/SPRITE_SPEC.md): 48x48 PNG with alpha, sprite_<id>_<motion>_<n>.png in res/drawable-nodpi.
 const SPRITE_DIR='app/src/main/res/drawable-nodpi';
@@ -124,6 +134,7 @@ console.log(`Sprites (required frames): ${spriteSummary.join(', ')}`);
 console.log(`Talks: prologue ${talks.prologue.length} pages, ${talks.talks.length} friends`);
 console.log(`Short lines in app: ${pack.lines.length}`);
 console.log(`Obstacle props in app: ${obstacleCount}/18`);
+console.log(`Short lines: ${allLines.length} (base 144 + additions ${extra.length})`);
 console.log(`Village stories with dialogue: ${scripted}/${village.length} (others play from their outline)`);
 
 assert.deepEqual(read('docs/CHARACTER_BIBLE.json').map(c=>c.id),expected);

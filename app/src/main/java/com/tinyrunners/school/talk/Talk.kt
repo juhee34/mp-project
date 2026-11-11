@@ -114,10 +114,12 @@ object TalkPlan {
         request: String?,
         thanks: String?,
         story: List<Step>,
+        greetingEvent: String = "select",
         pick: (String) -> String?,
     ): VillageParts {
         fun friend(event: String) = pick(event)?.let { TalkLine(characterId, it) }
-        val greeting = listOfNotNull(friend("select"))
+        // A written story opens with the friend's "new story" or "again" line; otherwise (or if none) a greeting.
+        val greeting = listOfNotNull(friend(greetingEvent) ?: friend("select").takeIf { greetingEvent != "select" })
         val told = story.filter { it !is Step.Run } + listOfNotNull(pick("home")?.let { Step.Line(characterId, it) })
         if (request == null) return VillageParts(greeting, told, askItems = false)
         return VillageParts(greeting + TalkLine(characterId, request),
