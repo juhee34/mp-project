@@ -102,13 +102,18 @@ class Page(private val activity: Activity) {
         this.text = text
         textSize = 16f
         isAllCaps = false
-        setTextColor(if (primary) Color.WHITE else LEAF)
         minHeight = dp(52)
         setPadding(dp(14), dp(10), dp(14), dp(10))
-        background = RippleDrawable(ColorStateList.valueOf(MINT), shape(if (primary) LEAF else PAPER, 16, if (primary) LEAF else LINE), null)
         stateListAnimator = null
+        style(this, primary)
         setOnClickListener { click() }
     }.also { body.addView(it, params(12)) }
+
+    /** Makes a page button the main (filled) one or a plain one, e.g. once loaded data says which matters most. */
+    fun style(button: Button, primary: Boolean) {
+        button.setTextColor(if (primary) Color.WHITE else LEAF)
+        button.background = RippleDrawable(ColorStateList.valueOf(MINT), shape(if (primary) LEAF else PAPER, 16, if (primary) LEAF else LINE), null)
+    }
 
     /** A rounded card with its own vertical column. */
     fun card(top: Int = 12): LinearLayout = LinearLayout(activity).apply {

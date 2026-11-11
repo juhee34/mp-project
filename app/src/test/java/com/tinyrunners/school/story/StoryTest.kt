@@ -90,4 +90,15 @@ class StoryTest {
         p.skip()
         assertTrue(p.finished)
     }
+
+    @Test fun nextStoryIsTheFirstUnlockedUnreadOneOfThatFriend() {
+        val all = Story.parseAll(java.io.File("src/main/assets/content/village_stories.json").readText())
+        assertEquals("mint_intro", Story.nextUnread(all, "mint", emptySet())?.id)
+        assertEquals("mint_episode_1", Story.nextUnread(all, "mint", setOf("mint_intro"))?.id)
+        assertEquals("cheese_intro", Story.nextUnread(all, "cheese", setOf("mint_intro"))?.id)
+        val mintAll = all.filter { it.characterId == "mint" }.map { it.id }.toSet()
+        assertNull(Story.nextUnread(all, "mint", mintAll))
+        assertEquals(listOf("intro", "episode_1", "episode_2", "episode_3"),
+            all.filter { it.characterId == "piko" }.map { it.id.removePrefix("piko_") })
+    }
 }

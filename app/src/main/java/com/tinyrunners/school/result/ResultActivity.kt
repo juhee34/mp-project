@@ -49,6 +49,11 @@ class ResultActivity : Activity() {
         page.line(card, getString(R.string.result_cleared, run.cleared))
         // One coin per ShopRules.METERS_PER_COIN metres; the shop works the balance out from the saved total distance.
         page.line(card, getString(R.string.result_coins, com.tinyrunners.school.shop.ShopRules.coinsForRun(run.meters)), 16f, Page.LEAF, bold = true)
+        // The friend's items picked up on this run; the bag count follows once it is loaded.
+        val item = com.tinyrunners.school.quest.QuestItems.of(character.id)
+        val itemLine = item?.let {
+            page.line(card, getString(R.string.result_items, getString(it.name), intent.getIntExtra(EXTRA_ITEMS, 0)), 16f, Page.LEAF, bold = true)
+        }
         val status = page.text(getString(R.string.result_saving), 15f)
 
         val storyId = intent.getStringExtra(GameActivity.EXTRA_STORY_ID)
@@ -57,12 +62,14 @@ class ResultActivity : Activity() {
             StoryRunSignal.finishedFor = storyId
             page.button(getString(R.string.result_continue_story), primary = true) { finish() }
         }
-        page.button(getString(R.string.result_again), primary = storyId == null) {
+        val again = page.button(getString(R.string.result_again), primary = storyId == null) {
             // A short "again!" line from the friend, then the run.
             startActivity(com.tinyrunners.school.talk.TalkActivity.retry(this, character.id,
                 GameActivity.intent(this, character.id).putExtra(GameActivity.EXTRA_STORY_ID, storyId)))
             finish()
         }
+        // Back to the village: straight to the friend's next story when enough items are in the bag.
+        val toStory = page.button(getString(R.string.result_to_village)) { openVillage(character.id, null) }
         page.button(getString(R.string.result_shop)) {
             startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, character.id))
         }
@@ -76,6 +83,25 @@ class ResultActivity : Activity() {
         }
 
         val store = ProgressStore.forCurrentUser(this)
+        if (item != null && storyId == null) {
+            com.tinyrunners.school.quest.ItemBagStore.forCurrentUser(this).load { bag ->
+                if (isDestroyed) return@load
+                val have = bag.getOrNull()?.count(character.id) ?: return@load
+                itemLine?.text = getString(R.string.result_items_bag, getString(item.name), intent.getIntExtra(EXTRA_ITEMS, 0), have)
+                store.loadAll { all ->
+                    if (isDestroyed) return@loadAll
+                    val read = all.getOrNull().orEmpty().values.flatMap { it.readStoryIds }.toSet()
+                    val next = com.tinyrunners.school.story.Story.nextUnread(
+                        com.tinyrunners.school.story.StoryRepository.load(this), character.id, read) ?: return@loadAll
+                    if (have >= com.tinyrunners.school.quest.QuestRules.NEEDED) {
+                        toStory.text = getString(R.string.result_give_items, character.name, getString(item.name))
+                        toStory.setOnClickListener { openVillage(character.id, next.id) }
+                        page.style(toStory, primary = true)
+                        page.style(again, primary = false)
+                    }
+                }
+            }
+        }
         store.record(run) { result ->
             if (isDestroyed) return@record
             result.onSuccess { outcome ->
@@ -93,7 +119,20 @@ class ResultActivity : Activity() {
         }
     }
 
+    /**
+     * Opens the village list on this friend's page and, with [storyId], that story's talk on top of it, so the
+     * list is what is left when the story ends.
+     */
+    private fun openVillage(characterId: String, storyId: String?) {
+        val list = com.tinyrunners.school.story.StoryListActivity.intent(this, characterId)
+        if (storyId == null) startActivity(list)
+        else startActivities(arrayOf(list, com.tinyrunners.school.talk.TalkActivity.village(this, characterId, storyId, askItems = true)))
+        finish()
+    }
+
     companion object {
+        /** Items of the friend picked up on this run. */
+        const val EXTRA_ITEMS = "items"
         const val EXTRA_RUN_ID = "runId"
         const val EXTRA_METERS = "meters"
         const val EXTRA_SCORE = "score"

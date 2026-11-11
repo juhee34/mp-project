@@ -33,6 +33,10 @@ data class Story(
         const val PLAYER = "player"
         const val NARRATOR = "narrator"
 
+        /** A friend's next village story: the first unlocked one not read yet, or null when all are read. */
+        fun nextUnread(stories: List<Story>, characterId: String, read: Set<String>): Story? =
+            stories.firstOrNull { it.characterId == characterId && it.id !in read && it.isUnlocked(read) }
+
         fun parseAll(json: String): List<Story> {
             val array = JSONArray(json)
             return List(array.length()) { parse(array.getJSONObject(it)) }

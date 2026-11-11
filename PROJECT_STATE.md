@@ -27,6 +27,11 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 달리기 결과에서 바로 이야기로 (2026-11-11, B)
+- 결과 카드에 "고사리 잎 6개 주웠어요 · 가방에 8개". 그 친구 물품이 3개 이상이고 안 본 이야기가 있으면 "라일에게 고사리 잎 전하러 가기"(초록 주 버튼, 한 번 더 달리기는 보통 버튼으로) → 마을 이야기 목록(그 친구 쪽) 위에 그 이야기 대화를 바로 연다. 아니면 "마을 이야기로" → 그 친구 쪽 목록. 가방 창 표시는 "고사리 잎 8개 · 3개 필요".
+- Story.nextUnread(첫 안 본·열린 이야기)를 목록과 결과가 함께 쓴다. StoryListActivity.intent(context, friendId).
+- 검증: 빌드·테스트(110개, 실패 0)·lint, validate-content 통과. 에뮬레이터(임시 자동 점프, 되돌림): 라일 281m 고사리 잎 6개 → 결과 "가방에 8개"(이전에 사용자가 모은 2개 포함) → "라일에게 고사리 잎 전하러 가기" → 2편 부탁·가방 창(8개) → 뒤로 가면 마을 이야기 라일 쪽. 건네주기는 누르지 않았다. 버튼 색 바꿈과 "3개 필요" 문구는 그 뒤 화면을 다시 찍어 보지 않았다.
+
 ## A의 추가 짧은 대사 96개 연결 (2026-11-11, B)
 - docs/dialogue/short-lines-expansion-01~03.json을 app/src/main/assets/content/short_lines_expansion_01~03.json으로 그대로 복사하고, 앱이 기존 144개와 함께 읽는다(같은 id는 한 번만). 친구×상황마다 3개 → 5개, 다섯 개가 한 번씩 나온 뒤에 다시 섞인다.
 - story_unread/story_reread(HANDOFF: 이야기를 열 때 1회)를 마을 이야기 첫 인사로 쓴다. 처음 보는 대사 있는 이야기는 story_unread, 다시 보기는 story_reread, 개요만 있는 이야기는 select. clear는 이 게임에 완주가 없어 예약 그대로.

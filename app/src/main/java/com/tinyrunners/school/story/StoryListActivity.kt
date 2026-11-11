@@ -59,7 +59,8 @@ class StoryListActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        index = savedInstanceState?.getInt(KEY_INDEX) ?: 0
+        index = savedInstanceState?.getInt(KEY_INDEX)
+            ?: friends.indexOfFirst { it.id == intent.getStringExtra(EXTRA_FRIEND) }.coerceAtLeast(0)
         val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(6), dp(16), dp(12)) }
 
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
@@ -162,9 +163,8 @@ class StoryListActivity : Activity() {
 
     /** The story to open: the first unlocked one not read yet, or the last read one to see again. */
     private fun storyFor(friend: CharacterDefinition): Pair<Story?, Boolean> {
-        val own = stories.filter { it.characterId == friend.id }
-        own.firstOrNull { it.id !in read && it.isUnlocked(read) }?.let { return it to false }
-        return own.lastOrNull { it.id in read } to true
+        Story.nextUnread(stories, friend.id, read)?.let { return it to false }
+        return stories.lastOrNull { it.characterId == friend.id && it.id in read } to true
     }
 
     private fun bind() {
@@ -257,5 +257,12 @@ class StoryListActivity : Activity() {
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
-    private companion object { const val KEY_INDEX = "friendIndex" }
+    companion object {
+        private const val KEY_INDEX = "friendIndex"
+        private const val EXTRA_FRIEND = "villageFriend"
+
+        /** The village list, opened on [friendId]'s page. */
+        fun intent(context: android.content.Context, friendId: String) =
+            android.content.Intent(context, StoryListActivity::class.java).putExtra(EXTRA_FRIEND, friendId)
+    }
 }
