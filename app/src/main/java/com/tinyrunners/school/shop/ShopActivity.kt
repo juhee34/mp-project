@@ -424,10 +424,11 @@ private class ShopBackground(context: Context) : View(context) {
         for ((fx, fy, size) in listOf(Triple(0.22f, 0.3f, 7f), Triple(0.63f, 0.18f, 9f), Triple(0.84f, 0.5f, 6f), Triple(0.41f, 0.55f, 5f), Triple(0.12f, 0.62f, 6f))) {
             sparkle(canvas, w * fx, h * fy, size * d)
         }
-        // Crescent moon, top right (under the coin badge area it stays a soft glow).
-        paint.color = Color.argb(40, 255, 240, 190); canvas.drawCircle(w * 0.74f, h * 0.2f, 34 * d, paint)
-        paint.color = Color.rgb(255, 238, 180); canvas.drawCircle(w * 0.74f, h * 0.2f, 18 * d, paint)
-        paint.color = Color.rgb(46, 32, 84); canvas.drawCircle(w * 0.74f + 8 * d, h * 0.2f - 5 * d, 16 * d, paint)
+        // Crescent moon in the top row, between the title and the coins, clear of the text below.
+        val mx = w * 0.56f; val my = 34 * d
+        paint.color = Color.argb(40, 255, 240, 190); canvas.drawCircle(mx, my, 26 * d, paint)
+        paint.color = Color.rgb(255, 238, 180); canvas.drawCircle(mx, my, 14 * d, paint)
+        paint.color = Color.rgb(40, 29, 78); canvas.drawCircle(mx + 6 * d, my - 4 * d, 12 * d, paint)
         // Magic circle glowing on the floor behind the cards.
         val cx = w / 2f; val cy = h * 0.93f
         paint.style = Paint.Style.STROKE
