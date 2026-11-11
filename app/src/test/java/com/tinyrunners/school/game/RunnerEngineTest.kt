@@ -144,11 +144,31 @@ class RunnerEngineTest {
             engine.autoJump()
             for (o in engine.obstacles) {
                 seen += o.kind
-                if (o.kind != ObstacleKind.BOX) firstNonBoxAt = minOf(firstNonBoxAt, engine.elapsed)
+                if (o.kind != ObstacleKind.BOX) firstNonBoxAt = minOf(firstNonBoxAt, engine.meters.toFloat())
             }
         }
         assertEquals(ObstacleKind.entries.toSet(), seen)
-        assertTrue("towers and bars only after the calm start", firstNonBoxAt >= e.config.mixedAfterSeconds)
+        assertTrue("towers and bars only after the calm start", firstNonBoxAt >= e.config.mixedAfterMeters)
+    }
+
+    @Test fun calmFirst100mThenFasterEvery100m() {
+        val c = RunnerConfig()
+        assertEquals(c.startSpeed, c.targetSpeed(0), 0f)
+        assertEquals(c.startSpeed, c.targetSpeed(99), 0f)
+        assertEquals(c.startSpeed + c.stageSpeedUp, c.targetSpeed(100), 0f)
+        assertEquals(c.startSpeed + 2 * c.stageSpeedUp, c.targetSpeed(250), 0f)
+        assertEquals(c.maxSpeed, c.targetSpeed(800), 0f)
+        assertEquals(c.maxSpeed, c.targetSpeed(5000), 0f)
+
+        val e = RunnerEngine(seed = 3)
+        e.tap()
+        var maxBefore100 = 0f
+        e.run(150f) { engine ->
+            engine.autoJump()
+            if (engine.meters < 100) maxBefore100 = maxOf(maxBefore100, engine.speed)
+        }
+        assertEquals("no speed-up before 100 m", c.startSpeed, maxBefore100, 0.01f)
+        assertTrue("faster after 100 m", e.speed > c.startSpeed)
     }
 
     @Test fun jumpingIntoAFloatingBarEndsTheRun() {

@@ -11,9 +11,16 @@ import kotlin.random.Random
 data class RunnerConfig(
     val gravity: Float = 2400f,
     val jumpVelocity: Float = 820f,
-    val startSpeed: Float = 260f,
-    val maxSpeed: Float = 520f,
-    val acceleration: Float = 6f,
+    /** Calm start: the first [stageMeters] run at this speed with boxes only and wider gaps. */
+    val startSpeed: Float = 240f,
+    /** Every [stageMeters] the target speed rises by [stageSpeedUp], up to [maxSpeed] (reached at 800 m). The start stays fast enough that one jump clears the tallest box. */
+    val stageMeters: Int = 100,
+    val stageSpeedUp: Float = 50f,
+    val maxSpeed: Float = 620f,
+    /** How quickly the speed eases up to the next stage, in world units per second squared, so it never jolts. */
+    val acceleration: Float = 60f,
+    /** Extra reaction time added to gaps during the calm start (first [stageMeters]). */
+    val calmExtraReaction: Float = 0.4f,
     /** Left edge of the player's 48x48 sprite cell; right of the score text even at the top of a double jump. */
     val playerX: Float = 120f,
     /** Sprite cell size: 48 art pixels at 1.75 world units each, so a body of ~32 pixels is ~56 units tall. */
@@ -45,7 +52,8 @@ data class RunnerConfig(
     val floatMinBottom: Float = 80f,
     val floatMaxBottom: Float = 120f,
     /** Only boxes for the first seconds; afterwards each spawn picks a type at random. */
-    val mixedAfterSeconds: Float = 8f,
+    /** Towers and floating bars appear only after the calm start. */
+    val mixedAfterMeters: Int = 100,
     val towerChance: Float = 0.25f,
     val floatChance: Float = 0.2f,
     val spawnX: Float = 1000f,
@@ -99,6 +107,10 @@ data class RunnerConfig(
      * Smallest clear distance between obstacles that still allows landing and jumping again. Next to a tower the
      * whole double jump has to fit.
      */
+    /** Target speed for a run that has covered [meters]: one step faster every [stageMeters]. */
+    fun targetSpeed(meters: Int): Float =
+        kotlin.math.min(maxSpeed, startSpeed + stageSpeedUp * (meters.coerceAtLeast(0) / stageMeters))
+
     fun minGap(speed: Float, nearTower: Boolean = false): Float =
         speed * ((if (nearTower) doubleAirTime else airTime) + reactionTime) + playerSize
 }
@@ -199,7 +211,8 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
 
     private fun tick(dt: Float) {
         elapsed += dt
-        speed = min(config.maxSpeed, speed + config.acceleration * dt)
+        // Speed steps up every 100 m (eased, not instant); the first 100 m stay at the calm start speed.
+        speed = min(config.targetSpeed(meters), speed + config.acceleration * dt)
 
         playerVy -= config.gravity * dt
         playerY += playerVy * dt
@@ -243,7 +256,7 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
             ObstacleKind.FLOAT -> Obstacle(c.spawnX, between(c.floatMinWidth, c.floatMaxWidth), c.floatThickness,
                 bottom = between(c.floatMinBottom, c.floatMaxBottom), kind = ObstacleKind.FLOAT)
         }
-        nextKind = if (elapsed < c.mixedAfterSeconds) ObstacleKind.BOX else {
+        nextKind = if (meters < c.mixedAfterMeters) ObstacleKind.BOX else {
             val r = random.nextFloat()
             when {
                 r < c.towerChance -> ObstacleKind.TOWER
@@ -252,7 +265,8 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
             }
         }
         val nearTower = kind == ObstacleKind.TOWER || nextKind == ObstacleKind.TOWER
-        nextGap = c.minGap(speed, nearTower) + random.nextFloat() * c.gapVariance * speed
+        nextGap = c.minGap(speed, nearTower) + random.nextFloat() * c.gapVariance * speed +
+            (if (meters < c.stageMeters) c.calmExtraReaction * speed else 0f)
     }
 
     private fun between(min: Float, max: Float) = random.nextFloat() * (max - min) + min
