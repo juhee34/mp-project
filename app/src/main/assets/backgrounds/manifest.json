@@ -1,96 +1,105 @@
 {
-  "status": "review_ready",
-  "loopReady": false,
+  "status": "running_loop_ready",
+  "loopReady": true,
   "layered": false,
-  "sourceSize": [
-    2169,
-    725
-  ],
   "characters": [
     {
       "id": "mint",
-      "source": "mint-cheese.png",
-      "sha256": "f3129e3b92a29baca77d9604bb9162b26146f40f77774610fdc075da1c22e88d",
+      "source": "running/mint-intro.png",
+      "sha256": "409362dd94bdc32acc8da930ad20c164c43b76276f260d68b85307757088b37f",
       "rect": [
         0,
-        4,
-        2169,
-        319
+        0,
+        1997,
+        280
       ],
-      "floorY": 278,
-      "floorStatus": "preview_checked",
-      "loopReady": false
+      "floorY": 256,
+      "floorStatus": "export_aligned",
+      "loopReady": true,
+      "loopSource": "running/mint-loop.png",
+      "loopSha256": "6c52f2fab3ba2b4c6904f93d4d980ebbf42d54c1303f4676c07f15a473e1147a"
     },
     {
       "id": "cheese",
-      "source": "mint-cheese.png",
-      "sha256": "f3129e3b92a29baca77d9604bb9162b26146f40f77774610fdc075da1c22e88d",
+      "source": "running/cheese-intro.png",
+      "sha256": "09ee990277822c48a24214793f76e3f2d464b78af66738ae38343b85deac9456",
       "rect": [
         0,
-        336,
-        2169,
-        385
+        0,
+        1564,
+        280
       ],
-      "floorY": 355,
-      "floorStatus": "preview_checked",
-      "loopReady": false
+      "floorY": 256,
+      "floorStatus": "export_aligned",
+      "loopReady": true,
+      "loopSource": "running/cheese-loop.png",
+      "loopSha256": "b9cf0feda644950589adcb96d2098300503922ce336c3d682d18da02347f6d4f"
     },
     {
       "id": "popo",
-      "source": "popo-lumi.png",
-      "sha256": "595807e0edb5263361bdf9a3304fd2dd91a6f337ce33bef757ba9ea6674dda7b",
+      "source": "running/popo-intro.png",
+      "sha256": "337583f3fca9923e0160dfd6a2099104b4f8bd51885d590e72e5d579549ef626",
       "rect": [
-        4,
-        4,
-        2161,
-        352
+        0,
+        0,
+        1588,
+        280
       ],
-      "floorY": 324,
-      "floorStatus": "preview_checked",
-      "loopReady": false
+      "floorY": 256,
+      "floorStatus": "export_aligned",
+      "loopReady": true,
+      "loopSource": "running/popo-loop.png",
+      "loopSha256": "400068db391f4cf36216d94b1651fe9da42f888984000afe30994d36e7fffd79"
     },
     {
       "id": "lumi",
-      "source": "popo-lumi.png",
-      "sha256": "595807e0edb5263361bdf9a3304fd2dd91a6f337ce33bef757ba9ea6674dda7b",
+      "source": "running/lumi-intro.png",
+      "sha256": "ac0c3f6f020511cae7e6bf4beade769d75cd8ba90fabe5df56c956caf402e54d",
       "rect": [
-        4,
-        368,
-        2161,
-        353
+        0,
+        0,
+        1682,
+        280
       ],
-      "floorY": 329,
-      "floorStatus": "preview_checked",
-      "loopReady": false
+      "floorY": 256,
+      "floorStatus": "export_aligned",
+      "loopReady": true,
+      "loopSource": "running/lumi-loop.png",
+      "loopSha256": "f9cba3bb9d49348236b0bee197b1e0e1f820713f713d426c72c8129f7bc9e48a"
     },
     {
       "id": "nunu",
-      "source": "nunu-piko.png",
-      "sha256": "45421bfc3d3ae0680dde06502ac16cfddad7139c1246e462e7ae47062129be1d",
+      "source": "running/nunu-intro.png",
+      "sha256": "657d04751e71c008f1f2f5f1722604b1881280e38d0d6a1cc81fd18ae2bde844",
       "rect": [
-        4,
-        4,
-        2161,
-        352
+        0,
+        0,
+        1713,
+        280
       ],
-      "floorY": 323,
-      "floorStatus": "preview_checked",
-      "loopReady": false
+      "floorY": 256,
+      "floorStatus": "export_aligned",
+      "loopReady": true,
+      "loopSource": "running/nunu-loop.png",
+      "loopSha256": "cc9c894bb2a9c123e5255a217c6d434ccde3c2fc61d4a172931f1e5343665f12"
     },
     {
       "id": "piko",
-      "source": "nunu-piko.png",
-      "sha256": "45421bfc3d3ae0680dde06502ac16cfddad7139c1246e462e7ae47062129be1d",
+      "source": "running/piko-intro.png",
+      "sha256": "90a717198acf275e6f72421919de0d173505a1dcebbe9f2d9d65a79e0899896e",
       "rect": [
-        4,
-        368,
-        2161,
-        353
+        0,
+        0,
+        1682,
+        280
       ],
-      "floorY": 329,
-      "floorStatus": "preview_checked",
-      "loopReady": false
+      "floorY": 256,
+      "floorStatus": "export_aligned",
+      "loopReady": true,
+      "loopSource": "running/piko-loop.png",
+      "loopSha256": "81386cfe0b77b9c029c4656f6dc0d8e9455dde866c6224f355ed17db3bbf4342"
     }
   ],
-  "visualReview": "Chrome 960x540 canvas: all six start/end views; mint scrolling observed. Not Android device QA."
+  "visualReview": "Exported art checked; runtime uses one intro followed only by running landscape. Device QA pending.",
+  "sequence": "intro_once_then_running_loop"
 }

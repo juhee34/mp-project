@@ -111,3 +111,12 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - rect=[x,y,width,height], floorY는 표시 영역 상단에서 충돌 바닥까지의 이미지 픽셀 거리다. 원본은 그대로 보존한다.
 - loopReady=false, layered=false. 거리 기반 0.25배 카메라는 끝에서 clamp한다. 엔진 거리/점프/충돌/점수는 바꾸지 않는다.
 - 바닥 위 그림은 비율을 유지하며 화면을 덮는다. 바닥 아래 띠만 기존 엔진 바닥 두께에 맞춰 세로 표시한다.
+
+
+## 2026-11-11 배경 출발·반복 분리
+- 사용자 확정: 한 판에서 집은 최초 한 번. 출발 연결 이후 집 없는 달리는 길만 반복한다. 재시작(distance=0)할 때만 집이 다시 나온다.
+- assets.json background.status=running_loop_ready, path는 출발 PNG, loopReady=true, layered=false. panorama_ready 구형 자산은 이전 계약을 유지한다.
+- backgrounds/manifest.json sequence=intro_once_then_running_loop. source/rect/floorY는 출발 이미지, loopSource는 독립 반복 이미지 전체다. 두 PNG 높이 280, 바닥 기준 y256 동일. sha256/loopSha256는 각 파일 해시다.
+- RunningBackgroundMotion은 출발 이미지를 한 번 배치하고 이후 loopSource만 배치한다. 파일 누락 시 기존 집 반복으로 대체하지 않는다. loopSource 필드 없는 구형 자산은 원본 끝에서 멈춘다.
+- 루프의 원경 지붕·작은 창문은 마을 풍경이다. 캐릭터의 큰 출발 집·무대·선착장 집은 반복 이미지에 넣지 않는다.
+- 아트 내보내기/경계 검수와 실제 Android 기기 검수는 구분한다.

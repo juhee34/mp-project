@@ -16,29 +16,41 @@ internal class StoryBackground private constructor(
     private val bitmap: Bitmap,
     private val region: Rect,
     private val floorY: Int,
+    private val loopBitmap: Bitmap?,
 ) {
     private val paint = Paint().apply { isFilterBitmap = false; isAntiAlias = false }
     private val source = Rect()
     private val destination = RectF()
+    private val loopRegion = loopBitmap?.let { Rect(0, 0, it.width, it.height) }
 
     fun draw(canvas: Canvas, width: Float, height: Float, groundY: Float, distance: Float, worldScale: Float) {
         val scale = BackgroundMotion.scale(width, groundY, region.width(), floorY)
         val artWidth = region.width() * scale
-        val offset = BackgroundMotion.offset(distance, worldScale, artWidth)
-        // When the picture's end scrolls in, the next copy follows it, so the scenery loops for the whole run.
-        for (left in BackgroundMotion.copies(offset, artWidth, width)) {
-            // Round to whole pixels so the two copies meet without a gap.
-            val l = left.roundToInt().toFloat()
-            val r = (left + artWidth).roundToInt().toFloat()
-            source.set(region.left, region.top, region.right, region.top + floorY)
-            destination.set(l, groundY - floorY * scale, r, groundY)
-            canvas.drawBitmap(bitmap, source, destination, paint)
-            // Only the underground band fills the engine's fixed ground thickness.
-            // Scenery keeps its aspect ratio; the physics floor never moves.
-            source.set(region.left, region.top + floorY, region.right, region.bottom)
-            destination.set(l, groundY, r, height)
-            canvas.drawBitmap(bitmap, source, destination, paint)
+        val travel = (distance * worldScale * 0.25f).coerceAtLeast(0f)
+        val loop = loopBitmap
+        if (loop == null) {
+            // Missing optional art must never bring the home back during this run.
+            val left = -travel.coerceAtMost((artWidth - width).coerceAtLeast(0f))
+            drawPart(canvas, bitmap, region, left, artWidth, scale, height, groundY)
+            return
         }
+        val loopWidth = loop.width * scale
+        val loopCrop = checkNotNull(loopRegion)
+        for (part in RunningBackgroundMotion.parts(travel, artWidth, loopWidth, width)) {
+            if (part.isLoop) drawPart(canvas, loop, loopCrop, part.left, loopWidth, scale, height, groundY)
+            else drawPart(canvas, bitmap, region, part.left, artWidth, scale, height, groundY)
+        }
+    }
+
+    private fun drawPart(canvas: Canvas, image: Bitmap, crop: Rect, left: Float, artWidth: Float, scale: Float, height: Float, groundY: Float) {
+        val l = left.roundToInt().toFloat()
+        val r = (left + artWidth).roundToInt().toFloat()
+        source.set(crop.left, crop.top, crop.right, crop.top + floorY)
+        destination.set(l, groundY - floorY * scale, r, groundY)
+        canvas.drawBitmap(image, source, destination, paint)
+        source.set(crop.left, crop.top + floorY, crop.right, crop.bottom)
+        destination.set(l, groundY, r, height)
+        canvas.drawBitmap(image, source, destination, paint)
     }
 
     companion object {
@@ -56,7 +68,12 @@ internal class StoryBackground private constructor(
                 } ?: return null
                 require(region.left >= 0 && region.top >= 0 && region.right <= bitmap.width && region.bottom <= bitmap.height)
                 require(region.width() > 0 && floor > 0 && floor < region.height())
-                StoryBackground(bitmap, region, floor)
+                val loopSource = entry.optString("loopSource")
+                val loop = if (loopSource.isNotBlank()) context.assets.open("backgrounds/" + loopSource).use {
+                    BitmapFactory.decodeStream(it)
+                } else null
+                require(loop == null || (loop.width > 0 && loop.height == region.height()))
+                StoryBackground(bitmap, region, floor, loop)
             } catch (e: Exception) {
                 Log.w("StoryBackground", "Background unavailable for $characterId", e)
                 null

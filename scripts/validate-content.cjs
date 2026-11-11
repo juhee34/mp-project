@@ -25,7 +25,18 @@ for(const s of stories){
   }else assert.deepEqual(s.pages,[],'Outlines must not be readable as finished stories');
 }
 for(const c of chars){assert(c.name&&c.home&&c.personality);assert(/^#[0-9A-F]{6}$/i.test(c.color));for(const id of c.storyIds)assert(stories.some(s=>s.id===id&&s.characterId===c.id));assert(assets.some(a=>a.characterId===c.id));}
-for(const a of assets)for(const kind of ['background','music']){assert(a[kind].brief);if(a[kind].status==='planned'){assert.equal(a[kind].path,null);}else{assert.equal(kind,'background');assert.equal(a[kind].status,'panorama_ready');assert.equal(a[kind].loopReady,false);assert.equal(a[kind].layered,false);assert(fs.existsSync(path.join(root,'app/src/main/assets',a[kind].path)));const manifest=read('app/src/main/assets/'+a[kind].manifest);assert(manifest.characters.some(c=>c.id===a.characterId && 'backgrounds/'+c.source===a[kind].path));}}
+for(const a of assets)for(const kind of ['background','music']) {
+ const v=a[kind];assert(v.brief);if(v.status==='planned'){assert.equal(v.path,null);continue;}
+ assert.equal(kind,'background');assert(['panorama_ready','running_loop_ready'].includes(v.status));assert.equal(v.layered,false);
+ const m=read('app/src/main/assets/'+v.manifest),e=m.characters.find(c=>c.id===a.characterId);assert(e);assert.equal('backgrounds/'+e.source,v.path);
+ const base=path.join(root,'app/src/main/assets/backgrounds'),b=fs.readFileSync(path.join(base,e.source));assert.equal(b.toString('ascii',1,4),'PNG');
+ if(v.status==='running_loop_ready'){
+  assert.equal(v.loopReady,true);assert.equal(e.loopReady,true);assert.equal(m.sequence,'intro_once_then_running_loop');assert.equal(e.floorY,256);assert.deepEqual(e.rect,[0,0,b.readUInt32BE(16),280]);
+  const l=fs.readFileSync(path.join(base,e.loopSource));assert.equal(l.toString('ascii',1,4),'PNG');assert.equal(l.readUInt32BE(20),280);assert(l.readUInt32BE(16)>0);assert.notEqual(e.source,e.loopSource);
+  const sha=x=>require('crypto').createHash('sha256').update(x).digest('hex');assert.equal(sha(b),e.sha256);assert.equal(sha(l),e.loopSha256);
+ }else assert.equal(v.loopReady,false);
+}
+
 const research=['andersen','grimm','aesop','modern','world'].flatMap(n=>read('research/'+n+'.json'));assert.equal(research.length,205);assert.equal(new Set(research.map(r=>r.id)).size,205);
 for(const r of research)assert(r.source_url.startsWith('http')&&r.verified_content);
 const p=fs.readFileSync(path.join(root,'docs/PROMPTS.md'),'utf8');assert.equal((p.match(/^## \d+단계 [AB] /gm)||[]).length,20);
