@@ -91,4 +91,21 @@ class ShopRulesTest {
         assertEquals(state, ShopState.fromMap(state.toMap()))
         assertEquals(0, ShopState.fromMap(mapOf("found" to -3L)).found)
     }
+
+    @Test fun friendsItemsCostTenCoinsAndNeedEnough() {
+        val meters = 9L * ShopRules.METERS_PER_COIN // 9 coins: not enough
+        org.junit.Assert.assertNull(ShopRules.buyItem(ShopState(), meters))
+        val rich = ShopRules.buyItem(ShopState(found = 5), meters)!! // 14 coins
+        assertEquals(ShopRules.ITEM_PRICE, rich.spent)
+        assertEquals(4, ShopRules.balance(meters, rich))
+    }
+
+    @Test fun coinPacksAddToTheBalanceAndAreSaved() {
+        val pack = ShopRules.COIN_PACKS.first()
+        val state = ShopRules.addBought(ShopState(spent = 30), pack)
+        assertEquals(pack.coins, state.bought)
+        assertEquals(pack.coins - 30, ShopRules.balance(0L, state))
+        assertEquals(state, ShopState.fromMap(state.toMap()))
+        assertEquals(listOf(100, 550, 1200), ShopRules.COIN_PACKS.map { it.coins })
+    }
 }

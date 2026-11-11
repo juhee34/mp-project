@@ -62,10 +62,12 @@ data class ShopState(
     val music: String = ShopCatalog.MAIN_MUSIC_ID,
     /** Bonus coins picked up on the road, on top of the distance coins. */
     val found: Int = 0,
+    /** Coins bought in the coin shop (a demonstration: no real payment is made in this school build). */
+    val bought: Int = 0,
 ) {
     fun owns(id: String) = ShopCatalog.find(id)?.price == 0 || id in owned
 
-    fun toMap(): Map<String, Any> = mapOf("owned" to owned.sorted(), "equipped" to equipped, "spent" to spent, "music" to music, "found" to found)
+    fun toMap(): Map<String, Any> = mapOf("owned" to owned.sorted(), "equipped" to equipped, "spent" to spent, "music" to music, "found" to found, "bought" to bought)
 
     companion object {
         fun fromMap(m: Map<String, Any?>?): ShopState {
@@ -77,7 +79,8 @@ data class ShopState(
             val music = wearable(m["music"] as? String, ItemKind.MUSIC, ShopCatalog.MAIN_MUSIC_ID)
             val spent = ((m["spent"] as? Number)?.toInt() ?: 0).coerceAtLeast(0)
             val found = ((m["found"] as? Number)?.toInt() ?: 0).coerceAtLeast(0)
-            return ShopState(owned, equipped, spent, music, found)
+            val bought = ((m["bought"] as? Number)?.toInt() ?: 0).coerceAtLeast(0)
+            return ShopState(owned, equipped, spent, music, found, bought)
         }
     }
 }
@@ -92,7 +95,21 @@ object ShopRules {
 
     fun coinsForRun(meters: Int): Int = meters.coerceAtLeast(0) / METERS_PER_COIN
     fun earned(totalMeters: Long): Int = (totalMeters.coerceAtLeast(0) / METERS_PER_COIN).toInt()
-    fun balance(totalMeters: Long, state: ShopState): Int = (earned(totalMeters) + state.found - state.spent).coerceAtLeast(0)
+    fun balance(totalMeters: Long, state: ShopState): Int =
+        (earned(totalMeters) + state.found + state.bought - state.spent).coerceAtLeast(0)
+
+    /** A friend's item (quest/Quest.kt) costs this many coins in the shop. */
+    const val ITEM_PRICE = 10
+
+    /** Buys one of a friend's items: the coins are spent here, the item goes to the bag. Null if not enough coins. */
+    fun buyItem(state: ShopState, totalMeters: Long): ShopState? =
+        if (balance(totalMeters, state) < ITEM_PRICE) null else state.copy(spent = state.spent + ITEM_PRICE)
+
+    /** Coin packs for sale (prices in won). In this build buying one is a demonstration and charges nothing. */
+    data class CoinPack(val id: String, val coins: Int, val won: Int)
+    val COIN_PACKS = listOf(CoinPack("coins_100", 100, 1200), CoinPack("coins_550", 550, 5900), CoinPack("coins_1200", 1200, 11000))
+
+    fun addBought(state: ShopState, pack: CoinPack): ShopState = state.copy(bought = state.bought + pack.coins)
 
     /** Adds bonus coins picked up on a run. */
     fun addFound(state: ShopState, count: Int): ShopState = if (count <= 0) state else state.copy(found = state.found + count)

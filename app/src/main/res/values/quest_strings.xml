@@ -38,7 +38,7 @@
 
     <!-- 가방 screen. -->
     <string name="bag_title">가방</string>
-    <string name="bag_body">달리며 모은 코인과 친구들의 물품이에요. 코인은 꾸미기 상점에서, 물품은 마을 이야기에서 써요.</string>
+    <string name="bag_body">달리며 모은 코인과 친구들의 물품이에요. 코인은 상점에서, 물품은 마을 이야기에서 써요.</string>
     <string name="bag_item_title">%1$s × %2$s</string>
     <string name="bag_item_owner">%1$s에게 필요한 물품</string>
     <string name="bag_need">다음 이야기까지 %1$d개 더</string>

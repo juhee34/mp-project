@@ -47,6 +47,17 @@
     <string name="result_chip_items">%1$s +%2$d</string>
     <string name="result_chip_cleared">장애물 %1$d개</string>
     <string name="result_best_so_far">이 친구와 최고 기록 %1$dm · %2$d점</string>
+    <string name="result_chip_ad">광고 +%1$d</string>
+    <string name="ad_offer_title">광고 보고 코인 2배 받기?</string>
+    <string name="ad_offer_body">짧은 광고를 보면 이번 판에 모은 코인 %1$d개를 한 번 더 받아요. 광고는 원할 때만 봐요.</string>
+    <string name="ad_offer_watch">광고 보기</string>
+    <string name="ad_offer_decline">괜찮아요</string>
+    <string name="ad_label">광고 · 시연용</string>
+    <string name="ad_demo_title">Tiny Runners와 함께 달려요!</string>
+    <string name="ad_demo_body">이 화면은 과제용 시연 광고예요. 실제 앱에서는 이 자리에 광고가 나와요.</string>
+    <string name="ad_countdown">%1$d초 뒤 보상을 받을 수 있어요</string>
+    <string name="ad_finished">광고가 끝났어요</string>
+    <string name="ad_claim">코인 받기</string>
     <string name="result_new_best">새 최고 점수예요!</string>
     <string name="result_save_failed">기록을 저장하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
     <string name="result_again">한 번 더 달리기</string>

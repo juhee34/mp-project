@@ -40,8 +40,11 @@ class ShopActivity : Activity() {
     private lateinit var row: LinearLayout
     private var wallet: Wallet? = null
     private var busy = false
-    /** Which shelf is shown: trails behind the runner, or music for runs. */
-    private var shelf = ItemKind.TRAIL
+    /** Which shelf is shown. */
+    private enum class Shelf { TRAIL, MUSIC, ITEMS, COINS }
+    private var shelf = Shelf.TRAIL
+    /** Friends' items in the bag, for the 물품 shelf. */
+    private var bag: com.tinyrunners.school.quest.ItemBag? = null
     /** The song being previewed with "들어보기", if any. */
     private var previewing: String? = null
     private lateinit var tabs: LinearLayout
@@ -60,7 +63,7 @@ class ShopActivity : Activity() {
         top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
         top.addView(TextView(this).apply {
             setText(R.string.shop_title)
-            textSize = 24f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD)
+            textSize = 24f; setTextColor(TITLE); setTypeface(typeface, Typeface.BOLD)
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
             setPadding(dp(12), 0, 0, 0)
         }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
@@ -78,12 +81,12 @@ class ShopActivity : Activity() {
         top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         content.addView(top)
         content.addView(TextView(this).apply {
-            text = getString(R.string.shop_body, ShopRules.METERS_PER_COIN); textSize = 15f; setTextColor(Page.MUTED); setPadding(0, dp(6), 0, 0)
+            text = getString(R.string.shop_body, ShopRules.METERS_PER_COIN); textSize = 15f; setTextColor(SUBTITLE); setPadding(0, dp(6), 0, 0)
         })
         tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        if (intent.getBooleanExtra(EXTRA_MUSIC, false)) shelf = ItemKind.MUSIC
+        if (intent.getBooleanExtra(EXTRA_MUSIC, false)) shelf = Shelf.MUSIC
         content.addView(tabs, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
-        message = TextView(this).apply { textSize = 15f; setTextColor(Page.LEAF); setTypeface(typeface, Typeface.BOLD) }
+        message = TextView(this).apply { textSize = 15f; setTextColor(MESSAGE); setTypeface(typeface, Typeface.BOLD) }
         content.addView(message, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
 
         row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(4), dp(8), dp(4)) }
@@ -106,9 +109,10 @@ class ShopActivity : Activity() {
             }
         })
         render()
+        loadBag()
         store.load { result ->
             if (isDestroyed) return@load
-            result.onSuccess { wallet = it; render() }.onFailure { coins.text = "—"; message.setTextColor(Page.ERROR); message.setText(R.string.shop_load_failed) }
+            result.onSuccess { wallet = it; render() }.onFailure { coins.text = "—"; message.setTextColor(MESSAGE_ERROR); message.setText(R.string.shop_load_failed) }
         }
     }
 
@@ -116,10 +120,112 @@ class ShopActivity : Activity() {
         val w = wallet
         if (w != null) coins.text = getString(R.string.shop_coins, w.coins)
         tabs.removeAllViews()
-        tabs.addView(tab(R.string.shop_tab_trails, ItemKind.TRAIL))
-        tabs.addView(tab(R.string.shop_tab_music, ItemKind.MUSIC), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(8) })
+        listOf(Shelf.TRAIL to R.string.shop_tab_trails, Shelf.MUSIC to R.string.shop_tab_music,
+            Shelf.ITEMS to R.string.shop_tab_items, Shelf.COINS to R.string.shop_tab_coins).forEachIndexed { i, (s, label) ->
+            tabs.addView(tab(label, s), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { if (i > 0) marginStart = dp(8) })
+        }
         row.removeAllViews()
-        for (item in ShopCatalog.of(shelf)) row.addView(card(item, w), LinearLayout.LayoutParams(dp(178), LinearLayout.LayoutParams.MATCH_PARENT).apply { marginEnd = dp(10) })
+        val params = { LinearLayout.LayoutParams(dp(178), LinearLayout.LayoutParams.MATCH_PARENT).apply { marginEnd = dp(10) } }
+        when (shelf) {
+            Shelf.TRAIL -> ShopCatalog.of(ItemKind.TRAIL).forEach { row.addView(card(it, w), params()) }
+            Shelf.MUSIC -> ShopCatalog.of(ItemKind.MUSIC).forEach { row.addView(card(it, w), params()) }
+            Shelf.ITEMS -> com.tinyrunners.school.quest.QuestItems.all.forEach { row.addView(itemCard(it, w), params()) }
+            Shelf.COINS -> ShopRules.COIN_PACKS.forEach { row.addView(coinCard(it), params()) }
+        }
+    }
+
+    private fun loadBag() {
+        com.tinyrunners.school.quest.ItemBagStore.forCurrentUser(this).load { result ->
+            if (isDestroyed) return@load
+            result.onSuccess { bag = it; if (shelf == Shelf.ITEMS) render() }
+        }
+    }
+
+    /** One of a friend's items for coins; it goes straight to the bag. */
+    private fun itemCard(item: com.tinyrunners.school.quest.QuestItem, w: Wallet?): View {
+        val friend = com.tinyrunners.school.data.CharacterRepository(this).find(item.friendId)
+        val card = shelfCard()
+        card.addView(com.tinyrunners.school.talk.ItemIconView(this, item), LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
+        card.addView(TextView(this).apply { setText(item.name); textSize = 17f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD) })
+        card.addView(TextView(this).apply {
+            text = getString(R.string.shop_item_owner, friend?.name.orEmpty(), bag?.count(item.friendId)?.toString() ?: "…")
+            textSize = 13f; setTextColor(Page.MUTED); maxLines = 2
+        })
+        card.addView(priceText(getString(R.string.shop_price, ShopRules.ITEM_PRICE)))
+        card.addView(actionButton(getString(R.string.shop_buy), primary = true, enabled = w != null) { buyItem(item) }, actionParams())
+        return card
+    }
+
+    private fun buyItem(item: com.tinyrunners.school.quest.QuestItem) {
+        if (busy) return
+        busy = true
+        store.buyItem(item.friendId) { result ->
+            busy = false
+            if (isDestroyed) return@buyItem
+            result.onSuccess { (ok, w) ->
+                wallet = w
+                if (ok) { message.setTextColor(MESSAGE); message.text = getString(R.string.shop_item_bought, getString(item.name)) }
+                else { message.setTextColor(MESSAGE_ERROR); message.text = getString(R.string.shop_not_enough, ShopRules.ITEM_PRICE - w.coins) }
+                loadBag()
+                render()
+            }.onFailure { message.setTextColor(MESSAGE_ERROR); message.setText(R.string.shop_failed) }
+        }
+    }
+
+    /** A coin pack. Buying asks first and makes clear that this build charges nothing (demonstration). */
+    private fun coinCard(pack: ShopRules.CoinPack): View {
+        val card = shelfCard()
+        card.addView(CoinPile(this, pack.coins), LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
+        card.addView(TextView(this).apply { text = getString(R.string.shop_pack_name, pack.coins); textSize = 17f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD) })
+        card.addView(TextView(this).apply { setText(R.string.shop_pack_demo); textSize = 13f; setTextColor(Page.MUTED); maxLines = 2 })
+        card.addView(priceText(getString(R.string.shop_pack_price, String.format(java.util.Locale.KOREA, "%,d", pack.won))))
+        card.addView(actionButton(getString(R.string.shop_pack_buy), primary = true, enabled = true) { confirmPack(pack) }, actionParams())
+        return card
+    }
+
+    private fun confirmPack(pack: ShopRules.CoinPack) {
+        android.app.AlertDialog.Builder(this)
+            .setTitle(getString(R.string.shop_pack_confirm_title, pack.coins))
+            .setMessage(getString(R.string.shop_pack_confirm_body, String.format(java.util.Locale.KOREA, "%,d", pack.won), pack.coins))
+            .setPositiveButton(R.string.shop_pack_buy) { _, _ -> buyPack(pack) }
+            .setNegativeButton(R.string.shop_pack_cancel, null)
+            .show()
+    }
+
+    private fun buyPack(pack: ShopRules.CoinPack) {
+        if (busy) return
+        busy = true
+        store.buyCoins(pack) { result ->
+            busy = false
+            if (isDestroyed) return@buyCoins
+            result.onSuccess { wallet = it; message.setTextColor(MESSAGE); message.text = getString(R.string.shop_pack_done, pack.coins); render() }
+                .onFailure { message.setTextColor(MESSAGE_ERROR); message.setText(R.string.shop_failed) }
+        }
+    }
+
+    private fun shelfCard() = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(dp(12), dp(10), dp(12), dp(10))
+        background = GradientDrawable().apply { setColor(Page.PAPER); cornerRadius = dp(20).toFloat(); setStroke(dp(1), Page.LINE) }
+    }
+
+    private fun priceText(text: String) = TextView(this).apply {
+        this.text = text; textSize = 14f; setTextColor(COIN_INK); setTypeface(typeface, Typeface.BOLD); setPadding(0, dp(4), 0, 0)
+    }
+
+    private fun actionParams() = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) }
+
+    private fun actionButton(text: String, primary: Boolean, enabled: Boolean, click: () -> Unit) = Button(this).apply {
+        this.text = text
+        textSize = 15f; isAllCaps = false; stateListAnimator = null
+        minHeight = dp(44); minimumHeight = dp(44); setPadding(0, 0, 0, 0)
+        setTextColor(if (primary) Color.WHITE else Page.LEAF)
+        background = RippleDrawable(ColorStateList.valueOf(Page.MINT), GradientDrawable().apply {
+            setColor(if (primary) Page.LEAF else Page.MINT); cornerRadius = dp(14).toFloat()
+        }, null)
+        isEnabled = enabled
+        alpha = if (enabled) 1f else 0.6f
+        setOnClickListener { click() }
     }
 
     override fun onPause() {
@@ -202,14 +308,14 @@ class ShopActivity : Activity() {
             if (isDestroyed) return@buy
             result.onSuccess { (outcome, w) ->
                 wallet = w
-                message.setTextColor(Page.LEAF)
+                message.setTextColor(MESSAGE)
                 message.text = when (outcome) {
                     is ShopRules.Purchase.Bought -> getString(if (item.kind == ItemKind.MUSIC) R.string.shop_bought_music else R.string.shop_bought, getString(item.name))
-                    is ShopRules.Purchase.NotEnough -> { message.setTextColor(Page.ERROR); getString(R.string.shop_not_enough, outcome.missing) }
+                    is ShopRules.Purchase.NotEnough -> { message.setTextColor(MESSAGE_ERROR); getString(R.string.shop_not_enough, outcome.missing) }
                     else -> ""
                 }
                 render()
-            }.onFailure { message.setTextColor(Page.ERROR); message.setText(R.string.shop_failed) }
+            }.onFailure { message.setTextColor(MESSAGE_ERROR); message.setText(R.string.shop_failed) }
         }
     }
 
@@ -220,13 +326,13 @@ class ShopActivity : Activity() {
             busy = false
             if (isDestroyed) return@equip
             result.onSuccess { wallet = it; message.text = ""; render() }
-                .onFailure { message.setTextColor(Page.ERROR); message.setText(R.string.shop_failed) }
+                .onFailure { message.setTextColor(MESSAGE_ERROR); message.setText(R.string.shop_failed) }
         }
     }
 
-    /** Shelf switch: the chosen shelf is filled green. */
-    private fun tab(label: Int, kind: ItemKind) = pill(getString(label), if (shelf == kind) Page.LEAF else Page.PAPER,
-        if (shelf == kind) Color.WHITE else Page.LEAF) { if (shelf != kind) { shelf = kind; message.text = ""; render() } }
+    /** Shelf switch: the chosen shelf is filled. */
+    private fun tab(label: Int, kind: Shelf) = pill(getString(label), if (shelf == kind) MAGIC_TAB else Page.PAPER,
+        if (shelf == kind) Color.WHITE else MAGIC_TAB) { if (shelf != kind) { shelf = kind; message.text = ""; render() } }
 
     @android.annotation.SuppressLint("DiscouragedApi")
     private fun trackExists(item: ShopItem) =
@@ -253,6 +359,12 @@ class ShopActivity : Activity() {
         private val COIN = Color.rgb(246, 200, 80)
         private val COIN_BG = Color.rgb(255, 247, 220)
         private val COIN_INK = Color.rgb(140, 96, 20)
+        /** Text on the dark magic-shop background. */
+        private val TITLE = Color.rgb(255, 246, 226)
+        private val SUBTITLE = Color.rgb(222, 210, 246)
+        private val MESSAGE = Color.rgb(196, 240, 210)
+        private val MESSAGE_ERROR = Color.rgb(255, 196, 190)
+        private val MAGIC_TAB = Color.rgb(98, 72, 160)
 
         fun intent(context: Context, friendId: String?) = Intent(context, ShopActivity::class.java).putExtra(EXTRA_FRIEND, friendId)
     }
@@ -285,84 +397,92 @@ private class TrailPreview(context: Context, friendId: String, private val style
 }
 
 /**
- * Inside a little village shop: a thin striped awning along the top, warm wooden plank walls with shelves of jars,
- * boxes and plants, and a wooden counter along the bottom the item cards stand on.
+ * A little magic shop at night: a deep violet room with stars, a crescent moon, heavy velvet curtains on both
+ * sides with gold tassels, floating sparkles, and a glowing magic circle on the floor under the counter.
+ * Drawn once (no animation), so it costs nothing while the shop is open.
  */
 private class ShopBackground(context: Context) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val rect = RectF()
+    private val path = android.graphics.Path()
 
     override fun onDraw(canvas: Canvas) {
         val w = width.toFloat(); val h = height.toFloat()
         val d = resources.displayMetrics.density
-        // Wall: vertical planks in two warm tones with dark seams and a few nail dots.
-        val plank = 38 * d
-        var x = 0f; var i = 0
-        while (x < w) {
-            paint.color = if (i % 2 == 0) Color.rgb(236, 214, 178) else Color.rgb(228, 204, 166)
-            canvas.drawRect(x, 0f, x + plank, h, paint)
-            paint.color = Color.rgb(196, 160, 116); canvas.drawRect(x + plank - 1.5f * d, 0f, x + plank, h, paint)
-            paint.color = Color.rgb(170, 132, 90)
-            canvas.drawCircle(x + plank / 2f, h * 0.18f, 1.6f * d, paint); canvas.drawCircle(x + plank / 2f, h * 0.62f, 1.6f * d, paint)
-            x += plank; i++
+        // Night room: violet at the top, warmer purple near the floor.
+        paint.shader = android.graphics.LinearGradient(0f, 0f, 0f, h, Color.rgb(36, 26, 72), Color.rgb(86, 52, 118), android.graphics.Shader.TileMode.CLAMP)
+        canvas.drawRect(0f, 0f, w, h, paint)
+        paint.shader = null
+        // Stars in a fixed, uneven pattern.
+        val rnd = java.util.Random(7)
+        repeat(70) {
+            val x = rnd.nextFloat() * w; val y = rnd.nextFloat() * h * 0.75f
+            val r = (0.8f + rnd.nextFloat() * 1.6f) * d
+            paint.color = Color.argb(120 + rnd.nextInt(130), 255, 248, 220)
+            canvas.drawCircle(x, y, r, paint)
         }
-        // Two long shelves with jars, boxes and little pots.
-        shelf(canvas, w, h * 0.36f, d, seed = 1)
-        shelf(canvas, w, h * 0.6f, d, seed = 7)
-        // Awning: red and cream stripes with a scalloped edge.
-        // Kept thin so the title and buttons below it stay easy to read.
-        val awning = 7 * d; val stripe = 22 * d
-        x = 0f; i = 0
-        while (x < w) {
-            paint.color = if (i % 2 == 0) Color.rgb(214, 92, 76) else Color.rgb(255, 246, 228)
-            canvas.drawRect(x, 0f, x + stripe, awning, paint)
-            canvas.drawCircle(x + stripe / 2f, awning, stripe * 0.32f, paint)
-            x += stripe; i++
+        // Four-point sparkles.
+        for ((fx, fy, size) in listOf(Triple(0.22f, 0.3f, 7f), Triple(0.63f, 0.18f, 9f), Triple(0.84f, 0.5f, 6f), Triple(0.41f, 0.55f, 5f), Triple(0.12f, 0.62f, 6f))) {
+            sparkle(canvas, w * fx, h * fy, size * d)
         }
-        // Counter along the bottom: a top board and the front panels.
-        val top = h * 0.84f
-        paint.color = Color.rgb(150, 98, 58); canvas.drawRect(0f, top, w, h, paint)
-        paint.color = Color.rgb(176, 120, 72); canvas.drawRect(0f, top, w, top + 10 * d, paint)
-        paint.color = Color.rgb(126, 80, 46)
-        x = 0f; while (x < w) { canvas.drawRect(x, top + 16 * d, x + 2 * d, h, paint); x += 90 * d }
+        // Crescent moon, top right (under the coin badge area it stays a soft glow).
+        paint.color = Color.argb(40, 255, 240, 190); canvas.drawCircle(w * 0.74f, h * 0.2f, 34 * d, paint)
+        paint.color = Color.rgb(255, 238, 180); canvas.drawCircle(w * 0.74f, h * 0.2f, 18 * d, paint)
+        paint.color = Color.rgb(46, 32, 84); canvas.drawCircle(w * 0.74f + 8 * d, h * 0.2f - 5 * d, 16 * d, paint)
+        // Magic circle glowing on the floor behind the cards.
+        val cx = w / 2f; val cy = h * 0.93f
+        paint.style = Paint.Style.STROKE
+        paint.color = Color.argb(90, 190, 160, 255); paint.strokeWidth = 3 * d
+        canvas.drawOval(cx - w * 0.36f, cy - 34 * d, cx + w * 0.36f, cy + 34 * d, paint)
+        paint.color = Color.argb(70, 255, 220, 140); paint.strokeWidth = 2 * d
+        canvas.drawOval(cx - w * 0.28f, cy - 24 * d, cx + w * 0.28f, cy + 24 * d, paint)
+        paint.style = Paint.Style.FILL
+        // Velvet curtains with gold tassels on both sides.
+        curtain(canvas, 0f, w * 0.07f, h, d, left = true)
+        curtain(canvas, w, w * 0.07f, h, d, left = false)
+        // Valance along the top: deep red with a gold fringe.
+        paint.color = Color.rgb(120, 34, 66); canvas.drawRect(0f, 0f, w, 6 * d, paint)
+        paint.color = Color.rgb(232, 186, 90)
+        var x = 0f; while (x < w) { canvas.drawCircle(x + 5 * d, 7 * d, 2.2f * d, paint); x += 10 * d }
     }
 
-    private fun shelf(canvas: Canvas, w: Float, y: Float, d: Float, seed: Int) {
-        // Things sitting on the board, in a repeating but uneven order.
-        var x = 14 * d; var n = seed
-        while (x < w - 30 * d) {
-            when (n % 4) {
-                0 -> { // glass jar with a coloured inside and a lid
-                    paint.color = JARS[n % JARS.size]; rect.set(x, y - 26 * d, x + 20 * d, y); canvas.drawRoundRect(rect, 5 * d, 5 * d, paint)
-                    paint.color = Color.argb(110, 255, 255, 255); rect.set(x + 3 * d, y - 22 * d, x + 7 * d, y - 6 * d); canvas.drawRoundRect(rect, 2 * d, 2 * d, paint)
-                    paint.color = Color.rgb(120, 84, 50); rect.set(x - 1 * d, y - 30 * d, x + 21 * d, y - 25 * d); canvas.drawRoundRect(rect, 2 * d, 2 * d, paint)
-                    x += 30 * d
-                }
-                1 -> { // small wooden box
-                    paint.color = Color.rgb(184, 132, 82); canvas.drawRect(x, y - 18 * d, x + 28 * d, y, paint)
-                    paint.color = Color.rgb(150, 104, 62); canvas.drawRect(x, y - 18 * d, x + 28 * d, y - 15 * d, paint)
-                    x += 38 * d
-                }
-                2 -> { // potted sprout
-                    paint.color = Color.rgb(196, 112, 76); rect.set(x, y - 14 * d, x + 18 * d, y); canvas.drawRoundRect(rect, 3 * d, 3 * d, paint)
-                    paint.color = Color.rgb(104, 160, 88)
-                    canvas.drawOval(x + 1 * d, y - 28 * d, x + 10 * d, y - 14 * d, paint); canvas.drawOval(x + 8 * d, y - 30 * d, x + 17 * d, y - 15 * d, paint)
-                    x += 28 * d
-                }
-                else -> { // stack of little books
-                    for (b in 0 until 3) { paint.color = BOOKS[(n + b) % BOOKS.size]; canvas.drawRect(x, y - (b + 1) * 7 * d, x + 26 * d - b * 3 * d, y - b * 7 * d, paint) }
-                    x += 36 * d
-                }
-            }
-            n += 3
-        }
-        // The board itself and its shadow.
-        paint.color = Color.rgb(160, 110, 66); canvas.drawRect(0f, y, w, y + 7 * d, paint)
-        paint.color = Color.argb(50, 90, 50, 20); canvas.drawRect(0f, y + 7 * d, w, y + 11 * d, paint)
+    private fun sparkle(canvas: Canvas, x: Float, y: Float, s: Float) {
+        paint.color = Color.argb(220, 255, 244, 200)
+        path.reset()
+        path.moveTo(x, y - s); path.quadTo(x, y, x + s, y); path.quadTo(x, y, x, y + s); path.quadTo(x, y, x - s, y); path.quadTo(x, y, x, y - s)
+        canvas.drawPath(path, paint)
     }
 
-    private companion object {
-        val JARS = intArrayOf(Color.rgb(240, 190, 80), Color.rgb(150, 200, 120), Color.rgb(230, 140, 150), Color.rgb(140, 180, 220), Color.rgb(200, 160, 220))
-        val BOOKS = intArrayOf(Color.rgb(120, 150, 200), Color.rgb(214, 120, 100), Color.rgb(110, 170, 120), Color.rgb(230, 190, 90))
+    private fun curtain(canvas: Canvas, edge: Float, width: Float, h: Float, d: Float, left: Boolean) {
+        val inner = if (left) edge + width else edge - width
+        path.reset()
+        path.moveTo(edge, 0f); path.lineTo(inner, 0f)
+        path.quadTo(if (left) inner - width * 0.6f else inner + width * 0.6f, h * 0.45f, inner, h * 0.85f)
+        path.lineTo(edge, h * 0.85f); path.close()
+        paint.color = Color.rgb(132, 38, 74); canvas.drawPath(path, paint)
+        // Folds.
+        paint.color = Color.argb(60, 30, 0, 20); paint.strokeWidth = 3 * d; paint.style = Paint.Style.STROKE
+        for (k in 1..2) { val fx = if (left) edge + width * k / 3f else edge - width * k / 3f; canvas.drawLine(fx, 0f, fx, h * 0.8f, paint) }
+        paint.style = Paint.Style.FILL
+        // Gold tie and tassel.
+        paint.color = Color.rgb(232, 186, 90)
+        val tx = if (left) edge + width * 0.7f else edge - width * 0.7f
+        canvas.drawRect(tx - width * 0.35f, h * 0.48f, tx + width * 0.35f, h * 0.48f + 5 * d, paint)
+        canvas.drawCircle(tx, h * 0.48f + 10 * d, 5 * d, paint)
+        canvas.drawRect(tx - 3 * d, h * 0.48f + 12 * d, tx + 3 * d, h * 0.48f + 26 * d, paint)
+    }
+}
+
+/** A small heap of coins for a coin pack card; bigger packs show more coins. */
+@SuppressLint("ViewConstructor")
+private class CoinPile(context: Context, private val coins: Int) : View(context) {
+    override fun onDraw(canvas: Canvas) {
+        val n = when { coins >= 1000 -> 6; coins >= 500 -> 4; else -> 2 }
+        val r = minOf(width / 8f, height / 3.2f)
+        val baseY = height - r * 1.1f
+        for (i in 0 until n) {
+            val x = width / 2f + (i - (n - 1) / 2f) * r * 1.1f
+            val y = baseY - (i % 2) * r * 0.5f
+            com.tinyrunners.school.game.CoinArt.draw(canvas, x, y, r, spin = 0f)
+        }
     }
 }

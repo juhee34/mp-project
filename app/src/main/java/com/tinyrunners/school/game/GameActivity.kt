@@ -45,8 +45,11 @@ class GameActivity : Activity() {
                         .putExtra(ResultActivity.EXTRA_ITEMS, picked)
                         .putExtra(ResultActivity.EXTRA_COINS, bonus)
                         .putExtra(ResultActivity.EXTRA_DISTANCE, engine.distance)
-                    // The friend says a few words where they fell, then the result screen opens.
-                    startActivity(com.tinyrunners.school.talk.TalkActivity.stumble(this, character.id, engine.meters, engine.distance, result, picked))
+                    // The friend says a few words where they fell; then (when the run earned coins) an optional ad that
+                    // doubles them, then the result screen.
+                    val runCoins = com.tinyrunners.school.shop.ShopRules.coinsForRun(engine.meters) + bonus
+                    val next = if (runCoins > 0) com.tinyrunners.school.result.AdOfferActivity.intent(this, result, runCoins) else result
+                    startActivity(com.tinyrunners.school.talk.TalkActivity.stumble(this, character.id, engine.meters, engine.distance, next, picked))
                     finish()
                 }
             }, RESULT_DELAY_MS)

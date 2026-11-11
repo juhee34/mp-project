@@ -98,6 +98,7 @@ class ResultActivity : Activity() {
             chips.addView(chip(com.tinyrunners.school.talk.ItemIconView(this, item),
                 getString(R.string.result_chip_items, getString(item.name), intent.getIntExtra(EXTRA_ITEMS, 0))))
         }
+        intent.getIntExtra(EXTRA_AD_BONUS, 0).takeIf { it > 0 }?.let { chips.addView(chip(CoinIcon(this), getString(R.string.result_chip_ad, it))) }
         chips.addView(chip(null, getString(R.string.result_chip_cleared, run.cleared)))
         left.addView(chips, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) })
         // Best so far with this friend (or the news of a new best), once saved.
@@ -256,6 +257,8 @@ class ResultActivity : Activity() {
         const val EXTRA_CLEARED = "cleared"
         /** Where the run ended (world units), so the background shows that spot of the friend's road. */
         const val EXTRA_DISTANCE = "distance"
+        /** Coins given for watching the optional ad after the crash. */
+        const val EXTRA_AD_BONUS = "adBonus"
 
         fun intent(context: Context, run: RunResult) = Intent(context, ResultActivity::class.java)
             .putExtra(EXTRA_RUN_ID, run.runId)

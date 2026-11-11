@@ -27,7 +27,7 @@ import kotlin.math.roundToInt
  * First screen after login. Same look as the opening (title, sky, hills, clouds and the six friends on the ground)
  * with five buttons stacked in the middle: white with green text. The user calls this screen the menu.
  * 스토리 진행하기 → world story (black screen) → talks with the village residents.
- * 게임하기 → friend selection. 꾸미기 상점 → the shop (trails and music). 튜토리얼 → the game guide on a practice run.
+ * 게임하기 → friend selection. 상점 → the shop (trails and music). 튜토리얼 → the game guide on a practice run.
  * 설정 → settings.
  */
 class HubActivity : Activity() {

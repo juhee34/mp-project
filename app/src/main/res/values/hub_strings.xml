@@ -2,7 +2,7 @@
 <resources>
     <string name="hub_story">스토리 진행하기</string>
     <string name="hub_game">게임하기</string>
-    <string name="hub_shop">꾸미기 상점</string>
+    <string name="hub_shop">상점</string>
     <string name="hub_tutorial">튜토리얼</string>
     <string name="hub_settings">설정</string>
 </resources>

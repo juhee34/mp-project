@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="menu_shop">꾸미기 상점</string>
-    <string name="shop_title">꾸미기 상점</string>
+    <string name="menu_shop">상점</string>
+    <string name="shop_title">상점</string>
     <string name="shop_body">%1$dm 달릴 때마다 1코인, 길 위 코인을 주우면 1코인 더 모여요. 꾸미기는 달리는 모습만 바꾸고, 점프와 속도는 6명 모두 그대로예요.</string>
     <string name="shop_coins">코인 %1$d</string>
     <string name="coin_badge_loading">코인 …</string>
@@ -33,6 +33,18 @@
     <string name="shop_preview_description">%1$s 미리 보기</string>
     <string name="shop_tab_trails">달리기 꾸미기</string>
     <string name="shop_tab_music">음악</string>
+    <string name="shop_tab_items">물품</string>
+    <string name="shop_tab_coins">코인 충전</string>
+    <string name="shop_item_owner">%1$s에게 필요한 물품 · 가방에 %2$s개</string>
+    <string name="shop_item_bought">%1$s 1개를 샀어요. 가방에 넣었어요.</string>
+    <string name="shop_pack_name">코인 %1$d개</string>
+    <string name="shop_pack_demo">시연용 결제 · 실제로 돈이 나가지 않아요</string>
+    <string name="shop_pack_price">₩%1$s</string>
+    <string name="shop_pack_buy">충전하기</string>
+    <string name="shop_pack_cancel">취소</string>
+    <string name="shop_pack_confirm_title">코인 %1$d개 충전</string>
+    <string name="shop_pack_confirm_body">실제 앱에서는 ₩%1$s이 결제되는 상품이에요. 이 과제용 버전은 시연용이라 돈이 나가지 않고 코인 %2$d개만 들어와요. 충전할까요?</string>
+    <string name="shop_pack_done">코인 %1$d개를 충전했어요.</string>
     <string name="shop_coming_soon">준비 중</string>
     <string name="shop_bought_music">%1$s을(를) 샀어요. 다음 달리기부터 들려요.</string>
     <string name="shop_music_main">기본 테마</string>
@@ -52,7 +64,7 @@
     <string name="settings_music">음악과 효과음</string>
     <string name="settings_music_toggle">모든 화면에서 배경 음악 켜기</string>
     <string name="settings_sfx_toggle">대화 효과음 켜기</string>
-    <string name="result_shop">꾸미기 상점</string>
+    <string name="result_shop">상점</string>
     <string name="shop_preview_play">▶ 들어보기</string>
     <string name="shop_preview_stop">■ 멈추기</string>
 </resources>

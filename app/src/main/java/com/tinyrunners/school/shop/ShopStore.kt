@@ -24,6 +24,10 @@ interface ShopStore {
     fun equip(itemId: String, done: (Result<Wallet>) -> Unit)
     /** Saves bonus coins picked up on a run. */
     fun addFound(count: Int, done: (Result<Unit>) -> Unit)
+    /** Spends [ShopRules.ITEM_PRICE] coins on one of [friendId]'s items, which goes to the bag. False: not enough coins. */
+    fun buyItem(friendId: String, done: (Result<Pair<Boolean, Wallet>>) -> Unit)
+    /** Adds a coin pack (demonstration purchase, no payment). */
+    fun buyCoins(pack: ShopRules.CoinPack, done: (Result<Wallet>) -> Unit)
 
     companion object {
         fun forCurrentUser(context: Context): ShopStore {
@@ -59,12 +63,12 @@ class LocalShopStore(context: Context) : ShopStore {
             val o = org.json.JSONObject(text)
             val owned = o.optJSONArray("owned")?.let { a -> List(a.length()) { a.getString(it) } }.orEmpty()
             ShopState.fromMap(mapOf("owned" to owned, "equipped" to o.optString("equipped"), "spent" to o.optInt("spent"),
-                "music" to o.optString("music"), "found" to o.optInt("found")))
+                "music" to o.optString("music"), "found" to o.optInt("found"), "bought" to o.optInt("bought")))
         } ?: ShopState()
     } catch (_: Exception) { ShopState() }
 
     private fun save(s: ShopState) {
-        val json = org.json.JSONObject().put("owned", org.json.JSONArray(s.owned.sorted())).put("equipped", s.equipped).put("spent", s.spent).put("music", s.music).put("found", s.found)
+        val json = org.json.JSONObject().put("owned", org.json.JSONArray(s.owned.sorted())).put("equipped", s.equipped).put("spent", s.spent).put("music", s.music).put("found", s.found).put("bought", s.bought)
         prefs.edit().putString(KEY, json.toString()).apply()
         ShopStore.remember(app, s)
     }
@@ -98,6 +102,23 @@ class LocalShopStore(context: Context) : ShopStore {
     override fun addFound(count: Int, done: (Result<Unit>) -> Unit) {
         save(ShopRules.addFound(state(), count))
         main.post { done(Result.success(Unit)) }
+    }
+
+    override fun buyItem(friendId: String, done: (Result<Pair<Boolean, Wallet>>) -> Unit) {
+        val meters = totalMeters()
+        val next = ShopRules.buyItem(state(), meters)
+        if (next != null) {
+            save(next)
+            com.tinyrunners.school.quest.LocalItemBagStore(app).add(friendId, 1) { }
+        }
+        val wallet = Wallet(state(), meters)
+        main.post { done(Result.success((next != null) to wallet)) }
+    }
+
+    override fun buyCoins(pack: ShopRules.CoinPack, done: (Result<Wallet>) -> Unit) {
+        save(ShopRules.addBought(state(), pack))
+        val wallet = Wallet(state(), totalMeters())
+        main.post { done(Result.success(wallet)) }
     }
 
     private companion object { const val KEY = "state" }
@@ -141,6 +162,31 @@ class FirestoreShopStore(context: Context, private val uid: String, private val 
             tx.set(stateRef, ShopRules.addFound(ShopState.fromMap(tx.get(stateRef).data), count).toMap())
             Unit
         }.addOnSuccessListener { done(Result.success(Unit)) }.addOnFailureListener { done(Result.failure(it)) }
+    }
+
+    override fun buyItem(friendId: String, done: (Result<Pair<Boolean, Wallet>>) -> Unit) {
+        val bagRef = user.collection("items").document("bag")
+        // Coins and the bag change in one transaction, so a purchase is never half done.
+        db.runTransaction { tx ->
+            val state = ShopState.fromMap(tx.get(stateRef).data)
+            val meters = friends.sumOf { id ->
+                (tx.get(user.collection("progress").document(id)).getLong("totalMeters") ?: 0L).coerceAtLeast(0L)
+            }
+            val bag = com.tinyrunners.school.quest.ItemBag.fromMap(tx.get(bagRef).data)
+            val next = ShopRules.buyItem(state, meters)
+            if (next != null) {
+                tx.set(stateRef, next.toMap())
+                tx.set(bagRef, com.tinyrunners.school.quest.QuestRules.add(bag, friendId, 1).toMap())
+            }
+            (next != null) to Wallet(next ?: state, meters)
+        }.addOnSuccessListener { done(Result.success(it)) }.addOnFailureListener { done(Result.failure(it)) }
+    }
+
+    override fun buyCoins(pack: ShopRules.CoinPack, done: (Result<Wallet>) -> Unit) {
+        db.runTransaction { tx ->
+            tx.set(stateRef, ShopRules.addBought(ShopState.fromMap(tx.get(stateRef).data), pack).toMap())
+            Unit
+        }.addOnSuccessListener { load(done) }.addOnFailureListener { done(Result.failure(it)) }
     }
 
     override fun equip(itemId: String, done: (Result<Wallet>) -> Unit) {

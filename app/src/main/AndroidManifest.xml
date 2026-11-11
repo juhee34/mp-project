@@ -14,6 +14,7 @@
         <activity android:name=".settings.SettingsActivity" android:screenOrientation="sensorLandscape" android:exported="false" />
         <activity android:name=".story.StoryListActivity" android:screenOrientation="sensorLandscape" android:exported="false" />
         <activity android:name=".story.StoryCollectionActivity" android:exported="false" android:screenOrientation="sensorLandscape" />
+        <activity android:name=".result.AdOfferActivity" android:exported="false" android:screenOrientation="sensorLandscape" />
         <activity android:name=".quest.BagActivity" android:exported="false" android:screenOrientation="sensorLandscape" />
         <activity android:name=".story.StoryActivity" android:screenOrientation="sensorLandscape" android:exported="false" />
         <activity android:name=".MainActivity" android:screenOrientation="sensorLandscape" android:exported="false" />
