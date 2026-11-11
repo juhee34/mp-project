@@ -27,7 +27,6 @@ import com.tinyrunners.school.R
 import com.tinyrunners.school.characters.CharacterSprites
 import com.tinyrunners.school.characters.SpriteFrame
 import com.tinyrunners.school.ui.Page
-import com.tinyrunners.school.ui.SceneryView
 import kotlin.math.roundToInt
 
 /**
@@ -55,7 +54,7 @@ class ShopActivity : Activity() {
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(8), dp(16), dp(12))
+            setPadding(dp(16), dp(20), dp(16), dp(12))
         }
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
@@ -93,7 +92,7 @@ class ShopActivity : Activity() {
 
         setContentView(FrameLayout(this).apply {
             setBackgroundColor(Page.BACKGROUND)
-            addView(SceneryView(this@ShopActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(ShopBackground(this@ShopActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(content, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             setOnApplyWindowInsetsListener { v, insets ->
                 if (Build.VERSION.SDK_INT >= 30) {
@@ -125,7 +124,7 @@ class ShopActivity : Activity() {
 
     override fun onPause() {
         // Leaving the shop ends the preview.
-        if (previewing != null) { com.tinyrunners.school.audio.Music.stop(); previewing = null }
+        previewing = null
         super.onPause()
     }
 
@@ -134,9 +133,9 @@ class ShopActivity : Activity() {
         val id = item.track?.let { resources.getIdentifier(it, "raw", packageName) } ?: 0
         if (id == 0) return
         if (previewing == item.id) {
-            com.tinyrunners.school.audio.Music.stop(); previewing = null
+            // Stop the preview: back to the song chosen for the app.
+            com.tinyrunners.school.audio.Music.playGame(this); previewing = null
         } else {
-            com.tinyrunners.school.audio.Music.stop()
             com.tinyrunners.school.audio.Music.play(this, id, force = true); previewing = item.id
         }
         render()
@@ -282,5 +281,88 @@ private class TrailPreview(context: Context, friendId: String, private val style
         box.set(left, top, left + size, top + size)
         canvas.drawBitmap(art[frames[((t * 8).toInt()) % 4]], null, box, pixel)
         postInvalidateDelayed(66)
+    }
+}
+
+/**
+ * Inside a little village shop: a thin striped awning along the top, warm wooden plank walls with shelves of jars,
+ * boxes and plants, and a wooden counter along the bottom the item cards stand on.
+ */
+private class ShopBackground(context: Context) : View(context) {
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val rect = RectF()
+
+    override fun onDraw(canvas: Canvas) {
+        val w = width.toFloat(); val h = height.toFloat()
+        val d = resources.displayMetrics.density
+        // Wall: vertical planks in two warm tones with dark seams and a few nail dots.
+        val plank = 38 * d
+        var x = 0f; var i = 0
+        while (x < w) {
+            paint.color = if (i % 2 == 0) Color.rgb(236, 214, 178) else Color.rgb(228, 204, 166)
+            canvas.drawRect(x, 0f, x + plank, h, paint)
+            paint.color = Color.rgb(196, 160, 116); canvas.drawRect(x + plank - 1.5f * d, 0f, x + plank, h, paint)
+            paint.color = Color.rgb(170, 132, 90)
+            canvas.drawCircle(x + plank / 2f, h * 0.18f, 1.6f * d, paint); canvas.drawCircle(x + plank / 2f, h * 0.62f, 1.6f * d, paint)
+            x += plank; i++
+        }
+        // Two long shelves with jars, boxes and little pots.
+        shelf(canvas, w, h * 0.36f, d, seed = 1)
+        shelf(canvas, w, h * 0.6f, d, seed = 7)
+        // Awning: red and cream stripes with a scalloped edge.
+        // Kept thin so the title and buttons below it stay easy to read.
+        val awning = 7 * d; val stripe = 22 * d
+        x = 0f; i = 0
+        while (x < w) {
+            paint.color = if (i % 2 == 0) Color.rgb(214, 92, 76) else Color.rgb(255, 246, 228)
+            canvas.drawRect(x, 0f, x + stripe, awning, paint)
+            canvas.drawCircle(x + stripe / 2f, awning, stripe * 0.32f, paint)
+            x += stripe; i++
+        }
+        // Counter along the bottom: a top board and the front panels.
+        val top = h * 0.84f
+        paint.color = Color.rgb(150, 98, 58); canvas.drawRect(0f, top, w, h, paint)
+        paint.color = Color.rgb(176, 120, 72); canvas.drawRect(0f, top, w, top + 10 * d, paint)
+        paint.color = Color.rgb(126, 80, 46)
+        x = 0f; while (x < w) { canvas.drawRect(x, top + 16 * d, x + 2 * d, h, paint); x += 90 * d }
+    }
+
+    private fun shelf(canvas: Canvas, w: Float, y: Float, d: Float, seed: Int) {
+        // Things sitting on the board, in a repeating but uneven order.
+        var x = 14 * d; var n = seed
+        while (x < w - 30 * d) {
+            when (n % 4) {
+                0 -> { // glass jar with a coloured inside and a lid
+                    paint.color = JARS[n % JARS.size]; rect.set(x, y - 26 * d, x + 20 * d, y); canvas.drawRoundRect(rect, 5 * d, 5 * d, paint)
+                    paint.color = Color.argb(110, 255, 255, 255); rect.set(x + 3 * d, y - 22 * d, x + 7 * d, y - 6 * d); canvas.drawRoundRect(rect, 2 * d, 2 * d, paint)
+                    paint.color = Color.rgb(120, 84, 50); rect.set(x - 1 * d, y - 30 * d, x + 21 * d, y - 25 * d); canvas.drawRoundRect(rect, 2 * d, 2 * d, paint)
+                    x += 30 * d
+                }
+                1 -> { // small wooden box
+                    paint.color = Color.rgb(184, 132, 82); canvas.drawRect(x, y - 18 * d, x + 28 * d, y, paint)
+                    paint.color = Color.rgb(150, 104, 62); canvas.drawRect(x, y - 18 * d, x + 28 * d, y - 15 * d, paint)
+                    x += 38 * d
+                }
+                2 -> { // potted sprout
+                    paint.color = Color.rgb(196, 112, 76); rect.set(x, y - 14 * d, x + 18 * d, y); canvas.drawRoundRect(rect, 3 * d, 3 * d, paint)
+                    paint.color = Color.rgb(104, 160, 88)
+                    canvas.drawOval(x + 1 * d, y - 28 * d, x + 10 * d, y - 14 * d, paint); canvas.drawOval(x + 8 * d, y - 30 * d, x + 17 * d, y - 15 * d, paint)
+                    x += 28 * d
+                }
+                else -> { // stack of little books
+                    for (b in 0 until 3) { paint.color = BOOKS[(n + b) % BOOKS.size]; canvas.drawRect(x, y - (b + 1) * 7 * d, x + 26 * d - b * 3 * d, y - b * 7 * d, paint) }
+                    x += 36 * d
+                }
+            }
+            n += 3
+        }
+        // The board itself and its shadow.
+        paint.color = Color.rgb(160, 110, 66); canvas.drawRect(0f, y, w, y + 7 * d, paint)
+        paint.color = Color.argb(50, 90, 50, 20); canvas.drawRect(0f, y + 7 * d, w, y + 11 * d, paint)
+    }
+
+    private companion object {
+        val JARS = intArrayOf(Color.rgb(240, 190, 80), Color.rgb(150, 200, 120), Color.rgb(230, 140, 150), Color.rgb(140, 180, 220), Color.rgb(200, 160, 220))
+        val BOOKS = intArrayOf(Color.rgb(120, 150, 200), Color.rgb(214, 120, 100), Color.rgb(110, 170, 120), Color.rgb(230, 190, 90))
     }
 }

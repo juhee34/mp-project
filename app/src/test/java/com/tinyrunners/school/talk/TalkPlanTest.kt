@@ -119,4 +119,15 @@ class TalkPlanTest {
         assertEquals("솔방울을", Josa.with("솔방울", "을", "를"))
         assertEquals("종이배를", Josa.with("종이배", "을", "를"))
     }
+
+    @Test fun eachSceneFollowsTheFriendWhoLeadsIt() {
+        val n = TalkScript.NARRATOR
+        val lines = listOf(
+            TalkLine(n, "— 첫 장면 —"), TalkLine("mint", "a"), TalkLine("piko", "b"),
+            TalkLine(n, "— 피코 장면 —"), TalkLine("piko", "c"), TalkLine("piko", "d"), TalkLine("mint", "e"),
+            TalkLine(n, "— 조용한 장면 —"), TalkLine(n, "f"),
+        )
+        assertEquals(listOf("mint", "mint", "mint", "piko", "piko", "piko", "piko", "mint", "mint"), TalkMusic.sceneLeaders(lines, "mint"))
+        assertEquals(emptyList<String>(), TalkMusic.sceneLeaders(emptyList(), "mint"))
+    }
 }

@@ -84,12 +84,10 @@ class GameActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        com.tinyrunners.school.audio.Music.playGame(this)
         runnerView?.startLoop()
     }
 
     override fun onPause() {
-        com.tinyrunners.school.audio.Music.pauseSoon()
         // Leaving the app or a dialog on top always pauses; the player resumes with a tap.
         runnerView?.engine?.pause()
         runnerView?.stopLoop()

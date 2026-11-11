@@ -38,7 +38,10 @@ import kotlin.math.roundToInt
  * Next to the friend: name, home and one line in their own voice (A's short line pack, "select" lines), then
  * "이 친구와 대화하기" opens that friend's village story. Top: "◀ 처음으로" and "이야기 모음 ▶".
  */
-class StoryListActivity : Activity() {
+class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
+    /** Story screens play the main theme. */
+    override fun musicTrack(): Int = com.tinyrunners.school.R.raw.main_theme
+
     private val friends by lazy { CharacterRepository(this).characters }
     private val stories by lazy { StoryRepository.load(this) }
     private var index = 0
@@ -142,7 +145,6 @@ class StoryListActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        com.tinyrunners.school.audio.Music.playStory(this)
         // Re-read progress each time: finishing a story marks it read.
         ProgressStore.forCurrentUser(this).loadAll { result ->
             if (isDestroyed) return@loadAll
@@ -153,7 +155,6 @@ class StoryListActivity : Activity() {
     }
 
     override fun onPause() {
-        com.tinyrunners.school.audio.Music.pauseSoon()
         super.onPause()
     }
 

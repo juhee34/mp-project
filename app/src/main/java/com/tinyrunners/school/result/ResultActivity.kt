@@ -36,13 +36,11 @@ import kotlin.math.roundToInt
  */
 class ResultActivity : Activity() {
     override fun onPause() {
-        com.tinyrunners.school.audio.Music.pauseSoon()
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        com.tinyrunners.school.audio.Music.playGame(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

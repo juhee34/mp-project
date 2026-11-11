@@ -92,7 +92,6 @@ class BagActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        com.tinyrunners.school.audio.Music.playGame(this)
         render()
         // Everything is re-read when the screen comes back: runs, purchases and hand-overs change it.
         ShopStore.forCurrentUser(this).load { result ->
@@ -111,7 +110,6 @@ class BagActivity : Activity() {
     }
 
     override fun onPause() {
-        com.tinyrunners.school.audio.Music.pauseSoon()
         super.onPause()
     }
 

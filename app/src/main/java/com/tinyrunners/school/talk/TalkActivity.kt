@@ -37,19 +37,15 @@ import kotlin.math.roundToInt
  * It runs before every run (long talk the first time, short lines afterwards), before "한 번 더 달리기", and right
  * after a crash. When the talk ends (or "건너뛰기" is pressed) the next screen opens.
  */
-class TalkActivity : Activity() {
-    override fun onPause() {
-        com.tinyrunners.school.audio.Music.pauseSoon()
-        super.onPause()
-    }
+class TalkActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
+    /** Song for the scene being told (stories only); run talks keep the song chosen in the shop. */
+    private var sceneTrack: Int? = null
+    /** Song for each line of the lines on screen (stories only). */
+    private var lineTracks: List<Int> = emptyList()
 
-    override fun onResume() {
-        super.onResume()
-        // Replays from 이야기 모음 are part of the story, so they get the story music.
-        val mode = intent.getIntExtra(EXTRA_MODE, 0)
-        if (mode == TalkMode.REPLAY.ordinal || mode == TalkMode.VILLAGE.ordinal) com.tinyrunners.school.audio.Music.playStory(this)
-        else com.tinyrunners.school.audio.Music.playGame(this)
-    }
+    override fun musicTrack(): Int? = sceneTrack
+
+    private val isStory: Boolean get() = intent.getIntExtra(EXTRA_MODE, 0).let { it == TalkMode.REPLAY.ordinal || it == TalkMode.VILLAGE.ordinal }
 
     private var view: TalkView? = null
     private var done = false
@@ -99,6 +95,8 @@ class TalkActivity : Activity() {
         // Every friend can speak in a village story, so all names are known.
         names = CharacterRepository(this).characters.associate { it.id to it.name } +
             (TalkScript.PLAYER to (AuthService.currentName(this) ?: getString(R.string.talk_player_default)))
+        com.tinyrunners.school.audio.Sfx.init(this)
+        if (isStory) sceneTrack = com.tinyrunners.school.audio.Music.friendTrack(this, character.id)
         val skip = TextView(this).apply {
             setText(R.string.talk_skip)
             setTextColor(Color.WHITE)
@@ -138,9 +136,17 @@ class TalkActivity : Activity() {
         val player = TalkPlayer(lines)
         if (at > 0) player.restore(at)
         // After a crash the scene shows the spot where the friend fell, with the friend in their tumble pose.
+        // Stories: each scene plays the song of the friend who leads it (speaks most), changing at scene cards.
+        lineTracks = if (isStory) TalkMusic.sceneLeaders(lines, characterId).map { com.tinyrunners.school.audio.Music.friendTrack(this, it) } else emptyList()
         val talk = TalkView(this, characterId, player, names, guest = guest,
             distance = intent.getFloatExtra(EXTRA_DISTANCE, 0f),
             fallen = intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.STUMBLE.ordinal) { finishTalk(characterId, firstTime) }
+        talk.onLine = { i ->
+            lineTracks.getOrNull(i)?.takeIf { it != sceneTrack }?.let { track ->
+                sceneTrack = track
+                com.tinyrunners.school.audio.Music.play(this, track)
+            }
+        }
         view = talk
         frame.addView(talk, 0, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
     }
@@ -160,6 +166,7 @@ class TalkActivity : Activity() {
         val friendName = names[characterId] ?: characterId
         val store = com.tinyrunners.school.quest.ItemBagStore.forCurrentUser(this)
 
+        com.tinyrunners.school.audio.Sfx.play(this, com.tinyrunners.school.audio.Sfx.Sound.CHOICE)
         val panel = android.widget.LinearLayout(this).apply {
             orientation = android.widget.LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
@@ -209,7 +216,10 @@ class TalkActivity : Activity() {
                         when {
                             result.isFailure -> { count.setText(R.string.quest_error); main.isEnabled = true }
                             next == null -> store.load { r -> if (!isDestroyed) r.onSuccess { show(it) } }
-                            else -> { frame.removeView(panel); handOver(characterId) }
+                            else -> {
+                                com.tinyrunners.school.audio.Sfx.play(this, com.tinyrunners.school.audio.Sfx.Sound.GIVE, volume = 0.7f)
+                                frame.removeView(panel); handOver(characterId)
+                            }
                         }
                     }
                 }
@@ -266,6 +276,7 @@ class TalkActivity : Activity() {
         val d = resources.displayMetrics.density
         fun dp(v: Int) = (v * d).roundToInt()
         skip?.visibility = View.GONE
+        com.tinyrunners.school.audio.Sfx.play(this, com.tinyrunners.school.audio.Sfx.Sound.CHOICE)
         val panel = android.widget.LinearLayout(this).apply {
             orientation = android.widget.LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
@@ -384,6 +395,8 @@ internal class TalkView(
     private val onFinished: () -> Unit,
 ) : View(context) {
     private val mainId = characterId
+    /** Called when a new line starts showing (its index). */
+    var onLine: ((Int) -> Unit)? = null
     private val guestSprites = mutableMapOf<String, CharacterSprites?>()
     private val dim = Paint().apply {
         isFilterBitmap = false; isAntiAlias = false
@@ -422,6 +435,7 @@ internal class TalkView(
 
     override fun performClick(): Boolean {
         super.performClick()
+        if (!player.isTyping && !player.isFinished) com.tinyrunners.school.audio.Sfx.play(context, com.tinyrunners.school.audio.Sfx.Sound.NEXT, volume = 0.35f)
         player.tap()
         if (player.isFinished) onFinished() else invalidate()
         return true
@@ -483,7 +497,11 @@ internal class TalkView(
         if (player.isTyping) {
             typed += (now - lastTick) / CHAR_MS
             val whole = typed.toInt()
-            if (whole > 0) { player.type(whole); typed -= whole }
+            if (whole > 0) {
+                player.type(whole); typed -= whole
+                // A soft blip as letters appear, in the speaker's voice (spaces are silent).
+                if (line.text.getOrNull(player.shown - 1)?.isWhitespace() == false) com.tinyrunners.school.audio.Sfx.blip(context, line.speaker)
+            }
         } else typed = 0f
         lastTick = now
 
@@ -515,6 +533,7 @@ internal class TalkView(
 
         if (announced != player.index) {
             announced = player.index
+            onLine?.invoke(player.index)
             val who = if (narrator) "" else (names[line.speaker] ?: line.speaker) + ". "
             contentDescription = who + line.text
             announceForAccessibility(contentDescription)
@@ -566,5 +585,28 @@ internal class ItemIconView(context: Context, private val item: com.tinyrunners.
     override fun onDraw(canvas: Canvas) {
         val size = min(width, height).toFloat()
         com.tinyrunners.school.quest.ItemArt.draw(canvas, item, (width - size) / 2f, (height - size) / 2f, size, withGlow = false)
+    }
+}
+
+/** Which friend leads each scene of a story, for its music. Pure, so it is unit tested. */
+internal object TalkMusic {
+    /**
+     * For each line, the friend who speaks most in its scene (scenes start at the "— title —" narration cards);
+     * ties and narration-only scenes go to [main].
+     */
+    fun sceneLeaders(lines: List<TalkLine>, main: String): List<String> {
+        val out = ArrayList<String>(lines.size)
+        var start = 0
+        fun close(end: Int) {
+            val counts = lines.subList(start, end).filter { it.speaker != TalkScript.NARRATOR && it.speaker != TalkScript.PLAYER }
+                .groupingBy { it.speaker }.eachCount()
+            val best = counts.maxOfOrNull { it.value } ?: 0
+            val leader = if ((counts[main] ?: 0) >= best) main else counts.entries.first { it.value == best }.key
+            repeat(end - start) { out += leader }
+            start = end
+        }
+        lines.forEachIndexed { i, l -> if (i > start && l.speaker == TalkScript.NARRATOR && l.text.startsWith("— ")) close(i) }
+        close(lines.size)
+        return out
     }
 }

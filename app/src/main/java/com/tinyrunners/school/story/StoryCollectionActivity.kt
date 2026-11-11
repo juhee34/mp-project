@@ -45,7 +45,10 @@ import kotlin.math.roundToInt
  * story in order (first talk, the village stories). All are listed from the start; the ones not reached yet in
  * 스토리 진행 stay locked. Nothing here changes progress; it only replays.
  */
-class StoryCollectionActivity : Activity() {
+class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
+    /** Story screens play the main theme. */
+    override fun musicTrack(): Int = com.tinyrunners.school.R.raw.main_theme
+
     private val friends by lazy { CharacterRepository(this).characters }
     private val stories by lazy { StoryRepository.load(this) }
     private var read: Set<String> = emptySet()
@@ -99,7 +102,6 @@ class StoryCollectionActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        com.tinyrunners.school.audio.Music.playStory(this)
         render()
         // Re-read progress each time: a story finished in 스토리 진행 opens here.
         ProgressStore.forCurrentUser(this).loadAll { result ->
@@ -111,7 +113,6 @@ class StoryCollectionActivity : Activity() {
     }
 
     override fun onPause() {
-        com.tinyrunners.school.audio.Music.pauseSoon()
         super.onPause()
     }
 

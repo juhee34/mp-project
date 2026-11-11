@@ -17,15 +17,16 @@ import kotlin.math.roundToInt
  * The world story ("스토리 진행하기" on the hub): white text on black, one short page per tap, then the village
  * residents. "건너뛰기" jumps straight to the residents.
  */
-class PrologueActivity : Activity() {
+class PrologueActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
+    /** Story screens play the main theme. */
+    override fun musicTrack(): Int = com.tinyrunners.school.R.raw.main_theme
+
     override fun onPause() {
-        com.tinyrunners.school.audio.Music.pauseSoon()
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        com.tinyrunners.school.audio.Music.playStory(this)
     }
 
     private lateinit var pages: List<String>

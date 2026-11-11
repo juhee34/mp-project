@@ -21,9 +21,11 @@ import com.tinyrunners.school.progress.CharacterProgress
 import com.tinyrunners.school.progress.ProgressStore
 import com.tinyrunners.school.ui.Page
 
-class StoryActivity : Activity() {
+class StoryActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
+    /** Story screens play the main theme. */
+    override fun musicTrack(): Int = com.tinyrunners.school.R.raw.main_theme
+
     override fun onPause() {
-        com.tinyrunners.school.audio.Music.pauseSoon()
         super.onPause()
     }
 
@@ -71,7 +73,6 @@ class StoryActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        com.tinyrunners.school.audio.Music.playStory(this)
         if (!ready) return
         if (!AuthService.hasSession(this) || owner != AuthService.currentUid(this)) { finish(); return }
         val request = ++generation

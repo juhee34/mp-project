@@ -27,9 +27,11 @@ object StoryRunSignal {
  * Dialogue screen: tap to continue, a skip button, at most a couple of choices, and one run with the friend.
  * The player has no picture; their lines are shown with their nickname.
  */
-class StoryActivity : Activity() {
+class StoryActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
+    /** Story screens play the main theme. */
+    override fun musicTrack(): Int = com.tinyrunners.school.R.raw.main_theme
+
     override fun onPause() {
-        com.tinyrunners.school.audio.Music.pauseSoon()
         super.onPause()
     }
 
@@ -53,7 +55,6 @@ class StoryActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        com.tinyrunners.school.audio.Music.playStory(this)
         if (!::player.isInitialized) return
         if (waitingForRun && StoryRunSignal.finishedFor == player.story.id) {
             StoryRunSignal.finishedFor = null

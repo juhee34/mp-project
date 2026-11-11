@@ -83,7 +83,7 @@ class SettingsActivity : Activity() {
         page.text(getString(R.string.settings_weather_source), 12f)
         refreshPreview()
 
-        // Background music for runs and story screens.
+        // Background music on every screen.
         val music = page.card(16)
         page.line(music, getString(R.string.settings_music), 13f, Page.LEAF, bold = true, top = 0)
         val musicSettings = com.tinyrunners.school.audio.MusicSettings(this)
@@ -95,9 +95,21 @@ class SettingsActivity : Activity() {
             minHeight = page.dp(48)
             setOnCheckedChangeListener { _, on ->
                 musicSettings.enabled = on
-                if (!on) com.tinyrunners.school.audio.Music.stop()
+                if (on) com.tinyrunners.school.audio.Music.playGame(this@SettingsActivity) else com.tinyrunners.school.audio.Music.stop()
             }
         }, page.params(8))
+        val sfx = com.tinyrunners.school.audio.SfxSettings(this)
+        music.addView(Switch(this).apply {
+            text = getString(R.string.settings_sfx_toggle)
+            textSize = 16f
+            setTextColor(Page.INK)
+            isChecked = sfx.enabled
+            minHeight = page.dp(48)
+            setOnCheckedChangeListener { _, on ->
+                sfx.enabled = on
+                if (on) com.tinyrunners.school.audio.Sfx.play(this@SettingsActivity, com.tinyrunners.school.audio.Sfx.Sound.NEXT)
+            }
+        }, page.params(4))
 
         val guide = page.card(16)
         page.line(guide, getString(R.string.settings_guide), 13f, Page.LEAF, bold = true, top = 0)
