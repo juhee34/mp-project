@@ -38,14 +38,15 @@ object ShopCatalog {
         ShopItem("petals", R.string.shop_item_petals, R.string.shop_blurb_petals, 60, TrailStyle.PETALS),
         ShopItem("notes", R.string.shop_item_notes, R.string.shop_blurb_notes, 70, TrailStyle.NOTES),
         ShopItem("rainbow", R.string.shop_item_rainbow, R.string.shop_blurb_rainbow, 120, TrailStyle.RAINBOW),
-        // Music: the main theme is free; six more songs are sold once their files are added as res/raw/music_<id>.*
+        // Music: the main theme is free; six songs (2026-11-11) are res/raw/music_<id>.mp3. The friend in each id only picks
+        // the sprite in the shop preview; the shop shows the song's own title (Korean, with the original English title).
         ShopItem(MAIN_MUSIC_ID, R.string.shop_music_main, R.string.shop_music_main_blurb, 0, kind = ItemKind.MUSIC, track = "main_theme"),
-        ShopItem("music_mint", R.string.shop_music_mint, R.string.shop_music_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_mint"),
-        ShopItem("music_cheese", R.string.shop_music_cheese, R.string.shop_music_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_cheese"),
-        ShopItem("music_popo", R.string.shop_music_popo, R.string.shop_music_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_popo"),
-        ShopItem("music_lumi", R.string.shop_music_lumi, R.string.shop_music_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_lumi"),
-        ShopItem("music_nunu", R.string.shop_music_nunu, R.string.shop_music_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_nunu"),
-        ShopItem("music_piko", R.string.shop_music_piko, R.string.shop_music_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_piko"),
+        ShopItem("music_mint", R.string.shop_music_mint, R.string.shop_music_mint_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_mint"),
+        ShopItem("music_cheese", R.string.shop_music_cheese, R.string.shop_music_cheese_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_cheese"),
+        ShopItem("music_popo", R.string.shop_music_popo, R.string.shop_music_popo_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_popo"),
+        ShopItem("music_lumi", R.string.shop_music_lumi, R.string.shop_music_lumi_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_lumi"),
+        ShopItem("music_nunu", R.string.shop_music_nunu, R.string.shop_music_nunu_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_nunu"),
+        ShopItem("music_piko", R.string.shop_music_piko, R.string.shop_music_piko_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_piko"),
     )
 
     fun find(id: String?): ShopItem? = items.firstOrNull { it.id == id }

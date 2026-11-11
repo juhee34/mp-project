@@ -27,6 +27,10 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 상점 음악 6곡 넣음 (2026-11-11, B)
+- 사용자가 준 mp3 6곡을 res/raw에 추가하고 판매 시작(각 80코인). 상점 이름은 곡 제목(한글 + 원제): music_mint 라일의 첫 지평선(Lail's First Horizon), music_cheese 햇살 속 작은 발(Tiny Paws in the Sun), music_popo 웅덩이를 폴짝(Jumping Over Puddles), music_lumi 클로버 사이를 달려(Running Through Clover), music_nunu 누누의 살금살금(Nunu's Tiptoe), music_piko 물살 속의 장화(Boots in the Current). 라일·누누 곡은 제목대로, 나머지 4곡의 친구 연결(상점 미리 보기 캐릭터)은 B의 추정이다.
+- 검증: 빌드·lint 성공, 단위 테스트 94개 실패 0. 에뮬레이터: 음악 탭 7장(기본 무료 + 6곡 80코인 "사기"), 기기 저장값만 잠깐 music_lumi로 바꿔 달리기에서 mp3 재생 확인(mp3 디코더 사용) 후 원래대로 되돌림, crash 0건. 실제 구매(80코인)는 계정 코인 38이라 해 보지 않았다. APK 약 42MB(음원 약 19MB).
+
 ## 메인 음악, 상점 음악 칸, 시작 화면 버튼 4개 (2026-11-11, B)
 - 사용자가 준 메인 음원(카카오톡 mp4, 38초, 소리 트랙 있음)을 res/raw/main_theme.mp4로 넣었다. audio/Music: 공유 MediaPlayer가 반복 재생. 게임·친구 대화·결과 화면은 상점에서 고른 음악(없으면 메인), 세계 이야기·마을 이야기·이야기 도감은 메인 음악. 시작 화면·친구 선택·상점·설정에서는 0.6초 뒤 멈춘다(화면 사이 이동 중에는 끊기지 않음). 설정에 "배경 음악" 켜기/끄기.
 - 상점 "달리기 꾸미기 / 음악" 탭. 음악: 기본 테마(무료) + 라일·치즈·포포·루미·누누·피코의 노래(각 80코인, 이름은 캐릭터별 음악 계획에 맞춘 가정). 음원 파일이 앱에 없으면 "준비 중"으로 살 수 없다. **음원 추가 방법: res/raw/music_mint.mp3(또는 m4a·ogg·mp4) 처럼 music_<친구id> 이름으로 넣으면 바로 판매·재생된다.** ShopState에 music(고른 음악) 추가, 사면 바로 선택.
