@@ -8,15 +8,15 @@ import org.junit.Test
 class TutorialFlowTest {
     @Test fun walksThroughAllPagesInOrderThenFinishes() {
         val flow = TutorialFlow()
-        assertEquals(6, flow.count)
+        assertEquals(7, flow.count)
         val seen = mutableListOf<TutorialStep>()
         while (!flow.finished) { seen += flow.current; flow.next() }
-        assertEquals(listOf(TutorialStep.JUMP, TutorialStep.DOUBLE_JUMP, TutorialStep.FLOATING, TutorialStep.PLANK, TutorialStep.PICKUPS, TutorialStep.PAUSE), seen)
+        assertEquals(listOf(TutorialStep.JUMP, TutorialStep.DOUBLE_JUMP, TutorialStep.FLOATING, TutorialStep.PLANK, TutorialStep.PICKUPS, TutorialStep.BAG, TutorialStep.PAUSE), seen)
     }
 
     @Test fun onlyTheLastPageIsLast() {
         val flow = TutorialFlow()
-        repeat(5) { assertFalse(flow.isLast); flow.next() }
+        repeat(6) { assertFalse(flow.isLast); flow.next() }
         assertTrue(flow.isLast)
         assertFalse(flow.finished)
     }

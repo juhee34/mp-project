@@ -25,6 +25,7 @@ enum class TutorialStep(val title: Int, val body: Int) {
     FLOATING(R.string.tutorial_float_title, R.string.tutorial_float_body),
     PLANK(R.string.tutorial_plank_title, R.string.tutorial_plank_body),
     PICKUPS(R.string.tutorial_pickups_title, R.string.tutorial_pickups_body),
+    BAG(R.string.tutorial_bag_title, R.string.tutorial_bag_body),
     PAUSE(R.string.tutorial_pause_title, R.string.tutorial_pause_body),
 }
 
@@ -80,10 +81,18 @@ class TutorialOverlay(context: Context, private val onDone: () -> Unit) : FrameL
         counter.apply { textSize = 13f; setTextColor(LEAF); typeface = Typeface.DEFAULT_BOLD }
         title.apply { textSize = 22f; setTextColor(INK); typeface = Typeface.DEFAULT_BOLD }
         body.apply { textSize = 16f; setTextColor(MUTED); setLineSpacing(0f, 1.15f) }
+        body.textSize = 15f
         card.addView(counter)
-        card.addView(title, column(4))
-        card.addView(picture, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(110)).apply { topMargin = dp(10) })
-        card.addView(body, column(10))
+        // Landscape: the picture on the left, the title and text on the right, the buttons below. The text scrolls if
+        // it is ever too long, so the buttons always stay on screen.
+        val middle = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        middle.addView(picture, LinearLayout.LayoutParams(dp(240), dp(130)))
+        val words = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+        words.addView(title)
+        words.addView(android.widget.ScrollView(context).apply { addView(body); isVerticalScrollBarEnabled = true },
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
+        middle.addView(words, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(18) })
+        card.addView(middle, column(8))
 
         val buttons = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.END }
         skip.apply {
@@ -98,9 +107,9 @@ class TutorialOverlay(context: Context, private val onDone: () -> Unit) : FrameL
         }
         buttons.addView(skip, LinearLayout.LayoutParams(dp(120), LinearLayout.LayoutParams.WRAP_CONTENT))
         buttons.addView(next, LinearLayout.LayoutParams(dp(140), LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(10) })
-        card.addView(buttons, column(14))
+        card.addView(buttons, column(10))
 
-        addView(card, LayoutParams(dp(520), LayoutParams.WRAP_CONTENT, Gravity.CENTER).apply {
+        addView(card, LayoutParams(dp(660), LayoutParams.WRAP_CONTENT, Gravity.CENTER).apply {
             leftMargin = dp(16); rightMargin = dp(16)
         })
         render()
@@ -243,6 +252,15 @@ private class TutorialPicture(context: Context) : View(context) {
                 curve.lineTo(w * 0.6f, ground - 12 * u)
                 curve.quadTo(w * 0.72f, ground - 120 * u, w * 0.88f, ground - 26 * u)
                 canvas.drawPath(curve, path)
+            }
+            TutorialStep.BAG -> {
+                // Coins go to the shop, items to the friends; both are kept in the pouch (bag).
+                val size = 56 * u
+                com.tinyrunners.school.ui.PouchIcon.draw(canvas, w / 2 - size / 2, h / 2 - size / 2 - 8 * u, size)
+                CoinArt.draw(canvas, w * 0.3f, h / 2 - 8 * u, 10 * u, spin = 0f)
+                com.tinyrunners.school.quest.QuestItems.of("mint")?.let { item ->
+                    com.tinyrunners.school.quest.ItemArt.draw(canvas, item, w * 0.7f - 12 * u, h / 2 - 20 * u, 24 * u, withGlow = false)
+                }
             }
             TutorialStep.PAUSE -> {
                 val size = 44 * u
