@@ -435,7 +435,6 @@ internal class TalkView(
 
     override fun performClick(): Boolean {
         super.performClick()
-        if (!player.isTyping && !player.isFinished) com.tinyrunners.school.audio.Sfx.play(context, com.tinyrunners.school.audio.Sfx.Sound.NEXT, volume = 0.35f)
         player.tap()
         if (player.isFinished) onFinished() else invalidate()
         return true
@@ -497,11 +496,7 @@ internal class TalkView(
         if (player.isTyping) {
             typed += (now - lastTick) / CHAR_MS
             val whole = typed.toInt()
-            if (whole > 0) {
-                player.type(whole); typed -= whole
-                // A soft blip as letters appear, in the speaker's voice (spaces are silent).
-                if (line.text.getOrNull(player.shown - 1)?.isWhitespace() == false) com.tinyrunners.school.audio.Sfx.blip(context, line.speaker)
-            }
+            if (whole > 0) { player.type(whole); typed -= whole }
         } else typed = 0f
         lastTick = now
 

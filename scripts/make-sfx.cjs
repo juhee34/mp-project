@@ -22,12 +22,8 @@ const note = (freq, len, amp, wave = "sine") => Array.from({ length: Math.round(
 const seq = (...parts) => parts.flat();
 const rest = (len) => new Array(Math.round(RATE * len)).fill(0);
 
-// Typing: a tiny soft blip (the talk scene changes its pitch per friend).
-out("sfx_blip", note(740, 0.045, 0.35, "square"));
-// Next line: a small rising pop.
-out("sfx_next", seq(note(520, 0.05, 0.4), note(780, 0.07, 0.35)));
 // A choice or the item panel appears: two gentle notes.
 out("sfx_choice", seq(note(660, 0.08, 0.4), rest(0.02), note(880, 0.12, 0.35)));
 // Items handed over: a bright little arpeggio (C E G C).
 out("sfx_give", seq(note(523, 0.09, 0.4), note(659, 0.09, 0.4), note(784, 0.09, 0.4), note(1047, 0.28, 0.45)));
-console.log("wrote sfx_blip, sfx_next, sfx_choice, sfx_give");
+console.log("wrote sfx_choice, sfx_give");

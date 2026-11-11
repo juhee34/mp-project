@@ -43,6 +43,10 @@
     <string name="result_score_label">점수</string>
     <string name="result_meters">%1$dm</string>
     <string name="result_saving">기록을 저장하는 중…</string>
+    <string name="result_chip_coins">코인 +%1$d</string>
+    <string name="result_chip_items">%1$s +%2$d</string>
+    <string name="result_chip_cleared">장애물 %1$d개</string>
+    <string name="result_best_so_far">이 친구와 최고 기록 %1$dm · %2$d점</string>
     <string name="result_new_best">새 최고 점수예요!</string>
     <string name="result_save_failed">기록을 저장하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
     <string name="result_again">한 번 더 달리기</string>

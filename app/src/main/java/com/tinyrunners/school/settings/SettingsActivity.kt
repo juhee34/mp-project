@@ -107,7 +107,7 @@ class SettingsActivity : Activity() {
             minHeight = page.dp(48)
             setOnCheckedChangeListener { _, on ->
                 sfx.enabled = on
-                if (on) com.tinyrunners.school.audio.Sfx.play(this@SettingsActivity, com.tinyrunners.school.audio.Sfx.Sound.NEXT)
+                if (on) com.tinyrunners.school.audio.Sfx.play(this@SettingsActivity, com.tinyrunners.school.audio.Sfx.Sound.CHOICE)
             }
         }, page.params(4))
 

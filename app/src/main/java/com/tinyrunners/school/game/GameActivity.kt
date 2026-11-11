@@ -44,6 +44,7 @@ class GameActivity : Activity() {
                         .putExtra(EXTRA_STORY_ID, intent.getStringExtra(EXTRA_STORY_ID))
                         .putExtra(ResultActivity.EXTRA_ITEMS, picked)
                         .putExtra(ResultActivity.EXTRA_COINS, bonus)
+                        .putExtra(ResultActivity.EXTRA_DISTANCE, engine.distance)
                     // The friend says a few words where they fell, then the result screen opens.
                     startActivity(com.tinyrunners.school.talk.TalkActivity.stumble(this, character.id, engine.meters, engine.distance, result, picked))
                     finish()
