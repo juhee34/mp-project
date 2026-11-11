@@ -80,6 +80,7 @@ class StoryActivity : Activity() {
         val friends = CharacterRepository(this)
         val friend = friends.find(story.characterId) ?: return
         page.body.removeAllViews()
+        page.backPill(getString(R.string.story_back_to_list_short)) { finish() }
         page.eyebrow(getString(R.string.story_eyebrow, friend.name))
         page.title(story.title)
         if (!story.scripted) page.text(getString(R.string.story_outline_notice), 13f)
@@ -155,6 +156,7 @@ class StoryListActivity : Activity() {
         super.onResume()
         com.tinyrunners.school.audio.Music.playStory(this)
         val page = Page(this).show()
+        page.backPill(getString(R.string.common_back_short)) { finish() }
         page.eyebrow(getString(R.string.characters_brand))
         page.title(getString(R.string.story_list_title))
         page.text(getString(R.string.story_list_body))

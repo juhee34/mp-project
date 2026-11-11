@@ -64,6 +64,19 @@ class Page(private val activity: Activity) {
         return this
     }
 
+    /** Small "◀ 돌아가기" pill at the top-left, so the way out is visible without scrolling to the end. */
+    fun backPill(text: String, click: () -> Unit): Button = Button(activity).apply {
+        this.text = text
+        textSize = 14f
+        isAllCaps = false
+        setTextColor(LEAF)
+        minHeight = dp(40); minimumHeight = dp(40)
+        setPadding(dp(14), 0, dp(14), 0)
+        background = RippleDrawable(ColorStateList.valueOf(MINT), shape(PAPER, 16, LINE), null)
+        stateListAnimator = null
+        setOnClickListener { click() }
+    }.also { body.addView(it, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(8) }) }
+
     fun eyebrow(text: String) = label(text, 13f, LEAF, bold = true)
     fun title(text: String) = label(text, 28f, INK, top = 6, bold = true).apply { isAccessibilityHeading(this) }
     fun text(text: String, size: Float = 16f, color: Int = MUTED, top: Int = 8) = label(text, size, color, top)

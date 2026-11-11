@@ -21,6 +21,7 @@
     <string name="story_saved">본 이야기로 기록했어요.</string>
     <string name="story_save_failed">기록하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
     <string name="story_back_to_list">이야기 목록으로</string>
+    <string name="story_back_to_list_short">◀ 목록으로</string>
     <string name="result_continue_story">이야기 계속하기</string>
     <string name="characters_story_book">이야기 도감</string>
 </resources>
