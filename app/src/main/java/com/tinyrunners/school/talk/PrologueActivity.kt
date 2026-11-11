@@ -54,6 +54,11 @@ class PrologueActivity : Activity() {
         }
         setContentView(FrameLayout(this).apply {
             setBackgroundColor(Color.BLACK)
+            // The hills, clouds and six friends stay visible under a see-through dark layer.
+            addView(com.tinyrunners.school.opening.OpeningBackground(this@PrologueActivity, showTitle = false),
+                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(View(this@PrologueActivity).apply { setBackgroundColor(SHADE) },
+                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(text, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(skip, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT,
                 Gravity.TOP or Gravity.END).apply { setMargins(0, dp(12), dp(12), 0) })
@@ -102,6 +107,8 @@ class PrologueActivity : Activity() {
     companion object {
         private const val KEY_PAGE = "page"
         private const val FADE_MS = 450L
+        /** Black at about 62% so the scenery shows through but the white text stays easy to read. */
+        private val SHADE = Color.argb(158, 0, 0, 0)
 
         /** "스토리 진행하기" on the hub: the world story every time, then the residents. */
         fun forStory(context: Context): Intent = Intent(context, PrologueActivity::class.java)

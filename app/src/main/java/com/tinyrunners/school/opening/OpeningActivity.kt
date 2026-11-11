@@ -93,7 +93,7 @@ class OpeningActivity : Activity() {
 
 /** Draws A's opening artwork with crisp pixels (centre-crop), or the placeholder line-up of all six friends. Shared with the hub. */
 @SuppressLint("ViewConstructor")
-internal class OpeningBackground(context: Context) : View(context) {
+internal class OpeningBackground(context: Context, private val showTitle: Boolean = true) : View(context) {
     private val art: Bitmap? = loadArt(context)
     private val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false; isDither = false }
     private val fill = Paint()
@@ -121,13 +121,20 @@ internal class OpeningBackground(context: Context) : View(context) {
         scene.draw(canvas, w, h, ground, h * 0.17f)
         postInvalidateDelayed(ScenePainter.FRAME_MS)
 
+        if (showTitle) drawTitle(canvas, w, h)
+        drawFriends(canvas, w, h, ground)
+    }
+
+    private fun drawTitle(canvas: Canvas, w: Int, h: Int) {
         text.color = INK
         text.textSize = h * 0.09f
         canvas.drawText(context.getString(R.string.app_name), w / 2f, h * 0.2f, text)
         text.textSize = h * 0.035f
         text.color = MUTED
         canvas.drawText(context.getString(R.string.opening_tagline), w / 2f, h * 0.27f, text)
+    }
 
+    private fun drawFriends(canvas: Canvas, w: Int, h: Int, ground: Float) {
         // Six friends in a row on the ground, leaving the centre clear for the button.
         if (friends.isEmpty()) return
         val scale = max(1, (h * 0.22f / CharacterSprites.SIZE).roundToInt())
