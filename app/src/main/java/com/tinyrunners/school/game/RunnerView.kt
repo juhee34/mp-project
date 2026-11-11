@@ -42,7 +42,9 @@ class RunnerView(
     private var spriteScale = 1
     private val fill = Paint()
     private val text = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = INK }
-    private val pauseRect = RectF()
+    /** Top bar buttons shown during a run: 정지 (pause) and 진행 (resume). */
+    private val stopRect = RectF()
+    private val goRect = RectF()
     private var lastFrameNanos = 0L
     private var looping = false
 
@@ -99,9 +101,10 @@ class RunnerView(
         // One art pixel covers playerSize / 48 world units (1.75); round to whole screen pixels so the art stays sharp.
         spriteScale = (scale * engine.config.playerSize / CharacterSprites.SIZE).roundToInt().coerceAtLeast(1)
         groundY = h - GROUND_THICKNESS * scale
-        val size = 44f * resources.displayMetrics.density
-        val margin = 12f * resources.displayMetrics.density
-        pauseRect.set(w - margin - size, margin, w - margin, margin + size)
+        val d = resources.displayMetrics.density
+        val bw = 104f * d; val bh = 44f * d; val margin = 12f * d; val gap = 8f * d
+        goRect.set(w - margin - bw, margin, w - margin, margin + bh)
+        stopRect.set(goRect.left - gap - bw, margin, goRect.left - gap, margin + bh)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -112,7 +115,9 @@ class RunnerView(
         val i = event.actionIndex
         val x = event.getX(i); val y = event.getY(i)
         when {
-            engine.phase == RunnerEngine.Phase.RUNNING && pauseRect.contains(x, y) -> engine.pause()
+            // The two top buttons never make the runner jump.
+            buttonsVisible && stopRect.contains(x, y) -> engine.pause()
+            buttonsVisible && goRect.contains(x, y) -> engine.resume()
             // When a result screen follows (onRunOver set), a late tap after the crash must not restart the run.
             engine.phase != RunnerEngine.Phase.OVER || onRunOver == null -> engine.tap()
         }
@@ -153,6 +158,12 @@ class RunnerView(
                 context.getString(R.string.game_over_score, engine.score, engine.cleared),
                 if (onRunOver == null && engine.canRestart) context.getString(R.string.game_over_hint) else null)
             RunnerEngine.Phase.RUNNING -> Unit
+        }
+        // Drawn last so the 진행 button stays clear above the pause overlay.
+        if (buttonsVisible) {
+            val running = engine.phase == RunnerEngine.Phase.RUNNING
+            drawBarButton(canvas, stopRect, context.getString(R.string.game_stop_button), active = running, pauseIcon = true)
+            drawBarButton(canvas, goRect, context.getString(R.string.game_go_button), active = !running, pauseIcon = false)
         }
     }
 
@@ -306,22 +317,49 @@ class RunnerView(
         }
         weather?.let {
             text.textAlign = Paint.Align.RIGHT
-            val right = if (engine.phase == RunnerEngine.Phase.RUNNING) pauseRect.left - 12f * d else w - 16f * d
+            val right = if (buttonsVisible) stopRect.left - 12f * d else w - 16f * d
             canvas.drawText(context.getString(R.string.weather_hud, context.getString(it.city.label),
                 context.getString(it.sky.label), it.temperatureC), right, 40f * d, text)
             text.textAlign = Paint.Align.LEFT
         }
         text.alpha = 255
 
-        if (engine.phase == RunnerEngine.Phase.RUNNING) {
-            fill.color = PANEL; canvas.drawRoundRect(pauseRect, 8f * d, 8f * d, fill)
-            fill.color = INK
-            val bw = pauseRect.width() * 0.14f
-            val cx = pauseRect.centerX(); val top = pauseRect.top + pauseRect.height() * 0.28f
-            val bottom = pauseRect.bottom - pauseRect.height() * 0.28f
-            canvas.drawRect(cx - bw * 1.8f, top, cx - bw * 0.6f, bottom, fill)
-            canvas.drawRect(cx + bw * 0.6f, top, cx + bw * 1.8f, bottom, fill)
+    }
+
+    /** Pause and resume are only meaningful while a run is going or resting. */
+    private val buttonsVisible: Boolean
+        get() = engine.phase == RunnerEngine.Phase.RUNNING || engine.phase == RunnerEngine.Phase.PAUSED
+
+    /** A pill with an icon and a label; the button that can be pressed now is filled, the other is faint. */
+    private fun drawBarButton(canvas: Canvas, r: RectF, label: String, active: Boolean, pauseIcon: Boolean) {
+        val d = resources.displayMetrics.density
+        fill.color = if (active) BUTTON_ON else PANEL
+        fill.alpha = if (active) 255 else 150
+        canvas.drawRoundRect(r, r.height() / 2f, r.height() / 2f, fill)
+        fill.alpha = 255
+        val ink = if (active) android.graphics.Color.WHITE else INK
+        fill.color = ink
+        if (!active) fill.alpha = 130
+        val s = r.height() * 0.36f
+        val ix = r.left + r.height() * 0.42f
+        val iy = r.centerY()
+        if (pauseIcon) {
+            canvas.drawRect(ix, iy - s / 2, ix + s * 0.32f, iy + s / 2, fill)
+            canvas.drawRect(ix + s * 0.62f, iy - s / 2, ix + s * 0.94f, iy + s / 2, fill)
+        } else {
+            val p = android.graphics.Path().apply { moveTo(ix, iy - s / 2); lineTo(ix + s * 0.9f, iy); lineTo(ix, iy + s / 2); close() }
+            canvas.drawPath(p, fill)
         }
+        fill.alpha = 255
+        text.color = ink
+        if (!active) text.alpha = 130
+        text.typeface = Typeface.DEFAULT_BOLD
+        text.textSize = 16f * d
+        text.textAlign = Paint.Align.LEFT
+        canvas.drawText(label, ix + s + 10f * d, iy - (text.ascent() + text.descent()) / 2f, text)
+        text.alpha = 255
+        text.color = INK
+        text.typeface = Typeface.DEFAULT
     }
 
     private fun overlay(canvas: Canvas, w: Float, h: Float, title: String, line: String, hint: String?) {
@@ -364,6 +402,7 @@ class RunnerView(
         val LEAF = Color.rgb(106, 150, 96)
         val INK = Color.rgb(43, 59, 47)
         val PANEL = Color.argb(200, 255, 248, 231)
+        val BUTTON_ON = Color.rgb(48, 83, 65)
         val SCRIM = Color.argb(170, 250, 246, 236)
     }
 }
