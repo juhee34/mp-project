@@ -27,9 +27,10 @@ object Music {
     /** Runs and their talks/result: the music bought and chosen in the shop, or the main theme. */
     fun playGame(context: Context) = play(context, gameTrack(context))
 
-    fun play(context: Context, resId: Int) {
+    /** [force] plays even with music switched off in settings (the shop's "들어보기" is an explicit request). */
+    fun play(context: Context, resId: Int, force: Boolean = false) {
         handler.removeCallbacks(pauseTask)
-        if (!MusicSettings(context).enabled) { stop(); return }
+        if (!force && !MusicSettings(context).enabled) { stop(); return }
         if (playing != resId) {
             stop()
             player = try {

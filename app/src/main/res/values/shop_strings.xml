@@ -52,4 +52,6 @@
     <string name="settings_music">배경 음악</string>
     <string name="settings_music_toggle">달리기와 이야기에서 음악 켜기</string>
     <string name="result_shop">꾸미기 상점</string>
+    <string name="shop_preview_play">▶ 들어보기</string>
+    <string name="shop_preview_stop">■ 멈추기</string>
 </resources>

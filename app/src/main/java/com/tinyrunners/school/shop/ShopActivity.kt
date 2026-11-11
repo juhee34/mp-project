@@ -43,6 +43,8 @@ class ShopActivity : Activity() {
     private var busy = false
     /** Which shelf is shown: trails behind the runner, or music for runs. */
     private var shelf = ItemKind.TRAIL
+    /** The song being previewed with "들어보기", if any. */
+    private var previewing: String? = null
     private lateinit var tabs: LinearLayout
     private lateinit var friendId: String
 
@@ -121,6 +123,25 @@ class ShopActivity : Activity() {
         for (item in ShopCatalog.of(shelf)) row.addView(card(item, w), LinearLayout.LayoutParams(dp(178), LinearLayout.LayoutParams.MATCH_PARENT).apply { marginEnd = dp(10) })
     }
 
+    override fun onPause() {
+        // Leaving the shop ends the preview.
+        if (previewing != null) { com.tinyrunners.school.audio.Music.stop(); previewing = null }
+        super.onPause()
+    }
+
+    /** Plays a song from the music shelf (or stops it when it is already playing). */
+    private fun preview(item: ShopItem) {
+        val id = item.track?.let { resources.getIdentifier(it, "raw", packageName) } ?: 0
+        if (id == 0) return
+        if (previewing == item.id) {
+            com.tinyrunners.school.audio.Music.stop(); previewing = null
+        } else {
+            com.tinyrunners.school.audio.Music.stop()
+            com.tinyrunners.school.audio.Music.play(this, id, force = true); previewing = item.id
+        }
+        render()
+    }
+
     private fun card(item: ShopItem, w: Wallet?): View {
         val owned = w?.state?.owns(item.id) == true
         val music = item.kind == ItemKind.MUSIC
@@ -146,6 +167,17 @@ class ShopActivity : Activity() {
             text = if (item.price == 0) getString(R.string.shop_free) else if (!ready) getString(R.string.shop_coming_soon) else getString(R.string.shop_price, item.price)
             textSize = 14f; setTextColor(COIN_INK); setTypeface(typeface, Typeface.BOLD); setPadding(0, dp(4), 0, 0)
         })
+        if (music && ready) card.addView(Button(this).apply {
+            // Hear the song before buying or wearing it.
+            setText(if (previewing == item.id) R.string.shop_preview_stop else R.string.shop_preview_play)
+            textSize = 14f; isAllCaps = false; stateListAnimator = null
+            minHeight = dp(36); minimumHeight = dp(36); setPadding(0, 0, 0, 0)
+            setTextColor(Page.LEAF)
+            background = RippleDrawable(ColorStateList.valueOf(Page.MINT), GradientDrawable().apply {
+                setColor(Color.WHITE); cornerRadius = dp(14).toFloat(); setStroke(dp(2), Page.LEAF)
+            }, null)
+            setOnClickListener { preview(item) }
+        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
         val label = when { wearing -> R.string.shop_wearing; owned -> R.string.shop_wear; !ready -> R.string.shop_coming_soon; else -> R.string.shop_buy }
         card.addView(Button(this).apply {
             setText(label)
