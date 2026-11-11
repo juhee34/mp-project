@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="intro_start">시작하기 · 친구 고르기</string>
+    <string name="intro_start_hint">처음부터 여섯 친구 모두 선택할 수 있어요.</string>
+    <string name="intro_how_title">함께 달리는 방법</string>
+    <string name="intro_how_body">친구를 고르고 달리기를 시작해요.\n화면을 톡 누르면 점프! 공중에서 한 번 더 누르면 더 높이 뛰어요. 공중의 가지 모양 가시 막대는 점프하지 않고 아래로 지나가요. 바닥 가시는 발판에 올라가 건너요.</string>
+    <string name="intro_optional_reading">쉬고 싶으면 오른쪽 위 ‘정지’를, 이어 달리려면 ‘진행’을 눌러요. 이야기는 나중에 읽어도 괜찮아요.</string>
+    <string name="intro_friends_title">서로 다른 여섯 개의 하루</string>
+    <string name="intro_equal_play">달리는 속도와 점프 규칙은 같아요. 마음이 가는 친구와 고향을 골라 보세요.</string>
+    <string name="intro_mint_story">지도를 펴면 궁금한 것이 더 늘어나는 라일. 오늘은 길 옆의 작은 발견도 그려 보고 싶어요.</string>
+    <string name="intro_cheese_story">햇살 좋은 자리를 좋아하는 치즈. 무심한 한마디 뒤에 친구를 위한 자리를 남겨 둬요.</string>
+    <string name="intro_popo_story">새로운 소리가 궁금한 포포. 먼 곳을 좋아하는 마음만큼 돌아올 집도 소중해요.</string>
+    <string name="intro_lumi_story">솔방울 마이크를 든 루미. 오늘의 관객은 어떤 장면에서 웃을까요?</string>
+    <string name="intro_nunu_story">책장 뒤에 숨은 누누. 찾기도 전에 작은 웃음소리가 먼저 들릴지 몰라요.</string>
+    <string name="intro_piko_story">종이배를 접으면 마음부터 출발하는 피코. 친구와 함께 멈춰 볼 곳도 궁금해요.</string>
+    <string name="intro_mint_music">준비 중인 음악 · 호기심을 따라 가볍게 걷는 분위기</string>
+    <string name="intro_cheese_music">준비 중인 음악 · 햇볕 아래 느긋하고 장난스러운 분위기</string>
+    <string name="intro_popo_music">준비 중인 음악 · 맑은 소리 사이로 포근함이 느껴지는 분위기</string>
+    <string name="intro_lumi_music">준비 중인 음악 · 숲속 작은 무대의 경쾌한 분위기</string>
+    <string name="intro_nunu_music">준비 중인 음악 · 조용한 여백에 작은 장난이 섞인 분위기</string>
+    <string name="intro_piko_music">준비 중인 음악 · 물방울처럼 통통 튀는 분위기</string>
+    <string name="intro_story_title">달리고, 쉬고, 이야기를 펼쳐요</string>
+    <string name="intro_story_body">도감에는 친구마다 소개와 첫 이야기가 있어요. 읽던 곳에서 이어 보거나 좋아하는 이야기를 다시 펼칠 수 있어요. 다음 이야기는 준비 중이에요.</string>
+    <string name="intro_music_notice">친구별 음악은 아직 앱에서 들을 수 없어요. 분위기를 고르고 반복 구간을 다듬고 있어요.</string>
+    <string name="intro_background_flow">집을 나서면 친구의 고향 길이 이어져요. 달리는 동안에는 길이 계속되고, 다시 시작할 때 집에서 출발해요.</string>
+    <string name="intro_first_guides">처음에는 세계 소개와 친구의 첫 대화를 만나요. 이후 출발·재도전·넘어진 뒤에는 짧은 대사를 만나요. 바로 달리고 싶으면 ‘건너뛰기’를 눌러도 괜찮아요. 첫 게임의 조작 안내는 친구 선택 화면의 ‘튜토리얼하기’에서 다시 볼 수 있어요.</string>
+</resources>
