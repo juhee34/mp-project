@@ -1,5 +1,7 @@
 package com.tinyrunners.school.talk
 
+import com.tinyrunners.school.story.Option
+import com.tinyrunners.school.story.Step
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
@@ -60,21 +62,33 @@ class TalkPlanTest {
         assertTrue(all.all { it.text.isNotBlank() })
     }
 
-    @Test fun villageWithItemsAsksFirstThenThanksAndTellsTheStory() {
-        val parts = TalkPlan.village("lumi", "솔방울 3개!", "고마워!", "숲이 열렸다. 노래했다.", scripted = false, pick = pick)
+    private val story = listOf(
+        Step.Line(TalkScript.NARRATOR, "숲이 열렸다."),
+        Step.Line("piko", "여기야!"),
+        Step.Choice(listOf(Option("가자", listOf(Step.Line("lumi", "좋아!"))), Option("잠깐", emptyList()))),
+        Step.Run,
+        Step.Line("lumi", "끝!"),
+    )
+
+    @Test fun villageWithItemsAsksFirstThenThanksTellsTheStoryAndSaysGoodbye() {
+        val parts = TalkPlan.village("lumi", "솔방울 3개!", "고마워!", story, pick)
         assertTrue(parts.askItems)
         assertEquals(listOf(TalkLine("lumi", "line:select"), TalkLine("lumi", "솔방울 3개!")), parts.before)
-        assertEquals(listOf(TalkLine("lumi", "고마워!"), TalkLine(TalkScript.NARRATOR, "숲이 열렸다."),
-            TalkLine(TalkScript.NARRATOR, "노래했다."), TalkLine("lumi", "line:home")), parts.after)
+        assertEquals(listOf(Step.Line("lumi", "고마워!")) + story.filter { it !is Step.Run } + Step.Line("lumi", "line:home"), parts.after)
     }
 
-    @Test fun scriptedVillageOnlyThanksHereAndAgainSkipsTheRequest() {
-        val scripted = TalkPlan.village("mint", "잎 3장!", "고마워!", "", scripted = true, pick = pick)
-        assertEquals(listOf(TalkLine("mint", "고마워!")), scripted.after)
-        val again = TalkPlan.village("mint", null, null, "", scripted = true, pick = pick)
-        assertEquals(VillageParts(emptyList(), emptyList(), askItems = false), again)
-        val outlineAgain = TalkPlan.village("lumi", null, null, "숲.", scripted = false, pick = pick)
-        assertEquals(TalkPlan.lines(TalkMode.VILLAGE, "lumi", false, emptyList(), null, "숲.", pick = pick), outlineAgain.before)
+    @Test fun seeingAStoryAgainSkipsTheRequest() {
+        val again = TalkPlan.village("lumi", null, null, story, pick)
+        assertEquals(VillageParts(listOf(TalkLine("lumi", "line:select")),
+            story.filter { it !is Step.Run } + Step.Line("lumi", "line:home"), askItems = false), again)
+    }
+
+    @Test fun storyIsPlayedInPartsBetweenChoicesWithOtherFriendsSpeaking() {
+        val (first, at) = TalkPlan.segment(story, 0)
+        assertEquals(listOf(TalkLine(TalkScript.NARRATOR, "숲이 열렸다."), TalkLine("piko", "여기야!")), first)
+        assertEquals(2, at)
+        // After the choice (index 2) the run step is skipped and the rest is told.
+        assertEquals(listOf(TalkLine("lumi", "끝!")) to story.size, TalkPlan.segment(story, at + 1))
     }
 
     @Test fun koreanParticleFollowsTheLastSyllable() {

@@ -1,5 +1,6 @@
 package com.tinyrunners.school.talk
 
+import com.tinyrunners.school.story.Step
 import org.json.JSONObject
 
 /**
@@ -103,28 +104,43 @@ object TalkPlan {
     }
 
     /**
-     * A village visit where the friend needs items: [VillageParts.before] ends with the friend's [request], then the
-     * player hands the items over, then [VillageParts.after] starts with [thanks]. A [scripted] story continues on
-     * the dialogue screen, so after the thanks nothing more is told here. Without a [request] (the story was already
-     * told) there is no hand-over: an outline story is told as usual, a scripted one opens its dialogue directly.
+     * A village visit: the friend's greeting and, when the friend needs items, their [request] ([VillageParts.before]).
+     * Then (after the hand-over) the friend's [thanks], the story itself and a goodbye ([VillageParts.after]).
+     * Story steps are told in the talk scene: lines as they are, choices as buttons. A run step is left out because
+     * the items were already gathered on runs.
      */
     fun village(
         characterId: String,
         request: String?,
         thanks: String?,
-        storyOutline: String,
-        scripted: Boolean,
+        story: List<Step>,
         pick: (String) -> String?,
     ): VillageParts {
-        if (request == null && scripted) return VillageParts(emptyList(), emptyList(), askItems = false)
         fun friend(event: String) = pick(event)?.let { TalkLine(characterId, it) }
         val greeting = listOfNotNull(friend("select"))
-        val told = if (scripted) emptyList()
-            else sentences(storyOutline).map { TalkLine(TalkScript.NARRATOR, it) } + listOfNotNull(friend("home"))
-        if (request == null) return VillageParts(greeting + told, emptyList(), askItems = false)
+        val told = story.filter { it !is Step.Run } + listOfNotNull(pick("home")?.let { Step.Line(characterId, it) })
+        if (request == null) return VillageParts(greeting, told, askItems = false)
         return VillageParts(greeting + TalkLine(characterId, request),
-            listOfNotNull(thanks?.let { TalkLine(characterId, it) }) + told, askItems = true)
+            listOfNotNull(thanks?.let { Step.Line(characterId, it) }) + told, askItems = true)
+    }
+
+    /**
+     * Lines from [from] up to the next choice (or the end) and where that stopped, so the talk scene can play them,
+     * then show the choice. Lines spoken by [TalkScript.PLAYER] keep that speaker.
+     */
+    fun segment(steps: List<Step>, from: Int): Pair<List<TalkLine>, Int> {
+        val out = mutableListOf<TalkLine>()
+        var i = from
+        while (i < steps.size) {
+            when (val s = steps[i]) {
+                is Step.Line -> out += TalkLine(s.speaker, s.text)
+                is Step.Choice -> break
+                Step.Run -> Unit
+            }
+            i++
+        }
+        return out to i
     }
 }
 
-data class VillageParts(val before: List<TalkLine>, val after: List<TalkLine>, val askItems: Boolean)
+data class VillageParts(val before: List<TalkLine>, val after: List<Step>, val askItems: Boolean)

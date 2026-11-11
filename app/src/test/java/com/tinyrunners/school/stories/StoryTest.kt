@@ -8,13 +8,13 @@ class StoryTest {
     private val catalogue get() = StoryParser.parse(File("src/main/assets/content/stories.json").readText())
     private val first get() = catalogue.first { it.id == "mint_episode_1" }
 
-    @Test fun sixFriendsHaveIntroductionEpisodeAndTwoOutlines() {
+    @Test fun sixFriendsHaveIntroductionTwoEpisodesAndAnOutline() {
         val stories = catalogue
         assertEquals(24, stories.size)
         stories.groupBy { it.characterId }.values.forEach { own ->
-            assertEquals(listOf("ready", "ready", "outline", "outline"), own.sortedBy { it.order }.map { it.status })
-            assertTrue(own[0].pages.isNotEmpty()); assertTrue(own[1].pages.size > 1)
-            assertTrue(own.drop(2).all { it.pages.isEmpty() })
+            assertEquals(listOf("ready", "ready", "ready", "outline"), own.sortedBy { it.order }.map { it.status })
+            assertTrue(own[0].pages.isNotEmpty()); assertTrue(own[1].pages.size > 1); assertTrue(own[2].pages.size > 1)
+            assertTrue(own.drop(3).all { it.pages.isEmpty() })
         }
     }
     @Test fun introductionIsAvailableWithoutPlaying() {

@@ -60,6 +60,10 @@ class TalkActivity : Activity() {
     private var village: VillageParts? = null
     private var handedOver = false
     private var firstTime = false
+    /** VILLAGE, after the hand-over: position in [VillageParts.after] and a choice waiting for the player. */
+    private var stepAt = 0
+    private var pendingChoice: com.tinyrunners.school.story.Step.Choice? = null
+    private var choicePanel: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,11 +78,10 @@ class TalkActivity : Activity() {
             val item = com.tinyrunners.school.quest.QuestItems.of(character.id)
                 ?.takeIf { intent.getBooleanExtra(EXTRA_ASK, false) }
             village = TalkPlan.village(character.id, item?.let { getString(it.request) }, item?.let { getString(it.thanks) },
-                villageStory()?.summary.orEmpty(), intent.getBooleanExtra(EXTRA_SCRIPTED, false)) { event ->
-                ShortLineRepository.pick(this, character.id, event)
-            }
+                villageStory()?.steps.orEmpty()) { event -> ShortLineRepository.pick(this, character.id, event) }
         }
-        val lines = village?.let { if (handedOver) it.after else it.before } ?: TalkPlan.lines(
+        // A restored visit that was past the hand-over starts the story again from its beginning.
+        val lines = village?.let { if (handedOver) TalkPlan.segment(it.after, 0).first else it.before } ?: TalkPlan.lines(
             mode, character.id, firstTime,
             fullTalk = TalkRepository.load(this)?.talkFor(character.id).orEmpty(),
             narration = if (mode == TalkMode.STUMBLE) stumbleNarration(character.id, meters) else null,
@@ -86,10 +89,9 @@ class TalkActivity : Activity() {
         ) { event -> ShortLineRepository.pick(this, character.id, event) }
         if (lines.isEmpty()) { finishTalk(character.id, firstTime); return }
 
-        names = mapOf(
-            character.id to character.name,
-            TalkScript.PLAYER to (AuthService.currentName(this) ?: getString(R.string.talk_player_default)),
-        )
+        // Every friend can speak in a village story, so all names are known.
+        names = CharacterRepository(this).characters.associate { it.id to it.name } +
+            (TalkScript.PLAYER to (AuthService.currentName(this) ?: getString(R.string.talk_player_default)))
         val skip = TextView(this).apply {
             setText(R.string.talk_skip)
             setTextColor(Color.WHITE)
@@ -103,7 +105,11 @@ class TalkActivity : Activity() {
                 setColor(Color.argb(150, 38, 52, 43))
                 cornerRadius = 24 * resources.displayMetrics.density
             }
-            setOnClickListener { finishTalk(character.id, firstTime) }
+            setOnClickListener {
+                // In a village story, skipping ends the story (it still counts as seen); the request is never skipped.
+                if (village != null && handedOver) { stepAt = Int.MAX_VALUE; pendingChoice = null }
+                finishTalk(character.id, firstTime)
+            }
         }
         this.skip = skip
         val margin = (12 * resources.displayMetrics.density).roundToInt()
@@ -113,17 +119,19 @@ class TalkActivity : Activity() {
         }
         root = frame
         setContentView(frame)
+        if (handedOver) stepAt = TalkPlan.segment(village?.after.orEmpty(), 0).second
         showLines(character.id, lines, savedInstanceState?.getInt(KEY_INDEX) ?: 0)
     }
 
     /** Puts a talk scene for [lines] behind the skip button, replacing any earlier one. */
     private fun showLines(characterId: String, lines: List<TalkLine>, at: Int = 0) {
         val frame = root ?: return
+        val guest = view?.guest
         view?.let { frame.removeView(it) }
         val player = TalkPlayer(lines)
         if (at > 0) player.restore(at)
         // After a crash the scene shows the spot where the friend fell, with the friend in their tumble pose.
-        val talk = TalkView(this, characterId, player, names,
+        val talk = TalkView(this, characterId, player, names, guest = guest,
             distance = intent.getFloatExtra(EXTRA_DISTANCE, 0f),
             fallen = intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.STUMBLE.ordinal) { finishTalk(characterId, firstTime) }
         view = talk
@@ -226,13 +234,55 @@ class TalkActivity : Activity() {
         }
     }
 
-    /** Items given (or not needed after all): the friend says thanks and the visit goes on. */
+    /** Items given (or not needed after all): the friend says thanks and the story is told. */
     private fun handOver(characterId: String) {
         handedOver = true
-        done = false
+        stepAt = 0
         skip?.visibility = View.VISIBLE
+        playStory(characterId, emptyList())
+    }
+
+    /** Plays [lead] and the story lines up to the next choice; a choice then waits as buttons (see [finishTalk]). */
+    private fun playStory(characterId: String, lead: List<TalkLine>) {
         val after = village?.after.orEmpty()
-        if (after.isEmpty()) finishTalk(characterId, firstTime) else showLines(characterId, after)
+        val (lines, next) = TalkPlan.segment(after, stepAt.coerceAtMost(after.size))
+        stepAt = next
+        pendingChoice = after.getOrNull(next) as? com.tinyrunners.school.story.Step.Choice
+        done = false
+        val all = lead + lines
+        if (all.isEmpty()) finishTalk(characterId, firstTime) else showLines(characterId, all)
+    }
+
+    /** A story choice: two or three answers; each only changes the friend's next reply. */
+    private fun showChoice(characterId: String, choice: com.tinyrunners.school.story.Step.Choice) {
+        val frame = root ?: return
+        val d = resources.displayMetrics.density
+        fun dp(v: Int) = (v * d).roundToInt()
+        skip?.visibility = View.GONE
+        val panel = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            setPadding(dp(16), dp(14), dp(16), dp(14))
+            background = android.graphics.drawable.GradientDrawable().apply {
+                setColor(Color.argb(235, 255, 253, 246)); cornerRadius = 18 * d; setStroke(dp(3), GATE_LEAF)
+            }
+            isClickable = true
+        }
+        choice.options.forEachIndexed { i, option ->
+            panel.addView(gateButton(filled = i == 0).apply {
+                text = option.text
+                setOnClickListener {
+                    frame.removeView(panel)
+                    choicePanel = null
+                    skip?.visibility = View.VISIBLE
+                    stepAt++
+                    playStory(characterId, option.reply.map { TalkLine(it.speaker, it.text) })
+                }
+            }, android.widget.LinearLayout.LayoutParams(dp(320), dp(44)).apply { if (i > 0) topMargin = dp(10) })
+        }
+        choicePanel = panel
+        frame.addView(panel, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT,
+            Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = dp(16) })
     }
 
     /** Talk finished or skipped: go on to the run (start/retry) or to the result screen (after a crash). */
@@ -242,13 +292,10 @@ class TalkActivity : Activity() {
         if (intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.REPLAY.ordinal) { finish(); return }
         if (intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.VILLAGE.ordinal) {
             // The friend's request was heard (or skipped): the items are asked for before the story goes on.
-            if (village?.askItems == true && !handedOver) { showGate(characterId); return }
-            val story = villageStory()
-            if (story != null && intent.getBooleanExtra(EXTRA_SCRIPTED, false)) {
-                startActivity(com.tinyrunners.school.story.StoryActivity.intent(this, story.id)); finish(); return
-            }
-            // Heard to the end (or skipped): the village story counts as seen, like the dialogue screen does.
-            story?.let { com.tinyrunners.school.progress.ProgressStore.forCurrentUser(this).markStoryRead(characterId, it.id) { } }
+            if (!handedOver) { if (village?.askItems == true) showGate(characterId) else handOver(characterId); return }
+            pendingChoice?.let { if (choicePanel == null) showChoice(characterId, it); return }
+            // Heard to the end (or skipped): the village story counts as seen.
+            villageStory()?.let { com.tinyrunners.school.progress.ProgressStore.forCurrentUser(this).markStoryRead(characterId, it.id) { } }
             finish(); return
         }
         // The long first talk is shown once per friend; later runs get short lines instead.
@@ -280,7 +327,6 @@ class TalkActivity : Activity() {
         private const val KEY_INDEX = "talkIndex"
         private const val KEY_GIVEN = "talkGiven"
         private const val EXTRA_ASK = "talkAskItems"
-        private const val EXTRA_SCRIPTED = "talkScripted"
         private val GATE_LEAF = Color.rgb(48, 83, 65)
         private val GATE_INK = Color.rgb(38, 52, 43)
         private const val EXTRA_MODE = "talkMode"
@@ -295,14 +341,13 @@ class TalkActivity : Activity() {
             Intent(context, TalkActivity::class.java).putExtra(GameActivity.EXTRA_CHARACTER_ID, characterId)
 
         /**
-         * A village visit as an RPG-style talk. With [askItems] the friend first asks for their items and the story
-         * only goes on once they are handed over. A [scripted] story then continues on the dialogue screen; an
-         * outline story is told here, closes at the end and is marked seen.
+         * A village visit as an RPG-style talk on the friend's own background. With [askItems] the friend first asks
+         * for their items and the story is only told once they are handed over. Closes at the end and marks it seen.
          */
-        fun village(context: Context, characterId: String, storyId: String, askItems: Boolean = false, scripted: Boolean = false) =
+        fun village(context: Context, characterId: String, storyId: String, askItems: Boolean = false) =
             intent(context, characterId)
             .putExtra(EXTRA_MODE, TalkMode.VILLAGE.ordinal).putExtra(EXTRA_STORY, storyId)
-            .putExtra(EXTRA_ASK, askItems).putExtra(EXTRA_SCRIPTED, scripted)
+            .putExtra(EXTRA_ASK, askItems)
 
         /** A friend's long first talk again, from 이야기 모음; closes at the end without a run. */
         fun replay(context: Context, characterId: String) = intent(context, characterId).putExtra(EXTRA_MODE, TalkMode.REPLAY.ordinal)
@@ -327,8 +372,17 @@ internal class TalkView(
     private val names: Map<String, String>,
     private val distance: Float = 0f,
     private val fallen: Boolean = false,
+    /** Another friend already in the scene (kept when the scene is rebuilt between story parts). */
+    var guest: String? = null,
     private val onFinished: () -> Unit,
 ) : View(context) {
+    private val mainId = characterId
+    private val guestSprites = mutableMapOf<String, CharacterSprites?>()
+    private val dim = Paint().apply {
+        isFilterBitmap = false; isAntiAlias = false
+        // Darker, not see-through: the friend who is listening steps back a little.
+        colorFilter = android.graphics.LightingColorFilter(0xFF9C9C9C.toInt(), 0)
+    }
     private val scenery = StoryBackground.load(context, characterId)
     private val fallback = ScenePainter()
     private val sprites = CharacterSprites.load(resources, characterId)
@@ -380,17 +434,22 @@ internal class TalkView(
         val boxHeight = max(h * 0.28f, dpF(110f))
         box.set(margin, h - margin - boxHeight, w - margin, h - margin)
 
-        // The friend, large and centred, standing just above the box; idle frames alternate slowly.
+        // The friend, large and centred, standing just above the box; idle frames alternate slowly. When another
+        // friend speaks in a story they step in on the right, facing the friend, and stay for the rest of the scene.
+        val speaking = (player.current ?: lastLine)?.speaker
+        if (speaking != null && speaking != mainId && names.containsKey(speaking) && speaking != TalkScript.PLAYER) guest = speaking
+        val frame = if (fallen) SpriteFrame.FAIL_0
+            else if ((SystemClock.uptimeMillis() / IDLE_FRAME_MS) % 2 == 0L) SpriteFrame.IDLE_0 else SpriteFrame.IDLE_1
+        val px = max(1, ((box.top - dpF(24f)) * 0.62f / CharacterSprites.SIZE).roundToInt()).toFloat()
+        val feet = box.top - dpF(6f)
+        val other = guest
         sprites?.let {
-            val frame = if (fallen) SpriteFrame.FAIL_0
-                else if ((SystemClock.uptimeMillis() / IDLE_FRAME_MS) % 2 == 0L) SpriteFrame.IDLE_0 else SpriteFrame.IDLE_1
-            val px = max(1, ((box.top - dpF(24f)) * 0.62f / CharacterSprites.SIZE).roundToInt()).toFloat()
-            val size = CharacterSprites.SIZE * px
-            val feet = box.top - dpF(6f)
-            val left = (w / 2f - CharacterSprites.CENTER_X * px).roundToInt().toFloat()
-            val top = (feet - CharacterSprites.FOOT_EDGE_Y * px).roundToInt().toFloat()
-            sprite.set(left, top, left + size, top + size)
-            canvas.drawBitmap(it[frame], null, sprite, pixel)
+            val paint = if (other != null && speaking == other) dim else pixel
+            drawFriend(canvas, it[frame], if (other == null) w / 2f else w * 0.34f, feet, px, paint, flip = false)
+        }
+        if (other != null) {
+            val art = guestSprites.getOrPut(other) { CharacterSprites.load(resources, other) }
+            art?.let { drawFriend(canvas, it[frame], w * 0.66f, feet, px, if (speaking == mainId) dim else pixel, flip = true) }
         }
 
         // Once the last line is read it stays in the box (the hand-over panel opens over the scene meanwhile).
@@ -454,6 +513,19 @@ internal class TalkView(
             announceForAccessibility(contentDescription)
         }
         postInvalidateOnAnimation()
+    }
+
+    private fun drawFriend(canvas: Canvas, bitmap: android.graphics.Bitmap?, centerX: Float, feet: Float, px: Float, paint: Paint, flip: Boolean) {
+        bitmap ?: return
+        val size = CharacterSprites.SIZE * px
+        val left = (centerX - CharacterSprites.CENTER_X * px).roundToInt().toFloat()
+        val top = (feet - CharacterSprites.FOOT_EDGE_Y * px).roundToInt().toFloat()
+        sprite.set(left, top, left + size, top + size)
+        if (!flip) { canvas.drawBitmap(bitmap, null, sprite, paint); return }
+        canvas.save()
+        canvas.scale(-1f, 1f, sprite.centerX(), sprite.centerY())
+        canvas.drawBitmap(bitmap, null, sprite, paint)
+        canvas.restore()
     }
 
     companion object {

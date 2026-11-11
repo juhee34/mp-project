@@ -60,6 +60,7 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - CharacterProgress(characterId, runs, totalMeters, bestMeters, bestScore). 실패한 판도 runs·totalMeters에 더한다. 감소·만료 없음.
 - 같은 runId는 한 번만 반영한다. 로그인 사용자는 Firestore(`users/{uid}/runs/{runId}`, `users/{uid}/progress/{characterId}`) 트랜잭션, 임시 모드는 기기 SharedPreferences.
 - A의 도감은 `ProgressStore.forCurrentUser(context).loadAll { }`로 거리만 읽는다. B의 진행 저장 스키마는 변경하지 않는다. 읽음 표시는 아래 별도 로컬 저장 계약을 따른다.
+- 마을 이야기(B, 2026-11-11): village_stories.json = 친구마다 <id>_intro, <id>_episode_1~3(unlock.afterStory로 차례). 1·2편 lines는 scripts/build-story-content.cjs가 원고에서 만든다(손으로 고치지 말고 원고를 고친 뒤 다시 실행). speaker는 6명 id 누구나, player, narrator. 앱은 모두 대화 장면(TalkActivity)으로 보여 주며 run 단계는 대화에서 건너뛴다. stories.json 2편은 status ready.
 - 친구 물품(B, 2026-11-11): 로그인 사용자는 `users/{uid}/items/bag` {have: {친구id: Int}, given: [storyId]}, 임시 모드는 기기 SharedPreferences(items_guest). 물품 정의는 quest/Quest.kt(친구당 1종, 이야기마다 3개 필요). 모르는 친구 id와 음수는 읽을 때 버린다. 기존 보안 규칙(users/{uid}/**)으로 충분하다.
 - 상점 음악(B, 2026-11-11): shop/state에 music(고른 음악 id, 기본 music_main) 추가. 음악 아이템 music_<친구id>는 res/raw/music_<친구id>.(mp3|m4a|ogg|mp4)가 있어야 팔린다. 메인 음악 res/raw/main_theme.mp4.
 - 꾸미기 상점(B, 2026-11-11): 코인 = 모든 친구 totalMeters 합 ÷ 25(버림, ShopRules.METERS_PER_COIN) − 쓴 코인. 2026-11-11 10m→25m로 낮춤. 로그인 사용자는 `users/{uid}/shop/state` {owned: [itemId], equipped: itemId, spent: Int}, 구매는 진행 문서 6개와 같은 트랜잭션에서 잔액 확인. 임시 모드는 기기 SharedPreferences(shop_guest). 아이템은 달릴 때 뒤에 그려지는 모양(TrailStyle)뿐이며 물리·충돌과 무관하다. 기존 보안 규칙(users/{uid}/**)으로 충분하다.

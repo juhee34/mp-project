@@ -69,7 +69,9 @@ class StoryCollectionActivity : Activity() {
             finished.forEach { story ->
                 val name = friends.firstOrNull { it.id == story.characterId }?.name.orEmpty()
                 page.line(village, getString(R.string.story_list_item, name, story.title), 15f, Page.INK, top = 10)
-                village.addView(replayButton(page) { startActivity(StoryActivity.intent(this, story.id)) }, page.params(4))
+                village.addView(replayButton(page) {
+                    startActivity(com.tinyrunners.school.talk.TalkActivity.village(this, story.characterId, story.id))
+                }, page.params(4))
             }
         }
     }

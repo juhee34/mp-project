@@ -8,7 +8,7 @@ assert.equal(stories.length,24);assert.equal(new Set(stories.map(s=>s.id)).size,
 for(const id of expected){
   const own=stories.filter(s=>s.characterId===id);
   assert.deepEqual(own.map(s=>s.id),[`${id}_intro`,`${id}_episode_1`,`${id}_episode_2`,`${id}_episode_3`]);
-  assert.deepEqual(own.map(s=>s.status),['ready','ready','outline','outline']);
+  assert.deepEqual(own.map(s=>s.status),['ready','ready','ready','outline']); // episode 2 written (A, STORY_EXPANSION, 2026-11-11)
   assert.deepEqual(chars.find(c=>c.id===id).storyIds,own.map(s=>s.id));
 }
 for(const s of stories){
