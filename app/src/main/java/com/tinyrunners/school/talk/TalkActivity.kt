@@ -46,7 +46,8 @@ class TalkActivity : Activity() {
     override fun onResume() {
         super.onResume()
         // Replays from 이야기 모음 are part of the story, so they get the story music.
-        if (intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.REPLAY.ordinal) com.tinyrunners.school.audio.Music.playStory(this)
+        val mode = intent.getIntExtra(EXTRA_MODE, 0)
+        if (mode == TalkMode.REPLAY.ordinal || mode == TalkMode.VILLAGE.ordinal) com.tinyrunners.school.audio.Music.playStory(this)
         else com.tinyrunners.school.audio.Music.playGame(this)
     }
 
@@ -65,6 +66,7 @@ class TalkActivity : Activity() {
             mode, character.id, firstTime,
             fullTalk = TalkRepository.load(this)?.talkFor(character.id).orEmpty(),
             narration = if (mode == TalkMode.STUMBLE) getString(R.string.talk_stumble_narration, meters) else null,
+            storyOutline = if (mode == TalkMode.VILLAGE) villageStory()?.summary.orEmpty() else "",
         ) { event -> ShortLineRepository.pick(this, character.id, event) }
         if (lines.isEmpty()) { finishTalk(character.id, firstTime); return }
 
@@ -107,12 +109,21 @@ class TalkActivity : Activity() {
         if (done) return
         done = true
         if (intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.REPLAY.ordinal) { finish(); return }
+        if (intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.VILLAGE.ordinal) {
+            // Heard to the end (or skipped): the village story counts as seen, like the dialogue screen does.
+            villageStory()?.let { com.tinyrunners.school.progress.ProgressStore.forCurrentUser(this).markStoryRead(characterId, it.id) { } }
+            finish(); return
+        }
         // The long first talk is shown once per friend; later runs get short lines instead.
         if (firstTime) TalkProgress(this).markTalkSeen(characterId)
         @Suppress("DEPRECATION")
         val next = intent.getParcelableExtra<Intent>(EXTRA_NEXT) ?: GameActivity.intent(this, characterId)
         startActivity(next)
         finish()
+    }
+
+    private fun villageStory() = intent.getStringExtra(EXTRA_STORY)?.let { id ->
+        com.tinyrunners.school.story.StoryRepository.load(this).firstOrNull { it.id == id }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -126,10 +137,15 @@ class TalkActivity : Activity() {
         private const val EXTRA_NEXT = "talkNext"
         private const val EXTRA_METERS = "talkMeters"
         private const val EXTRA_DISTANCE = "talkDistance"
+        private const val EXTRA_STORY = "talkStory"
 
         /** Before a run chosen on the selection screen. */
         fun intent(context: Context, characterId: String) =
             Intent(context, TalkActivity::class.java).putExtra(GameActivity.EXTRA_CHARACTER_ID, characterId)
+
+        /** A village story without written dialogue, as an RPG-style talk; closes at the end and marks it seen. */
+        fun village(context: Context, characterId: String, storyId: String) = intent(context, characterId)
+            .putExtra(EXTRA_MODE, TalkMode.VILLAGE.ordinal).putExtra(EXTRA_STORY, storyId)
 
         /** A friend's long first talk again, from 이야기 모음; closes at the end without a run. */
         fun replay(context: Context, characterId: String) = intent(context, characterId).putExtra(EXTRA_MODE, TalkMode.REPLAY.ordinal)
@@ -293,3 +309,4 @@ internal class TalkView(
         private val INK = Color.rgb(38, 52, 43)
     }
 }
+

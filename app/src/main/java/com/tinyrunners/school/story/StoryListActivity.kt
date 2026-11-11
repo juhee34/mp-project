@@ -215,7 +215,9 @@ class StoryListActivity : Activity() {
 
     private fun openTalk() {
         val story = storyFor(friends[index]).first ?: return
-        startActivity(StoryActivity.intent(this, story.id))
+        // Written dialogue opens the dialogue screen; an outline is told in the RPG-style talk scene.
+        startActivity(if (story.scripted) StoryActivity.intent(this, story.id)
+            else com.tinyrunners.school.talk.TalkActivity.village(this, story.characterId, story.id))
     }
 
     /** The friend breathes between the two idle frames and bobs a little. */

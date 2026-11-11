@@ -66,12 +66,17 @@ class TalkPlayer(private val lines: List<TalkLine>) {
 
 /**
  * Why the talk scene is shown: before a run from the selection, before "한 번 더", right after a crash, or REPLAY of a
- * friend's long first talk from 이야기 모음 (no run afterwards).
+ * friend's long first talk from 이야기 모음 (no run afterwards), or VILLAGE: a village story whose dialogue is not
+ * written yet, told as narration between the friend's greeting and goodbye.
  */
-enum class TalkMode { START, RETRY, STUMBLE, REPLAY }
+enum class TalkMode { START, RETRY, STUMBLE, REPLAY, VILLAGE }
 
 /** Which lines a talk scene shows. Pure, so the choice is unit tested. */
 object TalkPlan {
+    /** Splits an outline into one sentence per dialogue box (keeps the full stop). */
+    fun sentences(text: String): List<String> =
+        text.split(Regex("(?<=[.!?])\\s+")).map { it.trim() }.filter { it.isNotEmpty() }
+
     /**
      * START: the long getting-to-know-you talk the first time with a friend, afterwards a greeting and a departure
      * line. RETRY: one "again!" line. STUMBLE: a short narration of the distance, then the friend's comfort line.
@@ -83,6 +88,7 @@ object TalkPlan {
         firstTime: Boolean,
         fullTalk: List<TalkLine>,
         narration: String?,
+        storyOutline: String = "",
         pick: (String) -> String?,
     ): List<TalkLine> {
         fun friend(event: String) = pick(event)?.let { TalkLine(characterId, it) }
@@ -91,6 +97,8 @@ object TalkPlan {
             TalkMode.RETRY -> listOfNotNull(friend("retry"))
             TalkMode.STUMBLE -> listOfNotNull(narration?.let { TalkLine(TalkScript.NARRATOR, it) }, friend("stumble"))
             TalkMode.REPLAY -> fullTalk
+            TalkMode.VILLAGE -> listOfNotNull(friend("select")) +
+                sentences(storyOutline).map { TalkLine(TalkScript.NARRATOR, it) } + listOfNotNull(friend("home"))
         }
     }
 }
