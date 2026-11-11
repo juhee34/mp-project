@@ -162,5 +162,8 @@
         }
       ]
     }
-  ]
+  ],
+  "releaseUrl": "https://github.com/juhee34/mp-project/releases/tag/a-content-review-20261111",
+  "uploadCommandSucceeded": true,
+  "postUploadRemoteHashVerified": false
 }

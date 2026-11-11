@@ -321,7 +321,7 @@
     "bytes": 10462167,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/REVIEW.md",
@@ -337,7 +337,7 @@
     "bytes": 72847972,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/README.md",
@@ -353,7 +353,7 @@
     "bytes": 5009804,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/loops/lumi_loop_draft.wav",
@@ -361,7 +361,7 @@
     "bytes": 4833404,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/loops/mint_loop_draft.wav",
@@ -369,7 +369,7 @@
     "bytes": 5362604,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/loops/nunu_loop_draft.wav",
@@ -377,7 +377,7 @@
     "bytes": 5539004,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/loops/piko_loop_draft.wav",
@@ -385,7 +385,7 @@
     "bytes": 4762844,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/loops/popo_loop_draft.wav",
@@ -393,7 +393,7 @@
     "bytes": 3552740,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/measurements.json",
@@ -417,7 +417,7 @@
     "bytes": 15303096,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/trimmed/lumi_trimmed.wav",
@@ -425,7 +425,7 @@
     "bytes": 6893744,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/trimmed/mint_trimmed.wav",
@@ -433,7 +433,7 @@
     "bytes": 10734596,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/trimmed/nunu_trimmed.wav",
@@ -441,7 +441,7 @@
     "bytes": 6351016,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/trimmed/piko_trimmed.wav",
@@ -449,7 +449,7 @@
     "bytes": 6091940,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/all-music-drafts/trimmed/popo_trimmed.wav",
@@ -457,7 +457,7 @@
     "bytes": 5308996,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/metadata.json",
@@ -473,7 +473,7 @@
     "bytes": 5059196,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/piko-drafts/Puddle_Jumpers_trimmed_draft.wav",
@@ -481,7 +481,7 @@
     "bytes": 6091940,
     "decision": "archive_or_preserve_local",
     "same": [],
-    "result": "audio prerelease archive planned; do not commit WAV and ZIP duplicates"
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
   },
   {
     "path": "docs/audio/piko-drafts/README.txt",
@@ -749,5 +749,33 @@
     "bytes": 24223036,
     "decision": "preserve_local",
     "result": "historical differently-signed test APK; not an official current release"
+  },
+  {
+    "path": "docs/STORY_EXPANSION_01.md",
+    "bytes": 11383,
+    "sha256": "f85e7e5ef1c740a6b6170e4881100a1f20474fee31bedf071b1d7b5b9ce43f59",
+    "decision": "preserve_concurrent_work",
+    "result": "created after initial inventory by separate work; user-review pending, not included in this publication"
+  },
+  {
+    "path": "docs/STORY_EXPANSION_02.md",
+    "bytes": 12417,
+    "sha256": "dd2f1a8103655fda12dde283ffd9b3671cf201480033f84bc1c724aa2b2fefda",
+    "decision": "preserve_concurrent_work",
+    "result": "created after initial inventory by separate work; user-review pending, not included in this publication"
+  },
+  {
+    "path": "docs/dialogue/short-lines-expansion-01.json",
+    "bytes": 6697,
+    "sha256": "f65bac7d4c6d61cae2bcf91f2143da5ed244462480c5ce254d26a6ce2c2ad71b",
+    "decision": "preserve_concurrent_work",
+    "result": "created after initial inventory by separate work; user-review pending, not included in this publication"
+  },
+  {
+    "path": "docs/dialogue/short-lines-expansion-02.json",
+    "bytes": 6696,
+    "sha256": "4e71afb216a461a307ff7a42b883d91e010ee8b9e3fdefb04c94c8cde8e62585",
+    "decision": "preserve_concurrent_work",
+    "result": "created after initial inventory by separate work; user-review pending, not included in this publication"
   }
 ]

@@ -478,3 +478,5 @@
 - 콘텐츠/JSON/XML/JS/링크·자산/원고 일치/ZIP 해시/공백 검사 및 최신 통합 assembleDebug 통과. 이번 테스트·Lint·기기 실행은 미실시(B 담당). 웹 데스크톱/모바일 크기 검수 완료 범위와 최종 문안 재검수 제한은 PENDING_DELIVERABLES_20261111.md 참고.
 - 실제 사이트 재배포는 게시 인증 전달 실행 승인 거절로 미완료. 기존 사이트 ID·소유자 전용 범위 유지. 다운로드 버튼의 실제 저장도 브라우저 권한 거절로 미검증이며 소스 파일/링크 검사와 구분한다.
 - 자세한 파일별 처리·검증·제외 사유·후속 담당: docs/PENDING_DELIVERABLES_20261111.md, docs/PUBLICATION_FILE_MAP_20261111.json, docs/audio/HANDOFF.md. Git 게시와 main 통합, 사이트 배포를 구분하며 게시 실적은 해당 문서에 후속 기록한다.
+- 게시 결과: b412a81/2999b20/492c1c0 push 성공, PR #4 생성(https://github.com/juhee34/mp-project/pull/4), 후보 ZIP 2개 prerelease a-content-review-20261111 업로드 종료 0. main 병합은 하지 않았다. 추가 원격 읽기 검증은 승인 거절로 미실시; 사이트 재배포는 계속 미완료다.
+- 종료 점검에서 별도 작업의 STORY_EXPANSION_01/02.md 및 short-lines-expansion-01/02.json과 원래 상태 기록 추가를 발견해 보존/제외했다. 시작 시 파일 315개 중 314개 해시 동일, 변경된 원래 PROJECT_STATE를 되돌리지 않았다. 원래 staged 없음. 확장 자료까지 전부 게시됐다고 보고하지 않는다.

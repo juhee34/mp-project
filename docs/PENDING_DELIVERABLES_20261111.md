@@ -54,4 +54,20 @@
 
 ## 게시 실적
 
-작업 브랜치 `codex/a-content-release`. 이번 변경의 main 병합은 하지 않는다. 원격 push/PR/음악 prerelease의 실제 완료 결과는 게시 후 아래에 기록한다.
+작업 브랜치 `codex/a-content-release`. 이번 변경의 main 병합은 하지 않는다. 원격 게시의 실제 완료 결과는 아래와 같다.
+
+- GitHub push 성공: `b412a81` 선택·소개 / `2999b20` 웹사이트 / `492c1c0` 대사·아트·음악 인계 및 감사. 원격 서버의 새 브랜치 생성과 push 완료 응답 확인.
+- PR: https://github.com/juhee34/mp-project/pull/4 (base main, head codex/a-content-release). main 직접 push·병합·강제 push 없음. 이번 A 변경은 PR 검토/병합 대기다.
+- 음악 ZIP 2개 업로드 명령 성공(종료 0): https://github.com/juhee34/mp-project/releases/tag/a-content-review-20261111 . 검토용 prerelease이며 latest/기존 공식 APK 릴리스를 교체하지 않았다. 후보 청음·선정/앱 연결과는 별개다.
+- PR/릴리스 추가 읽기 조회는 실행 승인 거절로 수행하지 못했다. push/PR 생성/릴리스 업로드 성공 응답은 확보했지만 게시 이후 원격 파일의 재다운로드 해시 대조는 하지 않았다. 승인 가능한 환경에서 팀원이 PR 파일 목록과 릴리스 자산을 확인한다.
+
+## 작업 중 별도로 생긴 자료 — 이번 게시 제외
+
+마지막 원래 사본 점검에서 시작 시점에는 없던 다음 4파일이 발견됐다. 이 게시 작업이 만든 파일이 아니며 사용자 검토 대기/앱 미연결로 기록된 동시 진행 작업이므로 임의로 묶어 게시하지 않았다.
+
+- `docs/STORY_EXPANSION_01.md`
+- `docs/STORY_EXPANSION_02.md`
+- `docs/dialogue/short-lines-expansion-01.json`
+- `docs/dialogue/short-lines-expansion-02.json`
+
+원래 PROJECT_STATE에 라일·치즈 및 포포·루미 확장 기록이 추가됐다. 시작 시 315파일 중 314개 SHA-256은 그대로이며 PROJECT_STATE만 외부 작업으로 바뀌었다. 원래 staged 인덱스는 계속 비어 있다. 새 기록을 되돌리거나 이번 상태 파일로 덮어쓰지 않았다. 원고/추가 대사 검토·앱 반영/게시 여부는 해당 제작 담당이 정리할 후속 작업이다. 따라서 프로젝트의 모든 로컬 자료가 업로드됐다고 단정하지 않는다.
