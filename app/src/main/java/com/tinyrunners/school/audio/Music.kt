@@ -29,6 +29,8 @@ object Music {
     private var playing = 0
     private val handler = Handler(Looper.getMainLooper())
     private val pauseTask = Runnable { player?.takeIf { it.isPlaying }?.pause() }
+    /** Current volume of each player, so a new fade starts where the last one stopped. */
+    private val volumes = java.util.WeakHashMap<MediaPlayer, Float>()
 
     /** Story screens without a friend of their own: the main theme. */
     fun playStory(context: Context) = play(context, R.raw.main_theme)
@@ -53,8 +55,8 @@ object Music {
         player = next
         playing = resId
         // Cross-fade: the new song comes up while the old one goes down, so changes never cut abruptly.
-        fade(next, 0f, VOLUME, start = true)
-        current?.let { old -> fade(old, VOLUME, 0f) { old.release() } }
+        fade(next, VOLUME, start = true)
+        current?.let { old -> fade(old, 0f) { old.release() } }
     }
 
     /** Waits a moment so the next screen can keep the song playing without a gap. */
@@ -62,6 +64,7 @@ object Music {
 
     fun stop() {
         handler.removeCallbacks(pauseTask)
+        player?.let { handler.removeCallbacksAndMessages(it) }
         player?.release()
         player = null
         playing = 0
@@ -80,13 +83,20 @@ object Music {
     private fun raw(context: Context, name: String?): Int? =
         name?.let { context.resources.getIdentifier(it, "raw", context.packageName) }?.takeIf { it != 0 }
 
-    private fun fade(p: MediaPlayer, from: Float, to: Float, start: Boolean = false, done: () -> Unit = {}) {
+    /**
+     * Moves [p]'s volume to [to] in small steps. Any fade still running on the same player is cancelled first, so
+     * two fades never fight over one player (that made the music wobble when songs changed quickly).
+     */
+    private fun fade(p: MediaPlayer, to: Float, start: Boolean = false, done: () -> Unit = {}) {
+        handler.removeCallbacksAndMessages(p)
+        val from = volumes[p] ?: 0f
         try { p.setVolume(from, from); if (start) p.start() } catch (_: IllegalStateException) { return }
-        for (i in 1..FADE_STEPS) handler.postDelayed({
+        val begin = android.os.SystemClock.uptimeMillis()
+        for (i in 1..FADE_STEPS) handler.postAtTime({
             val v = from + (to - from) * i / FADE_STEPS
-            try { p.setVolume(v, v) } catch (_: IllegalStateException) { }
+            try { p.setVolume(v, v); volumes[p] = v } catch (_: IllegalStateException) { }
             if (i == FADE_STEPS) done()
-        }, FADE_MS * i / FADE_STEPS)
+        }, p, begin + FADE_MS * i / FADE_STEPS)
     }
 
     private const val VOLUME = 0.7f

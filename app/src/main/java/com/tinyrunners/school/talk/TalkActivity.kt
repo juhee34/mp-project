@@ -96,7 +96,9 @@ class TalkActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
         names = CharacterRepository(this).characters.associate { it.id to it.name } +
             (TalkScript.PLAYER to (AuthService.currentName(this) ?: getString(R.string.talk_player_default)))
         com.tinyrunners.school.audio.Sfx.init(this)
-        if (isStory) sceneTrack = com.tinyrunners.school.audio.Music.friendTrack(this, character.id)
+        // Start on the first scene's song right away, so the music does not change twice as the story opens.
+        if (isStory) sceneTrack = com.tinyrunners.school.audio.Music.friendTrack(this,
+            TalkMusic.sceneLeaders(lines, character.id).firstOrNull() ?: character.id)
         val skip = TextView(this).apply {
             setText(R.string.talk_skip)
             setTextColor(Color.WHITE)
