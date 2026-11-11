@@ -22,6 +22,13 @@
     <string name="story_save_failed">기록하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
     <string name="story_back_to_list">이야기 목록으로</string>
     <string name="story_back_to_list_short">◀ 목록으로</string>
+    <string name="village_quote">“%1$s”</string>
+    <string name="village_talk">이 친구와 대화하기</string>
+    <string name="village_talk_again">다시 대화하기</string>
+    <string name="village_status_new">새 이야기 · %1$s</string>
+    <string name="village_status_read">%1$s · 다 봤어요</string>
+    <string name="village_none">아직 준비된 이야기가 없어요.</string>
+    <string name="village_card_description">친구 %1$d / %2$d. %3$s, %4$s. %5$s 옆으로 넘기거나 화살표로 다른 친구를 볼 수 있어요.</string>
     <string name="collection_open">이야기 모음 ▶</string>
     <string name="collection_back">◀ 마을 이야기로</string>
     <string name="collection_title">이야기 모음</string>
