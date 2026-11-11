@@ -78,6 +78,8 @@ class MainActivity : Activity() {
     /** Coins change after runs and purchases, so the badge is re-read every time this screen comes back. */
     private fun refreshCoins() {
         val badge = findViewById<TextView>(R.id.coin_badge) ?: return
+        // The coins live in the bag together with the friends' items.
+        badge.setOnClickListener { startActivity(com.tinyrunners.school.quest.BagActivity.intent(this)) }
         com.tinyrunners.school.shop.ShopStore.forCurrentUser(this).load { result ->
             if (isDestroyed) return@load
             result.onSuccess { wallet ->
