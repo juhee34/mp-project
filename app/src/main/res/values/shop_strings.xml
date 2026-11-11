@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="menu_shop">꾸미기 상점</string>
+    <string name="shop_title">꾸미기 상점</string>
+    <string name="shop_body">10m 달릴 때마다 1코인이 모여요. 꾸미기는 달리는 모습만 바꾸고, 점프와 속도는 6명 모두 그대로예요.</string>
+    <string name="shop_coins">코인 %1$d</string>
+    <string name="shop_loading">코인을 세는 중…</string>
+    <string name="shop_load_failed">상점 정보를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</string>
+    <string name="shop_price">%1$d코인</string>
+    <string name="shop_free">무료</string>
+    <string name="shop_buy">사기</string>
+    <string name="shop_wear">쓰기</string>
+    <string name="shop_wearing">쓰는 중</string>
+    <string name="shop_bought">%1$s을(를) 샀어요. 다음 달리기부터 보여요.</string>
+    <string name="shop_not_enough">코인이 %1$d개 모자라요. 조금 더 달려 볼까요?</string>
+    <string name="shop_failed">저장하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
+    <string name="shop_back">◀ 돌아가기</string>
+    <string name="shop_item_none">꾸미기 없음</string>
+    <string name="shop_blurb_none">처음 모습 그대로</string>
+    <string name="shop_item_stars">반짝 별</string>
+    <string name="shop_blurb_stars">뒤로 작은 별이 반짝여요</string>
+    <string name="shop_item_bubbles">동글 물방울</string>
+    <string name="shop_blurb_bubbles">물방울이 둥실 떠올라요</string>
+    <string name="shop_item_hearts">하트 방울</string>
+    <string name="shop_blurb_hearts">하트가 통통 따라와요</string>
+    <string name="shop_item_petals">꽃잎 바람</string>
+    <string name="shop_blurb_petals">꽃잎이 바람에 날려요</string>
+    <string name="shop_item_notes">음표 산책</string>
+    <string name="shop_blurb_notes">음표가 흥얼흥얼 따라와요</string>
+    <string name="shop_item_rainbow">무지개 꼬리</string>
+    <string name="shop_blurb_rainbow">무지개가 길게 물결쳐요</string>
+    <string name="shop_preview_description">%1$s 미리 보기</string>
+    <string name="result_coins">+%1$d코인 모았어요</string>
+    <string name="result_shop">꾸미기 상점</string>
+</resources>

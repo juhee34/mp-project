@@ -32,6 +32,9 @@ class MainActivity : Activity() {
             return
         }
         setContentView(R.layout.activity_main)
+        findViewById<View>(R.id.menu_shop).setOnClickListener {
+            startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, characterScreens?.currentFriendId))
+        }
         findViewById<View>(R.id.menu_stories).setOnClickListener { startActivity(Intent(this, StoryListActivity::class.java)) }
         findViewById<View>(R.id.menu_records).setOnClickListener { startActivity(Intent(this, RecordsActivity::class.java)) }
         findViewById<View>(R.id.menu_settings).setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }

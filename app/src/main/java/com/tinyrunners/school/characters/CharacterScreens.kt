@@ -38,6 +38,9 @@ internal class CharacterScreens(
     private var selectedId: String? = null
     private var selectionScroll = 0
 
+    /** The friend currently shown on the selection stage, if any (the shop previews decorations on them). */
+    val currentFriendId: String? get() = selectedId
+
     fun restore(state: Bundle?) {
         selectedId = state?.getString("selectedId")
         selectionScroll = state?.getInt("selectionScroll") ?: 0
