@@ -214,10 +214,13 @@ class StoryListActivity : Activity() {
     }
 
     private fun openTalk() {
-        val story = storyFor(friends[index]).first ?: return
-        // Written dialogue opens the dialogue screen; an outline is told in the RPG-style talk scene.
-        startActivity(if (story.scripted) StoryActivity.intent(this, story.id)
-            else com.tinyrunners.school.talk.TalkActivity.village(this, story.characterId, story.id))
+        val (story, again) = storyFor(friends[index])
+        if (story == null) return
+        // A first visit starts with the friend asking for their items (talk scene). Written dialogue then opens the
+        // dialogue screen; an outline is told in the talk scene. Seeing a story again skips the request.
+        startActivity(if (story.scripted && again) StoryActivity.intent(this, story.id)
+            else com.tinyrunners.school.talk.TalkActivity.village(this, story.characterId, story.id,
+                askItems = !again, scripted = story.scripted))
     }
 
     /** The friend breathes between the two idle frames and bobs a little. */

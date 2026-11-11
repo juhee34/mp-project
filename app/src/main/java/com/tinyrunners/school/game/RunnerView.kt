@@ -33,6 +33,8 @@ class RunnerView(
     private val storyBackground = StoryBackground.load(context, character.id)
     /** A's hometown props for boxes and towers; floating branches keep their drawn look. */
     private val obstacleArt = ObstacleArt.load(resources, character.id)
+    /** The friend's hometown item scattered on the road (quest/Quest.kt). */
+    private val questItem = com.tinyrunners.school.quest.QuestItems.of(character.id)
     private val spritePaint = Paint().apply {
         isFilterBitmap = false
         isAntiAlias = false
@@ -144,6 +146,7 @@ class RunnerView(
         }
 
         for (o in engine.obstacles) drawObstacle(canvas, o)
+        drawPickups(canvas)
         drawRunner(canvas)
         drawWeather(canvas, w)
         drawHud(canvas, w)
@@ -350,6 +353,17 @@ class RunnerView(
         runnerArt.draw(canvas)
     }
 
+    /** Items bob gently and glow, so they read as something to collect rather than something to avoid. */
+    private fun drawPickups(canvas: Canvas) {
+        val item = questItem ?: return
+        for (p in engine.pickups) {
+            if (p.taken) continue
+            val bob = kotlin.math.sin(animTime * 4f + p.x * 0.02f) * 4f
+            val size = p.size * scale
+            com.tinyrunners.school.quest.ItemArt.draw(canvas, item, sx(p.x), sy(p.bottom + p.size + bob), size)
+        }
+    }
+
     private fun drawHud(canvas: Canvas, w: Float) {
         val d = resources.displayMetrics.density
         // Stable contrast over detailed scenery, including snowy and dusk scenes.
@@ -361,7 +375,14 @@ class RunnerView(
         canvas.drawText(character.name, 16f * d, 32f * d, text)
         text.typeface = Typeface.DEFAULT
         text.textSize = 15f * d
-        canvas.drawText(context.getString(R.string.game_hud, engine.meters, engine.score), 16f * d, 54f * d, text)
+        val hud = context.getString(R.string.game_hud, engine.meters, engine.score)
+        canvas.drawText(hud, 16f * d, 54f * d, text)
+        questItem?.let { item ->
+            // Items picked up this run, next to the distance.
+            val x = 16f * d + text.measureText(hud) + 14f * d
+            com.tinyrunners.school.quest.ItemArt.draw(canvas, item, x, 40f * d, 18f * d, withGlow = false)
+            canvas.drawText(context.getString(R.string.item_hud, engine.collected), x + 22f * d, 54f * d, text)
+        }
         text.textSize = 11f * d
         text.alpha = 150
         if (sprites == null) {

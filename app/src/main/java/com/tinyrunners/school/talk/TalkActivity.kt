@@ -53,6 +53,13 @@ class TalkActivity : Activity() {
 
     private var view: TalkView? = null
     private var done = false
+    private var root: FrameLayout? = null
+    private var skip: View? = null
+    private var names: Map<String, String> = emptyMap()
+    /** VILLAGE only: the talk split around handing over the friend's items. */
+    private var village: VillageParts? = null
+    private var handedOver = false
+    private var firstTime = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,27 +67,29 @@ class TalkActivity : Activity() {
         val character = CharacterRepository(this).find(characterId)
         if (character == null) { finish(); return }
         val mode = TalkMode.entries.getOrNull(intent.getIntExtra(EXTRA_MODE, 0)) ?: TalkMode.START
-        val firstTime = mode == TalkMode.START && TalkProgress(this).shouldShowTalk(character.id)
+        firstTime = mode == TalkMode.START && TalkProgress(this).shouldShowTalk(character.id)
         val meters = intent.getIntExtra(EXTRA_METERS, 0)
-        val lines = TalkPlan.lines(
+        handedOver = savedInstanceState?.getBoolean(KEY_GIVEN) == true
+        if (mode == TalkMode.VILLAGE) {
+            val item = com.tinyrunners.school.quest.QuestItems.of(character.id)
+                ?.takeIf { intent.getBooleanExtra(EXTRA_ASK, false) }
+            village = TalkPlan.village(character.id, item?.let { getString(it.request) }, item?.let { getString(it.thanks) },
+                villageStory()?.summary.orEmpty(), intent.getBooleanExtra(EXTRA_SCRIPTED, false)) { event ->
+                ShortLineRepository.pick(this, character.id, event)
+            }
+        }
+        val lines = village?.let { if (handedOver) it.after else it.before } ?: TalkPlan.lines(
             mode, character.id, firstTime,
             fullTalk = TalkRepository.load(this)?.talkFor(character.id).orEmpty(),
-            narration = if (mode == TalkMode.STUMBLE) getString(R.string.talk_stumble_narration, meters) else null,
+            narration = if (mode == TalkMode.STUMBLE) stumbleNarration(character.id, meters) else null,
             storyOutline = if (mode == TalkMode.VILLAGE) villageStory()?.summary.orEmpty() else "",
         ) { event -> ShortLineRepository.pick(this, character.id, event) }
         if (lines.isEmpty()) { finishTalk(character.id, firstTime); return }
 
-        val player = TalkPlayer(lines)
-        savedInstanceState?.let { player.restore(it.getInt(KEY_INDEX)) }
-        val names = mapOf(
+        names = mapOf(
             character.id to character.name,
             TalkScript.PLAYER to (AuthService.currentName(this) ?: getString(R.string.talk_player_default)),
         )
-        // After a crash the scene shows the spot where the friend fell, with the friend in their tumble pose.
-        val talk = TalkView(this, character.id, player, names,
-            distance = intent.getFloatExtra(EXTRA_DISTANCE, 0f), fallen = mode == TalkMode.STUMBLE) { finishTalk(character.id, firstTime) }
-        view = talk
-
         val skip = TextView(this).apply {
             setText(R.string.talk_skip)
             setTextColor(Color.WHITE)
@@ -96,12 +105,134 @@ class TalkActivity : Activity() {
             }
             setOnClickListener { finishTalk(character.id, firstTime) }
         }
+        this.skip = skip
         val margin = (12 * resources.displayMetrics.density).roundToInt()
-        setContentView(FrameLayout(this).apply {
-            addView(talk, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+        val frame = FrameLayout(this).apply {
             addView(skip, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT,
                 Gravity.TOP or Gravity.END).apply { setMargins(0, margin, margin, 0) })
-        })
+        }
+        root = frame
+        setContentView(frame)
+        showLines(character.id, lines, savedInstanceState?.getInt(KEY_INDEX) ?: 0)
+    }
+
+    /** Puts a talk scene for [lines] behind the skip button, replacing any earlier one. */
+    private fun showLines(characterId: String, lines: List<TalkLine>, at: Int = 0) {
+        val frame = root ?: return
+        view?.let { frame.removeView(it) }
+        val player = TalkPlayer(lines)
+        if (at > 0) player.restore(at)
+        // After a crash the scene shows the spot where the friend fell, with the friend in their tumble pose.
+        val talk = TalkView(this, characterId, player, names,
+            distance = intent.getFloatExtra(EXTRA_DISTANCE, 0f),
+            fallen = intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.STUMBLE.ordinal) { finishTalk(characterId, firstTime) }
+        view = talk
+        frame.addView(talk, 0, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+    }
+
+    /**
+     * The friend asked for their items: shows how many the bag holds and lets the player hand them over, or tells
+     * them where to find more. Handing over continues the talk with the friend's thanks.
+     */
+    private fun showGate(characterId: String) {
+        val frame = root ?: return
+        val item = com.tinyrunners.school.quest.QuestItems.of(characterId) ?: return handOver(characterId)
+        val storyId = intent.getStringExtra(EXTRA_STORY) ?: return handOver(characterId)
+        val d = resources.displayMetrics.density
+        fun dp(v: Int) = (v * d).roundToInt()
+        skip?.visibility = View.GONE
+        val itemName = getString(item.name)
+        val friendName = names[characterId] ?: characterId
+        val store = com.tinyrunners.school.quest.ItemBagStore.forCurrentUser(this)
+
+        val panel = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            setPadding(dp(24), dp(18), dp(24), dp(18))
+            background = android.graphics.drawable.GradientDrawable().apply {
+                setColor(Color.argb(245, 255, 253, 246)); cornerRadius = 18 * d; setStroke(dp(3), GATE_LEAF)
+            }
+            isClickable = true
+        }
+        val top = android.widget.LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+        top.addView(ItemIconView(this, item), android.widget.LinearLayout.LayoutParams(dp(44), dp(44)))
+        val count = TextView(this).apply {
+            setTextColor(GATE_INK); textSize = 19f; typeface = Typeface.DEFAULT_BOLD
+            setPadding(dp(12), 0, 0, 0); setText(R.string.quest_loading)
+        }
+        top.addView(count)
+        panel.addView(top)
+        val hint = TextView(this).apply {
+            setTextColor(GATE_INK); textSize = 15f; gravity = Gravity.CENTER; visibility = View.GONE
+            setPadding(0, dp(8), 0, 0)
+        }
+        panel.addView(hint)
+        val buttons = android.widget.LinearLayout(this).apply { gravity = Gravity.CENTER; setPadding(0, dp(12), 0, 0) }
+        val main = gateButton(filled = true).apply { visibility = View.GONE }
+        val later = gateButton(filled = false).apply { setText(R.string.quest_later); setOnClickListener { finish() } }
+        buttons.addView(main, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, dp(44)).apply { marginEnd = dp(10) })
+        buttons.addView(later, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, dp(44)))
+        panel.addView(buttons)
+        frame.addView(panel, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT,
+            Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = dp(16) })
+
+        fun show(bag: com.tinyrunners.school.quest.ItemBag) {
+            if (storyId in bag.given) { frame.removeView(panel); handOver(characterId); return }
+            val have = bag.count(characterId)
+            val needed = com.tinyrunners.school.quest.QuestRules.NEEDED
+            count.text = getString(R.string.quest_have, itemName, have, needed)
+            main.visibility = View.VISIBLE
+            main.isEnabled = true
+            if (have >= needed) {
+                hint.visibility = View.GONE
+                main.text = getString(R.string.quest_give, itemName)
+                main.setOnClickListener {
+                    main.isEnabled = false
+                    store.give(characterId, storyId) { result ->
+                        if (isDestroyed) return@give
+                        val next = result.getOrNull()
+                        when {
+                            result.isFailure -> { count.setText(R.string.quest_error); main.isEnabled = true }
+                            next == null -> store.load { r -> if (!isDestroyed) r.onSuccess { show(it) } }
+                            else -> { frame.removeView(panel); handOver(characterId) }
+                        }
+                    }
+                }
+            } else {
+                hint.visibility = View.VISIBLE
+                hint.text = getString(R.string.quest_short, Josa.with(friendName, "과", "와"), Josa.with(itemName, "을", "를"))
+                main.setText(R.string.quest_run)
+                main.setOnClickListener {
+                    startActivity(GameActivity.intent(this, characterId))
+                    finish()
+                }
+            }
+        }
+        store.load { result ->
+            if (isDestroyed) return@load
+            result.onSuccess { show(it) }.onFailure { count.setText(R.string.quest_error) }
+        }
+    }
+
+    private fun gateButton(filled: Boolean) = TextView(this).apply {
+        val d = resources.displayMetrics.density
+        textSize = 16f
+        typeface = Typeface.DEFAULT_BOLD
+        gravity = Gravity.CENTER
+        setPadding((18 * d).roundToInt(), 0, (18 * d).roundToInt(), 0)
+        setTextColor(if (filled) Color.WHITE else GATE_LEAF)
+        background = android.graphics.drawable.GradientDrawable().apply {
+            setColor(if (filled) GATE_LEAF else Color.WHITE); cornerRadius = 22 * d; setStroke((2 * d).roundToInt(), GATE_LEAF)
+        }
+    }
+
+    /** Items given (or not needed after all): the friend says thanks and the visit goes on. */
+    private fun handOver(characterId: String) {
+        handedOver = true
+        done = false
+        skip?.visibility = View.VISIBLE
+        val after = village?.after.orEmpty()
+        if (after.isEmpty()) finishTalk(characterId, firstTime) else showLines(characterId, after)
     }
 
     /** Talk finished or skipped: go on to the run (start/retry) or to the result screen (after a crash). */
@@ -110,8 +241,14 @@ class TalkActivity : Activity() {
         done = true
         if (intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.REPLAY.ordinal) { finish(); return }
         if (intent.getIntExtra(EXTRA_MODE, 0) == TalkMode.VILLAGE.ordinal) {
+            // The friend's request was heard (or skipped): the items are asked for before the story goes on.
+            if (village?.askItems == true && !handedOver) { showGate(characterId); return }
+            val story = villageStory()
+            if (story != null && intent.getBooleanExtra(EXTRA_SCRIPTED, false)) {
+                startActivity(com.tinyrunners.school.story.StoryActivity.intent(this, story.id)); finish(); return
+            }
             // Heard to the end (or skipped): the village story counts as seen, like the dialogue screen does.
-            villageStory()?.let { com.tinyrunners.school.progress.ProgressStore.forCurrentUser(this).markStoryRead(characterId, it.id) { } }
+            story?.let { com.tinyrunners.school.progress.ProgressStore.forCurrentUser(this).markStoryRead(characterId, it.id) { } }
             finish(); return
         }
         // The long first talk is shown once per friend; later runs get short lines instead.
@@ -122,30 +259,50 @@ class TalkActivity : Activity() {
         finish()
     }
 
+    private fun stumbleNarration(characterId: String, meters: Int): String {
+        val items = intent.getIntExtra(EXTRA_ITEMS, 0)
+        val item = com.tinyrunners.school.quest.QuestItems.of(characterId)
+        return if (items > 0 && item != null) getString(R.string.talk_stumble_items, meters, getString(item.name), items)
+            else getString(R.string.talk_stumble_narration, meters)
+    }
+
     private fun villageStory() = intent.getStringExtra(EXTRA_STORY)?.let { id ->
         com.tinyrunners.school.story.StoryRepository.load(this).firstOrNull { it.id == id }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         view?.let { outState.putInt(KEY_INDEX, it.player.index) }
+        outState.putBoolean(KEY_GIVEN, handedOver)
         super.onSaveInstanceState(outState)
     }
 
     companion object {
         private const val KEY_INDEX = "talkIndex"
+        private const val KEY_GIVEN = "talkGiven"
+        private const val EXTRA_ASK = "talkAskItems"
+        private const val EXTRA_SCRIPTED = "talkScripted"
+        private val GATE_LEAF = Color.rgb(48, 83, 65)
+        private val GATE_INK = Color.rgb(38, 52, 43)
         private const val EXTRA_MODE = "talkMode"
         private const val EXTRA_NEXT = "talkNext"
         private const val EXTRA_METERS = "talkMeters"
         private const val EXTRA_DISTANCE = "talkDistance"
         private const val EXTRA_STORY = "talkStory"
+        private const val EXTRA_ITEMS = "talkItems"
 
         /** Before a run chosen on the selection screen. */
         fun intent(context: Context, characterId: String) =
             Intent(context, TalkActivity::class.java).putExtra(GameActivity.EXTRA_CHARACTER_ID, characterId)
 
-        /** A village story without written dialogue, as an RPG-style talk; closes at the end and marks it seen. */
-        fun village(context: Context, characterId: String, storyId: String) = intent(context, characterId)
+        /**
+         * A village visit as an RPG-style talk. With [askItems] the friend first asks for their items and the story
+         * only goes on once they are handed over. A [scripted] story then continues on the dialogue screen; an
+         * outline story is told here, closes at the end and is marked seen.
+         */
+        fun village(context: Context, characterId: String, storyId: String, askItems: Boolean = false, scripted: Boolean = false) =
+            intent(context, characterId)
             .putExtra(EXTRA_MODE, TalkMode.VILLAGE.ordinal).putExtra(EXTRA_STORY, storyId)
+            .putExtra(EXTRA_ASK, askItems).putExtra(EXTRA_SCRIPTED, scripted)
 
         /** A friend's long first talk again, from 이야기 모음; closes at the end without a run. */
         fun replay(context: Context, characterId: String) = intent(context, characterId).putExtra(EXTRA_MODE, TalkMode.REPLAY.ordinal)
@@ -155,9 +312,10 @@ class TalkActivity : Activity() {
             .putExtra(EXTRA_MODE, TalkMode.RETRY.ordinal).putExtra(EXTRA_NEXT, next)
 
         /** Right after a crash; [result] is the result screen shown afterwards. */
-        fun stumble(context: Context, characterId: String, meters: Int, distance: Float, result: Intent) = intent(context, characterId)
+        fun stumble(context: Context, characterId: String, meters: Int, distance: Float, result: Intent, items: Int = 0) =
+            intent(context, characterId)
             .putExtra(EXTRA_MODE, TalkMode.STUMBLE.ordinal).putExtra(EXTRA_NEXT, result)
-            .putExtra(EXTRA_METERS, meters).putExtra(EXTRA_DISTANCE, distance)
+            .putExtra(EXTRA_METERS, meters).putExtra(EXTRA_DISTANCE, distance).putExtra(EXTRA_ITEMS, items)
     }
 }
 
@@ -188,6 +346,7 @@ internal class TalkView(
     private var announced = -1
     private var layout: StaticLayout? = null
     private var layoutFor = -1 to -1
+    private var lastLine: TalkLine? = null
 
     init {
         isFocusable = true
@@ -234,7 +393,9 @@ internal class TalkView(
             canvas.drawBitmap(it[frame], null, sprite, pixel)
         }
 
-        val line = player.current ?: return
+        // Once the last line is read it stays in the box (the hand-over panel opens over the scene meanwhile).
+        val line = player.current ?: lastLine ?: return
+        lastLine = line
         val narrator = line.speaker == TalkScript.NARRATOR
         fill.color = if (narrator) NARRATOR_BOX else PAPER
         canvas.drawRoundRect(box, dpF(14f), dpF(14f), fill)
@@ -264,9 +425,10 @@ internal class TalkView(
         val textWidth = (box.width() - dpF(48f)).toInt()
         textPaint.color = if (narrator) NARRATOR_TEXT else INK
         textPaint.typeface = if (narrator) Typeface.create(Typeface.DEFAULT, Typeface.ITALIC) else Typeface.DEFAULT
-        val key = player.index to player.shown
+        val shownChars = if (player.current == null) line.text.length else player.shown
+        val key = player.index to shownChars
         if (layoutFor != key || layout == null) {
-            layout = StaticLayout.Builder.obtain(line.text, 0, player.shown, textPaint, textWidth)
+            layout = StaticLayout.Builder.obtain(line.text, 0, shownChars, textPaint, textWidth)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL).setLineSpacing(0f, 1.25f).build()
             layoutFor = key
         }
@@ -310,3 +472,20 @@ internal class TalkView(
     }
 }
 
+
+/** Korean particle after a word: [withFinal] when the last syllable has a final consonant (라일과), else [without] (치즈와). */
+internal object Josa {
+    fun with(word: String, withFinal: String, without: String): String {
+        val last = word.lastOrNull { it in '\uAC00'..'\uD7A3' } ?: return word + without
+        return word + if ((last - '\uAC00') % 28 != 0) withFinal else without
+    }
+}
+
+/** The friend's item as a still pixel icon (hand-over panel). */
+@SuppressLint("ViewConstructor")
+internal class ItemIconView(context: Context, private val item: com.tinyrunners.school.quest.QuestItem) : View(context) {
+    override fun onDraw(canvas: Canvas) {
+        val size = min(width, height).toFloat()
+        com.tinyrunners.school.quest.ItemArt.draw(canvas, item, (width - size) / 2f, (height - size) / 2f, size, withGlow = false)
+    }
+}

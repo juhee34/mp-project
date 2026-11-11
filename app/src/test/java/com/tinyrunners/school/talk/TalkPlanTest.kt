@@ -59,4 +59,28 @@ class TalkPlanTest {
         }
         assertTrue(all.all { it.text.isNotBlank() })
     }
+
+    @Test fun villageWithItemsAsksFirstThenThanksAndTellsTheStory() {
+        val parts = TalkPlan.village("lumi", "솔방울 3개!", "고마워!", "숲이 열렸다. 노래했다.", scripted = false, pick = pick)
+        assertTrue(parts.askItems)
+        assertEquals(listOf(TalkLine("lumi", "line:select"), TalkLine("lumi", "솔방울 3개!")), parts.before)
+        assertEquals(listOf(TalkLine("lumi", "고마워!"), TalkLine(TalkScript.NARRATOR, "숲이 열렸다."),
+            TalkLine(TalkScript.NARRATOR, "노래했다."), TalkLine("lumi", "line:home")), parts.after)
+    }
+
+    @Test fun scriptedVillageOnlyThanksHereAndAgainSkipsTheRequest() {
+        val scripted = TalkPlan.village("mint", "잎 3장!", "고마워!", "", scripted = true, pick = pick)
+        assertEquals(listOf(TalkLine("mint", "고마워!")), scripted.after)
+        val again = TalkPlan.village("mint", null, null, "", scripted = true, pick = pick)
+        assertEquals(VillageParts(emptyList(), emptyList(), askItems = false), again)
+        val outlineAgain = TalkPlan.village("lumi", null, null, "숲.", scripted = false, pick = pick)
+        assertEquals(TalkPlan.lines(TalkMode.VILLAGE, "lumi", false, emptyList(), null, "숲.", pick = pick), outlineAgain.before)
+    }
+
+    @Test fun koreanParticleFollowsTheLastSyllable() {
+        assertEquals("라일과", Josa.with("라일", "과", "와"))
+        assertEquals("치즈와", Josa.with("치즈", "과", "와"))
+        assertEquals("솔방울을", Josa.with("솔방울", "을", "를"))
+        assertEquals("종이배를", Josa.with("종이배", "을", "를"))
+    }
 }

@@ -32,13 +32,16 @@ class GameActivity : Activity() {
         // One ID per run; the result screen saves with it, so a recreated result screen cannot double count.
         val runId = UUID.randomUUID().toString()
         view.onRunOver = {
+            // Items picked up on the road go into the bag right away, so leaving the talk early keeps them.
+            val picked = engine.collected
+            if (picked > 0) com.tinyrunners.school.quest.ItemBagStore.forCurrentUser(this).add(character.id, picked) { }
             view.postDelayed({
                 if (!isFinishing) {
                     val result = ResultActivity.intent(this,
                         RunResult(runId, character.id, engine.meters, engine.score, engine.cleared))
                         .putExtra(EXTRA_STORY_ID, intent.getStringExtra(EXTRA_STORY_ID))
                     // The friend says a few words where they fell, then the result screen opens.
-                    startActivity(com.tinyrunners.school.talk.TalkActivity.stumble(this, character.id, engine.meters, engine.distance, result))
+                    startActivity(com.tinyrunners.school.talk.TalkActivity.stumble(this, character.id, engine.meters, engine.distance, result, picked))
                     finish()
                 }
             }, RESULT_DELAY_MS)

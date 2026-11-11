@@ -101,4 +101,30 @@ object TalkPlan {
                 sentences(storyOutline).map { TalkLine(TalkScript.NARRATOR, it) } + listOfNotNull(friend("home"))
         }
     }
+
+    /**
+     * A village visit where the friend needs items: [VillageParts.before] ends with the friend's [request], then the
+     * player hands the items over, then [VillageParts.after] starts with [thanks]. A [scripted] story continues on
+     * the dialogue screen, so after the thanks nothing more is told here. Without a [request] (the story was already
+     * told) there is no hand-over: an outline story is told as usual, a scripted one opens its dialogue directly.
+     */
+    fun village(
+        characterId: String,
+        request: String?,
+        thanks: String?,
+        storyOutline: String,
+        scripted: Boolean,
+        pick: (String) -> String?,
+    ): VillageParts {
+        if (request == null && scripted) return VillageParts(emptyList(), emptyList(), askItems = false)
+        fun friend(event: String) = pick(event)?.let { TalkLine(characterId, it) }
+        val greeting = listOfNotNull(friend("select"))
+        val told = if (scripted) emptyList()
+            else sentences(storyOutline).map { TalkLine(TalkScript.NARRATOR, it) } + listOfNotNull(friend("home"))
+        if (request == null) return VillageParts(greeting + told, emptyList(), askItems = false)
+        return VillageParts(greeting + TalkLine(characterId, request),
+            listOfNotNull(thanks?.let { TalkLine(characterId, it) }) + told, askItems = true)
+    }
 }
+
+data class VillageParts(val before: List<TalkLine>, val after: List<TalkLine>, val askItems: Boolean)

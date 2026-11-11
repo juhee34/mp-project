@@ -339,4 +339,46 @@ class RunnerEngineTest {
         b.run(20f) { it.autoJump() }
         assertEquals(a.obstacles.map { it.x to it.height }, b.obstacles.map { it.x to it.height })
     }
+
+    @Test fun itemsLieInGapsAndAreCollectedWithoutEndingTheRun() {
+        for (seed in 1L..20L) {
+            val e = RunnerEngine(seed)
+            e.tap()
+            var seen = 0
+            e.run(90f) { eng ->
+                eng.autoJump()
+                for (p in eng.pickups) for (o in eng.obstacles) {
+                    // An item never sits on an obstacle, its plank, or the spikes.
+                    val overlaps = p.x + p.size > minOf(o.x, o.plankLeft) && p.x < maxOf(o.x + o.width, o.plankRight)
+                    assertFalse("seed $seed item at ${p.x} overlaps ${o.kind}", overlaps)
+                }
+                seen = maxOf(seen, eng.pickups.size)
+            }
+            assertEquals("seed $seed", RunnerEngine.Phase.RUNNING, e.phase)
+            assertTrue("seed $seed saw no items", seen > 0)
+            assertTrue("seed $seed collected nothing", e.collected > 0)
+        }
+    }
+
+    @Test fun itemsNeverChangeTheObstacleCourse() {
+        val with = RunnerEngine(seed = 9); val without = RunnerEngine(seed = 9).apply { pickupsOn = false }
+        with.tap(); without.tap()
+        with.run(40f) { it.autoJump() }
+        without.run(40f) { it.autoJump() }
+        assertTrue(without.pickups.isEmpty())
+        assertEquals(0, without.collected)
+        assertEquals(without.obstacles.map { it.x to it.kind }, with.obstacles.map { it.x to it.kind })
+    }
+
+    @Test fun restartEmptiesTheItemsOfTheLastRun() {
+        val e = RunnerEngine(seed = 3)
+        e.tap()
+        e.run(60f) { it.autoJump() }
+        assertTrue(e.collected > 0)
+        e.run(300f)
+        while (!e.canRestart) e.update(frame)
+        e.tap()
+        assertEquals(0, e.collected)
+        assertTrue(e.pickups.isEmpty())
+    }
 }

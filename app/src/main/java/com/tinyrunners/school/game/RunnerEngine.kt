@@ -65,6 +65,11 @@ data class RunnerConfig(
      * the only way across is to jump onto the plank (one jump reaches it) and run along it. The plank can be
      * passed through from below and is landed on from above.
      */
+    /** Chance an obstacle gap holds an item, how often it floats up high, and the two heights. */
+    val pickupChance: Float = 0.45f,
+    val pickupHighChance: Float = 0.4f,
+    val pickupGroundBottom: Float = 6f,
+    val pickupHighBottom: Float = 80f,
     val spikeHeight: Float = 26f,
     val spikeExtra: Float = 30f,
     val plankMinTop: Float = 85f,
@@ -152,10 +157,19 @@ data class Obstacle(
     val plankRight: Float get() = x + width + plankOverhang
 }
 
+/** A friend's item lying on the road (see quest/Quest.kt): touching it picks it up; it never ends the run. */
+data class Pickup(var x: Float, val bottom: Float, val size: Float = PICKUP_SIZE, var taken: Boolean = false) {
+    companion object { const val PICKUP_SIZE = 34f }
+}
+
 class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     enum class Phase { READY, RUNNING, PAUSED, OVER }
 
     private var random = Random(seed)
+    /** Separate from [random] so placing items never changes the obstacle sequence. */
+    private var pickupRandom = Random(seed * 31 + 7)
+    /** Whether items are scattered on the road this run. */
+    var pickupsOn = true
     private var accumulator = 0f
     private var nextGap = 0f
     private var overTime = 0f
@@ -172,6 +186,10 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     var airJumpsUsed = 0; private set
     private val _obstacles = mutableListOf<Obstacle>()
     val obstacles: List<Obstacle> get() = _obstacles
+    private val _pickups = mutableListOf<Pickup>()
+    val pickups: List<Pickup> get() = _pickups
+    /** Items picked up in this run. */
+    var collected = 0; private set
 
     /** Height the runner is standing on: 0 on the ground, or a plank's top. */
     var floorY = 0f; private set
@@ -196,6 +214,7 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     /** New run with a fresh obstacle sequence; nothing from the previous run carries over. */
     fun restart() {
         random = Random(random.nextLong())
+        pickupRandom = Random(pickupRandom.nextLong())
         reset()
     }
 
@@ -229,6 +248,7 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         accumulator = 0f; overTime = 0f
         airJumpsUsed = 0
         _obstacles.clear()
+        _pickups.clear(); collected = 0
         // First obstacle spawns after about one second of running, then needs a few more seconds to arrive.
         nextGap = config.startSpeed
         nextKind = ObstacleKind.BOX
@@ -247,6 +267,8 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         distance += dx
         for (o in _obstacles) o.x -= dx
         _obstacles.removeAll { it.plankRight < -config.playerSize && it.x + it.width < -config.playerSize }
+        for (p in _pickups) p.x -= dx
+        _pickups.removeAll { it.taken || it.x + it.size < -config.playerSize }
 
         // Land on the ground or on a plank the feet were above a moment ago; walking off a plank's end falls.
         floorY = supportBelow(previousY)
@@ -260,6 +282,9 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         val pr = config.playerX + config.playerSize - config.playerInset
         val pb = playerY
         val pt = playerY + config.playerHitHeight
+        for (p in _pickups) {
+            if (!p.taken && pr > p.x && pl < p.x + p.size && pb < p.bottom + p.size && pt > p.bottom) { p.taken = true; collected++ }
+        }
         for (o in _obstacles) {
             val ol = o.x + config.obstacleInset
             val or = o.x + o.width - config.obstacleInset
@@ -313,6 +338,18 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
             (if (meters < c.stageMeters) c.calmExtraReaction * speed else 0f) +
             // After spikes the runner first walks off the plank's far end and drops to the ground.
             (if (kind == ObstacleKind.SPIKES) c.plankOverhang + speed * kotlin.math.sqrt(2f * c.plankMaxTop / c.gravity) else 0f)
+        placePickup(_obstacles.last())
+    }
+
+    /** Sometimes leaves an item in the middle of the gap after [o]: on the ground, or up where a jump reaches it. */
+    private fun placePickup(o: Obstacle) {
+        if (!pickupsOn || pickupRandom.nextFloat() >= config.pickupChance) return
+        val high = pickupRandom.nextFloat() < config.pickupHighChance
+        val gapStart = maxOf(o.x + o.width, o.plankRight)
+        val gapEnd = o.x + o.width + nextGap
+        if (gapEnd - gapStart < Pickup.PICKUP_SIZE * 3) return
+        val x = (gapStart + gapEnd) / 2f - Pickup.PICKUP_SIZE / 2f
+        _pickups += Pickup(x, if (high) config.pickupHighBottom else config.pickupGroundBottom)
     }
 
     private fun between(min: Float, max: Float) = random.nextFloat() * (max - min) + min

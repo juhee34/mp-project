@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="item_mint">고사리 잎</string>
+    <string name="item_mint_request">오늘 지도에 고사리 길을 그리고 싶은데… 고사리 잎 3장만 찾아 줄래?</string>
+    <string name="item_mint_thanks">와, 이 잎은 어제 없던 모양이야! 고마워.</string>
+    <string name="item_cheese">햇빛 조각</string>
+    <string name="item_cheese_request">햇빛 조각 3개만 모아 줄래? 누누한테 가져가고 싶어.</string>
+    <string name="item_cheese_thanks">…따뜻하네. 고마워, 진짜로.</string>
+    <string name="item_popo">조개껍데기</string>
+    <string name="item_popo_request">조개껍데기 3개… 그 안에 다른 고향 소리가 들어 있을지도 몰라.</string>
+    <string name="item_popo_thanks">이 소리… 처음 들어. 고마워.</string>
+    <string name="item_lumi">솔방울</string>
+    <string name="item_lumi_request">솔방울 마이크가 부족해! 솔방울 3개만 구해 줄래?</string>
+    <string name="item_lumi_thanks">짜잔! 관객석 완성! 고마워!</string>
+    <string name="item_nunu">책갈피</string>
+    <string name="item_nunu_request">책갈피 3개만… 내가 있던 자리에 끼워 두고 싶어.</string>
+    <string name="item_nunu_thanks">헤헤, 이제 자리가 안 지워지겠다.</string>
+    <string name="item_piko">종이배</string>
+    <string name="item_piko_request">종이배 3척만 띄워 줄래? 정박지에 세워 두게!</string>
+    <string name="item_piko_thanks">출항 준비 완료! 고마워!</string>
+
+    <!-- Run HUD and the narration after a crash. -->
+    <string name="item_hud">× %1$d</string>
+    <string name="talk_stumble_items">쿵! 함께 %1$dm를 달렸어요. %2$s %3$d개를 주웠어요.</string>
+
+    <!-- Hand-over panel in the village talk. -->
+    <string name="quest_have">%1$s %2$d / %3$d</string>
+    <string name="quest_give">%1$s 건네주기</string>
+    <string name="quest_short">%1$s 달리면 길에서 %2$s 주울 수 있어요.</string>
+    <string name="quest_run">달리러 가기</string>
+    <string name="quest_later">나중에</string>
+    <string name="quest_loading">가방을 확인하는 중…</string>
+    <string name="quest_error">가방을 열지 못했어요. 잠시 후 다시 해 주세요.</string>
+</resources>
