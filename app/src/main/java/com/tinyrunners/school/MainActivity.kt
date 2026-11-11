@@ -35,6 +35,12 @@ class MainActivity : Activity() {
         findViewById<View>(R.id.menu_shop).setOnClickListener {
             startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, characterScreens?.currentFriendId))
         }
+        findViewById<TextView>(R.id.coin_badge).apply {
+            background = coinBackground()
+            setCompoundDrawablesRelative(coinIcon(), null, null, null)
+            compoundDrawablePadding = (6 * resources.displayMetrics.density).toInt()
+            setOnClickListener { startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this@MainActivity, characterScreens?.currentFriendId)) }
+        }
         findViewById<View>(R.id.menu_stories).setOnClickListener { startActivity(Intent(this, StoryListActivity::class.java)) }
         findViewById<View>(R.id.menu_records).setOnClickListener { startActivity(Intent(this, RecordsActivity::class.java)) }
         findViewById<View>(R.id.menu_settings).setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
@@ -64,6 +70,38 @@ class MainActivity : Activity() {
             it.restore(savedInstanceState)
         }
         openRequestedSelection()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshCoins()
+    }
+
+    /** Coins change after runs and purchases, so the badge is re-read every time this screen comes back. */
+    private fun refreshCoins() {
+        val badge = findViewById<TextView>(R.id.coin_badge) ?: return
+        com.tinyrunners.school.shop.ShopStore.forCurrentUser(this).load { result ->
+            if (isDestroyed) return@load
+            result.onSuccess { wallet ->
+                badge.text = getString(R.string.shop_coins, wallet.coins)
+                badge.contentDescription = getString(R.string.coin_badge_description, wallet.coins)
+            }
+        }
+    }
+
+    private fun coinBackground() = android.graphics.drawable.GradientDrawable().apply {
+        val d = resources.displayMetrics.density
+        setColor(android.graphics.Color.rgb(255, 247, 220))
+        setStroke((2 * d).toInt(), android.graphics.Color.rgb(246, 200, 80))
+        cornerRadius = 20 * d
+    }
+
+    private fun coinIcon() = android.graphics.drawable.GradientDrawable().apply {
+        val d = resources.displayMetrics.density
+        shape = android.graphics.drawable.GradientDrawable.OVAL
+        setColor(android.graphics.Color.rgb(246, 200, 80))
+        setStroke((2 * d).toInt(), android.graphics.Color.rgb(140, 96, 20))
+        setBounds(0, 0, (16 * d).toInt(), (16 * d).toInt())
     }
 
     override fun onNewIntent(intent: Intent) {

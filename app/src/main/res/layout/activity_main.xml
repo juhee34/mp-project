@@ -24,6 +24,26 @@
             android:paddingHorizontal="12dp"
             android:paddingTop="4dp">
 
+            <!-- Coin balance (the metres-per-coin rule lives in shop/ShopRules); tapping it opens the shop. -->
+            <TextView
+                android:id="@+id/coin_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="16dp"
+                android:text="@string/coin_badge_loading"
+                android:textColor="#8C6014"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
             <Button
                 android:id="@+id/menu_shop"
                 style="?android:attr/borderlessButtonStyle"
