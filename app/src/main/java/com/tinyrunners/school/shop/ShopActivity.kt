@@ -66,8 +66,12 @@ class ShopActivity : Activity() {
             setText(R.string.shop_title)
             textSize = 24f; setTextColor(TITLE); setTypeface(typeface, Typeface.BOLD)
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-            setPadding(dp(12), 0, 0, 0)
-        }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+            setPadding(dp(12), 0, dp(16), 0)
+        })
+        // The shelves sit in the title row so the cards below have more height for their pictures.
+        tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        if (intent.getBooleanExtra(EXTRA_MUSIC, false)) shelf = Shelf.MUSIC
+        top.addView(tabs, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         coins = TextView(this).apply {
             setText(R.string.shop_loading)
             textSize = 18f; setTextColor(COIN_INK); setTypeface(typeface, Typeface.BOLD)
@@ -82,17 +86,14 @@ class ShopActivity : Activity() {
         top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         content.addView(top)
         content.addView(TextView(this).apply {
-            text = getString(R.string.shop_body, ShopRules.METERS_PER_COIN); textSize = 15f; setTextColor(SUBTITLE); setPadding(0, dp(6), 0, 0)
+            text = getString(R.string.shop_body, ShopRules.METERS_PER_COIN); textSize = 14f; setTextColor(SUBTITLE); setPadding(0, dp(6), 0, 0)
         })
-        tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        if (intent.getBooleanExtra(EXTRA_MUSIC, false)) shelf = Shelf.MUSIC
-        content.addView(tabs, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
         message = TextView(this).apply { textSize = 15f; setTextColor(MESSAGE); setTypeface(typeface, Typeface.BOLD) }
         content.addView(message, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
 
         row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(4), dp(8), dp(4)) }
         val scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; addView(row) }
-        content.addView(scroller, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(6) })
+        content.addView(scroller, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(2) })
 
         setContentView(FrameLayout(this).apply {
             setBackgroundColor(Page.BACKGROUND)
@@ -262,28 +263,38 @@ class ShopActivity : Activity() {
                 setStroke(dp(if (wearing) 3 else 1), if (wearing) Page.LEAF else Page.LINE)
             }
         }
-        val previewFriend = if (music) item.id.removePrefix("music_").takeIf { it in FRIENDS } ?: friendId else friendId
-        card.addView(TrailPreview(this, previewFriend, if (music) TrailStyle.NOTES else item.style).apply {
+        // Songs show their friend (the main theme shows everyone); decorations show the friend from the selection.
+        val songFriend = if (music) item.id.removePrefix("music_").takeIf { it in FRIENDS } else null
+        val previewFriend = songFriend ?: friendId
+        card.addView(TrailPreview(this, previewFriend, if (music) TrailStyle.NOTES else item.style,
+            everyone = music && songFriend == null).apply {
             if (!ready) alpha = 0.45f
             contentDescription = getString(R.string.shop_preview_description, getString(item.name))
         }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
-        card.addView(TextView(this).apply { setText(item.name); textSize = 17f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD) })
-        card.addView(TextView(this).apply { setText(item.blurb); textSize = 13f; setTextColor(Page.MUTED); maxLines = 2 })
-        card.addView(TextView(this).apply {
+        if (music) card.addView(TextView(this).apply {
+            text = songFriend?.let { id -> getString(R.string.shop_song_of, com.tinyrunners.school.data.CharacterRepository(context).find(id)?.name.orEmpty()) }
+                ?: getString(R.string.shop_song_everyone)
+            textSize = 12f; setTextColor(Page.LEAF); setTypeface(typeface, Typeface.BOLD)
+        })
+        card.addView(TextView(this).apply { setText(item.name); textSize = 17f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD); maxLines = 1 })
+        card.addView(TextView(this).apply { setText(item.blurb); textSize = 13f; setTextColor(Page.MUTED); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
+        val priceRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        priceRow.addView(TextView(this).apply {
             text = if (item.price == 0) getString(R.string.shop_free) else if (!ready) getString(R.string.shop_coming_soon) else getString(R.string.shop_price, item.price)
             textSize = 14f; setTextColor(COIN_INK); setTypeface(typeface, Typeface.BOLD); setPadding(0, dp(4), 0, 0)
-        })
-        if (music && ready) card.addView(Button(this).apply {
+        }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        card.addView(priceRow)
+        if (music && ready) priceRow.addView(Button(this).apply {
             // Hear the song before buying or wearing it.
             setText(if (previewing == item.id) R.string.shop_preview_stop else R.string.shop_preview_play)
             textSize = 14f; isAllCaps = false; stateListAnimator = null
-            minHeight = dp(36); minimumHeight = dp(36); setPadding(0, 0, 0, 0)
+            minHeight = dp(30); minimumHeight = dp(30); minWidth = 0; minimumWidth = 0; setPadding(dp(10), 0, dp(10), 0)
             setTextColor(Page.LEAF)
             background = RippleDrawable(ColorStateList.valueOf(Page.MINT), GradientDrawable().apply {
                 setColor(Color.WHITE); cornerRadius = dp(14).toFloat(); setStroke(dp(2), Page.LEAF)
             }, null)
             setOnClickListener { preview(item) }
-        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
+        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(30)))
         val label = when { wearing -> R.string.shop_wearing; owned -> R.string.shop_wear; !ready -> R.string.shop_coming_soon; else -> R.string.shop_buy }
         card.addView(Button(this).apply {
             setText(label)
@@ -360,12 +371,12 @@ class ShopActivity : Activity() {
         private val COIN = Color.rgb(246, 200, 80)
         private val COIN_BG = Color.rgb(255, 247, 220)
         private val COIN_INK = Color.rgb(140, 96, 20)
-        /** Text and the selected tab on the light wooden shop. */
-        private val TITLE = Color.rgb(78, 48, 26)
-        private val SUBTITLE = Color.rgb(112, 80, 52)
+        /** Text and the selected tab on the light-green shop. */
+        private val TITLE = Page.INK
+        private val SUBTITLE = Color.rgb(70, 100, 72)
         private val MESSAGE = Page.LEAF
         private val MESSAGE_ERROR = Page.ERROR
-        private val MAGIC_TAB = Color.rgb(150, 88, 50)
+        private val MAGIC_TAB = Page.LEAF
 
         fun intent(context: Context, friendId: String?) = Intent(context, ShopActivity::class.java).putExtra(EXTRA_FRIEND, friendId)
     }
@@ -373,8 +384,9 @@ class ShopActivity : Activity() {
 
 /** A friend running in place with the item's trail behind them, so players see the decoration before buying. */
 @SuppressLint("ViewConstructor")
-private class TrailPreview(context: Context, friendId: String, private val style: TrailStyle) : View(context) {
+private class TrailPreview(context: Context, friendId: String, private val style: TrailStyle, private val everyone: Boolean = false) : View(context) {
     private val sprites = CharacterSprites.load(resources, friendId)
+    private val all = if (everyone) listOf("mint", "cheese", "popo", "lumi", "nunu", "piko").mapNotNull { CharacterSprites.load(resources, it) } else emptyList()
     private val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false }
     private val ground = Paint().apply { color = Color.rgb(221, 232, 214) }
     private val box = RectF()
@@ -383,8 +395,24 @@ private class TrailPreview(context: Context, friendId: String, private val style
     override fun onDraw(canvas: Canvas) {
         val w = width.toFloat(); val h = height.toFloat()
         canvas.drawRoundRect(0f, h * 0.55f, w, h, 12f, 12f, ground)
+        val t0 = (SystemClock.uptimeMillis() - start) / 1000f
+        if (all.isNotEmpty()) {
+            // The main theme belongs to everyone: all six friends bob in a row with notes above.
+            val px = minOf(h * 0.75f, w / 6.2f) / CharacterSprites.SIZE
+            val size = CharacterSprites.SIZE * px
+            all.forEachIndexed { i, s ->
+                val left = w / 2f + (i - 2.5f) * size * 0.98f - size / 2f
+                val bob = if (((t0 * 2).toInt() + i) % 2 == 0) 0f else px * 2
+                box.set(left, h - size - bob, left + size, h - bob)
+                canvas.drawBitmap(s[SpriteFrame.IDLE_0], null, box, pixel)
+            }
+            TrailPainter.draw(canvas, style, w * 0.15f, h * 0.2f, px, t0 * 1.5f)
+            postInvalidateDelayed(120)
+            return
+        }
         val art = sprites ?: return
-        val px = (h * 0.8f / CharacterSprites.SIZE).toInt().coerceAtLeast(1).toFloat()
+        // Fractional pixel scale, so the friend fills the picture instead of snapping down to a tiny 1x sprite.
+        val px = (h * 0.95f / CharacterSprites.SIZE).coerceAtLeast(1f)
         val size = CharacterSprites.SIZE * px
         val left = w * 0.62f - size / 2f
         val top = h - size - px
@@ -398,9 +426,9 @@ private class TrailPreview(context: Context, friendId: String, private val style
 }
 
 /**
- * A cosy shop with a touch of magic: light wooden plank walls with a few gold sparkles, caramel velvet curtains with
- * gold tassels on both sides and a fringed valance, and a wooden shop counter along the bottom that the item cards
- * stand in front of. Drawn once (no animation).
+ * A cosy green shop with a touch of magic: light-green plank walls with a few gold sparkles, leafy green velvet
+ * curtains with gold tassels and a fringed valance, and a green-painted shop counter along the bottom that the item
+ * cards stand in front of (green goes with the shop's green buttons). Drawn once (no animation).
  */
 private class ShopBackground(context: Context) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -413,9 +441,9 @@ private class ShopBackground(context: Context) : View(context) {
         val plank = 38 * d
         var x = 0f; var i = 0
         while (x < w) {
-            paint.color = if (i % 2 == 0) Color.rgb(238, 218, 184) else Color.rgb(230, 208, 172)
+            paint.color = if (i % 2 == 0) Color.rgb(232, 242, 214) else Color.rgb(222, 236, 202)
             canvas.drawRect(x, 0f, x + plank, h, paint)
-            paint.color = Color.rgb(204, 172, 130); canvas.drawRect(x + plank - 1.5f * d, 0f, x + plank, h, paint)
+            paint.color = Color.rgb(188, 212, 166); canvas.drawRect(x + plank - 1.5f * d, 0f, x + plank, h, paint)
             x += plank; i++
         }
         // A few gold sparkles: the shop's bit of magic.
@@ -424,11 +452,11 @@ private class ShopBackground(context: Context) : View(context) {
         }
         // Shop counter along the bottom: a thick top board, then the front with carved panels.
         val top = h * 0.82f
-        paint.color = Color.rgb(140, 92, 54); canvas.drawRect(0f, top, w, h, paint)
-        paint.color = Color.rgb(176, 120, 72); canvas.drawRect(0f, top, w, top + 12 * d, paint)
-        paint.color = Color.rgb(200, 146, 92); canvas.drawRect(0f, top, w, top + 3 * d, paint)
-        paint.color = Color.argb(60, 60, 30, 10); canvas.drawRect(0f, top + 12 * d, w, top + 16 * d, paint)
-        paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.color = Color.rgb(118, 76, 42)
+        paint.color = Color.rgb(78, 120, 82); canvas.drawRect(0f, top, w, h, paint)
+        paint.color = Color.rgb(112, 156, 106); canvas.drawRect(0f, top, w, top + 12 * d, paint)
+        paint.color = Color.rgb(150, 190, 132); canvas.drawRect(0f, top, w, top + 3 * d, paint)
+        paint.color = Color.argb(60, 20, 50, 24); canvas.drawRect(0f, top + 12 * d, w, top + 16 * d, paint)
+        paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.color = Color.rgb(62, 98, 66)
         val panel = 120 * d
         x = 10 * d
         while (x < w) { canvas.drawRoundRect(x, top + 22 * d, x + panel - 20 * d, h - 8 * d, 6 * d, 6 * d, paint); x += panel }
@@ -456,7 +484,7 @@ private class ShopBackground(context: Context) : View(context) {
         path.lineTo(edge, h * 0.85f); path.close()
         paint.color = CURTAIN; canvas.drawPath(path, paint)
         // Folds.
-        paint.color = Color.argb(60, 60, 24, 8); paint.strokeWidth = 3 * d; paint.style = Paint.Style.STROKE
+        paint.color = Color.argb(60, 16, 48, 22); paint.strokeWidth = 3 * d; paint.style = Paint.Style.STROKE
         for (k in 1..2) { val fx = if (left) edge + width * k / 3f else edge - width * k / 3f; canvas.drawLine(fx, 0f, fx, h * 0.8f, paint) }
         paint.style = Paint.Style.FILL
         // Gold tie and tassel.
@@ -468,9 +496,9 @@ private class ShopBackground(context: Context) : View(context) {
     }
 
     private companion object {
-        /** Caramel velvet that goes with the light wood. */
-        val CURTAIN = Color.rgb(170, 96, 56)
-        val CURTAIN_DARK = Color.rgb(132, 70, 38)
+        /** Leafy velvet that goes with the light-green walls. */
+        val CURTAIN = Color.rgb(84, 140, 92)
+        val CURTAIN_DARK = Color.rgb(56, 104, 66)
     }
 }
 

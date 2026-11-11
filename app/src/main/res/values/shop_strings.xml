@@ -16,7 +16,7 @@
     <string name="shop_bought">%1$s을(를) 샀어요. 다음 달리기부터 보여요.</string>
     <string name="shop_not_enough">코인이 %1$d개 모자라요. 조금 더 달려 볼까요?</string>
     <string name="shop_failed">저장하지 못했어요. 인터넷 연결을 확인해 주세요.</string>
-    <string name="shop_item_none">꾸미기 없음</string>
+    <string name="shop_item_none">기본</string>
     <string name="shop_blurb_none">처음 모습 그대로</string>
     <string name="shop_item_stars">반짝 별</string>
     <string name="shop_blurb_stars">뒤로 작은 별이 반짝여요</string>
@@ -31,7 +31,7 @@
     <string name="shop_item_rainbow">무지개 꼬리</string>
     <string name="shop_blurb_rainbow">무지개가 길게 물결쳐요</string>
     <string name="shop_preview_description">%1$s 미리 보기</string>
-    <string name="shop_tab_trails">달리기 꾸미기</string>
+    <string name="shop_tab_trails">꾸미기</string>
     <string name="shop_tab_music">음악</string>
     <string name="shop_tab_items">물품</string>
     <string name="shop_tab_coins">코인 충전</string>
@@ -67,4 +67,6 @@
     <string name="result_shop">상점</string>
     <string name="shop_preview_play">▶ 들어보기</string>
     <string name="shop_preview_stop">■ 멈추기</string>
+    <string name="shop_song_of">%1$s의 노래</string>
+    <string name="shop_song_everyone">모두의 노래</string>
 </resources>
