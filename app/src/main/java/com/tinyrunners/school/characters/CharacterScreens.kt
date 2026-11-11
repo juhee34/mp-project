@@ -47,7 +47,8 @@ internal class CharacterScreens(
         when (state?.getString("route")) {
             Route.SELECT.name -> showSelection()
             Route.PROFILE.name -> showProfile(selectedId.orEmpty(), state.getInt("profileScroll"))
-            else -> showIntro()
+            // The old intro page is gone: the hub after login does that job, so this screen opens on the selection.
+            else -> showSelection()
         }
     }
 
@@ -61,35 +62,10 @@ internal class CharacterScreens(
     fun goBack(): Boolean {
         when (route) {
             Route.PROFILE -> showSelection()
-            Route.SELECT -> showIntro()
-            Route.INTRO -> return false
+            // Back from the selection leaves this screen (to the hub).
+            Route.SELECT, Route.INTRO -> return false
         }
         return true
-    }
-
-    private fun showIntro() {
-        val body = screen(Route.INTRO)
-        val cover = panel()
-        cover.background = shape(LEAF, 22)
-        cover.label(context.getString(R.string.characters_intro_eyebrow), 13f, MINT, bold = true)
-        cover.label(context.getString(R.string.characters_intro_title), 36f, Color.WHITE, 10, bold = true, heading = true)
-        cover.label(context.getString(R.string.characters_intro_body), 16f, Color.WHITE, 12)
-        body.addView(cover, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) })
-
-        body.label(context.getString(R.string.characters_intro_friends, repository.characters.size), 20f, top = 24, bold = true, heading = true)
-        val portraitsPerRow = (repository.characters.size + 1) / 2
-        repository.characters.chunked(portraitsPerRow).forEach { friends ->
-            val row = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-            friends.forEach { friend ->
-                row.addView(portrait(friend), LinearLayout.LayoutParams(0, dp(48), 1f).apply {
-                    marginEnd = dp(6)
-                })
-            }
-            body.addView(row, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(6) })
-        }
-        body.label(context.getString(R.string.characters_placeholder_notice), 14f, MUTED, 8)
-        body.action(R.string.characters_choose, primary = true) { showSelection() }
-        body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context)) }
     }
 
     /**
@@ -112,7 +88,7 @@ internal class CharacterScreens(
 
         // Title row: back to the intro, title, and which friend of six this is.
         val top = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(smallButton(context.getString(R.string.characters_back_intro_short)) { showIntro() })
+        top.addView(smallButton(context.getString(R.string.characters_back_hub)) { (context as? android.app.Activity)?.finish() })
         top.addView(TextView(context).apply {
             text = context.getString(R.string.characters_select_title)
             textSize = 22f; setTextColor(INK); setTypeface(typeface, Typeface.BOLD)

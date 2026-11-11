@@ -23,7 +23,7 @@
     <string name="characters_back_selection">다른 친구 고르기</string>
     <string name="characters_profile">이 친구 이야기 보기</string>
     <string name="characters_profile_short">자세히 보기</string>
-    <string name="characters_back_intro_short">◀ 소개</string>
+    <string name="characters_back_hub">◀ 처음으로</string>
     <string name="characters_prev">이전 친구</string>
     <string name="characters_next">다음 친구</string>
     <string name="characters_species_home">%1$s · %2$s</string>

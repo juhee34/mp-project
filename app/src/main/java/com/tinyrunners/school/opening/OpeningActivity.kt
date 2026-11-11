@@ -91,9 +91,9 @@ class OpeningActivity : Activity() {
     private companion object { val LEAF = Color.rgb(48, 83, 65) }
 }
 
-/** Draws A's opening artwork with crisp pixels (centre-crop), or the placeholder line-up of all six friends. */
+/** Draws A's opening artwork with crisp pixels (centre-crop), or the placeholder line-up of all six friends. Shared with the hub. */
 @SuppressLint("ViewConstructor")
-private class OpeningBackground(context: Context) : View(context) {
+internal class OpeningBackground(context: Context) : View(context) {
     private val art: Bitmap? = loadArt(context)
     private val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false; isDither = false }
     private val fill = Paint()

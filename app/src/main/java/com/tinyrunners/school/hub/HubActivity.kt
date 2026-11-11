@@ -3,122 +3,98 @@ package com.tinyrunners.school.hub
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.Gravity
+import android.view.View
 import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.tinyrunners.school.MainActivity
 import com.tinyrunners.school.R
 import com.tinyrunners.school.game.GameActivity
+import com.tinyrunners.school.opening.OpeningBackground
 import com.tinyrunners.school.talk.PrologueActivity
-import com.tinyrunners.school.ui.Page
-import com.tinyrunners.school.ui.SceneryView
 import kotlin.math.roundToInt
 
 /**
- * First screen after login: three big choices side by side on the opening's sky and hills.
+ * First screen after login. Same look as the opening (title, sky, hills, clouds and the six friends on the ground)
+ * with three buttons stacked in the middle, styled like the opening's 시작하기 button.
  * 스토리 진행하기 → world story (black screen) → talks with the village residents.
  * 게임하기 → friend selection. 튜토리얼 하기 → the game guide on a practice run.
  */
 class HubActivity : Activity() {
-    /** The login popup closes right where a card appears; a tap carried over from it must not open anything. */
-    private val shownAt = android.os.SystemClock.uptimeMillis()
+    /** The login popup closes right where a button appears; a tap carried over from it must not open anything. */
+    private val shownAt = SystemClock.uptimeMillis()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val content = LinearLayout(this).apply {
+        val buttons = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(dp(24), dp(16), dp(24), dp(24))
+            // Narrow enough to fit in the gap between 포포 and 루미 on the ground.
+            translationY = dp(8).toFloat()
         }
-        content.addView(TextView(this).apply {
-            setText(R.string.hub_title)
-            textSize = 34f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD)
-            gravity = Gravity.CENTER
-            if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-        })
-        content.addView(TextView(this).apply {
-            setText(R.string.hub_subtitle)
-            textSize = 16f; setTextColor(Page.MUTED); gravity = Gravity.CENTER
-            setPadding(0, dp(4), 0, 0)
-        })
-
-        val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER }
-        row.addView(choice(R.string.hub_story, R.string.hub_story_body, STORY, primary = false) {
-            startActivity(PrologueActivity.forStory(this))
-        }, weighted(first = true))
-        row.addView(choice(R.string.hub_game, R.string.hub_game_body, Page.LEAF, primary = true) {
-            startActivity(MainActivity.selectionIntent(this))
-        }, weighted())
-        row.addView(choice(R.string.hub_tutorial, R.string.hub_tutorial_body, TUTORIAL, primary = false) {
+        buttons.addView(button(R.string.hub_story) { startActivity(PrologueActivity.forStory(this)) }, slot(first = true))
+        buttons.addView(button(R.string.hub_game) { startActivity(MainActivity.selectionIntent(this)) }, slot())
+        buttons.addView(button(R.string.hub_tutorial) {
             // A practice run with 라일 that always starts with the game guide.
             startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
-        }, weighted())
-        content.addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(18) })
+        }, slot())
 
         setContentView(FrameLayout(this).apply {
-            setBackgroundColor(Page.BACKGROUND)
-            addView(SceneryView(this@HubActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            addView(content, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            setOnApplyWindowInsetsListener { v, insets ->
-                if (Build.VERSION.SDK_INT >= 30) {
-                    val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
-                    v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-                } else {
-                    @Suppress("DEPRECATION")
-                    v.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom)
-                }
-                insets
-            }
+            addView(OpeningBackground(this@HubActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(buttons, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
         })
+        hideSystemBars()
     }
 
-    /** A big rounded card button: a title and one line saying where it goes. */
-    private fun choice(title: Int, body: Int, accent: Int, primary: Boolean, click: () -> Unit) = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        gravity = Gravity.CENTER
-        setPadding(dp(16), dp(18), dp(16), dp(18))
-        isClickable = true
-        isFocusable = true
-        contentDescription = getString(title) + ". " + getString(body)
-        background = RippleDrawable(ColorStateList.valueOf(Page.MINT), GradientDrawable().apply {
-            setColor(if (primary) accent else Page.PAPER)
-            cornerRadius = dp(28).toFloat()
-            setStroke(dp(3), accent)
-        }, null)
-        setOnClickListener { if (android.os.SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click() }
-        addView(TextView(context).apply {
-            setText(title)
-            textSize = 24f; setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER
-            setTextColor(if (primary) Color.WHITE else accent)
-        })
-        addView(TextView(context).apply {
-            setText(body)
-            textSize = 15f; gravity = Gravity.CENTER
-            setTextColor(if (primary) Color.argb(230, 255, 255, 255) else Page.MUTED)
-            setPadding(0, dp(8), 0, 0)
-        })
-    }
-
-    private fun weighted(first: Boolean = false) =
-        LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f).apply {
-            if (!first) marginStart = dp(16)
-            topMargin = dp(8); bottomMargin = dp(8)
+    /** Same look as the opening's 시작하기: leaf green pill, white border, bold white text. */
+    private fun button(label: Int, click: () -> Unit) = Button(this).apply {
+        setText(label)
+        textSize = 18f
+        isAllCaps = false
+        setTextColor(Color.WHITE)
+        typeface = Typeface.DEFAULT_BOLD
+        minHeight = dp(48); minimumHeight = dp(48)
+        setPadding(dp(16), 0, dp(16), 0)
+        background = GradientDrawable().apply {
+            setColor(LEAF)
+            cornerRadius = dp(26).toFloat()
+            setStroke(dp(3), Color.WHITE)
         }
+        stateListAnimator = null
+        setOnClickListener { if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click() }
+    }
+
+    private fun slot(first: Boolean = false) = LinearLayout.LayoutParams(dp(200), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+        if (!first) topMargin = dp(10)
+    }
+
+    private fun hideSystemBars() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.setDecorFitsSystemWindows(false)
+            window.insetsController?.let {
+                it.hide(WindowInsets.Type.systemBars())
+                it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        }
+    }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     companion object {
-        private val STORY = Color.rgb(140, 96, 150)
-        private val TUTORIAL = Color.rgb(176, 112, 64)
+        private val LEAF = Color.rgb(48, 83, 65)
         private const val TAP_GUARD_MS = 600L
 
         /** Opens the hub as the only screen in the task (after login it replaces the opening and popups). */
