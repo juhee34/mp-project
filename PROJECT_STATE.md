@@ -429,3 +429,10 @@
 - assets.json, 배경 manifest 및 DATA_CONTRACT와 검사기를 함께 갱신. 6명 경로·PNG 크기·높이·바닥 기준·SHA-256·독립 루프 파일 검사 통과. 전체 단위 테스트 77개 실패/오류 0. assembleDebug/testDebugUnitTest/lintDebug 통과. 최종 자산 메타데이터 변경 후 APK 재패키징을 별도 수행한다.
 - 출발·반복 원화와 정적 반복 비교판 육안 확인. preview.html은 검수용 독립 미리보기다. 실제 Android 기기 검수는 에뮬레이터 부팅/ADB 연결 미확보로 미완료이며 동적 화면 완료를 주장하지 않는다.
 - docs/art/running-loops/HANDOFF.md, preview.html, gallery.png 및 scripts/export-running-backgrounds.ps1 제공. 원래 작업 브랜치의 소개·음원·대사·웹사이트 미게시 변경은 이번 게시에 섞지 않는다.
+
+### 2026-11-11 배경 게시 재검토 / B팀 검증 인계
+- c95614f 작업본과 최신 origin/main(c8fcbb6)을 대조했다. 배경 관련 28파일만 차이 나며 복구 bundle이 정상이다. 별도 소개·음원·대사·웹사이트와 개인 설정/로그는 포함하지 않는다.
+- 콘텐츠 검사와 커밋 diff 공백 검사 통과. 코드의 집 1회/길 전용 반복 분기와 6명 gallery를 정적으로 검토했다. 실제 주행 검수와 구분한다.
+- 이번 Android 재검증 시도는 PowerShell 옵션 전달 오류로 작업 실행 전에 실패했다. 사용자가 빌드·테스트를 B팀 업무로 지정하여 재실행과 기기 실행을 중단했다. 이전 사본의 77개 테스트/Lint 통과는 이전 검증 기록으로만 유지한다.
+- 연결 기기 없음. APK 설치·에뮬레이터 실행·개인 앱 데이터 초기화 없음. B팀의 다음 작업은 HANDOFF.md에 기록한 6명 출발→길 전환→3회 반복→일시정지/재개→재시작 검수 및 빌드·테스트·Lint다.
+- 팀 가이드에 따라 codex/running-background-loops 브랜치를 게시하고 PR로 인계한다. 상대 검토 전 main에 직접 병합하지 않는다.
