@@ -89,57 +89,223 @@ internal class CharacterScreens(
         body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context)) }
     }
 
+    /**
+     * Friend selection as a swipeable stage: one friend at a time, large and gently bobbing on the left, with their
+     * description on the right. Swipe sideways or use the arrows to meet the next friend; everything fits on one
+     * landscape screen, so nothing needs scrolling.
+     */
     fun showSelection() {
         if (repository.find(selectedId.orEmpty()) == null) selectedId = repository.characters.first().id
-        val body = screen(Route.SELECT)
-        body.label(context.getString(R.string.characters_select_title), 28f, top = 8, bold = true, heading = true)
-        body.label(context.getString(R.string.characters_select_hint, repository.characters.size), 16f, MUTED, 8)
-        body.label(context.getString(R.string.characters_placeholder_notice), 14f, MUTED, 4)
+        val friends = repository.characters
+        route = Route.SELECT
+        host.removeAllViews()
+        scroll = ScrollView(context).apply { isFillViewport = true }
+        val body = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(4), dp(16), dp(12))
+        }
+        scroll.addView(body)
+        host.addView(scroll, FrameLayout.LayoutParams(MATCH, MATCH))
 
-        repository.characters.forEach { friend ->
-            val selected = friend.id == selectedId
-            val name = context.getString(R.string.characters_name_and_species, friend.name, friend.species)
-            val title = if (selected) context.getString(R.string.characters_selected_name, name) else name
-            val card = Button(context).apply {
-                text = SpannableStringBuilder(title).apply {
-                    setSpan(StyleSpan(Typeface.BOLD), 0, title.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    append('\n').append(friend.personality.substringBefore('.'))
-                    append('\n').append(friend.home)
-                }
-                textSize = 16f
-                isAllCaps = false
-                gravity = Gravity.CENTER_VERTICAL or Gravity.START
-                isSelected = selected
-                setSingleLine(false)
-                setTextColor(INK)
-                setPaddingRelative(dp(12), dp(12), dp(12), dp(12))
-                minHeight = dp(76)
-                compoundDrawablePadding = dp(12)
-                val thumbnail = portraitArtwork(friend).apply { setBounds(0, 0, dp(48), dp(48)) }
-                setCompoundDrawablesRelative(thumbnail, null, null, null)
-                background = ripple(if (selected) MINT else PAPER, if (selected) LEAF else LINE)
-                stateListAnimator = null
-                setOnClickListener {
-                    selectionScroll = scroll.scrollY
-                    selectedId = friend.id
-                    showSelection()
+        // Title row: back to the intro, title, and which friend of six this is.
+        val top = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        top.addView(smallButton(context.getString(R.string.characters_back_intro_short)) { showIntro() })
+        top.addView(TextView(context).apply {
+            text = context.getString(R.string.characters_select_title)
+            textSize = 22f; setTextColor(INK); setTypeface(typeface, Typeface.BOLD)
+            if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
+            setPadding(dp(10), 0, 0, 0)
+        }, LinearLayout.LayoutParams(0, WRAP, 1f))
+        val dots = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        top.addView(dots)
+        body.addView(top, LinearLayout.LayoutParams(MATCH, WRAP))
+
+        // Stage: ◀ [card] ▶
+        val stage = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        val prev = arrowButton("◀", R.string.characters_prev)
+        val next = arrowButton("▶", R.string.characters_next)
+        val card = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(18), dp(12), dp(22), dp(12))
+        }
+        val spot = FrameLayout(context)
+        val sprite = ImageView(context).apply {
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }
+        spot.addView(sprite, FrameLayout.LayoutParams(MATCH, MATCH))
+        card.addView(spot, LinearLayout.LayoutParams(dp(150), dp(150)))
+        val info = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(18), 0, 0, 0) }
+        val name = TextView(context).apply { textSize = 26f; setTextColor(INK); setTypeface(typeface, Typeface.BOLD) }
+        val tag = TextView(context).apply {
+            textSize = 14f; setTextColor(LEAF); setTypeface(typeface, Typeface.BOLD)
+            setPadding(dp(10), dp(3), dp(10), dp(3))
+        }
+        val personality = TextView(context).apply { textSize = 15f; setTextColor(INK); setLineSpacing(dp(2).toFloat(), 1f) }
+        val summary = TextView(context).apply {
+            textSize = 13f; setTextColor(MUTED); setLineSpacing(dp(2).toFloat(), 1f)
+            ellipsize = android.text.TextUtils.TruncateAt.END
+        }
+        info.addView(name, LinearLayout.LayoutParams(WRAP, WRAP))
+        info.addView(tag, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(4) })
+        info.addView(personality, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(10) })
+        // The summary takes whatever height is left and shows only whole lines (ending in …), never a cut-off line.
+        info.addView(summary, LinearLayout.LayoutParams(MATCH, 0, 1f).apply { topMargin = dp(6) })
+        card.addView(info, LinearLayout.LayoutParams(0, MATCH, 1f))
+        stage.addView(prev, LinearLayout.LayoutParams(dp(48), dp(48)))
+        stage.addView(card, LinearLayout.LayoutParams(0, MATCH, 1f).apply { marginStart = dp(8); marginEnd = dp(8) })
+        stage.addView(next, LinearLayout.LayoutParams(dp(48), dp(48)))
+        body.addView(stage, LinearLayout.LayoutParams(MATCH, 0, 1f).apply { topMargin = dp(6) })
+
+        // Actions in one row along the bottom.
+        val actions = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
+        fun current() = friends.first { it.id == selectedId }
+        actions.addView(rowButton(R.string.characters_run, primary = true) { onStartRun(current().id) },
+            LinearLayout.LayoutParams(0, WRAP, 1.6f))
+        actions.addView(rowButton(R.string.characters_profile_short) { showProfile(current().id) },
+            LinearLayout.LayoutParams(0, WRAP, 1f).apply { marginStart = dp(8) })
+        actions.addView(rowButton(R.string.characters_story_book) {
+            context.startActivity(StoryActivity.intent(context, current().id))
+        }, LinearLayout.LayoutParams(0, WRAP, 1f).apply { marginStart = dp(8) })
+        // Demo button: always opens the game guide first, with the friend shown on the stage.
+        actions.addView(rowButton(R.string.characters_tutorial) {
+            context.startActivity(GameActivity.intent(context, current().id).putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
+        }, LinearLayout.LayoutParams(0, WRAP, 1f).apply { marginStart = dp(8) })
+        body.addView(actions, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) })
+
+        var frame = 0
+        val sprites = mutableMapOf<String, CharacterSprites?>()
+        fun spriteFrame(friend: CharacterDefinition): Drawable {
+            val set = sprites.getOrPut(friend.id) { CharacterSprites.load(context.resources, friend.id) }
+                ?: return CharacterPortrait(friend.color)
+            val bitmap = set[if (frame % 2 == 0) SpriteFrame.IDLE_0 else SpriteFrame.IDLE_1]
+            return BitmapDrawable(context.resources, bitmap).apply { isFilterBitmap = false; setAntiAlias(false) }
+        }
+
+        fun bind() {
+            val index = friends.indexOfFirst { it.id == selectedId }
+            val friend = friends[index]
+            val tint = friendColor(friend)
+            card.background = shape(PAPER, 24, tint)
+            (card.background as GradientDrawable).setStroke(dp(3), tint)
+            spot.background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(blend(tint, PAPER, 0.55f))
+            }
+            sprite.setImageDrawable(spriteFrame(friend))
+            name.text = friend.name
+            tag.text = context.getString(R.string.characters_species_home, friend.species, friend.home)
+            tag.background = shape(blend(tint, PAPER, 0.7f), 12)
+            personality.text = friend.personality
+            summary.text = friend.summary
+            summary.maxLines = Int.MAX_VALUE
+            summary.post {
+                val lines = summary.height / summary.lineHeight.coerceAtLeast(1)
+                summary.visibility = if (lines < 1) View.INVISIBLE else View.VISIBLE
+                summary.maxLines = lines.coerceAtLeast(1)
+            }
+            card.contentDescription = context.getString(R.string.characters_card_description,
+                index + 1, friends.size, friend.name, friend.species, friend.home, friend.personality)
+            dots.removeAllViews()
+            friends.forEachIndexed { i, f ->
+                dots.addView(View(context).apply {
+                    background = GradientDrawable().apply {
+                        shape = GradientDrawable.OVAL
+                        setColor(if (i == index) friendColor(f) else LINE)
+                    }
+                    importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                }, LinearLayout.LayoutParams(dp(if (i == index) 14 else 10), dp(if (i == index) 14 else 10)).apply { marginStart = dp(6) })
+            }
+        }
+
+        fun go(step: Int) {
+            val index = friends.indexOfFirst { it.id == selectedId }
+            val target = (index + step + friends.size) % friends.size
+            val out = if (step > 0) -dp(60).toFloat() else dp(60).toFloat()
+            card.animate().translationX(out).alpha(0f).setDuration(120).withEndAction {
+                selectedId = friends[target].id
+                bind()
+                card.translationX = -out
+                card.animate().translationX(0f).alpha(1f).setDuration(160).start()
+                card.announceForAccessibility(card.contentDescription)
+            }.start()
+        }
+        prev.setOnClickListener { go(-1) }
+        next.setOnClickListener { go(1) }
+
+        // Sideways swipe on the stage moves between friends: compare where the finger went down and where it lifted.
+        var downX = 0f
+        var downY = 0f
+        @Suppress("ClickableViewAccessibility")
+        card.setOnTouchListener { v, event ->
+            when (event.actionMasked) {
+                android.view.MotionEvent.ACTION_DOWN -> { downX = event.x; downY = event.y; v.parent.requestDisallowInterceptTouchEvent(true) }
+                android.view.MotionEvent.ACTION_UP -> {
+                    val dx = event.x - downX
+                    if (kotlin.math.abs(dx) > dp(40) && kotlin.math.abs(dx) > kotlin.math.abs(event.y - downY)) go(if (dx < 0) 1 else -1)
                 }
             }
-            body.addView(card, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(10) })
+            true
         }
-        repository.find(selectedId.orEmpty())?.let { friend ->
-            body.label(context.getString(R.string.characters_selected_name, friend.name), 18f, top = 16, bold = true)
-            body.action(R.string.characters_run, primary = true) { onStartRun(friend.id) }
-            body.action(R.string.characters_profile) { selectionScroll = scroll.scrollY; showProfile(friend.id) }
-            body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context, friend.id)) }
+
+        // Gentle idle animation: the friend breathes between its two idle frames and bobs a little.
+        val tick = object : Runnable {
+            override fun run() {
+                if (!sprite.isAttachedToWindow) return
+                frame++
+                sprite.setImageDrawable(spriteFrame(friends.first { it.id == selectedId }))
+                sprite.translationY = if (frame % 2 == 0) 0f else -dp(4).toFloat()
+                sprite.postDelayed(this, IDLE_MS)
+            }
         }
-        body.action(R.string.characters_back_intro) { showIntro() }
-        // Demo button: always opens the game guide first, with the chosen friend (라일 if none is chosen yet).
-        body.action(R.string.characters_tutorial) {
-            val friendId = selectedId?.takeIf { repository.find(it) != null } ?: repository.characters.first().id
-            context.startActivity(GameActivity.intent(context, friendId).putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
-        }
-        restoreScroll(selectionScroll)
+        sprite.post { sprite.postDelayed(tick, IDLE_MS) }
+        bind()
+    }
+
+    private fun friendColor(friend: CharacterDefinition): Int =
+        try { Color.parseColor(friend.color) } catch (_: IllegalArgumentException) { LEAF }
+
+    private fun blend(a: Int, b: Int, t: Float): Int = Color.rgb(
+        (Color.red(a) * (1 - t) + Color.red(b) * t).roundToInt(),
+        (Color.green(a) * (1 - t) + Color.green(b) * t).roundToInt(),
+        (Color.blue(a) * (1 - t) + Color.blue(b) * t).roundToInt())
+
+    private fun arrowButton(symbol: String, description: Int) = Button(context).apply {
+        text = symbol
+        textSize = 18f
+        setTextColor(LEAF)
+        contentDescription = context.getString(description)
+        setPadding(0, 0, 0, 0)
+        background = RippleDrawable(ColorStateList.valueOf(0x33466F53), GradientDrawable().apply {
+            shape = GradientDrawable.OVAL; setColor(PAPER); setStroke(dp(1), LINE)
+        }, null)
+        stateListAnimator = null
+    }
+
+    private fun smallButton(label: String, click: () -> Unit) = Button(context).apply {
+        text = label
+        textSize = 14f
+        isAllCaps = false
+        setTextColor(LEAF)
+        minHeight = dp(40); minimumHeight = dp(40)
+        setPadding(dp(12), 0, dp(12), 0)
+        background = ripple(PAPER, LINE)
+        stateListAnimator = null
+        setOnClickListener { click() }
+    }
+
+    private fun rowButton(label: Int, primary: Boolean = false, click: () -> Unit) = Button(context).apply {
+        setText(label)
+        textSize = 15f
+        isAllCaps = false
+        setTextColor(if (primary) Color.WHITE else LEAF)
+        if (primary) setTypeface(typeface, Typeface.BOLD)
+        minHeight = dp(52)
+        setPadding(dp(8), dp(8), dp(8), dp(8))
+        background = ripple(if (primary) LEAF else PAPER, if (primary) LEAF else LINE)
+        stateListAnimator = null
+        setOnClickListener { click() }
     }
 
     private fun showProfile(id: String, scrollY: Int = 0) {
@@ -270,5 +436,6 @@ internal class CharacterScreens(
         val LINE = Color.rgb(221, 224, 209)
         val INK = Color.rgb(38, 52, 43)
         val MUTED = Color.rgb(79, 96, 84)
+        const val IDLE_MS = 520L
     }
 }
