@@ -54,7 +54,7 @@ class HubActivity : Activity() {
         }, slot())
 
         setContentView(FrameLayout(this).apply {
-            addView(OpeningBackground(this@HubActivity, titleY = 0.13f, titleSize = 0.09f), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(OpeningBackground(this@HubActivity, titleY = 0.13f), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(buttons, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER).apply { topMargin = dp(16) })
         })
         hideSystemBars()
