@@ -67,11 +67,7 @@ class ShopActivity : Activity() {
             textSize = 24f; setTextColor(TITLE); setTypeface(typeface, Typeface.BOLD)
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
             setPadding(dp(12), 0, dp(16), 0)
-        })
-        // The shelves sit in the title row so the cards below have more height for their pictures.
-        tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        if (intent.getBooleanExtra(EXTRA_MUSIC, false)) shelf = Shelf.MUSIC
-        top.addView(tabs, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         coins = TextView(this).apply {
             setText(R.string.shop_loading)
             textSize = 18f; setTextColor(COIN_INK); setTypeface(typeface, Typeface.BOLD)
@@ -86,8 +82,12 @@ class ShopActivity : Activity() {
         top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         content.addView(top)
         content.addView(TextView(this).apply {
-            text = getString(R.string.shop_body, ShopRules.METERS_PER_COIN); textSize = 14f; setTextColor(SUBTITLE); setPadding(0, dp(6), 0, 0)
+            text = getString(R.string.shop_body, ShopRules.METERS_PER_COIN); textSize = 14f; setTextColor(SUBTITLE); setPadding(0, dp(4), 0, 0)
         })
+        // The shelves, on their own row under the description.
+        tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        if (intent.getBooleanExtra(EXTRA_MUSIC, false)) shelf = Shelf.MUSIC
+        content.addView(tabs, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
         message = TextView(this).apply { textSize = 15f; setTextColor(MESSAGE); setTypeface(typeface, Typeface.BOLD) }
         content.addView(message, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
 
@@ -354,8 +354,8 @@ class ShopActivity : Activity() {
         this.text = text
         textSize = 14f; isAllCaps = false; stateListAnimator = null
         setTextColor(ink)
-        minHeight = dp(40); minimumHeight = dp(40)
-        setPadding(dp(12), 0, dp(12), 0)
+        minHeight = dp(36); minimumHeight = dp(36)
+        setPadding(dp(14), 0, dp(14), 0)
         background = RippleDrawable(ColorStateList.valueOf(Page.MINT), GradientDrawable().apply {
             setColor(fill); cornerRadius = dp(16).toFloat(); setStroke(dp(1), Page.LINE)
         }, null)
@@ -371,9 +371,9 @@ class ShopActivity : Activity() {
         private val COIN = Color.rgb(246, 200, 80)
         private val COIN_BG = Color.rgb(255, 247, 220)
         private val COIN_INK = Color.rgb(140, 96, 20)
-        /** Text and the selected tab on the light-green shop. */
+        /** Text and the selected tab: the menu's ink and leaf green. */
         private val TITLE = Page.INK
-        private val SUBTITLE = Color.rgb(70, 100, 72)
+        private val SUBTITLE = Page.MUTED
         private val MESSAGE = Page.LEAF
         private val MESSAGE_ERROR = Page.ERROR
         private val MAGIC_TAB = Page.LEAF
@@ -426,9 +426,9 @@ private class TrailPreview(context: Context, friendId: String, private val style
 }
 
 /**
- * A cosy green shop with a touch of magic: light-green plank walls with a few gold sparkles, leafy green velvet
- * curtains with gold tassels and a fringed valance, and a green-painted shop counter along the bottom that the item
- * cards stand in front of (green goes with the shop's green buttons). Drawn once (no animation).
+ * The shop, in the colours of the menu and the bag: a cream wallpaper (the menu's sky) with soft green stripes (its
+ * hills), curtains of light leather like the bag with pleats, stitched hems and gold tie-backs, a scalloped valance,
+ * and a tall brown wooden counter (the menu's ground) the item cards stand in front of. Drawn once (no animation).
  */
 private class ShopBackground(context: Context) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -437,36 +437,80 @@ private class ShopBackground(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         val w = width.toFloat(); val h = height.toFloat()
         val d = resources.displayMetrics.density
-        // Wall: light vertical planks in two warm tones with soft seams.
-        val plank = 38 * d
-        var x = 0f; var i = 0
-        while (x < w) {
-            paint.color = if (i % 2 == 0) Color.rgb(232, 242, 214) else Color.rgb(222, 236, 202)
-            canvas.drawRect(x, 0f, x + plank, h, paint)
-            paint.color = Color.rgb(188, 212, 166); canvas.drawRect(x + plank - 1.5f * d, 0f, x + plank, h, paint)
-            x += plank; i++
-        }
-        // A few gold sparkles: the shop's bit of magic.
-        for ((fx, fy, size) in listOf(Triple(0.22f, 0.3f, 7f), Triple(0.6f, 0.07f, 8f), Triple(0.84f, 0.42f, 6f), Triple(0.42f, 0.4f, 5f), Triple(0.13f, 0.6f, 6f))) {
+        // Wallpaper: the menu's sky colours, with soft hill-green stripes.
+        paint.shader = android.graphics.LinearGradient(0f, 0f, 0f, h, Color.rgb(250, 246, 236), Color.rgb(236, 240, 226), android.graphics.Shader.TileMode.CLAMP)
+        canvas.drawRect(0f, 0f, w, h, paint)
+        paint.shader = null
+        paint.color = Color.argb(150, 221, 232, 214)
+        val stripe = 46 * d
+        var x = stripe / 2
+        while (x < w) { canvas.drawRect(x, 0f, x + stripe * 0.45f, h, paint); x += stripe }
+        // A few gold sparkles.
+        for ((fx, fy, size) in listOf(Triple(0.24f, 0.32f, 6f), Triple(0.6f, 0.12f, 7f), Triple(0.82f, 0.4f, 5f), Triple(0.43f, 0.42f, 5f))) {
             sparkle(canvas, w * fx, h * fy, size * d)
         }
-        // Shop counter along the bottom: a thick top board, then the front with carved panels.
-        val top = h * 0.82f
-        paint.color = Color.rgb(78, 120, 82); canvas.drawRect(0f, top, w, h, paint)
-        paint.color = Color.rgb(112, 156, 106); canvas.drawRect(0f, top, w, top + 12 * d, paint)
-        paint.color = Color.rgb(150, 190, 132); canvas.drawRect(0f, top, w, top + 3 * d, paint)
-        paint.color = Color.argb(60, 20, 50, 24); canvas.drawRect(0f, top + 12 * d, w, top + 16 * d, paint)
-        paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.color = Color.rgb(62, 98, 66)
+        // The counter: tall, brown wood like the menu's ground, with a lighter top and carved front panels.
+        val top = h * 0.7f
+        paint.color = Color.rgb(150, 104, 64); canvas.drawRect(0f, top, w, h, paint)
+        paint.color = Color.rgb(176, 126, 80); canvas.drawRect(0f, top, w, top + 14 * d, paint)
+        paint.color = Color.rgb(206, 160, 108); canvas.drawRect(0f, top, w, top + 4 * d, paint)
+        paint.color = Color.argb(70, 70, 40, 16); canvas.drawRect(0f, top + 14 * d, w, top + 19 * d, paint)
+        paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.color = Color.rgb(122, 82, 48)
         val panel = 120 * d
         x = 10 * d
-        while (x < w) { canvas.drawRoundRect(x, top + 22 * d, x + panel - 20 * d, h - 8 * d, 6 * d, 6 * d, paint); x += panel }
+        while (x < w) { canvas.drawRoundRect(x, top + 26 * d, x + panel - 20 * d, h - 10 * d, 8 * d, 8 * d, paint); x += panel }
         paint.style = Paint.Style.FILL
-        // Curtains with gold tassels on both sides, and the valance with its fringe.
-        curtain(canvas, 0f, w * 0.07f, h, d, left = true)
-        curtain(canvas, w, w * 0.07f, h, d, left = false)
-        paint.color = CURTAIN_DARK; canvas.drawRect(0f, 0f, w, 6 * d, paint)
+        // Curtains on both sides, then the valance across the top.
+        curtain(canvas, w, h, d, left = true)
+        curtain(canvas, w, h, d, left = false)
+        valance(canvas, w, d)
+    }
+
+    /** Light leather drape: full at the top, tied back with a gold band, flaring out again to the counter. */
+    private fun curtain(canvas: Canvas, w: Float, h: Float, d: Float, left: Boolean) {
+        val edge = if (left) 0f else w
+        val dir = if (left) 1f else -1f
+        val full = w * 0.085f
+        val tieY = h * 0.5f
+        val bottom = h * 0.7f
+        path.reset()
+        path.moveTo(edge, 0f)
+        path.lineTo(edge + dir * full, 0f)
+        // In towards the tie, then out again below it.
+        path.cubicTo(edge + dir * full * 0.9f, tieY * 0.6f, edge + dir * full * 0.35f, tieY * 0.9f, edge + dir * full * 0.38f, tieY)
+        path.cubicTo(edge + dir * full * 0.45f, tieY + (bottom - tieY) * 0.4f, edge + dir * full * 0.95f, bottom * 0.95f, edge + dir * full * 1.05f, bottom)
+        path.lineTo(edge, bottom)
+        path.close()
+        // Pleats: a soft light/dark pattern across the fabric.
+        paint.shader = android.graphics.LinearGradient(edge, 0f, edge + dir * 14 * d, 0f,
+            Color.rgb(234, 204, 162), Color.rgb(206, 166, 118), android.graphics.Shader.TileMode.MIRROR)
+        canvas.drawPath(path, paint)
+        paint.shader = null
+        // Stitched hem along the inner edge, like the bag.
+        paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.color = Color.rgb(150, 104, 62)
+        paint.pathEffect = android.graphics.DashPathEffect(floatArrayOf(6 * d, 4 * d), 0f)
+        canvas.drawPath(path, paint)
+        paint.pathEffect = null; paint.style = Paint.Style.FILL
+        // Gold tie-back with a tassel.
+        val tx = edge + dir * full * 0.38f
         paint.color = Color.rgb(232, 186, 90)
-        x = 0f; while (x < w) { canvas.drawCircle(x + 5 * d, 7 * d, 2.2f * d, paint); x += 10 * d }
+        canvas.drawRoundRect(minOf(edge, tx) - 2 * d, tieY - 4 * d, maxOf(edge, tx) + 6 * d, tieY + 4 * d, 4 * d, 4 * d, paint)
+        canvas.drawCircle(tx + dir * 4 * d, tieY + 6 * d, 5 * d, paint)
+        paint.color = Color.rgb(212, 160, 64)
+        canvas.drawRoundRect(tx + dir * 4 * d - 4 * d, tieY + 9 * d, tx + dir * 4 * d + 4 * d, tieY + 26 * d, 3 * d, 3 * d, paint)
+    }
+
+    /** A scalloped band of the same leather across the top, with a stitched line. */
+    private fun valance(canvas: Canvas, w: Float, d: Float) {
+        val band = 8 * d; val scallop = 26 * d
+        paint.color = Color.rgb(220, 186, 140)
+        canvas.drawRect(0f, 0f, w, band, paint)
+        var x = 0f
+        while (x < w) { canvas.drawCircle(x + scallop / 2, band, scallop / 2, paint); x += scallop }
+        paint.style = Paint.Style.STROKE; paint.strokeWidth = 1.5f * d; paint.color = Color.rgb(150, 104, 62)
+        paint.pathEffect = android.graphics.DashPathEffect(floatArrayOf(5 * d, 4 * d), 0f)
+        canvas.drawLine(0f, band * 0.6f, w, band * 0.6f, paint)
+        paint.pathEffect = null; paint.style = Paint.Style.FILL
     }
 
     private fun sparkle(canvas: Canvas, x: Float, y: Float, s: Float) {
@@ -474,31 +518,6 @@ private class ShopBackground(context: Context) : View(context) {
         path.reset()
         path.moveTo(x, y - s); path.quadTo(x, y, x + s, y); path.quadTo(x, y, x, y + s); path.quadTo(x, y, x - s, y); path.quadTo(x, y, x, y - s)
         canvas.drawPath(path, paint)
-    }
-
-    private fun curtain(canvas: Canvas, edge: Float, width: Float, h: Float, d: Float, left: Boolean) {
-        val inner = if (left) edge + width else edge - width
-        path.reset()
-        path.moveTo(edge, 0f); path.lineTo(inner, 0f)
-        path.quadTo(if (left) inner - width * 0.6f else inner + width * 0.6f, h * 0.45f, inner, h * 0.85f)
-        path.lineTo(edge, h * 0.85f); path.close()
-        paint.color = CURTAIN; canvas.drawPath(path, paint)
-        // Folds.
-        paint.color = Color.argb(60, 16, 48, 22); paint.strokeWidth = 3 * d; paint.style = Paint.Style.STROKE
-        for (k in 1..2) { val fx = if (left) edge + width * k / 3f else edge - width * k / 3f; canvas.drawLine(fx, 0f, fx, h * 0.8f, paint) }
-        paint.style = Paint.Style.FILL
-        // Gold tie and tassel.
-        paint.color = Color.rgb(232, 186, 90)
-        val tx = if (left) edge + width * 0.7f else edge - width * 0.7f
-        canvas.drawRect(tx - width * 0.35f, h * 0.48f, tx + width * 0.35f, h * 0.48f + 5 * d, paint)
-        canvas.drawCircle(tx, h * 0.48f + 10 * d, 5 * d, paint)
-        canvas.drawRect(tx - 3 * d, h * 0.48f + 12 * d, tx + 3 * d, h * 0.48f + 26 * d, paint)
-    }
-
-    private companion object {
-        /** Leafy velvet that goes with the light-green walls. */
-        val CURTAIN = Color.rgb(84, 140, 92)
-        val CURTAIN_DARK = Color.rgb(56, 104, 66)
     }
 }
 
