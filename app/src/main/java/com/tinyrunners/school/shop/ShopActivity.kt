@@ -57,7 +57,8 @@ class ShopActivity : Activity() {
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(20), dp(16), dp(12))
+            // Clear of the curtains on both sides.
+            setPadding(dp(52), dp(20), dp(52), dp(12))
         }
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
@@ -359,12 +360,12 @@ class ShopActivity : Activity() {
         private val COIN = Color.rgb(246, 200, 80)
         private val COIN_BG = Color.rgb(255, 247, 220)
         private val COIN_INK = Color.rgb(140, 96, 20)
-        /** Text on the dark magic-shop background. */
-        private val TITLE = Color.rgb(255, 246, 226)
-        private val SUBTITLE = Color.rgb(222, 210, 246)
-        private val MESSAGE = Color.rgb(196, 240, 210)
-        private val MESSAGE_ERROR = Color.rgb(255, 196, 190)
-        private val MAGIC_TAB = Color.rgb(98, 72, 160)
+        /** Text and the selected tab on the light wooden shop. */
+        private val TITLE = Color.rgb(78, 48, 26)
+        private val SUBTITLE = Color.rgb(112, 80, 52)
+        private val MESSAGE = Page.LEAF
+        private val MESSAGE_ERROR = Page.ERROR
+        private val MAGIC_TAB = Color.rgb(150, 88, 50)
 
         fun intent(context: Context, friendId: String?) = Intent(context, ShopActivity::class.java).putExtra(EXTRA_FRIEND, friendId)
     }
@@ -397,9 +398,9 @@ private class TrailPreview(context: Context, friendId: String, private val style
 }
 
 /**
- * A little magic shop at night: a deep violet room with stars, a crescent moon, heavy velvet curtains on both
- * sides with gold tassels, floating sparkles, and a glowing magic circle on the floor under the counter.
- * Drawn once (no animation), so it costs nothing while the shop is open.
+ * A cosy shop with a touch of magic: light wooden plank walls with a few gold sparkles, caramel velvet curtains with
+ * gold tassels on both sides and a fringed valance, and a wooden shop counter along the bottom that the item cards
+ * stand in front of. Drawn once (no animation).
  */
 private class ShopBackground(context: Context) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -408,46 +409,40 @@ private class ShopBackground(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         val w = width.toFloat(); val h = height.toFloat()
         val d = resources.displayMetrics.density
-        // Night room: violet at the top, warmer purple near the floor.
-        paint.shader = android.graphics.LinearGradient(0f, 0f, 0f, h, Color.rgb(36, 26, 72), Color.rgb(86, 52, 118), android.graphics.Shader.TileMode.CLAMP)
-        canvas.drawRect(0f, 0f, w, h, paint)
-        paint.shader = null
-        // Stars in a fixed, uneven pattern.
-        val rnd = java.util.Random(7)
-        repeat(70) {
-            val x = rnd.nextFloat() * w; val y = rnd.nextFloat() * h * 0.75f
-            val r = (0.8f + rnd.nextFloat() * 1.6f) * d
-            paint.color = Color.argb(120 + rnd.nextInt(130), 255, 248, 220)
-            canvas.drawCircle(x, y, r, paint)
+        // Wall: light vertical planks in two warm tones with soft seams.
+        val plank = 38 * d
+        var x = 0f; var i = 0
+        while (x < w) {
+            paint.color = if (i % 2 == 0) Color.rgb(238, 218, 184) else Color.rgb(230, 208, 172)
+            canvas.drawRect(x, 0f, x + plank, h, paint)
+            paint.color = Color.rgb(204, 172, 130); canvas.drawRect(x + plank - 1.5f * d, 0f, x + plank, h, paint)
+            x += plank; i++
         }
-        // Four-point sparkles.
-        for ((fx, fy, size) in listOf(Triple(0.22f, 0.3f, 7f), Triple(0.63f, 0.18f, 9f), Triple(0.84f, 0.5f, 6f), Triple(0.41f, 0.55f, 5f), Triple(0.12f, 0.62f, 6f))) {
+        // A few gold sparkles: the shop's bit of magic.
+        for ((fx, fy, size) in listOf(Triple(0.22f, 0.3f, 7f), Triple(0.6f, 0.07f, 8f), Triple(0.84f, 0.42f, 6f), Triple(0.42f, 0.4f, 5f), Triple(0.13f, 0.6f, 6f))) {
             sparkle(canvas, w * fx, h * fy, size * d)
         }
-        // Crescent moon in the top row, between the title and the coins, clear of the text below.
-        val mx = w * 0.56f; val my = 34 * d
-        paint.color = Color.argb(40, 255, 240, 190); canvas.drawCircle(mx, my, 26 * d, paint)
-        paint.color = Color.rgb(255, 238, 180); canvas.drawCircle(mx, my, 14 * d, paint)
-        paint.color = Color.rgb(40, 29, 78); canvas.drawCircle(mx + 6 * d, my - 4 * d, 12 * d, paint)
-        // Magic circle glowing on the floor behind the cards.
-        val cx = w / 2f; val cy = h * 0.93f
-        paint.style = Paint.Style.STROKE
-        paint.color = Color.argb(90, 190, 160, 255); paint.strokeWidth = 3 * d
-        canvas.drawOval(cx - w * 0.36f, cy - 34 * d, cx + w * 0.36f, cy + 34 * d, paint)
-        paint.color = Color.argb(70, 255, 220, 140); paint.strokeWidth = 2 * d
-        canvas.drawOval(cx - w * 0.28f, cy - 24 * d, cx + w * 0.28f, cy + 24 * d, paint)
+        // Shop counter along the bottom: a thick top board, then the front with carved panels.
+        val top = h * 0.82f
+        paint.color = Color.rgb(140, 92, 54); canvas.drawRect(0f, top, w, h, paint)
+        paint.color = Color.rgb(176, 120, 72); canvas.drawRect(0f, top, w, top + 12 * d, paint)
+        paint.color = Color.rgb(200, 146, 92); canvas.drawRect(0f, top, w, top + 3 * d, paint)
+        paint.color = Color.argb(60, 60, 30, 10); canvas.drawRect(0f, top + 12 * d, w, top + 16 * d, paint)
+        paint.style = Paint.Style.STROKE; paint.strokeWidth = 2 * d; paint.color = Color.rgb(118, 76, 42)
+        val panel = 120 * d
+        x = 10 * d
+        while (x < w) { canvas.drawRoundRect(x, top + 22 * d, x + panel - 20 * d, h - 8 * d, 6 * d, 6 * d, paint); x += panel }
         paint.style = Paint.Style.FILL
-        // Velvet curtains with gold tassels on both sides.
+        // Curtains with gold tassels on both sides, and the valance with its fringe.
         curtain(canvas, 0f, w * 0.07f, h, d, left = true)
         curtain(canvas, w, w * 0.07f, h, d, left = false)
-        // Valance along the top: deep red with a gold fringe.
-        paint.color = Color.rgb(120, 34, 66); canvas.drawRect(0f, 0f, w, 6 * d, paint)
+        paint.color = CURTAIN_DARK; canvas.drawRect(0f, 0f, w, 6 * d, paint)
         paint.color = Color.rgb(232, 186, 90)
-        var x = 0f; while (x < w) { canvas.drawCircle(x + 5 * d, 7 * d, 2.2f * d, paint); x += 10 * d }
+        x = 0f; while (x < w) { canvas.drawCircle(x + 5 * d, 7 * d, 2.2f * d, paint); x += 10 * d }
     }
 
     private fun sparkle(canvas: Canvas, x: Float, y: Float, s: Float) {
-        paint.color = Color.argb(220, 255, 244, 200)
+        paint.color = Color.argb(200, 236, 186, 80)
         path.reset()
         path.moveTo(x, y - s); path.quadTo(x, y, x + s, y); path.quadTo(x, y, x, y + s); path.quadTo(x, y, x - s, y); path.quadTo(x, y, x, y - s)
         canvas.drawPath(path, paint)
@@ -459,9 +454,9 @@ private class ShopBackground(context: Context) : View(context) {
         path.moveTo(edge, 0f); path.lineTo(inner, 0f)
         path.quadTo(if (left) inner - width * 0.6f else inner + width * 0.6f, h * 0.45f, inner, h * 0.85f)
         path.lineTo(edge, h * 0.85f); path.close()
-        paint.color = Color.rgb(132, 38, 74); canvas.drawPath(path, paint)
+        paint.color = CURTAIN; canvas.drawPath(path, paint)
         // Folds.
-        paint.color = Color.argb(60, 30, 0, 20); paint.strokeWidth = 3 * d; paint.style = Paint.Style.STROKE
+        paint.color = Color.argb(60, 60, 24, 8); paint.strokeWidth = 3 * d; paint.style = Paint.Style.STROKE
         for (k in 1..2) { val fx = if (left) edge + width * k / 3f else edge - width * k / 3f; canvas.drawLine(fx, 0f, fx, h * 0.8f, paint) }
         paint.style = Paint.Style.FILL
         // Gold tie and tassel.
@@ -470,6 +465,12 @@ private class ShopBackground(context: Context) : View(context) {
         canvas.drawRect(tx - width * 0.35f, h * 0.48f, tx + width * 0.35f, h * 0.48f + 5 * d, paint)
         canvas.drawCircle(tx, h * 0.48f + 10 * d, 5 * d, paint)
         canvas.drawRect(tx - 3 * d, h * 0.48f + 12 * d, tx + 3 * d, h * 0.48f + 26 * d, paint)
+    }
+
+    private companion object {
+        /** Caramel velvet that goes with the light wood. */
+        val CURTAIN = Color.rgb(170, 96, 56)
+        val CURTAIN_DARK = Color.rgb(132, 70, 38)
     }
 }
 
