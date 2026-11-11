@@ -1,0 +1,899 @@
+{
+  "date": "2026-11-12",
+  "scope": "design_materials_only",
+  "integrated": false,
+  "sources": [
+    {
+      "file": "bag-approved-20261112.png",
+      "originalFilename": "ChatGPT Image 2026년 11월 12일 오전 12_58_44.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "e6999106689ae11ab1fd7f43935d30a23891b422c3c494064209d0100a480415",
+      "bytes": 3028534,
+      "unmodifiedOriginal": true
+    },
+    {
+      "file": "obstacles-approved-20261112.png",
+      "originalFilename": "길 위의 작은 모험 장애물 도감(1).png",
+      "width": 1586,
+      "height": 992,
+      "sha256": "944e2949856aaf85c1b4930d6e08c4f916865172a65f56a6356132968abcb94c",
+      "bytes": 2195021,
+      "unmodifiedOriginal": true
+    }
+  ],
+  "summary": {
+    "obstaclePngs": 18,
+    "bagItemOnlyPngs": 5,
+    "bagPendingReferencePngs": 1,
+    "pending": [
+      "mint bag item-only silhouette"
+    ]
+  },
+  "extraction": {
+    "method": "원본 영역을 1:1 복사하고 연결된 종이 배경을 알파 마스킹. 물품별 풀밭/꽃 분리. 남긴 RGB는 원본과 완전 일치.",
+    "regenerated": false,
+    "resized": false,
+    "recolored": false,
+    "physicsOrCollisionBoundsDefined": false,
+    "limitations": [
+      "고사리 잎과 풀밭 경계 분리 미완료",
+      "평면 원본의 외곽 종이색 혼합 픽셀 일부 유지; 어두운 배경에서 얇은 밝은 가장자리 보일 수 있음",
+      "풀밭에 가려진 물품 부분을 추정 복원하지 않음"
+    ]
+  },
+  "assets": [
+    {
+      "file": "extracted/air_mint.png",
+      "characterId": "mint",
+      "characterName": "라일",
+      "kind": "air",
+      "itemName": null,
+      "purpose": "공중 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        345,
+        200,
+        330,
+        105
+      ],
+      "retainedSourceBoundsXYWH": [
+        354,
+        206,
+        299,
+        85
+      ],
+      "width": 307,
+      "height": 93,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 11296,
+      "retainedBrightPixels": 752,
+      "sha256": "00e3824f8650f0eb4f58e10a9c1b6cc6fbddb2306723263dd90078efc0eacb61",
+      "bytes": 37470,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/spikes_mint.png",
+      "characterId": "mint",
+      "characterName": "라일",
+      "kind": "spikes",
+      "itemName": null,
+      "purpose": "바닥 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        770,
+        200,
+        300,
+        105
+      ],
+      "retainedSourceBoundsXYWH": [
+        786,
+        215,
+        268,
+        83
+      ],
+      "width": 276,
+      "height": 91,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 10537,
+      "retainedBrightPixels": 832,
+      "sha256": "93f68293da625029f41e72ca4df80b0ea54552753981aebeb37ac05272205f0c",
+      "bytes": 33656,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/platform_mint.png",
+      "characterId": "mint",
+      "characterName": "라일",
+      "kind": "platform",
+      "itemName": null,
+      "purpose": "밝고 평평한 윗면에 착지하는 발판 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        1158,
+        200,
+        355,
+        105
+      ],
+      "retainedSourceBoundsXYWH": [
+        1172,
+        230,
+        330,
+        67
+      ],
+      "width": 338,
+      "height": 75,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 18783,
+      "retainedBrightPixels": 3670,
+      "sha256": "176fe0a972d259280aa50b87b0fd56d3fd59d01a507fe922fa17b1612b5039be",
+      "bytes": 51484,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "pending/bag_mint_with_ground.png",
+      "characterId": "mint",
+      "characterName": "라일",
+      "kind": "bag",
+      "itemName": "고사리 잎",
+      "purpose": "가방 물품 표시 디자인",
+      "status": "pending_item_only_separation",
+      "integrated": false,
+      "source": "bag-approved-20261112.png",
+      "sourceCropXYWH": [
+        68,
+        280,
+        135,
+        164
+      ],
+      "retainedSourceBoundsXYWH": [
+        72,
+        286,
+        123,
+        155
+      ],
+      "width": 131,
+      "height": 163,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 9244,
+      "retainedBrightPixels": 294,
+      "sha256": "109f21360e60dad9160075a2f352c3ef71dc2905e83d65dfb6afec8002d5f54c",
+      "bytes": 29516,
+      "notes": "줄기와 풀밭이 연결되어 장식 포함 참고본만 보존. 물품 단독 분리 미완료."
+    },
+    {
+      "file": "extracted/air_cheese.png",
+      "characterId": "cheese",
+      "characterName": "치즈",
+      "kind": "air",
+      "itemName": null,
+      "purpose": "공중 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        345,
+        332,
+        330,
+        100
+      ],
+      "retainedSourceBoundsXYWH": [
+        359,
+        342,
+        295,
+        81
+      ],
+      "width": 303,
+      "height": 89,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 9996,
+      "retainedBrightPixels": 774,
+      "sha256": "1f70d38f9ae012432ad619ef7deda4d238a61bf8c290574ca374d3bb9d07e806",
+      "bytes": 33135,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/spikes_cheese.png",
+      "characterId": "cheese",
+      "characterName": "치즈",
+      "kind": "spikes",
+      "itemName": null,
+      "purpose": "바닥 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        770,
+        332,
+        300,
+        100
+      ],
+      "retainedSourceBoundsXYWH": [
+        786,
+        348,
+        264,
+        77
+      ],
+      "width": 272,
+      "height": 85,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 10406,
+      "retainedBrightPixels": 765,
+      "sha256": "8807f5b9f6608201cb26c50572201a9b98564b54907615c82567010fdab615b5",
+      "bytes": 33517,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/platform_cheese.png",
+      "characterId": "cheese",
+      "characterName": "치즈",
+      "kind": "platform",
+      "itemName": null,
+      "purpose": "밝고 평평한 윗면에 착지하는 발판 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        1158,
+        332,
+        355,
+        100
+      ],
+      "retainedSourceBoundsXYWH": [
+        1170,
+        352,
+        336,
+        70
+      ],
+      "width": 344,
+      "height": 78,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 20160,
+      "retainedBrightPixels": 3255,
+      "sha256": "9748be7c75baeea19eaed8ff2346f0d8e3792492a9eb9ecbb5b23d4dae6b47a2",
+      "bytes": 54524,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/bag_cheese.png",
+      "characterId": "cheese",
+      "characterName": "치즈",
+      "kind": "bag",
+      "itemName": "햇빛 조각",
+      "purpose": "가방 물품 표시 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "bag-approved-20261112.png",
+      "sourceCropXYWH": [
+        613,
+        291,
+        117,
+        101
+      ],
+      "retainedSourceBoundsXYWH": [
+        618,
+        297,
+        107,
+        95
+      ],
+      "width": 115,
+      "height": 103,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 4009,
+      "retainedBrightPixels": 54,
+      "sha256": "9036fe1acf0e4371b77950c9753c63e4b0dc6b5a2c8a46c51d942cda1bbbb9c5",
+      "bytes": 13046,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/air_popo.png",
+      "characterId": "popo",
+      "characterName": "포포",
+      "kind": "air",
+      "itemName": null,
+      "purpose": "공중 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        345,
+        464,
+        330,
+        99
+      ],
+      "retainedSourceBoundsXYWH": [
+        361,
+        472,
+        301,
+        79
+      ],
+      "width": 309,
+      "height": 87,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 12429,
+      "retainedBrightPixels": 2968,
+      "sha256": "de69f084c5a42dcaf246c4b094d2736d797763cc8c8450b95addd8dbca314878",
+      "bytes": 38559,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/spikes_popo.png",
+      "characterId": "popo",
+      "characterName": "포포",
+      "kind": "spikes",
+      "itemName": null,
+      "purpose": "바닥 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        770,
+        464,
+        300,
+        99
+      ],
+      "retainedSourceBoundsXYWH": [
+        785,
+        469,
+        273,
+        87
+      ],
+      "width": 281,
+      "height": 95,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 11904,
+      "retainedBrightPixels": 4160,
+      "sha256": "896ce839ece4cfd94b420c7b9969be3a6dbb17fe1a9dbe246f42e3e4a5d3d4f6",
+      "bytes": 35243,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/platform_popo.png",
+      "characterId": "popo",
+      "characterName": "포포",
+      "kind": "platform",
+      "itemName": null,
+      "purpose": "밝고 평평한 윗면에 착지하는 발판 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        1158,
+        464,
+        355,
+        99
+      ],
+      "retainedSourceBoundsXYWH": [
+        1170,
+        479,
+        334,
+        75
+      ],
+      "width": 342,
+      "height": 83,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 21452,
+      "retainedBrightPixels": 6491,
+      "sha256": "05d757dd1c04f28dc69be6a66b2cf84906552c65b2b4aa08adeb62a10009e66a",
+      "bytes": 56165,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/bag_popo.png",
+      "characterId": "popo",
+      "characterName": "포포",
+      "kind": "bag",
+      "itemName": "조개껍데기",
+      "purpose": "가방 물품 표시 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "bag-approved-20261112.png",
+      "sourceCropXYWH": [
+        1135,
+        297,
+        126,
+        104
+      ],
+      "retainedSourceBoundsXYWH": [
+        1141,
+        303,
+        113,
+        95
+      ],
+      "width": 121,
+      "height": 103,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 7754,
+      "retainedBrightPixels": 437,
+      "sha256": "7b338545d8cdd64ce89ee567e9c6810bf4838f31b6d6a967e0118726b878ca16",
+      "bytes": 21837,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/air_lumi.png",
+      "characterId": "lumi",
+      "characterName": "루미",
+      "kind": "air",
+      "itemName": null,
+      "purpose": "공중 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        345,
+        593,
+        330,
+        94
+      ],
+      "retainedSourceBoundsXYWH": [
+        353,
+        597,
+        300,
+        81
+      ],
+      "width": 308,
+      "height": 89,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 11552,
+      "retainedBrightPixels": 833,
+      "sha256": "526eaa0f847331b15dd4c7a2d4a0906700e15e4991aa4f9599c86e3c5d8bd078",
+      "bytes": 38297,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/spikes_lumi.png",
+      "characterId": "lumi",
+      "characterName": "루미",
+      "kind": "spikes",
+      "itemName": null,
+      "purpose": "바닥 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        770,
+        593,
+        300,
+        94
+      ],
+      "retainedSourceBoundsXYWH": [
+        779,
+        606,
+        280,
+        75
+      ],
+      "width": 288,
+      "height": 83,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 10517,
+      "retainedBrightPixels": 998,
+      "sha256": "cf6d9106f8eac80439422c70b5677aeb7159d31bb222ef4fb7aaff96a385f0c7",
+      "bytes": 33786,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/platform_lumi.png",
+      "characterId": "lumi",
+      "characterName": "루미",
+      "kind": "platform",
+      "itemName": null,
+      "purpose": "밝고 평평한 윗면에 착지하는 발판 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        1158,
+        593,
+        355,
+        94
+      ],
+      "retainedSourceBoundsXYWH": [
+        1168,
+        608,
+        337,
+        70
+      ],
+      "width": 345,
+      "height": 78,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 22079,
+      "retainedBrightPixels": 3237,
+      "sha256": "c8845f3e0ff9acb9a4f6cf7e329cfbbff40a7443c6a4b7c629b9dd71d2d197cb",
+      "bytes": 60173,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/bag_lumi.png",
+      "characterId": "lumi",
+      "characterName": "루미",
+      "kind": "bag",
+      "itemName": "솔방울",
+      "purpose": "가방 물품 표시 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "bag-approved-20261112.png",
+      "sourceCropXYWH": [
+        70,
+        574,
+        135,
+        153
+      ],
+      "retainedSourceBoundsXYWH": [
+        90,
+        583,
+        95,
+        119
+      ],
+      "width": 103,
+      "height": 127,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 8095,
+      "retainedBrightPixels": 41,
+      "sha256": "bd0df12a24e0fa8b35532f323392583e0c1a619c33a3ba6ff70d20505cc8f0cd",
+      "bytes": 24201,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/air_nunu.png",
+      "characterId": "nunu",
+      "characterName": "누누",
+      "kind": "air",
+      "itemName": null,
+      "purpose": "공중 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        345,
+        713,
+        330,
+        98
+      ],
+      "retainedSourceBoundsXYWH": [
+        354,
+        714,
+        303,
+        87
+      ],
+      "width": 311,
+      "height": 95,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 12482,
+      "retainedBrightPixels": 1705,
+      "sha256": "26cecaceef71fb6e2f6c3e50ddae623c589de68f17a3c10af41d361f7b6bccc1",
+      "bytes": 41417,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/spikes_nunu.png",
+      "characterId": "nunu",
+      "characterName": "누누",
+      "kind": "spikes",
+      "itemName": null,
+      "purpose": "바닥 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        770,
+        713,
+        300,
+        98
+      ],
+      "retainedSourceBoundsXYWH": [
+        787,
+        726,
+        262,
+        76
+      ],
+      "width": 270,
+      "height": 84,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 10805,
+      "retainedBrightPixels": 1445,
+      "sha256": "5b2a70a42e1a79b3b1b2d5e9e81994762b1a08a9067b71f3860e4ba4e90ec2a0",
+      "bytes": 35066,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/platform_nunu.png",
+      "characterId": "nunu",
+      "characterName": "누누",
+      "kind": "platform",
+      "itemName": null,
+      "purpose": "밝고 평평한 윗면에 착지하는 발판 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        1158,
+        713,
+        355,
+        98
+      ],
+      "retainedSourceBoundsXYWH": [
+        1172,
+        730,
+        332,
+        73
+      ],
+      "width": 340,
+      "height": 81,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 19833,
+      "retainedBrightPixels": 3316,
+      "sha256": "93c5c2aaefbf727affdaaaacf38445c6f49daf4780c1ec3fe3507032fb1e99a4",
+      "bytes": 49216,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/bag_nunu.png",
+      "characterId": "nunu",
+      "characterName": "누누",
+      "kind": "bag",
+      "itemName": "책갈피",
+      "purpose": "가방 물품 표시 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "bag-approved-20261112.png",
+      "sourceCropXYWH": [
+        606,
+        563,
+        131,
+        164
+      ],
+      "retainedSourceBoundsXYWH": [
+        623,
+        570,
+        83,
+        139
+      ],
+      "width": 91,
+      "height": 147,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 7418,
+      "retainedBrightPixels": 829,
+      "sha256": "ea6856b9d0eee6dba2b374a4ccb1acd2b4bcdac978b90646172a1c9fa904f544",
+      "bytes": 21836,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/air_piko.png",
+      "characterId": "piko",
+      "characterName": "피코",
+      "kind": "air",
+      "itemName": null,
+      "purpose": "공중 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        345,
+        846,
+        330,
+        88
+      ],
+      "retainedSourceBoundsXYWH": [
+        355,
+        849,
+        300,
+        78
+      ],
+      "width": 308,
+      "height": 86,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 11594,
+      "retainedBrightPixels": 1151,
+      "sha256": "bc588ee7c0b87658c85d8200b28b3503d672b27df21babc9f6912d70c69203f1",
+      "bytes": 37350,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/spikes_piko.png",
+      "characterId": "piko",
+      "characterName": "피코",
+      "kind": "spikes",
+      "itemName": null,
+      "purpose": "바닥 위험물 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        770,
+        846,
+        300,
+        88
+      ],
+      "retainedSourceBoundsXYWH": [
+        779,
+        850,
+        281,
+        75
+      ],
+      "width": 289,
+      "height": 83,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 10119,
+      "retainedBrightPixels": 1301,
+      "sha256": "c26727fd5cd7976f04382876d5d900b50fa0bb28bd9d21554000d2ca479c2577",
+      "bytes": 31915,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/platform_piko.png",
+      "characterId": "piko",
+      "characterName": "피코",
+      "kind": "platform",
+      "itemName": null,
+      "purpose": "밝고 평평한 윗면에 착지하는 발판 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "obstacles-approved-20261112.png",
+      "sourceCropXYWH": [
+        1158,
+        846,
+        355,
+        88
+      ],
+      "retainedSourceBoundsXYWH": [
+        1170,
+        856,
+        335,
+        64
+      ],
+      "width": 343,
+      "height": 72,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 20257,
+      "retainedBrightPixels": 3380,
+      "sha256": "c2a2b52e8184fa2e3cd5c0513cb6bf33667aad44f862966ab47298dd952a2729",
+      "bytes": 55763,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    },
+    {
+      "file": "extracted/bag_piko.png",
+      "characterId": "piko",
+      "characterName": "피코",
+      "kind": "bag",
+      "itemName": "종이배",
+      "purpose": "가방 물품 표시 디자인",
+      "status": "extracted_for_design_handoff",
+      "integrated": false,
+      "source": "bag-approved-20261112.png",
+      "sourceCropXYWH": [
+        1128,
+        588,
+        137,
+        129
+      ],
+      "retainedSourceBoundsXYWH": [
+        1137,
+        596,
+        122,
+        93
+      ],
+      "width": 130,
+      "height": 101,
+      "transparentPadding": 4,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaquePixels": 6842,
+      "retainedBrightPixels": 1801,
+      "sha256": "f950e861e32abf8629d52e7601677f6e2018415e9cbd18e2d4f18b83d2a25170",
+      "bytes": 19808,
+      "notes": "원본에서 보이는 색/픽셀만 유지. 재그림·리사이즈·색보정 없음. 원본의 밝은 외곽 혼합색은 남을 수 있음."
+    }
+  ],
+  "verification": {
+    "pngDecoded": 24,
+    "sourceHashesMatch": true,
+    "allRetainedRgbMatchesSourceCoordinates": true,
+    "clearPaddingPixels": 4,
+    "visualReview": [
+      "original two sheets",
+      "overview-checker.png",
+      "overview-dark.png"
+    ],
+    "gameOrDeviceChecksPerformed": false
+  }
+}
