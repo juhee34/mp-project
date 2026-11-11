@@ -24,12 +24,23 @@ object TrailPainter {
         for (i in 0 until COUNT) {
             val x = backX - px * 2f - i * gap + shift - gap
             val y = midY + sin(i * 1.7f + phase * 2.4f) * px * 3f - shape.size * px / 2f
-            val fade = 1f - (i + 1).toFloat() / (COUNT + 1)
+            // Nearest shapes are fully opaque; farther ones fade but stay visible on busy backgrounds.
+            val fade = 1f - i.toFloat() / (COUNT + 1)
             drawShape(canvas, shape, x, y, px, (255 * fade).toInt())
         }
     }
 
     private fun drawShape(canvas: Canvas, shape: List<String>, left: Float, top: Float, px: Float, alpha: Int) {
+        // A soft dark outline one pixel wide keeps light shapes readable over detailed scenery.
+        paint.color = OUTLINE
+        paint.alpha = alpha * 3 / 5
+        shape.forEachIndexed { row, line ->
+            line.forEachIndexed { col, c ->
+                if (PALETTE[c] == null) return@forEachIndexed
+                canvas.drawRect(left + (col - 1) * px + px * 0.5f, top + (row - 1) * px + px * 0.5f,
+                    left + (col + 2) * px - px * 0.5f, top + (row + 2) * px - px * 0.5f, paint)
+            }
+        }
         shape.forEachIndexed { row, line ->
             line.forEachIndexed { col, c ->
                 val color = PALETTE[c] ?: return@forEachIndexed
@@ -58,6 +69,7 @@ object TrailPainter {
     }
 
     private const val COUNT = 5
+    private val OUTLINE = Color.rgb(60, 50, 70)
     private val PALETTE = mapOf(
         'y' to Color.rgb(250, 214, 92), 'Y' to Color.rgb(255, 245, 190),
         'p' to Color.rgb(240, 120, 150), 'P' to Color.rgb(255, 200, 215),

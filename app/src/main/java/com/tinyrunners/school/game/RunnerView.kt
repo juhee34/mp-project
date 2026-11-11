@@ -291,7 +291,7 @@ class RunnerView(
             val size = CharacterSprites.SIZE * spriteScale
             spriteBounds.set(left, top, left + size, top + size)
             if (engine.phase != RunnerEngine.Phase.READY) com.tinyrunners.school.shop.TrailPainter.draw(
-                canvas, trail, left + spriteScale * 10f, top + size * 0.55f, spriteScale.toFloat(), engine.distance / 40f)
+                canvas, trail, left + spriteScale * 10f, top + size * 0.55f, spriteScale * 1.5f, engine.distance / 40f)
             canvas.drawBitmap(art[RunnerAnimation.frame(engine, animTime)], null, spriteBounds, spritePaint)
             return
         }
