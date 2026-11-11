@@ -68,6 +68,7 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 정의되지 않은 ID는 선택 화면으로 복귀한다. 원시 JSON과 Activity 사이의 의존을 Repository로 제한한다.
 
 ### 출발 전 대화 (B, 2026-11-10)
+- 2026-11-11 갱신: 대화는 매번 나온다. 그 친구와 첫 달리기만 talks.json의 긴 대화, 이후는 short_lines.json(A의 docs/dialogue/short-lines.json 복사본)의 select+start. 한 번 더 달리기는 retry, 부딪힌 뒤에는 내레이션 + stumble 후 결과 화면. 앱 복사본은 원본과 같아야 한다(검사기).
 - `content/talks.json`: `prologue`(문자열 배열, 한 번 누를 때 한 쪽), `talks`(6명 순서, `{characterId, lines:[{speaker, text}]}`). speaker는 해당 캐릭터 ID, `player`(로그인 닉네임, 없으면 "나"), `narrator`(이름표 없음). 마지막 대사는 그 친구가 한다.
 - 세계 이야기는 계정별 첫 로그인 한 번, 친구 대화는 계정·친구별 첫 달리기 한 번만(TalkProgress, 기기 저장).
 - 대화 배경은 그 친구의 달리기 배경 첫 장면(거리 0)을 멈춘 채 쓴다. 대화가 끝나거나 건너뛰기를 누르면 게임이 시작된다. 다시 달리기·이야기 달리기·도감의 바로 달리기는 대화를 거치지 않는다.

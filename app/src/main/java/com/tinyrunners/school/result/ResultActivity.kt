@@ -48,7 +48,9 @@ class ResultActivity : Activity() {
             page.button(getString(R.string.result_continue_story), primary = true) { finish() }
         }
         page.button(getString(R.string.result_again), primary = storyId == null) {
-            startActivity(GameActivity.intent(this, character.id).putExtra(GameActivity.EXTRA_STORY_ID, storyId))
+            // A short "again!" line from the friend, then the run.
+            startActivity(com.tinyrunners.school.talk.TalkActivity.retry(this, character.id,
+                GameActivity.intent(this, character.id).putExtra(GameActivity.EXTRA_STORY_ID, storyId)))
             finish()
         }
         page.button(getString(R.string.result_shop)) {

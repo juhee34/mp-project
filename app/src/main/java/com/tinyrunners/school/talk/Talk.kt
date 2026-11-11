@@ -63,3 +63,30 @@ class TalkPlayer(private val lines: List<TalkLine>) {
         shown = current?.text?.length ?: 0
     }
 }
+
+/** Why the talk scene is shown: before a run from the selection, before "한 번 더", or right after a crash. */
+enum class TalkMode { START, RETRY, STUMBLE }
+
+/** Which lines a talk scene shows. Pure, so the choice is unit tested. */
+object TalkPlan {
+    /**
+     * START: the long getting-to-know-you talk the first time with a friend, afterwards a greeting and a departure
+     * line. RETRY: one "again!" line. STUMBLE: a short narration of the distance, then the friend's comfort line.
+     * [pick] returns a short line for an event (select/start/retry/stumble) or null if there is none.
+     */
+    fun lines(
+        mode: TalkMode,
+        characterId: String,
+        firstTime: Boolean,
+        fullTalk: List<TalkLine>,
+        narration: String?,
+        pick: (String) -> String?,
+    ): List<TalkLine> {
+        fun friend(event: String) = pick(event)?.let { TalkLine(characterId, it) }
+        return when (mode) {
+            TalkMode.START -> if (firstTime && fullTalk.isNotEmpty()) fullTalk else listOfNotNull(friend("select"), friend("start"))
+            TalkMode.RETRY -> listOfNotNull(friend("retry"))
+            TalkMode.STUMBLE -> listOfNotNull(narration?.let { TalkLine(TalkScript.NARRATOR, it) }, friend("stumble"))
+        }
+    }
+}

@@ -34,19 +34,27 @@ import kotlin.math.roundToInt
 /**
  * RPG-style chat with the chosen friend before the run: the first frame of the friend's running background stands
  * still, the friend stands large in the middle, and a dialogue box at the bottom advances with each tap.
- * When the talk ends (or "건너뛰기" is pressed) the run starts.
+ * It runs before every run (long talk the first time, short lines afterwards), before "한 번 더 달리기", and right
+ * after a crash. When the talk ends (or "건너뛰기" is pressed) the next screen opens.
  */
 class TalkActivity : Activity() {
     private var view: TalkView? = null
-    private var started = false
+    private var done = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val characterId = intent.getStringExtra(GameActivity.EXTRA_CHARACTER_ID).orEmpty()
         val character = CharacterRepository(this).find(characterId)
         if (character == null) { finish(); return }
-        val lines = TalkRepository.load(this)?.talkFor(character.id).orEmpty()
-        if (lines.isEmpty()) { startRun(character.id); return }
+        val mode = TalkMode.entries.getOrNull(intent.getIntExtra(EXTRA_MODE, 0)) ?: TalkMode.START
+        val firstTime = mode == TalkMode.START && TalkProgress(this).shouldShowTalk(character.id)
+        val meters = intent.getIntExtra(EXTRA_METERS, 0)
+        val lines = TalkPlan.lines(
+            mode, character.id, firstTime,
+            fullTalk = TalkRepository.load(this)?.talkFor(character.id).orEmpty(),
+            narration = if (mode == TalkMode.STUMBLE) getString(R.string.talk_stumble_narration, meters) else null,
+        ) { event -> ShortLineRepository.pick(this, character.id, event) }
+        if (lines.isEmpty()) { finishTalk(character.id, firstTime); return }
 
         val player = TalkPlayer(lines)
         savedInstanceState?.let { player.restore(it.getInt(KEY_INDEX)) }
@@ -54,7 +62,9 @@ class TalkActivity : Activity() {
             character.id to character.name,
             TalkScript.PLAYER to (AuthService.currentName(this) ?: getString(R.string.talk_player_default)),
         )
-        val talk = TalkView(this, character.id, player, names) { startRun(character.id) }
+        // After a crash the scene shows the spot where the friend fell, with the friend in their tumble pose.
+        val talk = TalkView(this, character.id, player, names,
+            distance = intent.getFloatExtra(EXTRA_DISTANCE, 0f), fallen = mode == TalkMode.STUMBLE) { finishTalk(character.id, firstTime) }
         view = talk
 
         val skip = TextView(this).apply {
@@ -70,7 +80,7 @@ class TalkActivity : Activity() {
                 setColor(Color.argb(150, 38, 52, 43))
                 cornerRadius = 24 * resources.displayMetrics.density
             }
-            setOnClickListener { startRun(character.id) }
+            setOnClickListener { finishTalk(character.id, firstTime) }
         }
         val margin = (12 * resources.displayMetrics.density).roundToInt()
         setContentView(FrameLayout(this).apply {
@@ -80,12 +90,15 @@ class TalkActivity : Activity() {
         })
     }
 
-    private fun startRun(characterId: String) {
-        if (started) return
-        started = true
-        // Finished or skipped: next time with this friend the run starts right away.
-        TalkProgress(this).markTalkSeen(characterId)
-        startActivity(GameActivity.intent(this, characterId))
+    /** Talk finished or skipped: go on to the run (start/retry) or to the result screen (after a crash). */
+    private fun finishTalk(characterId: String, firstTime: Boolean) {
+        if (done) return
+        done = true
+        // The long first talk is shown once per friend; later runs get short lines instead.
+        if (firstTime) TalkProgress(this).markTalkSeen(characterId)
+        @Suppress("DEPRECATION")
+        val next = intent.getParcelableExtra<Intent>(EXTRA_NEXT) ?: GameActivity.intent(this, characterId)
+        startActivity(next)
         finish()
     }
 
@@ -96,8 +109,23 @@ class TalkActivity : Activity() {
 
     companion object {
         private const val KEY_INDEX = "talkIndex"
+        private const val EXTRA_MODE = "talkMode"
+        private const val EXTRA_NEXT = "talkNext"
+        private const val EXTRA_METERS = "talkMeters"
+        private const val EXTRA_DISTANCE = "talkDistance"
+
+        /** Before a run chosen on the selection screen. */
         fun intent(context: Context, characterId: String) =
             Intent(context, TalkActivity::class.java).putExtra(GameActivity.EXTRA_CHARACTER_ID, characterId)
+
+        /** Before "한 번 더 달리기"; [next] is the run to start afterwards. */
+        fun retry(context: Context, characterId: String, next: Intent) = intent(context, characterId)
+            .putExtra(EXTRA_MODE, TalkMode.RETRY.ordinal).putExtra(EXTRA_NEXT, next)
+
+        /** Right after a crash; [result] is the result screen shown afterwards. */
+        fun stumble(context: Context, characterId: String, meters: Int, distance: Float, result: Intent) = intent(context, characterId)
+            .putExtra(EXTRA_MODE, TalkMode.STUMBLE.ordinal).putExtra(EXTRA_NEXT, result)
+            .putExtra(EXTRA_METERS, meters).putExtra(EXTRA_DISTANCE, distance)
     }
 }
 
@@ -107,6 +135,8 @@ internal class TalkView(
     characterId: String,
     val player: TalkPlayer,
     private val names: Map<String, String>,
+    private val distance: Float = 0f,
+    private val fallen: Boolean = false,
     private val onFinished: () -> Unit,
 ) : View(context) {
     private val scenery = StoryBackground.load(context, characterId)
@@ -151,7 +181,7 @@ internal class TalkView(
         // Same framing as the runner (RunnerView): the background is its first frame, distance 0, and does not move.
         val scale = min(h / WORLD_HEIGHT, w / MIN_WORLD_WIDTH)
         val groundY = h - GROUND_THICKNESS * scale
-        if (scenery != null) scenery.draw(canvas, w, h, groundY, 0f, scale)
+        if (scenery != null) scenery.draw(canvas, w, h, groundY, distance, scale)
         else fallback.draw(canvas, width, height, groundY, h * 0.17f)
 
         // Dialogue box along the bottom.
@@ -161,7 +191,8 @@ internal class TalkView(
 
         // The friend, large and centred, standing just above the box; idle frames alternate slowly.
         sprites?.let {
-            val frame = if ((SystemClock.uptimeMillis() / IDLE_FRAME_MS) % 2 == 0L) SpriteFrame.IDLE_0 else SpriteFrame.IDLE_1
+            val frame = if (fallen) SpriteFrame.FAIL_0
+                else if ((SystemClock.uptimeMillis() / IDLE_FRAME_MS) % 2 == 0L) SpriteFrame.IDLE_0 else SpriteFrame.IDLE_1
             val px = max(1, ((box.top - dpF(24f)) * 0.62f / CharacterSprites.SIZE).roundToInt()).toFloat()
             val size = CharacterSprites.SIZE * px
             val feet = box.top - dpF(6f)

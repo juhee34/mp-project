@@ -27,6 +27,12 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 대화를 매번 + 부딪힌 뒤 위로 대사 (2026-11-11, B)
+- 사용자 요청. TalkActivity에 세 장면(TalkMode): START(친구 선택에서 달리기 — 그 친구와 처음이면 긴 대화 6줄, 이후엔 짧은 대사 select+start 2줄), RETRY(결과 화면 "한 번 더 달리기" — retry 1줄), STUMBLE(부딪힌 직후 — "쿵! 함께 Nm를 달렸어요." + stumble 1줄, 넘어진 자리 배경과 넘어진 자세). 대사 뒤 또는 건너뛰기 → 게임/결과 화면.
+- A의 짧은 대사 144개(docs/dialogue/short-lines.json)를 app/src/main/assets/content/short_lines.json으로 복사해 연결(친구×상황마다 3개를 섞어 한 번씩, 같은 줄 연속 없음 — HANDOFF 규칙 2). 검사기가 두 파일이 같은지와 6명×select/start/retry/stumble 3개씩 확인. 문안을 고치면 docs 원본을 고치고 앱 쪽으로 다시 복사한다. 세계 이야기(프롤로그)는 여전히 처음 한 번만.
+- 아직 안 쓴 상황: clear(완주 — 게임에 끝이 없음), home, story_unread/story_reread.
+- 검증: 빌드·lint 성공, 단위 테스트 92개 실패 0(TalkPlanTest 5개). 에뮬레이터: 출발 짧은 대사, 부딪힌 뒤 내레이션·라일 위로 대사(넘어진 자세), 결과 화면, 한 번 더 달리기 대사 → 게임까지 확인, crash 0건.
+
 ## 위 메뉴에 코인 표시 (2026-11-11, B)
 - activity_main 위쪽 줄 왼쪽에 노란 코인 배지("코인 N"). MainActivity.onResume마다 ShopStore로 다시 읽어 달리기·구매 뒤에도 맞는 값. 누르면 꾸미기 상점. TalkBack 설명 "가진 코인 N개".
 - 검증: 빌드·lint 성공, 단위 테스트 87개 실패 0. 에뮬레이터: 친구 선택 화면 왼쪽 위 "코인 8" 표시, 누르면 상점 열림, crash 0건.

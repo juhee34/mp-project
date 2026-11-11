@@ -34,9 +34,11 @@ class GameActivity : Activity() {
         view.onRunOver = {
             view.postDelayed({
                 if (!isFinishing) {
-                    startActivity(ResultActivity.intent(this,
+                    val result = ResultActivity.intent(this,
                         RunResult(runId, character.id, engine.meters, engine.score, engine.cleared))
-                        .putExtra(EXTRA_STORY_ID, intent.getStringExtra(EXTRA_STORY_ID)))
+                        .putExtra(EXTRA_STORY_ID, intent.getStringExtra(EXTRA_STORY_ID))
+                    // The friend says a few words where they fell, then the result screen opens.
+                    startActivity(com.tinyrunners.school.talk.TalkActivity.stumble(this, character.id, engine.meters, engine.distance, result))
                     finish()
                 }
             }, RESULT_DELAY_MS)

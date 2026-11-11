@@ -72,6 +72,14 @@ for(const t of talks.talks){assert(t.lines.length>0,`${t.characterId}: empty tal
   t.lines.forEach((l,i)=>{assert([t.characterId,"player","narrator"].includes(l.speaker),`${t.characterId} talk line ${i}: speaker`);assert(l.text&&l.text.trim());});
   assert.equal(t.lines.at(-1).speaker,t.characterId,`${t.characterId}: the friend should speak last`);}
 
+// Short dialogue pack (A, docs/dialogue): the app copy must match the document copy, 6 friends x 8 events x 3.
+const norm=t=>t.split(String.fromCharCode(13)).join("");
+const packDoc=norm(fs.readFileSync(path.join(root,"docs/dialogue/short-lines.json"),"utf8"));
+const packApp=norm(fs.readFileSync(path.join(root,"app/src/main/assets/content/short_lines.json"),"utf8"));
+assert.equal(packApp,packDoc,"app/src/main/assets/content/short_lines.json must be a copy of docs/dialogue/short-lines.json");
+const pack=JSON.parse(packApp);
+for(const id of expected)for(const ev of ["select","start","retry","stumble"])assert.equal(pack.lines.filter(l=>l.characterId===id&&l.event===ev).length,3,`short lines: ${id}/${ev} needs 3`);
+
 // Sprites (docs/SPRITE_SPEC.md): 48x48 PNG with alpha, sprite_<id>_<motion>_<n>.png in res/drawable-nodpi.
 const SPRITE_DIR='app/src/main/res/drawable-nodpi';
 const MOTIONS={idle:2,run:4,jump:2,fail:1,land:1,greet:2,home:2},REQUIRED=['idle','run','jump','fail'];
@@ -114,6 +122,7 @@ for(const id of expected)for(const prop of OBSTACLE_PROPS[id]){
 console.log('PASS: 6 characters; story/asset references; asset readiness honest; 205 research records; 20 role prompts.');
 console.log(`Sprites (required frames): ${spriteSummary.join(', ')}`);
 console.log(`Talks: prologue ${talks.prologue.length} pages, ${talks.talks.length} friends`);
+console.log(`Short lines in app: ${pack.lines.length}`);
 console.log(`Obstacle props in app: ${obstacleCount}/18`);
 console.log(`Village stories with dialogue: ${scripted}/${village.length} (others play from their outline)`);
 
