@@ -25,9 +25,10 @@ import kotlin.math.roundToInt
 
 /**
  * First screen after login. Same look as the opening (title, sky, hills, clouds and the six friends on the ground)
- * with four buttons stacked in the middle: white with green text.
+ * with five buttons stacked in the middle: white with green text. The user calls this screen the menu.
  * 스토리 진행하기 → world story (black screen) → talks with the village residents.
  * 게임하기 → friend selection. 꾸미기 상점 → the shop (trails and music). 튜토리얼 → the game guide on a practice run.
+ * 설정 → settings.
  */
 class HubActivity : Activity() {
     /** The login popup closes right where a button appears; a tap carried over from it must not open anything. */
@@ -39,7 +40,7 @@ class HubActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
             // Narrow enough to fit in the gap between 포포 and 루미 on the ground.
-            translationY = dp(12).toFloat()
+            translationY = dp(10).toFloat()
         }
         buttons.addView(button(R.string.hub_story) { startActivity(PrologueActivity.forStory(this)) }, slot(first = true))
         buttons.addView(button(R.string.hub_game) { startActivity(MainActivity.selectionIntent(this)) }, slot())
@@ -48,9 +49,12 @@ class HubActivity : Activity() {
             // A practice run with 라일 that always starts with the game guide.
             startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
         }, slot())
+        buttons.addView(button(R.string.hub_settings) {
+            startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java))
+        }, slot())
 
         setContentView(FrameLayout(this).apply {
-            addView(OpeningBackground(this@HubActivity, titleY = 0.15f), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(OpeningBackground(this@HubActivity, titleY = 0.13f), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(buttons, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
         })
         hideSystemBars()
@@ -59,11 +63,11 @@ class HubActivity : Activity() {
     /** White pill with a green border and bold green text (all four buttons the same). */
     private fun button(label: Int, click: () -> Unit) = Button(this).apply {
         setText(label)
-        textSize = 18f
+        textSize = 17f
         isAllCaps = false
         setTextColor(LEAF)
         typeface = Typeface.DEFAULT_BOLD
-        minHeight = dp(44); minimumHeight = dp(44)
+        minHeight = dp(40); minimumHeight = dp(40)
         setPadding(dp(16), 0, dp(16), 0)
         background = GradientDrawable().apply {
             setColor(Color.WHITE)
@@ -75,7 +79,7 @@ class HubActivity : Activity() {
     }
 
     private fun slot(first: Boolean = false) = LinearLayout.LayoutParams(dp(200), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-        if (!first) topMargin = dp(8)
+        if (!first) topMargin = dp(7)
     }
 
     private fun hideSystemBars() {

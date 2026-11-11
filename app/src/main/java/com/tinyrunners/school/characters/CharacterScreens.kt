@@ -23,7 +23,6 @@ import android.widget.TextView
 import com.tinyrunners.school.R
 import com.tinyrunners.school.data.CharacterDefinition
 import com.tinyrunners.school.data.CharacterRepository
-import com.tinyrunners.school.game.GameActivity
 import com.tinyrunners.school.stories.StoryActivity
 import kotlin.math.roundToInt
 
@@ -147,10 +146,7 @@ internal class CharacterScreens(
         actions.addView(rowButton(R.string.characters_story_book) {
             context.startActivity(StoryActivity.intent(context, current().id))
         }, LinearLayout.LayoutParams(0, WRAP, 1f).apply { marginStart = dp(8) })
-        // Demo button: always opens the game guide first, with the friend shown on the stage.
-        actions.addView(rowButton(R.string.characters_tutorial) {
-            context.startActivity(GameActivity.intent(context, current().id).putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
-        }, LinearLayout.LayoutParams(0, WRAP, 1f).apply { marginStart = dp(8) })
+        // The tutorial lives on the menu (hub), so the selection only has run / profile / story book.
         body.addView(actions, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) })
 
         var frame = 0

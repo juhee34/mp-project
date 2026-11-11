@@ -27,6 +27,13 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 메뉴에 설정, 친구 선택에서 튜토리얼 뺌, 세계 이야기 더 어둡게 (2026-11-11, B)
+- 용어: 사용자는 로그인 뒤 버튼 화면(HubActivity)을 "메뉴"라고 부른다.
+- 메뉴 버튼 5개: 스토리 진행하기 / 게임하기 / 꾸미기 상점 / 튜토리얼 / 설정. 5개가 들어가도록 제목을 조금 더 올리고(titleY 0.13) 버튼 높이 40dp·간격 7dp.
+- 친구 선택 화면 아래 버튼에서 튜토리얼하기를 뺐다(메뉴에 있으므로). 남은 버튼: 이 친구와 달리기 / 자세히 보기 / 이야기 도감.
+- 세계 이야기 검은 막 62% → 80%(argb 204).
+- 검증: 빌드·lint 성공, 단위 테스트 94개 실패 0. 에뮬레이터: 메뉴 5개 버튼, 설정 열림, 더 어두운 세계 이야기, 튜토리얼 없는 친구 선택, crash 0건.
+
 ## 상점 음악 6곡 넣음 (2026-11-11, B)
 - 사용자가 준 mp3 6곡을 res/raw에 추가하고 판매 시작(각 80코인). 상점 이름은 곡 제목(한글 + 원제): music_mint 라일의 첫 지평선(Lail's First Horizon), music_cheese 햇살 속 작은 발(Tiny Paws in the Sun), music_popo 웅덩이를 폴짝(Jumping Over Puddles), music_lumi 클로버 사이를 달려(Running Through Clover), music_nunu 누누의 살금살금(Nunu's Tiptoe), music_piko 물살 속의 장화(Boots in the Current). 라일·누누 곡은 제목대로, 나머지 4곡의 친구 연결(상점 미리 보기 캐릭터)은 B의 추정이다.
 - 검증: 빌드·lint 성공, 단위 테스트 94개 실패 0. 에뮬레이터: 음악 탭 7장(기본 무료 + 6곡 80코인 "사기"), 기기 저장값만 잠깐 music_lumi로 바꿔 달리기에서 mp3 재생 확인(mp3 디코더 사용) 후 원래대로 되돌림, crash 0건. 실제 구매(80코인)는 계정 코인 38이라 해 보지 않았다. APK 약 42MB(음원 약 19MB).
