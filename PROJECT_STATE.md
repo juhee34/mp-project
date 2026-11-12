@@ -705,3 +705,9 @@
 - 자세한 파일별 처리·검증·제외 사유·후속 담당: docs/PENDING_DELIVERABLES_20261111.md, docs/PUBLICATION_FILE_MAP_20261111.json, docs/audio/HANDOFF.md. Git 게시와 main 통합, 사이트 배포를 구분하며 게시 실적은 해당 문서에 후속 기록한다.
 - 게시 결과: b412a81/2999b20/492c1c0 push 성공, PR #4 생성(https://github.com/juhee34/mp-project/pull/4), 후보 ZIP 2개 prerelease a-content-review-20261111 업로드 종료 0. main 병합은 하지 않았다. 추가 원격 읽기 검증은 승인 거절로 미실시; 사이트 재배포는 계속 미완료다.
 - 종료 점검에서 별도 작업의 STORY_EXPANSION_01/02.md 및 short-lines-expansion-01/02.json과 원래 상태 기록 추가를 발견해 보존/제외했다. 시작 시 파일 315개 중 314개 해시 동일, 변경된 원래 PROJECT_STATE를 되돌리지 않았다. 원래 staged 없음. 확장 자료까지 전부 게시됐다고 보고하지 않는다.
+
+
+## 상점 디자인 전달 자료 (2026-11-12, A)
+- docs/art/shop/에 승인 상점 원본 PNG, 디자인 기준, 개발팀용 프롬프트, 원본 크기·해시를 정리했다. 승인 화면은 꾸미기 탭 1장이고 나머지 탭은 공통 스타일 적용 지침이다.
+- 디자인 자료만 변경. 앱 코드 적용·빌드·게임 실행·기능 검증은 하지 않았다. 개발 담당자가 후속 적용과 검증을 맡는다.
+- 자료 확인: PNG 열람 및 파일 크기·해시 기록, 문서 경로와 Git 변경 범위 확인. 투명 자산 분리본이나 구현 완료로 표시하지 않는다.
