@@ -185,8 +185,8 @@ class RunnerEngineTest {
         // One jump rises above the highest plank, and the runner fits under a plank's overhang.
         assertTrue(c.apexHeight > c.plankMaxTop + 10f)
         assertTrue(c.plankMinTop - c.plankThickness > c.playerHitHeight)
-        // The floating bar is now a thin bar.
-        assertTrue(c.floatThickness <= 20f)
+        // The floating bar stays a bar (wider and a little thicker since 2026-11-12, so it reads clearly).
+        assertTrue(c.floatThickness <= 30f)
     }
 
     @Test fun runnerStandsOnThePlankToCrossSpikes() {

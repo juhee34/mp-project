@@ -49,9 +49,9 @@ data class RunnerConfig(
      * Floating thorny bar at a random height: running under it is always safe; jumping into it is not.
      * Thin (thorns above and below are part of the hit box) so it reads as a bar, not a block to land on.
      */
-    val floatMinWidth: Float = 60f,
-    val floatMaxWidth: Float = 100f,
-    val floatThickness: Float = 18f,
+    val floatMinWidth: Float = 90f,
+    val floatMaxWidth: Float = 140f,
+    val floatThickness: Float = 26f,
     val floatMinBottom: Float = 80f,
     val floatMaxBottom: Float = 120f,
     /** Only boxes for the first seconds; afterwards each spawn picks a type at random. */

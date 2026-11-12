@@ -80,4 +80,5 @@
     <string name="shop_short">%1$d코인 부족</string>
     <string name="shop_in_bag">가방 %1$d개</string>
     <string name="shop_item_for">%1$s에게 필요한 물품</string>
+    <string name="shop_next_page">다음 상품 보기</string>
 </resources>

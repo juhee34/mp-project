@@ -50,6 +50,9 @@ class ShopActivity : Activity() {
     private lateinit var retry: Button
     private lateinit var row: LinearLayout
     private lateinit var scroller: HorizontalScrollView
+    /** Page dots and the ▶ button under the cards (only when a shelf has more cards than fit). */
+    private lateinit var pager: LinearLayout
+    private var pages = 1
     private var wallet: Wallet? = null
     private var loadFailed = false
     /** The card whose purchase or wear request is being saved; its button shows "처리 중" and nothing else reacts. */
@@ -74,7 +77,7 @@ class ShopActivity : Activity() {
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             // Inside the wooden frame, with room at the bottom for the plants.
-            setPadding(dp(26), dp(12), dp(26), dp(24))
+            setPadding(dp(26), dp(10), dp(26), dp(12))
         }
 
         // Top: 처음으로 | 상점 | short intro ........ coins  bag
@@ -94,9 +97,11 @@ class ShopActivity : Activity() {
         })
         top.addView(divider())
         top.addView(TextView(this).apply {
-            setText(R.string.shop_intro); textSize = 14f; setTextColor(INK_SOFT); maxLines = 1
+            setText(R.string.shop_intro); textSize = 15f; setTextColor(INK_SOFT); maxLines = 1
             ellipsize = android.text.TextUtils.TruncateAt.END
-        }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { weight = 0f; width = LinearLayout.LayoutParams.WRAP_CONTENT })
+        top.addView(LavenderSprig(this), LinearLayout.LayoutParams(dp(26), dp(30)).apply { marginStart = dp(10) })
+        top.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
         coins = TextView(this).apply {
             setText(R.string.shop_loading)
             textSize = 17f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD)
@@ -130,11 +135,14 @@ class ShopActivity : Activity() {
         tabRow.addView(message, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         retry = outlined(getString(R.string.shop_retry)) { load() }.apply { visibility = View.GONE }
         tabRow.addView(retry, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(38)).apply { marginStart = dp(8) })
-        content.addView(tabRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
+        content.addView(tabRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
 
         row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(2), 0, dp(2)) }
         scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(row) }
-        content.addView(scroller, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(8) })
+        content.addView(scroller, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(6) })
+        pager = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER }
+        content.addView(pager, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(30)).apply { topMargin = dp(3) })
+        scroller.setOnScrollChangeListener { _, _, _, _, _ -> markPage() }
         // Cards are sized from the row's width (four across), so lay them out again once that width is known.
         scroller.addOnLayoutChangeListener { _, l, _, r, _, ol, _, or, _ -> if (r - l != or - ol) scroller.post { render() } }
 
@@ -186,7 +194,7 @@ class ShopActivity : Activity() {
         tabs.removeAllViews()
         listOf(Shelf.TRAIL to R.string.shop_tab_trails, Shelf.MUSIC to R.string.shop_tab_music,
             Shelf.ITEMS to R.string.shop_tab_items, Shelf.COINS to R.string.shop_tab_coins).forEachIndexed { i, (s, label) ->
-            tabs.addView(tab(label, s), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(40)).apply { if (i > 0) marginStart = dp(10) })
+            tabs.addView(tab(label, s), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(40)).apply { if (i > 0) marginStart = dp(14) })
         }
         row.removeAllViews()
         // Four cards across on a wide screen; on a narrow one keep a readable minimum width and scroll sideways.
@@ -200,6 +208,48 @@ class ShopActivity : Activity() {
             Shelf.MUSIC -> add(ShopCatalog.of(ItemKind.MUSIC).map { card(it, w) })
             Shelf.ITEMS -> add(com.tinyrunners.school.quest.QuestItems.all.map { itemCard(it, w) })
             Shelf.COINS -> add(ShopRules.COIN_PACKS.map { coinCard(it) })
+        }
+        // Pages of four: dots show where you are, ▶ moves on (and back to the start after the last page).
+        val perPage = if (available > 0) maxOf(1, (available + gap) / (cardWidth + gap)) else 4
+        pages = (row.childCount + perPage - 1) / perPage
+        pager.removeAllViews()
+        if (pages > 1) {
+            repeat(pages) { i ->
+                pager.addView(View(this).apply { importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO },
+                    LinearLayout.LayoutParams(dp(12), dp(12)).apply { if (i > 0) marginStart = dp(12) })
+            }
+            pager.addView(Button(this).apply {
+                text = "▶"; textSize = 13f; setTextColor(GREEN); stateListAnimator = null; setPadding(0, 0, 0, 0)
+                minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
+                contentDescription = getString(R.string.shop_next_page)
+                background = RippleDrawable(ColorStateList.valueOf(OWNED), GradientDrawable().apply {
+                    setColor(CARD); cornerRadius = dp(8).toFloat(); setStroke(dp(2), GREEN)
+                }, null)
+                setOnClickListener {
+                    val page = currentPage()
+                    scroller.smoothScrollTo(if (page + 1 >= pages) 0 else (page + 1) * pageWidth(), 0)
+                }
+            }, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginStart = dp(22) })
+        }
+        markPage()
+    }
+
+    private fun pageWidth() = scroller.width + dp(14)
+
+    private fun currentPage(): Int {
+        val max = (row.width - scroller.width).coerceAtLeast(0)
+        if (pages <= 1) return 0
+        // The last page may be partly filled, so being scrolled to the end counts as the last page.
+        return if (scroller.scrollX >= max - dp(4)) pages - 1 else (scroller.scrollX + pageWidth() / 2) / pageWidth()
+    }
+
+    private fun markPage() {
+        val page = currentPage()
+        for (i in 0 until minOf(pages, pager.childCount)) {
+            pager.getChildAt(i).background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(if (i == page) GREEN else CARD); setStroke(dp(2), if (i == page) GREEN else HONEY_LIGHT)
+            }
         }
     }
 
@@ -235,7 +285,7 @@ class ShopActivity : Activity() {
     /** The shared card frame: cream card, honey border; the decoration or song in use gets a green border. */
     private fun shelfCard(inUse: Boolean = false) = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL
-        setPadding(dp(10), dp(10), dp(10), dp(10))
+        setPadding(dp(10), dp(8), dp(10), dp(8))
         background = GradientDrawable().apply {
             setColor(CARD); cornerRadius = dp(16).toFloat()
             setStroke(dp(if (inUse) 3 else 2), if (inUse) GREEN else HONEY_LIGHT)
@@ -245,9 +295,9 @@ class ShopActivity : Activity() {
     /** Name with an optional small chip (보유 / 가방 N개) at its right. */
     private fun nameRow(name: String, chip: String?) = LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(4), dp(6), 0, 0)
+        setPadding(dp(4), dp(4), 0, 0)
         addView(TextView(context).apply {
-            text = name; textSize = 18f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD); maxLines = 1
+            text = name; textSize = 17f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD); maxLines = 1
             ellipsize = android.text.TextUtils.TruncateAt.END
         }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         if (chip != null) addView(TextView(context).apply {
@@ -263,10 +313,10 @@ class ShopActivity : Activity() {
     }
 
     private fun priceText(text: String) = TextView(this).apply {
-        this.text = text; textSize = 16f; setTextColor(PRICE); setTypeface(typeface, Typeface.BOLD); setPadding(dp(4), dp(2), 0, 0)
+        this.text = text; textSize = 16f; setTextColor(PRICE); setTypeface(typeface, Typeface.BOLD); setPadding(dp(4), 0, 0, 0)
     }
 
-    private fun actionParams() = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(42)).apply { topMargin = dp(4) }
+    private fun actionParams() = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(36)).apply { topMargin = dp(4) }
 
     /** Button states from the design: filled green (사기), outlined (쓰기), light green (쓰는 중), beige (부족·대기). */
     private enum class Look { BUY, USE, IN_USE, WAIT }
@@ -465,7 +515,7 @@ class ShopActivity : Activity() {
         setText(label)
         textSize = 16f; isAllCaps = false; stateListAnimator = null; setTypeface(typeface, Typeface.BOLD)
         setTextColor(if (on) Color.WHITE else GREEN)
-        minWidth = dp(104); minimumWidth = dp(104); minHeight = dp(40); minimumHeight = dp(40)
+        minWidth = dp(128); minimumWidth = dp(128); minHeight = dp(40); minimumHeight = dp(40)
         setPadding(dp(18), 0, dp(18), 0)
         background = RippleDrawable(ColorStateList.valueOf(OWNED), GradientDrawable().apply {
             setColor(if (on) GREEN else CARD); cornerRadius = dp(20).toFloat(); setStroke(dp(2), if (on) GREEN else HONEY_LIGHT)
@@ -531,7 +581,7 @@ class ShopActivity : Activity() {
  */
 @SuppressLint("ViewConstructor")
 private open class ScenePicture(context: Context, sceneFriend: String?) : View(context) {
-    private val scene: Pair<Bitmap, Float>? = sceneFriend?.let { BackgroundThumbs.of(context, it) }
+    private val scene: Pair<Bitmap, Float>? = sceneFriend?.let { RoadThumbs.of(context, it) ?: BackgroundThumbs.of(context, it) }
     protected val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false }
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val src = Rect()
@@ -555,13 +605,59 @@ private open class ScenePicture(context: Context, sceneFriend: String?) : View(c
         }
         val (bitmap, floor) = art
         // Fill the height; keep the floor a little above the bottom edge so the friend stands on it.
-        val scale = h / (bitmap.height * 0.5f)
+        val scale = h / (bitmap.height * 0.62f)
         val srcW = (w / scale).coerceAtMost(bitmap.width.toFloat())
         val srcTop = (bitmap.height * floor - (h * 0.86f) / scale).coerceIn(0f, bitmap.height - h / scale)
         src.set(0, srcTop.toInt(), srcW.toInt(), (srcTop + h / scale).toInt().coerceAtMost(bitmap.height))
         dst.set(0f, 0f, w, h)
         canvas.drawBitmap(bitmap, src, dst, pixel)
         floorY = (bitmap.height * floor - srcTop) * scale
+    }
+}
+
+/** The start of each friend's running loop (the road outside home), for the shop's pictures. */
+internal object RoadThumbs {
+    private val cache = mutableMapOf<String, Pair<Bitmap, Float>?>()
+
+    fun of(context: Context, characterId: String): Pair<Bitmap, Float>? = cache.getOrPut(characterId) {
+        try {
+            val manifest = context.assets.open("backgrounds/manifest.json").bufferedReader().use { org.json.JSONObject(it.readText()) }
+            val entries = manifest.getJSONArray("characters")
+            val entry = (0 until entries.length()).map { entries.getJSONObject(it) }.firstOrNull { it.getString("id") == characterId }
+                ?: return@getOrPut null
+            val loop = entry.optString("loopSource").ifEmpty { return@getOrPut null }
+            val r = entry.getJSONArray("rect")
+            val height = r.getInt(3)
+            val bitmap = context.assets.open("backgrounds/" + loop).use { stream ->
+                @Suppress("DEPRECATION")
+                val decoder = if (Build.VERSION.SDK_INT >= 31) android.graphics.BitmapRegionDecoder.newInstance(stream)
+                    else android.graphics.BitmapRegionDecoder.newInstance(stream, false)
+                val width = minOf(decoder?.width ?: 0, height * 2)
+                decoder?.decodeRegion(Rect(0, 0, width, minOf(height, decoder.height)), null).also { decoder?.recycle() }
+            } ?: return@getOrPut null
+            bitmap to entry.getInt("floorY") / height.toFloat()
+        } catch (e: Exception) {
+            android.util.Log.w("RoadThumbs", "No road picture for $characterId", e)
+            null
+        }
+    }
+}
+
+/** A sprig of lavender after the shop's short introduction. */
+private class LavenderSprig(context: Context) : View(context) {
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    override fun onDraw(canvas: Canvas) {
+        val w = width.toFloat(); val h = height.toFloat(); val d = resources.displayMetrics.density
+        paint.color = Color.rgb(104, 150, 84); paint.strokeWidth = 1.5f * d
+        val tips = listOf(w * 0.3f to h * 0.12f, w * 0.62f to h * 0.05f, w * 0.85f to h * 0.3f)
+        for ((x, y) in tips) canvas.drawLine(w * 0.45f, h, x, y + 8 * d, paint)
+        for ((x, y) in tips) {
+            for (k in 0..3) {
+                paint.color = if (k % 2 == 0) ShopActivity.LAVENDER else Color.rgb(150, 116, 186)
+                canvas.drawCircle(x + (if (k % 2 == 0) -1.2f else 1.2f) * d, y + k * 2.8f * d, 2f * d, paint)
+            }
+            paint.color = Color.rgb(104, 150, 84)
+        }
     }
 }
 
@@ -611,8 +707,8 @@ private class ShopPreview(context: Context, friendId: String, private val style:
 private class ItemPreview(context: Context, private val item: com.tinyrunners.school.quest.QuestItem) : ScenePicture(context, item.friendId) {
     override fun onDraw(canvas: Canvas) {
         drawScene(canvas)
-        val size = minOf(height * 0.6f, width * 0.5f)
-        com.tinyrunners.school.quest.ItemArt.draw(canvas, item, (width - size) / 2f, floorY - size, size, withGlow = true)
+        val size = minOf(height * 0.72f, width * 0.5f)
+        com.tinyrunners.school.quest.ItemArt.draw(canvas, item, (width - size) / 2f, floorY - size, size, withGlow = false)
     }
 }
 
@@ -648,8 +744,8 @@ private class ShopBackground(context: Context) : View(context) {
         canvas.drawRoundRect(inset + 3.5f * d, inset + 3.5f * d, w - inset - 3.5f * d, h - inset - 3.5f * d, r - 3 * d, r - 3 * d, paint)
         paint.style = Paint.Style.FILL
         // Corner plants.
-        fern(canvas, 46 * d, h - 12 * d, d)
-        flowers(canvas, w - 70 * d, h - 12 * d, d)
+        fern(canvas, 56 * d, h - 12 * d, d * 1.3f)
+        flowers(canvas, w - 80 * d, h - 12 * d, d * 1.25f)
     }
 
     /** A terracotta pot with a fern of arching fronds. [cx] is the pot's centre, [base] its bottom. */

@@ -99,7 +99,7 @@ object ShopRules {
         (earned(totalMeters) + state.found + state.bought - state.spent).coerceAtLeast(0)
 
     /** A friend's item (quest/Quest.kt) costs this many coins in the shop. */
-    const val ITEM_PRICE = 10
+    const val ITEM_PRICE = 25
 
     /** Buys one of a friend's items: the coins are spent here, the item goes to the bag. Null if not enough coins. */
     fun buyItem(state: ShopState, totalMeters: Long): ShopState? =
