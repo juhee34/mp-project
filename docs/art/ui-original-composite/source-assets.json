@@ -1,0 +1,54 @@
+{
+  "status": "design-review-only",
+  "originalAssetsUnmodified": true,
+  "assets": [
+    {
+      "path": "app/src/main/res/drawable-nodpi/sprite_mint_idle_0.png",
+      "sha256": "40935f5e6cf0e8d39728111d95d0c077d2397d045b4f1eb19eb7451a7ff5a16d"
+    },
+    {
+      "path": "app/src/main/res/drawable-nodpi/sprite_cheese_idle_0.png",
+      "sha256": "d3fae332875884ceb1d80b52fbbe6cdb2dd59262fb77eabaaa47a19be2c214c6"
+    },
+    {
+      "path": "app/src/main/res/drawable-nodpi/sprite_popo_idle_0.png",
+      "sha256": "907834c13110b15540ce2c5d32adb9fc69403ffca45be9985fb79677fe150330"
+    },
+    {
+      "path": "app/src/main/res/drawable-nodpi/sprite_lumi_idle_0.png",
+      "sha256": "0053337c8f118a58e9a9108e7936b37031e31a948def1ae99af2420a1399ff34"
+    },
+    {
+      "path": "app/src/main/res/drawable-nodpi/sprite_nunu_idle_0.png",
+      "sha256": "61f3b3f3cc5be45f48bb1ad889c6b5003071f6344769ee83cac47c1502136c5a"
+    },
+    {
+      "path": "app/src/main/res/drawable-nodpi/sprite_piko_idle_0.png",
+      "sha256": "d8a61a59ae8795cae031ab2cdb6db526730b2bf94755fe80c35dc58f5eb526a2"
+    },
+    {
+      "path": "docs/story-updated-deliverables/website/assets/mint-home.png",
+      "sha256": "6dabe4325325dfa1a9a6b3e4e56147c8cde30ad7c626baa848bd17a2a4332334"
+    },
+    {
+      "path": "docs/story-updated-deliverables/website/assets/cheese-home.png",
+      "sha256": "a8e106f6d65eab07a27cdda31e05ee2e97c6c7a4ed3ab95186d4a771b8924921"
+    },
+    {
+      "path": "docs/story-updated-deliverables/website/assets/popo-home.png",
+      "sha256": "e3feca9a0278123a6fe0ea337908f6c59ff88dbe4d2f094ea5dddb12d26774a8"
+    },
+    {
+      "path": "docs/story-updated-deliverables/website/assets/lumi-home.png",
+      "sha256": "2349655b6ef2d744066e5fd731c09001f18bb5ef79f58e039dc41aeee8936dff"
+    },
+    {
+      "path": "docs/story-updated-deliverables/website/assets/nunu-home.png",
+      "sha256": "15d6c8a90c7e77f87a39919ff9b6104c2e6c0f6819d02a37ed826aa239c758b7"
+    },
+    {
+      "path": "docs/story-updated-deliverables/website/assets/piko-home.png",
+      "sha256": "b7594e4303f4dfacfe8b0e9da70be98bb68fb5f8ae8ccf06035d10f3b3b2d71a"
+    }
+  ]
+}

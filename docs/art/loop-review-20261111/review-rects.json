@@ -1,0 +1,122 @@
+﻿[
+    {
+        "normalizedSourceHeight":  301,
+        "sourceRect":  [
+                           0,
+                           4,
+                           2169,
+                           319
+                       ],
+        "id":  "mint",
+        "pair":  "mint-cheese",
+        "connectorRect":  [
+                              0,
+                              4,
+                              2048,
+                              299
+                          ],
+        "loopReady":  false,
+        "comparisonScale":  0.94421392346703548,
+        "cropStatus":  "review_only"
+    },
+    {
+        "normalizedSourceHeight":  364,
+        "sourceRect":  [
+                           0,
+                           336,
+                           2169,
+                           385
+                       ],
+        "id":  "cheese",
+        "pair":  "mint-cheese",
+        "connectorRect":  [
+                              0,
+                              315,
+                              2048,
+                              364
+                          ],
+        "loopReady":  false,
+        "comparisonScale":  0.94421392346703548,
+        "cropStatus":  "review_only"
+    },
+    {
+        "normalizedSourceHeight":  332,
+        "sourceRect":  [
+                           4,
+                           4,
+                           2161,
+                           352
+                       ],
+        "id":  "popo",
+        "pair":  "popo-lumi",
+        "connectorRect":  [
+                              4,
+                              4,
+                              2040,
+                              329
+                          ],
+        "loopReady":  false,
+        "comparisonScale":  0.944007403979639,
+        "cropStatus":  "review_only"
+    },
+    {
+        "normalizedSourceHeight":  333,
+        "sourceRect":  [
+                           4,
+                           368,
+                           2161,
+                           353
+                       ],
+        "id":  "lumi",
+        "pair":  "popo-lumi",
+        "connectorRect":  [
+                              4,
+                              345,
+                              2040,
+                              334
+                          ],
+        "loopReady":  false,
+        "comparisonScale":  0.944007403979639,
+        "cropStatus":  "review_only"
+    },
+    {
+        "normalizedSourceHeight":  332,
+        "sourceRect":  [
+                           4,
+                           4,
+                           2161,
+                           352
+                       ],
+        "id":  "nunu",
+        "pair":  "nunu-piko",
+        "connectorRect":  [
+                              4,
+                              4,
+                              2040,
+                              330
+                          ],
+        "loopReady":  false,
+        "comparisonScale":  0.944007403979639,
+        "cropStatus":  "review_only"
+    },
+    {
+        "normalizedSourceHeight":  333,
+        "sourceRect":  [
+                           4,
+                           368,
+                           2161,
+                           353
+                       ],
+        "id":  "piko",
+        "pair":  "nunu-piko",
+        "connectorRect":  [
+                              4,
+                              346,
+                              2040,
+                              334
+                          ],
+        "loopReady":  false,
+        "comparisonScale":  0.944007403979639,
+        "cropStatus":  "review_only"
+    }
+]
