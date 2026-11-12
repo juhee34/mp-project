@@ -1,0 +1,48 @@
+{
+  "status": "technical_drafts_not_listening_approved",
+  "sourceFile": "Puddle_Jumpers.mp3",
+  "sourceSha256": "73afda21507f15bcd1da33bb6f48b3ec60be1ac9be2a484645b41a44e8836751",
+  "sourcePcmDurationSeconds": 37.98204081632653,
+  "sourcePcmSha256": "845e9f69b59678e91b8f2cdf3f9281df498641ded63abcbfd7259c096645f975",
+  "trimmedBoundsSeconds": [
+    1.408684807256236,
+    35.94324263038549
+  ],
+  "loopSourceBoundsSeconds": [
+    6.1,
+    34.9
+  ],
+  "crossfadeSeconds": 0.12,
+  "loopMethod": "Raised-cosine tail/head overlap, rotated to continuous sample boundary",
+  "samplePeakCeilingDbfs": -1.5,
+  "listeningPerformed": false,
+  "beatAlignmentVerified": false,
+  "harmonyVerified": false,
+  "warning": "Sample peaks are not true peaks; original saturation cannot be restored by attenuation.",
+  "outputs": [
+    {
+      "file": "Puddle_Jumpers_trimmed_draft.wav",
+      "durationSeconds": 34.534557823129255,
+      "samplePeakDbfs": -1.5002633770788845,
+      "rmsDbfs": -15.35786922270362,
+      "gainDb": -1.4999999999999996,
+      "fullScaleSamples": 0,
+      "boundaryStepDbfs": -240.0,
+      "first250msRmsDbfs": -48.00291073952713,
+      "last250msRmsDbfs": -67.79150439834228,
+      "sha256": "cf72249fb9c50a87c26a197a0327b5ed9608112b09305c68c955d5b7704966b9"
+    },
+    {
+      "file": "Puddle_Jumpers_loop_draft.wav",
+      "durationSeconds": 28.68,
+      "samplePeakDbfs": -1.5002633770788845,
+      "rmsDbfs": -14.641875718297683,
+      "gainDb": -1.4999999999999996,
+      "fullScaleSamples": 0,
+      "boundaryStepDbfs": -27.549264044723728,
+      "first250msRmsDbfs": -13.929118052317154,
+      "last250msRmsDbfs": -14.41050135056522,
+      "sha256": "96dcecf7277d75359ca12d7b91eee9a8aa7cca90ef1e749e6fce62d9d9338560"
+    }
+  ]
+}

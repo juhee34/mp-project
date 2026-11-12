@@ -1,0 +1,145 @@
+{
+  "status": "metadata_only_audio_review_blocked",
+  "listeningPerformed": false,
+  "decodedSignalAnalyzed": false,
+  "tracks": [
+    {
+      "file": "Little_Wooden_Steps.mp4",
+      "proposedCharacterId": "mint",
+      "mappingConfirmed": false,
+      "bytes": 4974713,
+      "sha256": "e9c2bbaae597a1b8b24166b20f0d4ddfb7e8b00a3cf30a509b0d87f23f69ff40",
+      "mediaTracks": [
+        {
+          "timescale": 30000,
+          "durationSeconds": 63.60033333333333
+        },
+        {
+          "timescale": 44100,
+          "durationSeconds": 63.605215419501135
+        }
+      ],
+      "containerDurationSeconds": 63.601,
+      "audioSampleEntry": {
+        "codec": "mp4a",
+        "channels": 2,
+        "sampleRate": 44100.0
+      }
+    },
+    {
+      "file": "Soft_Paws_on_Window_Sills.mp4",
+      "proposedCharacterId": "cheese",
+      "mappingConfirmed": false,
+      "bytes": 5519744,
+      "sha256": "00088c555902ae3364025f4b5a04c4e262a38f385d4a06405b75bf9fc78f0700",
+      "mediaTracks": [
+        {
+          "timescale": 30000,
+          "durationSeconds": 87.56733333333334
+        },
+        {
+          "timescale": 44100,
+          "durationSeconds": 87.58521541950114
+        }
+      ],
+      "containerDurationSeconds": 87.568,
+      "audioSampleEntry": {
+        "codec": "mp4a",
+        "channels": 2,
+        "sampleRate": 44100.0
+      }
+    },
+    {
+      "file": "Summer_by_the_Harbor.mp4",
+      "proposedCharacterId": "popo",
+      "mappingConfirmed": false,
+      "bytes": 2920477,
+      "sha256": "b91e937d1d6d9e5db12c3b8d6ff5011a6fd847629c64a8f2d64c4a0af78cec0c",
+      "mediaTracks": [
+        {
+          "timescale": 30000,
+          "durationSeconds": 32.26733333333333
+        },
+        {
+          "timescale": 44100,
+          "durationSeconds": 32.25823129251701
+        }
+      ],
+      "containerDurationSeconds": 32.268,
+      "audioSampleEntry": {
+        "codec": "mp4a",
+        "channels": 2,
+        "sampleRate": 44100.0
+      }
+    },
+    {
+      "file": "Strolling_Through_Amber.mp4",
+      "proposedCharacterId": "lumi",
+      "mappingConfirmed": false,
+      "bytes": 3631499,
+      "sha256": "265a65fc32e364f8879dc263cf36278e0abe9b65c788612d27925a1ee9bd0d08",
+      "mediaTracks": [
+        {
+          "timescale": 30000,
+          "durationSeconds": 40.00033333333333
+        },
+        {
+          "timescale": 44100,
+          "durationSeconds": 39.99022675736961
+        }
+      ],
+      "containerDurationSeconds": 40.001,
+      "audioSampleEntry": {
+        "codec": "mp4a",
+        "channels": 2,
+        "sampleRate": 44100.0
+      }
+    },
+    {
+      "file": "A_Seat_for_the_Unseen.mp4",
+      "proposedCharacterId": "nunu",
+      "mappingConfirmed": false,
+      "bytes": 3204655,
+      "sha256": "39ed1bba6af840ee98486aef657b156bb18dc8e27e305e047703bb1622c17ea5",
+      "mediaTracks": [
+        {
+          "timescale": 30000,
+          "durationSeconds": 37.400333333333336
+        },
+        {
+          "timescale": 44100,
+          "durationSeconds": 37.404217687074826
+        }
+      ],
+      "containerDurationSeconds": 37.401,
+      "audioSampleEntry": {
+        "codec": "mp4a",
+        "channels": 2,
+        "sampleRate": 44100.0
+      }
+    },
+    {
+      "file": "Puddle_Jumpers.mp4",
+      "proposedCharacterId": "piko",
+      "mappingConfirmed": false,
+      "bytes": 3420287,
+      "sha256": "de496fbcab785452a92eb5df7ec75de1dd17fd9e614bd8d0a587a3d80eb5fcf7",
+      "mediaTracks": [
+        {
+          "timescale": 30000,
+          "durationSeconds": 38.00033333333333
+        },
+        {
+          "timescale": 44100,
+          "durationSeconds": 38.005215419501134
+        }
+      ],
+      "containerDurationSeconds": 38.001,
+      "audioSampleEntry": {
+        "codec": "mp4a",
+        "channels": 2,
+        "sampleRate": 44100.0
+      }
+    }
+  ]
+}
