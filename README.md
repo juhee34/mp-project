@@ -6,6 +6,7 @@
 - Android Studio에서 열 프로젝트 골격: Kotlin, XML host, 소개/6명 선택/프로필 코드
 - 캐릭터 6명 설정과 앱용 JSON, 이야기 개요, 배경·음악 제작 명세
 - [처음 시작하기](docs/START_HERE.md)와 [Claude 첫 프롬프트](docs/FIRST_CLAUDE_PROMPT.txt)
+- [함께 고치고 공유하는 방법(팀 작업 안내)](docs/TEAM_WORKFLOW.md), [설치 안내](docs/INSTALL_GUIDE.md)
 - [두 사람용 단계별 프롬프트 20개](docs/PROMPTS.md)
 - [소개서와 전체 개발 가이드](docs/DEVELOPMENT_GUIDE.html): 다운로드하여 브라우저에서 열기
 - [데이터 계약](docs/DATA_CONTRACT.md), [현재 진행 상태](PROJECT_STATE.md)
