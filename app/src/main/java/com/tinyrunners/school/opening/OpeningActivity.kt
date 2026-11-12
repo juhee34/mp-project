@@ -34,42 +34,30 @@ import kotlin.math.roundToInt
 
 
 /**
- * Landscape title screen shown on every launch: the friends' artwork fills the screen and one button sits in the
- * centre. "시작하기" always opens the login popup over this screen (see LoginActivity).
- *
- * The artwork is A's `res/drawable-nodpi/opening_background.png` when present (see docs/OPENING_SPEC.md);
- * until then a placeholder with all six friends' idle sprites is drawn.
+ * Landscape title screen shown on every launch, on the same picture as the login (A's approved meadow with the six
+ * friends and the paper card with the title, docs/art/ui-screens). "시작하기" sits in the card; pressing it raises
+ * the login card over this screen (LoginActivity is a popup laid out on the same canvas).
  */
 class OpeningActivity : Activity() {
-    private lateinit var button: Button
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val root = FrameLayout(this)
-        root.addView(OpeningBackground(this), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-        button = Button(this).apply {
-            textSize = 20f
-            isAllCaps = false
-            setTextColor(Color.WHITE)
-            typeface = Typeface.DEFAULT_BOLD
-            minHeight = dp(56)
-            background = GradientDrawable().apply {
-                setColor(LEAF)
-                cornerRadius = dp(28).toFloat()
-                setStroke(dp(3), Color.WHITE)
-            }
-            stateListAnimator = null
-            setText(R.string.opening_start)
-            setOnClickListener { onButton() }
-        }
-        root.addView(button, FrameLayout.LayoutParams(dp(220), FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
-        setContentView(root)
+        val frame = com.tinyrunners.school.ui.MockupFrame(this, R.drawable.bg_login_wide)
+        // Where the login popup puts its 로그인 button, so the card looks the same before and after.
+        frame.place(com.tinyrunners.school.ui.MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_primary,
+            getString(R.string.opening_start), Color.parseColor("#FFF8E7"), 40f) { onButton() }, 583, 632, 1090, 712)
+        frame.place(android.widget.TextView(this).apply {
+            setText(R.string.opening_hint); setTextColor(Color.parseColor("#5E5A4C")); gravity = Gravity.CENTER
+        }.also { frame.onScaleText(it, 26f) }, 583, 728, 1090, 790)
+        setContentView(frame)
         hideSystemBars()
     }
 
     /** Always the login popup first; it offers "continue with this account" when already signed in. */
     private fun onButton() {
         startActivity(Intent(this, LoginActivity::class.java))
+        // The popup animates itself (the card rises); no window transition.
+        @Suppress("DEPRECATION")
+        overridePendingTransition(0, 0)
     }
 
     private fun hideSystemBars() {
@@ -86,9 +74,6 @@ class OpeningActivity : Activity() {
         }
     }
 
-    private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
-
-    private companion object { val LEAF = Color.rgb(48, 83, 65) }
 }
 
 /** Draws A's opening artwork with crisp pixels (centre-crop), or the placeholder line-up of all six friends. Shared with the hub. */

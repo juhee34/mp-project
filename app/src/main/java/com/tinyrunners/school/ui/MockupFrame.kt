@@ -16,10 +16,11 @@ import kotlin.math.roundToInt
  * A screen laid out on A's approved mockup canvas (docs/art/ui-screens/README.md, layout.json): 1672×941 reference
  * pixels, scaled by min(width/1672, height/941) and centred. The wide background (2091×941, the original picture
  * in its middle 1672 px) fills the height and is centred, so parts placed with [place] land exactly on it on 16:9
- * and 20:9 phones. Children added without [place] fill the whole frame.
+ * and 20:9 phones. Children added without [place] fill the whole frame. With [backgroundRes] 0 nothing is drawn behind
+ * the parts (a popup laid out on the same canvas as the screen under it).
  */
 class MockupFrame(context: Context, backgroundRes: Int) : FrameLayout(context) {
-    private val art = requireNotNull(context.getDrawable(backgroundRes))
+    private val art = if (backgroundRes == 0) null else context.getDrawable(backgroundRes)
     private val paint = Paint()
 
     /** Scale from reference pixels to screen pixels, and where the reference canvas starts. */
@@ -70,6 +71,7 @@ class MockupFrame(context: Context, backgroundRes: Int) : FrameLayout(context) {
     }
 
     override fun onDraw(canvas: Canvas) {
+        val art = art ?: return
         // Fill behind everything with the picture's edge colour, then the wide picture at the canvas height.
         paint.color = EDGE
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="opening_start">시작하기</string>
+    <string name="opening_hint">여섯 친구가 기다리고 있어요</string>
     <string name="opening_tagline">여섯 친구와 함께 달리는 작은 모험</string>
 </resources>

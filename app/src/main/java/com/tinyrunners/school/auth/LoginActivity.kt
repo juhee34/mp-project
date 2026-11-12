@@ -23,15 +23,18 @@ import com.tinyrunners.school.ui.Page
 import kotlin.math.roundToInt
 
 /**
- * Login, in A's approved design (docs/art/ui-screens/approved/mockup_login.png): the meadow with the six friends and
- * a paper card in the middle (title and subtitle are part of the picture), with the e-mail and password fields and
- * the 로그인 / 회원가입 buttons at the mockup's positions (layout.json).
+ * Login, in A's approved design (docs/art/ui-screens/approved/mockup_login.png), as a popup: the opening already shows
+ * the same meadow, so this window only dims it and raises the paper card (cut out of the approved picture,
+ * res/drawable-nodpi/login_card.png) with the e-mail and password fields and the 로그인 / 회원가입 buttons at the
+ * mockup's positions (layout.json). The card lands exactly on the opening's card.
  *
  * The flow is unchanged: when a session already exists the card first offers "이 계정으로 계속하기" (and
  * "다른 계정으로 로그인" shows the form), so returning players do not retype their password.
  */
 class LoginActivity : Activity() {
     private lateinit var frame: MockupFrame
+    private lateinit var dim: View
+    private var closing = false
     private lateinit var error: TextView
     private lateinit var submit: Button
     private lateinit var second: Button
@@ -44,9 +47,13 @@ class LoginActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        frame = MockupFrame(this, R.drawable.bg_login_wide)
+        frame = MockupFrame(this, 0)
+        frame.place(android.widget.ImageView(this).apply {
+            setImageResource(R.drawable.login_card); scaleType = android.widget.ImageView.ScaleType.FIT_XY
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }, CARD[0], CARD[1], CARD[2], CARD[3])
 
-        frame.place(com.tinyrunners.school.ui.HomeButton.create(this, getString(R.string.common_back_pill)) { finish() }.apply {
+        frame.place(com.tinyrunners.school.ui.HomeButton.create(this, getString(R.string.common_back_pill)) { close() }.apply {
             setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
         }.also { frame.onScaleText(it, 28f) }, 30, 26, 270, 92)
 
@@ -70,8 +77,22 @@ class LoginActivity : Activity() {
         second = MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_secondary, "", DEEP_GREEN, 38f) { secondClick() }
             .also { frame.place(it, 580, 731, 1091, 808) }
 
-        setContentView(frame)
+        dim = View(this).apply { setBackgroundColor(Color.argb(120, 30, 34, 24)); alpha = 0f; setOnClickListener { } }
+        setContentView(android.widget.FrameLayout(this).apply {
+            addView(dim, android.widget.FrameLayout.LayoutParams(-1, -1))
+            addView(frame, android.widget.FrameLayout.LayoutParams(-1, -1))
+        })
         hideSystemBars()
+        // The card rises from below while the opening dims (first time only, not after rotation).
+        if (savedInstanceState == null) {
+            frame.visibility = View.INVISIBLE
+            frame.post {
+                frame.translationY = frame.height.toFloat()
+                frame.visibility = View.VISIBLE
+                frame.animate().translationY(0f).setDuration(RISE_MS).setInterpolator(android.view.animation.DecelerateInterpolator(2f)).start()
+                dim.animate().alpha(1f).setDuration(RISE_MS).start()
+            }
+        } else dim.alpha = 1f
         showingForm = savedInstanceState?.getBoolean("form") ?: !AuthService.hasSession(this)
         render()
     }
@@ -128,6 +149,24 @@ class LoginActivity : Activity() {
         }
     }
 
+    /** The card sinks back down and the popup closes, leaving the opening as it was. */
+    private fun close() {
+        if (closing) return
+        closing = true
+        dim.animate().alpha(0f).setDuration(SINK_MS).start()
+        frame.animate().translationY(frame.height.toFloat()).setDuration(SINK_MS)
+            .setInterpolator(android.view.animation.AccelerateInterpolator(1.5f)).withEndAction {
+                finish()
+                @Suppress("DEPRECATION")
+                overridePendingTransition(0, 0)
+            }.start()
+    }
+
+    @Deprecated("Back closes the popup with the same animation.")
+    override fun onBackPressed() {
+        close()
+    }
+
     private fun busy(on: Boolean) {
         submit.isEnabled = !on
         submit.setText(if (on) R.string.auth_working else R.string.login_submit)
@@ -167,6 +206,10 @@ class LoginActivity : Activity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     companion object {
+        /** The card picture's place on the 1672×941 canvas (cut from bg_login.png at this rect). */
+        private val CARD = intArrayOf(492, 40, 1180, 895)
+        private const val RISE_MS = 340L
+        private const val SINK_MS = 220L
         private val CREAM = Color.parseColor("#FFF8E7")
         private val DEEP_GREEN = Color.parseColor("#1E5A2A")
         private val INK = Color.parseColor("#3A3A2A")
