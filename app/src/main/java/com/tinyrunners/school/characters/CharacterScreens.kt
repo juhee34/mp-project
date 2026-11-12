@@ -72,20 +72,47 @@ internal class CharacterScreens(
         cover.label(context.getString(R.string.characters_intro_body), 16f, Color.WHITE, 12)
         body.addView(cover, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) })
 
-        body.label(context.getString(R.string.characters_intro_friends, repository.characters.size), 20f, top = 24, bold = true, heading = true)
-        val portraitsPerRow = (repository.characters.size + 1) / 2
-        repository.characters.chunked(portraitsPerRow).forEach { friends ->
-            val row = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-            friends.forEach { friend ->
-                row.addView(portrait(friend), LinearLayout.LayoutParams(0, dp(48), 1f).apply {
-                    marginEnd = dp(6)
-                })
+        body.action(R.string.intro_start, primary = true) { showSelection() }
+        body.label(context.getString(R.string.intro_start_hint), 14f, MUTED, 6)
+
+        val how = panel().apply { background = shape(MINT, 18) }
+        how.label(context.getString(R.string.intro_how_title), 20f, bold = true, heading = true)
+        how.label(context.getString(R.string.intro_how_body), 16f, top = 8)
+        how.label(context.getString(R.string.intro_optional_reading), 15f, MUTED, 10)
+        body.addView(how, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(20) })
+
+        body.label(context.getString(R.string.intro_friends_title), 24f, top = 24, bold = true, heading = true)
+        body.label(context.getString(R.string.intro_equal_play), 15f, MUTED, 8)
+        repository.characters.forEach { friend ->
+            val copy = when (friend.id) {
+                "mint" -> R.string.intro_mint_story to R.string.intro_mint_music
+                "cheese" -> R.string.intro_cheese_story to R.string.intro_cheese_music
+                "popo" -> R.string.intro_popo_story to R.string.intro_popo_music
+                "lumi" -> R.string.intro_lumi_story to R.string.intro_lumi_music
+                "nunu" -> R.string.intro_nunu_story to R.string.intro_nunu_music
+                else -> R.string.intro_piko_story to R.string.intro_piko_music
             }
-            body.addView(row, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(6) })
+            val card = panel().apply { background = shape(PAPER, 18, LINE) }
+            val row = LinearLayout(context).apply { gravity = Gravity.CENTER_VERTICAL }
+            row.addView(portrait(friend), LinearLayout.LayoutParams(dp(64), dp(64)).apply { marginEnd = dp(12) })
+            val identity = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+            identity.label(friend.name, 23f, bold = true, heading = true)
+            identity.label(friend.species, 14f, MUTED, 3)
+            row.addView(identity, LinearLayout.LayoutParams(0, WRAP, 1f))
+            card.addView(row, LinearLayout.LayoutParams(MATCH, WRAP))
+            card.detail(R.string.characters_home, friend.home, 12)
+            card.label(context.getString(copy.first), 16f, top = 10)
+            card.label(context.getString(copy.second), 14f, MUTED, 10)
+            body.addView(card, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) })
         }
-        body.label(context.getString(R.string.characters_placeholder_notice), 14f, MUTED, 8)
-        body.action(R.string.characters_choose, primary = true) { showSelection() }
+
+        val stories = panel().apply { background = shape(MINT, 18) }
+        stories.label(context.getString(R.string.intro_story_title), 20f, bold = true, heading = true)
+        stories.label(context.getString(R.string.intro_story_body), 16f, top = 8)
+        stories.label(context.getString(R.string.intro_music_notice), 14f, MUTED, 10)
+        body.addView(stories, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(20) })
         body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context)) }
+        body.action(R.string.intro_start, primary = true) { showSelection() }
     }
 
     fun showSelection() {
@@ -102,7 +129,16 @@ internal class CharacterScreens(
             val card = Button(context).apply {
                 text = SpannableStringBuilder(title).apply {
                     setSpan(StyleSpan(Typeface.BOLD), 0, title.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    append('\n').append(friend.personality.substringBefore('.'))
+                    val greeting = when (friend.id) {
+                        "mint" -> R.string.characters_greeting_mint
+                        "cheese" -> R.string.characters_greeting_cheese
+                        "popo" -> R.string.characters_greeting_popo
+                        "lumi" -> R.string.characters_greeting_lumi
+                        "nunu" -> R.string.characters_greeting_nunu
+                        "piko" -> R.string.characters_greeting_piko
+                        else -> null
+                    }
+                    append('\n').append(greeting?.let { context.getString(it) } ?: friend.personality)
                     append('\n').append(friend.home)
                 }
                 textSize = 16f
