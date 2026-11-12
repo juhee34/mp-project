@@ -1,0 +1,15 @@
+{
+ "status": "art_ready_for_integration",
+ "integrated": false,
+ "date": "2026-11-12",
+ "reference_size": [
+  1672,
+  941
+ ],
+ "source_mockups_sha256": {
+  "mockup_login.png": "55d28e8b9bdbde78e81e6ba13a4a4e43e2c75a9c18c463211abea6d7a73c66f9",
+  "mockup_main_menu.png": "26728e297e7ab745b9be1f1dad77917ff0d776f556ed4600895f82da651e31eb",
+  "mockup_story_collection.png": "7ff733741f46612a3f10f4d9653c75a0a9284d6246670862321d61db9015f930"
+ },
+ "method": "UI elements cut from the approved mockups; text removed; areas behind removed UI reconstructed (cream glow / paper / bench). Characters, titles and scenery kept in backgrounds by user choice."
+}

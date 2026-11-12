@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ui_story_btn_primary: fill #14531D, stroke #044419 (from the approved mockup). Pressed state darkens ~8%. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#124C1A" />
+            <stroke android:width="2dp" android:color="#044419" />
+            <corners android:radius="13dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#14531D" />
+            <stroke android:width="2dp" android:color="#044419" />
+            <corners android:radius="13dp" />
+        </shape>
+    </item>
+</selector>

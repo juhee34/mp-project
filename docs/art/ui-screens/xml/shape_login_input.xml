@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ui_login_input: fill #FDEDD2, stroke #69600E (from the approved mockup). Pressed state darkens ~8%. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#E8DAC1" />
+            <stroke android:width="2dp" android:color="#69600E" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FDEDD2" />
+            <stroke android:width="2dp" android:color="#69600E" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+</selector>

@@ -34,7 +34,7 @@ import com.tinyrunners.school.talk.PrologueActivity
 import com.tinyrunners.school.talk.TalkActivity
 import com.tinyrunners.school.talk.TalkProgress
 import com.tinyrunners.school.ui.Page
-import com.tinyrunners.school.ui.SceneryView
+import com.tinyrunners.school.ui.PaperBackdropView
 import org.json.JSONObject
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -85,7 +85,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
 
         setContentView(FrameLayout(this).apply {
             setBackgroundColor(Page.BACKGROUND)
-            addView(SceneryView(this@StoryCollectionActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(PaperBackdropView(this@StoryCollectionActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(content, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             setOnApplyWindowInsetsListener { v, insets ->
                 if (Build.VERSION.SDK_INT >= 30) {

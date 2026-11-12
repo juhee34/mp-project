@@ -29,7 +29,7 @@ import com.tinyrunners.school.progress.ProgressStore
 import com.tinyrunners.school.talk.ShortLineRepository
 import com.tinyrunners.school.ui.HomeButton
 import com.tinyrunners.school.ui.Page
-import com.tinyrunners.school.ui.SceneryView
+import com.tinyrunners.school.ui.PaperBackdropView
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -126,7 +126,7 @@ class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
 
         setContentView(FrameLayout(this).apply {
             setBackgroundColor(Page.BACKGROUND)
-            addView(SceneryView(this@StoryListActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(PaperBackdropView(this@StoryListActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(content, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             setOnApplyWindowInsetsListener { v, insets ->
                 if (Build.VERSION.SDK_INT >= 30) {

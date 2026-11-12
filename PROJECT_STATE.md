@@ -764,3 +764,9 @@
 - docs/character-copy/에 6명 스토리 기반 친절한 소개 JSON, 읽기용 멘트 문서, 기존 대사 Git 확인 기록, 개발팀 적용 프롬프트를 추가했다. 앱 코드·앱 콘텐츠는 변경하지 않았다.
 - 기존 대사: 기본 144 + 확장 96 = 240개, 문서/앱 JSON 일치 및 고유 ID 확인. 로더가 네 파일을 읽는다. 선택창은 personality를 직접 표시하고 shortIntro 등은 모델·파서에 연결되지 않았다.
 - 확인 범위는 콘텐츠 구조·ID·정적 호출 경로다. 게임 실행·빌드·APK 검증은 하지 않았다. 개발팀이 새 소개 필드를 연결하고 기존 대사의 실제 표시 상황을 확인한다.
+
+## UI 시안 3종 분리 + 네 화면 배경 통일 (2026-11-12, A)
+- docs/art/ui-screens/: 메인 메뉴·로그인·이야기 모음 승인 시안을 배경(캐릭터·제목 유지, 글자·버튼 제거)과 글자 없는 부품 PNG 21개, 9-patch 12개, shape XML 11개, layout.json(1672×941 기준 좌표)로 분리. 20:9용 *_wide 배경 포함. 부품을 다시 올린 비교 미리보기로 배치 확인. 가려졌던 배경은 보정으로 채움. 루미·누누·피코 썸네일·리본은 시안에 없어 미제작.
+- 마을 이야기·이야기 모음·캐릭터 소개/선택/프로필·내 기록의 SceneryView를 공통 그림 bg_common_paper(이야기 모음 시안에서 제목 제거)로 교체하는 PaperBackdropView 추가. Page.show(paper=true) 인자 추가(기본 false). 오프닝·허브·다른 Page 화면은 그대로.
+- 검수: docs/art/ui-screens/BACKGROUND_UNIFY_REVIEW.md. 종이 위 글자 대비는 충분, 벤치 위 MUTED 글자는 2.3으로 낮음.
+- 빌드·기기 실행 미검증 (작업 환경에 Android SDK·local.properties 없음). B가 assembleDebug와 16:9/20:9 기기 확인 후 병합.

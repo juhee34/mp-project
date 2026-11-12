@@ -1,0 +1,79 @@
+{
+ "ui_menu_btn_primary": {
+  "fill": "#164F19",
+  "stroke": "#134B16",
+  "stroke_px": 2,
+  "height_px": 89,
+  "radius_px": 44
+ },
+ "ui_menu_btn_secondary": {
+  "fill": "#FDEBCA",
+  "stroke": "#03360F",
+  "stroke_px": 3,
+  "height_px": 80,
+  "radius_px": 40
+ },
+ "ui_login_btn_primary": {
+  "fill": "#115519",
+  "stroke": "#105519",
+  "stroke_px": 2,
+  "height_px": 80,
+  "radius_px": 40
+ },
+ "ui_login_btn_secondary": {
+  "fill": "#FDEACB",
+  "stroke": "#043E16",
+  "stroke_px": 3,
+  "height_px": 77,
+  "radius_px": 38
+ },
+ "ui_login_input": {
+  "fill": "#FDEDD2",
+  "stroke": "#69600E",
+  "stroke_px": 3,
+  "height_px": 69,
+  "radius_px": 24
+ },
+ "ui_story_btn_primary": {
+  "fill": "#14531D",
+  "stroke": "#044419",
+  "stroke_px": 2,
+  "height_px": 65,
+  "radius_px": 32
+ },
+ "ui_story_btn_outline": {
+  "fill": "#FDEDCE",
+  "stroke": "#00320F",
+  "stroke_px": 3,
+  "height_px": 65,
+  "radius_px": 32
+ },
+ "ui_story_btn_disabled": {
+  "fill": "#E2D5C9",
+  "stroke": "#A59B99",
+  "stroke_px": 2,
+  "height_px": 65,
+  "radius_px": 32
+ },
+ "ui_story_count_pill": {
+  "fill": "#DBBDEB",
+  "stroke": "#D5BCE8",
+  "stroke_px": 2,
+  "height_px": 44,
+  "radius_px": 22
+ },
+ "ui_story_counter_pill": {
+  "fill": "#FCE5B9",
+  "stroke": "#672C00",
+  "stroke_px": 2,
+  "height_px": 71,
+  "radius_px": 35
+ },
+ "ui_story_back_button": {
+  "fill": "#0B5015",
+  "stroke": "#6D3000",
+  "stroke_px": 22,
+  "height_px": 71,
+  "radius_px": 35
+ }
+}
