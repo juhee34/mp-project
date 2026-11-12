@@ -27,6 +27,11 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 깃의 이야기 확인과 소개편 마을 대화 (2026-11-12, B)
+- git fetch: 새로 바뀐 원격은 codex/character-screens(A의 11-11 작업 사본, 6커밋)뿐. 그 안의 이야기·대사 파일(STORY_EXPANSION_01~03, short-lines-expansion-01~03, talks.reviewed.json)은 main과 바이트 동일하고 이미 앱에 들어가 있다(1편·2편 12개 ready, 대사 240+12, 첫 대화 수정안). 3편 6개는 원고가 아직 없어 개요 그대로. 오래된 소개 화면 코드가 함께 있어 브랜치는 합치지 않았다.
+- 앱에 빠져 있던 것: 원고의 "배경 이야기"(소개편)가 이야기 책에는 있었지만 마을 첫 방문 대화는 라일만 B가 쓴 대화였고 나머지 5명은 개요만 나왔다. scripts/build-story-content.cjs가 이제 6명 모두 원고 배경 이야기로 마을 첫 방문(<id>_intro, ready, 7~10줄 + 앞뒤 친구 인사)을 만든다. 라일의 예전 B 대화(선택지·달리기 포함)는 A 원고로 대체됐다. 마을 이야기 대화 18/24(3편 6개만 개요).
+- 검증: validate-content, assembleDebug·testDebugUnitTest(117개)·lintDebug 통과. 새 소개편 대화는 아이템 3개를 건네야 열려서 에뮬레이터 화면으로는 보지 못했다(같은 대화 화면을 쓰는 1·2편은 이전에 확인).
+
 ## 물품 → 아이템, 주머니 아이콘을 상점 시안대로 (2026-11-12, B)
 - 화면 글자의 "물품"을 모두 "아이템"으로 바꿨다(상점 탭·안내·카드, 가방 안내, 튜토리얼 2쪽). 받침이 같아 조사는 그대로. 데이터·ID(quest, items/bag)는 바꾸지 않았다.
 - ui/BagButton의 PouchIcon을 상점 승인 시안(docs/art/shop/approved/shop-approved.png) 오른쪽 위 주머니처럼 다시 그렸다: 크림색 천 자루, 위쪽 주름, 목의 갈색 끈, 앞면 연보라 꽃. 버튼은 크림 바탕에 꿀색 테두리.

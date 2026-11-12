@@ -26,6 +26,7 @@ storyIds는 stories.json에 존재하는 ID만 참조한다. assetStatus=planned
 - 생성: `python scripts/build-story-content.py`. 검증: `node scripts/validate-content.cjs`. 원문은 `docs/STORY_MANUSCRIPT_01~03.md`이며 JSON만 직접 수정하면 재생성 시 덮어써진다.
 
 ## 이야기 대사 (2026-11-10, IDEA_GUIDE 권장안 확정)
+- 2026-11-12: 마을 첫 방문(<id>_intro)도 STORY_MANUSCRIPT_0n.md의 배경 이야기로 생성한다(build-story-content.cjs). 손으로 쓴 소개 대화는 더 이상 보존하지 않는다.
 - **2026-11-10 분리:** 대사로 보는 "마을 이야기"(B, `story/`)는 `content/village_stories.json`을 쓴다. `stories.json`은 A의 이야기 도감(`stories/`) 전용이다. 두 기능은 메뉴 이름(마을 이야기 / 이야기 도감)과 저장 위치가 다르며 서로의 파일을 읽지 않는다. 검사기는 두 파일을 각각 검사한다.
 - `village_stories.json`의 이야기에 선택 필드 `lines`, `unlock`을 더한다. `body`는 대사가 없을 때 보여 줄 개요다.
 - `lines`의 한 줄: `{speaker, text}` / 선택지 `{choice:[{text, reply:[{speaker,text}]}]}`(2~3개, 이야기당 최대 2번, 바로 다음 대사만 달라짐) / 달리기 `{run:true}`(이야기당 최대 1번, 결과와 상관없이 이어짐).

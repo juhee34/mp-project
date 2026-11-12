@@ -5,7 +5,8 @@
 // 1. content/stories.json (story book): intro + episode 1 from docs/STORY_MANUSCRIPT_0n.md exactly as the Python
 //    script did, episode 2 from docs/STORY_EXPANSION_0n.md (A, approved 2026-11-11), episode 3 stays an outline.
 // 2. content/characters.json storyIds.
-// 3. content/village_stories.json: keeps each friend's intro visit and adds episode 1-3 as village talks.
+// 3. content/village_stories.json: each friend's first visit is A's "배경 이야기" from the manuscript (since
+//    2026-11-12; before that only 라일 had a hand-written intro talk), then episodes 1-3 as village talks.
 //    Written episodes become talk lines (speaker = friend id, narration = "narrator"); episode 3 is an outline.
 "use strict";
 const fs = require("fs");
@@ -101,6 +102,7 @@ IDS.forEach((cid, index) => {
   const bodyOf = (ps) => ps.flatMap((p) => p.blocks).map((b) => (b.speaker ? b.speaker + ": " : "") + b.text).join("\n\n");
   records.push(entry(cid, "_episode_1", ep[1].trim(), bodyOf(pages), "ready", "episode", 1, pages, 100, summary, after));
   episodes[cid] = { 1: { title: ep[1].trim(), summary, lines: talkLines(ep1Scenes) } };
+  episodes[cid].intro = { title: name + "의 집과 작은 바람", summary: background.split("\n\n")[0], lines: talkLines([{ title: "집과 작은 바람", text: background }]) };
 
   const outlines = [...section.matchAll(/\*\*([23])편 — (.*?)\*\*\s*\n([\s\S]*?)(?=\n대사 방향|\n\*\*[23]편|\n## |(?![\s\S]))/g)];
   if (outlines.length !== 2) throw new Error(cid + " outlines " + outlines.length);
@@ -132,13 +134,13 @@ const chars = JSON.parse(read("app/src/main/assets/content/characters.json"));
 for (const c of chars) c.storyIds = records.filter((s) => s.characterId === c.id).map((s) => s.id);
 write("app/src/main/assets/content/characters.json", chars);
 
-// Village visits: keep each intro as it is, then episodes 1-3 in order.
+// Village visits: A's background story as the first visit, then episodes 1-3 in order.
 const villagePath = "app/src/main/assets/content/village_stories.json";
-const oldVillage = JSON.parse(read(villagePath));
 const village = [];
 for (const cid of IDS) {
-  const intro = oldVillage.find((s) => s.id === cid + "_intro");
-  if (!intro) throw new Error(cid + " intro missing");
+  const i = episodes[cid].intro;
+  const intro = { id: cid + "_intro", characterId: cid, title: i.title, body: i.summary, status: "ready", unlockDistance: 0,
+    unlock: { afterStory: null }, lines: i.lines };
   village.push(intro);
   let previous = intro.id;
   for (const n of [1, 2, 3]) {
@@ -156,5 +158,5 @@ write(villagePath, village);
 
 for (const cid of IDS) {
   const e = episodes[cid];
-  console.log(cid, "village talk lines: episode 1", e[1].lines.length, "· episode 2", e[2].lines.length);
+  console.log(cid, "village talk lines: intro", e.intro.lines.length, "· episode 1", e[1].lines.length, "· episode 2", e[2].lines.length);
 }
