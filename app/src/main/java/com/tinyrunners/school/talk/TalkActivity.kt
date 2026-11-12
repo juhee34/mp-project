@@ -414,6 +414,8 @@ internal class TalkView(
     private val namePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = dpF(16f); color = Color.WHITE; typeface = Typeface.DEFAULT_BOLD
     }
+    /** A soft tint of a speaker's colour for the inside of their dialogue box. */
+    private fun tint(c: Int) = Color.argb(242, (255 * 0.82f + Color.red(c) * 0.18f).toInt(), (253 * 0.82f + Color.green(c) * 0.18f).toInt(), (246 * 0.82f + Color.blue(c) * 0.18f).toInt())
     private val box = RectF()
     private val tag = RectF()
     private val sprite = RectF()
@@ -478,9 +480,11 @@ internal class TalkView(
         val line = player.current ?: lastLine ?: return
         lastLine = line
         val narrator = line.speaker == TalkScript.NARRATOR
-        fill.color = if (narrator) NARRATOR_BOX else PAPER
+        // A friend's line is framed in their colour; the player keeps the warm brown, narration the dark box.
+        val accent = SPEAKER_COLORS[line.speaker] ?: LEAF
+        fill.color = if (narrator) NARRATOR_BOX else tint(accent)
         canvas.drawRoundRect(box, dpF(14f), dpF(14f), fill)
-        fill.style = Paint.Style.STROKE; fill.strokeWidth = dpF(3f); fill.color = LEAF
+        fill.style = Paint.Style.STROKE; fill.strokeWidth = dpF(3f); fill.color = accent
         canvas.drawRoundRect(box, dpF(14f), dpF(14f), fill)
         fill.style = Paint.Style.FILL
 
@@ -488,7 +492,7 @@ internal class TalkView(
             val name = names[line.speaker] ?: line.speaker
             val tagW = namePaint.measureText(name) + dpF(28f)
             tag.set(box.left + dpF(20f), box.top - dpF(18f), box.left + dpF(20f) + tagW, box.top + dpF(18f))
-            fill.color = if (line.speaker == TalkScript.PLAYER) PLAYER_TAG else LEAF
+            fill.color = accent
             canvas.drawRoundRect(tag, dpF(18f), dpF(18f), fill)
             canvas.drawText(name, tag.left + dpF(14f), tag.centerY() - (namePaint.ascent() + namePaint.descent()) / 2f, namePaint)
         }
@@ -524,7 +528,7 @@ internal class TalkView(
             val cy = box.bottom - dpF(20f)
             val s = dpF(7f)
             val path = android.graphics.Path().apply { moveTo(cx - s, cy - s * 0.6f); lineTo(cx + s, cy - s * 0.6f); lineTo(cx, cy + s * 0.6f); close() }
-            fill.color = LEAF
+            fill.color = accent
             canvas.drawPath(path, fill)
         }
 
@@ -566,7 +570,20 @@ internal class TalkView(
         private val NARRATOR_BOX = Color.argb(225, 38, 52, 43)
         private val NARRATOR_TEXT = Color.rgb(240, 236, 222)
         private val LEAF = Color.rgb(48, 83, 65)
-        private val PLAYER_TAG = Color.rgb(176, 112, 64)
+        /**
+         * Each speaker's dialogue colour (frame, name tag, ▼): one clearly different hue per friend, deep enough for a
+         * white name. Close to their characters.json colours, but 루미 is redder than 치즈 and 누누 takes the mint of
+         * their ribbon so no two friends look alike. The player (러너) is a calm slate.
+         */
+        internal val SPEAKER_COLORS = mapOf(
+            "mint" to Color.rgb(118, 88, 168),
+            "cheese" to Color.rgb(204, 122, 40),
+            "popo" to Color.rgb(62, 108, 150),
+            "lumi" to Color.rgb(186, 76, 70),
+            "nunu" to Color.rgb(54, 136, 116),
+            "piko" to Color.rgb(170, 136, 26),
+            TalkScript.PLAYER to Color.rgb(96, 106, 120),
+        )
         private val INK = Color.rgb(38, 52, 43)
     }
 }
