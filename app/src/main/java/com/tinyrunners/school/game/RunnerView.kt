@@ -56,6 +56,8 @@ class RunnerView(
     private var groundY = 0f
     private var animTime = 0f
     private var lastPhase = engine.phase
+    /** Items picked up so far, to vibrate once per new item. */
+    private var lastCollected = 0
     /** Coins earned so far this run (distance + road) and the "+1" coins rising above the friend. */
     private var shownCoins = 0
     private val coinPops = ArrayDeque<Float>()
@@ -95,7 +97,12 @@ class RunnerView(
         }
         lastFrameNanos = frameTimeNanos
         if (engine.phase == RunnerEngine.Phase.READY && lastPhase != RunnerEngine.Phase.READY) animTime = 0f
-        if (engine.phase == RunnerEngine.Phase.OVER && lastPhase != RunnerEngine.Phase.OVER) onRunOver?.invoke()
+        if (engine.phase == RunnerEngine.Phase.OVER && lastPhase != RunnerEngine.Phase.OVER) {
+            com.tinyrunners.school.audio.Haptics.crash(this)
+            onRunOver?.invoke()
+        }
+        if (engine.collected > lastCollected) com.tinyrunners.school.audio.Haptics.pickup(this)
+        lastCollected = engine.collected
         lastPhase = engine.phase
         invalidate()
         Choreographer.getInstance().postFrameCallback(this)

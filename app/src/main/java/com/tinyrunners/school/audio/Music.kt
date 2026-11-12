@@ -55,8 +55,16 @@ object Music {
         player = next
         playing = resId
         // Cross-fade: the new song comes up while the old one goes down, so changes never cut abruptly.
-        fade(next, VOLUME, start = true)
+        fade(next, AudioSettings(context).musicGain, start = true)
         current?.let { old -> fade(old, 0f) { old.release() } }
+    }
+
+    /** Sets the playing song to the volume chosen in settings straight away (while a slider moves). */
+    fun applyVolume(context: Context) {
+        val p = player ?: return
+        handler.removeCallbacksAndMessages(p)
+        val v = AudioSettings(context).musicGain
+        try { p.setVolume(v, v); volumes[p] = v } catch (_: IllegalStateException) { }
     }
 
     /** Waits a moment so the next screen can keep the song playing without a gap. */
@@ -99,7 +107,6 @@ object Music {
         }, p, begin + FADE_MS * i / FADE_STEPS)
     }
 
-    private const val VOLUME = 0.7f
     private const val PAUSE_DELAY_MS = 600L
     private const val FADE_MS = 600L
     private const val FADE_STEPS = 12

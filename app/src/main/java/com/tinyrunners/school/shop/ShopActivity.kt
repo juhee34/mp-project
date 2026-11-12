@@ -717,7 +717,7 @@ private class ItemPreview(context: Context, private val item: com.tinyrunners.sc
  * fern in the bottom-left corner and lavender and white flowers in the bottom-right. Drawn once (no animation);
  * everything with text is a real view on top.
  */
-private class ShopBackground(context: Context) : View(context) {
+internal class ShopBackground(context: Context) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val path = android.graphics.Path()
 

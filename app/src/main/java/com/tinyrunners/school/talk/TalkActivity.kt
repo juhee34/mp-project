@@ -416,6 +416,8 @@ internal class TalkView(
     }
     /** A soft tint of a speaker's colour for the inside of their dialogue box. */
     private fun tint(c: Int) = Color.argb(242, (255 * 0.82f + Color.red(c) * 0.18f).toInt(), (253 * 0.82f + Color.green(c) * 0.18f).toInt(), (246 * 0.82f + Color.blue(c) * 0.18f).toInt())
+    /** Typing speed chosen in settings (느리게 / 보통 / 빠르게). */
+    private val charMs = com.tinyrunners.school.audio.AudioSettings(context).talkSpeed.charMs
     private val box = RectF()
     private val tag = RectF()
     private val sprite = RectF()
@@ -500,7 +502,7 @@ internal class TalkView(
         // Typewriter: about 30 characters a second; a tap shows the whole line at once.
         val now = SystemClock.uptimeMillis()
         if (player.isTyping) {
-            typed += (now - lastTick) / CHAR_MS
+            typed += (now - lastTick) / charMs
             val whole = typed.toInt()
             if (whole > 0) { player.type(whole); typed -= whole }
         } else typed = 0f
@@ -562,7 +564,6 @@ internal class TalkView(
         private const val WORLD_HEIGHT = 360f
         private const val MIN_WORLD_WIDTH = 640f
         private const val GROUND_THICKNESS = 48f
-        private const val CHAR_MS = 33f
         private const val IDLE_FRAME_MS = 500L
         private const val IDLE_REDRAW_MS = 120L
         private const val BLINK_MS = 450L

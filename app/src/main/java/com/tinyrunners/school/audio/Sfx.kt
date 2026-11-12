@@ -29,7 +29,9 @@ object Sfx {
         if (!SfxSettings(context).enabled) return
         init(context)
         val id = ids[sound] ?: return
-        pool?.play(id, volume, volume, 1, 0, rate.coerceIn(0.5f, 2f))
+        // Scaled by the overall and effects volumes from settings (80% effects ≈ the earlier fixed level).
+        val v = (volume * AudioSettings(context).effectsGain / 0.8f).coerceIn(0f, 1f)
+        pool?.play(id, v, v, 1, 0, rate.coerceIn(0.5f, 2f))
     }
 }
 
