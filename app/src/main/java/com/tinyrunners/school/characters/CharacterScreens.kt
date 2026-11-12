@@ -68,22 +68,20 @@ internal class CharacterScreens(
     }
 
     /**
-     * Friend selection, laid out like the shop: one small card per friend in a row that slides sideways (CardShelf).
-     * Each card shows the friend at home, their name, species and tagline (A's friendly copy), "라일이랑 달리기",
-     * and smaller buttons for the profile and the story book. Tapping a card picks that friend (green edge), which
-     * is the friend the shop previews decorations on.
+     * Friend selection laid out like most games' character select (docs/research/CHARACTER_SELECT_RESEARCH.md): a big
+     * stage on the left with the chosen friend standing at home, an info panel on the right (name, species and home,
+     * tagline, short introduction, best record, "라일이랑 달리기", profile and story book), and a roster of six round
+     * portraits along the bottom to switch friends. Swiping the stage or its ◀ ▶ also switches. The chosen friend is
+     * the one the shop previews decorations on.
      */
     fun showSelection() {
         if (repository.find(selectedId.orEmpty()) == null) selectedId = repository.characters.first().id
         val friends = repository.characters
         route = Route.SELECT
         host.removeAllViews()
-        // The selection no longer scrolls up and down; this keeps save() working.
+        // The selection does not scroll up and down; this keeps save() working.
         scroll = ScrollView(context)
-        val body = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(4), dp(16), dp(10))
-        }
+        val body = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(2), dp(16), dp(8)) }
         host.addView(body, FrameLayout.LayoutParams(MATCH, MATCH))
 
         val top = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
@@ -96,45 +94,135 @@ internal class CharacterScreens(
         }, LinearLayout.LayoutParams(0, WRAP, 1f))
         body.addView(top, LinearLayout.LayoutParams(MATCH, WRAP))
 
-        val shelf = com.tinyrunners.school.ui.CardShelf(context)
-        body.addView(shelf, LinearLayout.LayoutParams(MATCH, 0, 1f).apply { topMargin = dp(4) })
+        // Stage (left) and info panel (right).
+        val main = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
+        val stageBox = FrameLayout(context)
+        val stage = ShowcaseStage(context)
+        stageBox.addView(stage, FrameLayout.LayoutParams(MATCH, MATCH))
+        val prev = stageArrow("◀", R.string.characters_prev)
+        val next = stageArrow("▶", R.string.characters_next)
+        stageBox.addView(prev, FrameLayout.LayoutParams(dp(40), dp(40), Gravity.START or Gravity.CENTER_VERTICAL).apply { marginStart = dp(8) })
+        stageBox.addView(next, FrameLayout.LayoutParams(dp(40), dp(40), Gravity.END or Gravity.CENTER_VERTICAL).apply { marginEnd = dp(8) })
+        main.addView(stageBox, LinearLayout.LayoutParams(0, MATCH, 1.15f))
 
-        fun cards(): List<View> = friends.map { friend ->
-            val card = com.tinyrunners.school.ui.CardShelf.card(context, selected = friend.id == selectedId)
-            card.addView(com.tinyrunners.school.story.SceneThumb(context, friend.id, locked = false).apply {
-                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            }, LinearLayout.LayoutParams(MATCH, 0, 1f))
-            val nameRow = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-            nameRow.addView(com.tinyrunners.school.ui.CardShelf.title(context, friend.name), LinearLayout.LayoutParams(0, WRAP, 1f))
-            nameRow.addView(com.tinyrunners.school.ui.CardShelf.chip(context, friend.species, blend(friendColor(friend), PAPER, 0.6f)))
-            card.addView(nameRow)
-            card.addView(com.tinyrunners.school.ui.CardShelf.body(context, friend.copy?.tagline ?: friend.personality, lines = 1).apply {
-                setTextColor(INK); setTypeface(typeface, Typeface.BOLD)
-            })
+        val info = com.tinyrunners.school.ui.CardShelf.card(context).apply { setPadding(dp(14), dp(6), dp(14), dp(8)) }
+        val name = TextView(context).apply { textSize = 22f; setTextColor(com.tinyrunners.school.ui.CardShelf.GREEN); setTypeface(typeface, Typeface.BOLD) }
+        val tag = com.tinyrunners.school.ui.CardShelf.chip(context, "")
+        val tagline = TextView(context).apply { textSize = 15f; setTextColor(INK); setTypeface(typeface, Typeface.BOLD); maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END }
+        val intro = TextView(context).apply {
+            textSize = 14f; setTextColor(com.tinyrunners.school.ui.CardShelf.INK_SOFT); setLineSpacing(0f, 1.15f)
+            ellipsize = android.text.TextUtils.TruncateAt.END
+        }
+        val best = TextView(context).apply { textSize = 13f; setTextColor(LEAF); setTypeface(typeface, Typeface.BOLD) }
+        val nameRow = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        nameRow.addView(name)
+        nameRow.addView(tag, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(10) })
+        info.addView(nameRow)
+        info.addView(tagline, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(2) })
+        // The introduction takes the height that is left, showing only whole lines.
+        info.addView(intro, LinearLayout.LayoutParams(MATCH, 0, 1f).apply { topMargin = dp(4) })
+        info.addView(best, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(2) })
+        val run = com.tinyrunners.school.ui.CardShelf.button(context, "", primary = true) { onStartRun(selectedId.orEmpty()) }
+        info.addView(run, LinearLayout.LayoutParams(MATCH, dp(38)).apply { topMargin = dp(4) })
+        val more = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
+        more.addView(com.tinyrunners.school.ui.CardShelf.button(context, context.getString(R.string.characters_profile_short), primary = false) {
+            showProfile(selectedId.orEmpty())
+        }, LinearLayout.LayoutParams(0, dp(32), 1f))
+        more.addView(com.tinyrunners.school.ui.CardShelf.button(context, context.getString(R.string.characters_story_book), primary = false) {
+            context.startActivity(StoryActivity.intent(context, selectedId.orEmpty()))
+        }, LinearLayout.LayoutParams(0, dp(32), 1f).apply { marginStart = dp(8) })
+        info.addView(more, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(5) })
+        main.addView(info, LinearLayout.LayoutParams(0, MATCH, 1f).apply { marginStart = dp(12) })
+        body.addView(main, LinearLayout.LayoutParams(MATCH, 0, 1f).apply { topMargin = dp(4) })
 
-            card.addView(com.tinyrunners.school.ui.CardShelf.button(context, runLabel(friend), primary = true) {
-                selectedId = friend.id; onStartRun(friend.id)
-            }, LinearLayout.LayoutParams(MATCH, dp(36)).apply { topMargin = dp(4) })
-            val more = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-            more.addView(com.tinyrunners.school.ui.CardShelf.button(context, context.getString(R.string.characters_profile_short), primary = false) {
-                showProfile(friend.id)
-            }, LinearLayout.LayoutParams(0, dp(30), 1f))
-            more.addView(com.tinyrunners.school.ui.CardShelf.button(context, context.getString(R.string.characters_story_book_short), primary = false) {
-                context.startActivity(StoryActivity.intent(context, friend.id))
-            }, LinearLayout.LayoutParams(0, dp(30), 1f).apply { marginStart = dp(6) })
-            card.addView(more, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(4) })
-            card.contentDescription = context.getString(R.string.characters_card_description_short,
-                friend.name, friend.species, friend.home, (friend.copy?.tagline ?: friend.personality) + " " + greetingFor(friend))
-            card
+        // Roster: six round portraits along the bottom.
+        val roster = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER
+            setPadding(dp(14), dp(3), dp(14), dp(2))
+            // A cream strip so the names read well over the bench in the picture.
+            background = shape(Color.argb(232, 255, 249, 235), 22)
+        }
+        body.addView(roster, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(5); gravity = Gravity.CENTER_HORIZONTAL })
+
+        var bests: Map<String, Int> = emptyMap()
+
+        fun bind() {
+            val friend = friends.first { it.id == selectedId }
+            val tint = friendColor(friend)
+            stage.show(friend.id, tint)
+            name.text = friend.name
+            tag.text = context.getString(R.string.characters_species_home, friend.species, friend.home)
+            tag.background = shape(blend(tint, PAPER, 0.62f), 10)
+            tagline.text = friend.copy?.tagline ?: friend.personality
+            intro.text = friend.copy?.selectionIntro ?: friend.summary
+            intro.maxLines = Int.MAX_VALUE
+            intro.post {
+                val lines = intro.height / intro.lineHeight.coerceAtLeast(1)
+                intro.visibility = if (lines < 1) View.INVISIBLE else View.VISIBLE
+                intro.maxLines = lines.coerceAtLeast(1)
+            }
+            val b = bests[friend.id]
+            best.text = if (b != null && b > 0) context.getString(R.string.characters_best, b) else context.getString(R.string.characters_best_none)
+            run.text = runLabel(friend)
+            info.contentDescription = context.getString(R.string.characters_card_description_short,
+                friend.name, friend.species, friend.home, tagline.text.toString() + " " + greetingFor(friend))
+            roster.removeAllViews()
+            friends.forEach { f ->
+                val on = f.id == selectedId
+                val cell = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL }
+                cell.addView(RosterPortrait(context, f.id, friendColor(f), on).apply {
+                    contentDescription = f.name
+                    setOnClickListener { if (selectedId != f.id) { selectedId = f.id; bind() } }
+                }, LinearLayout.LayoutParams(dp(if (on) 50 else 42), dp(if (on) 50 else 42)))
+                cell.addView(TextView(context).apply {
+                    text = f.name; textSize = 11f; gravity = Gravity.CENTER; includeFontPadding = false
+                    setTextColor(if (on) com.tinyrunners.school.ui.CardShelf.GREEN else MUTED)
+                    if (on) setTypeface(typeface, Typeface.BOLD)
+                })
+                roster.addView(cell, LinearLayout.LayoutParams(dp(70), WRAP))
+            }
         }
 
-        fun refresh(show: Int = -1) {
-            val list = cards()
-            // Tapping a card (not one of its buttons) picks that friend.
-            list.forEachIndexed { i, v -> v.isClickable = true; v.setOnClickListener { selectedId = friends[i].id; refresh() } }
-            shelf.setCards(list, show)
+        fun go(step: Int) {
+            val index = friends.indexOfFirst { it.id == selectedId }
+            selectedId = friends[(index + step + friends.size) % friends.size].id
+            bind()
+            stage.announceForAccessibility(friends.first { it.id == selectedId }.name)
         }
-        refresh(friends.indexOfFirst { it.id == selectedId })
+        prev.setOnClickListener { go(-1) }
+        next.setOnClickListener { go(1) }
+
+        // Sideways swipe on the stage switches friends.
+        var downX = 0f
+        var downY = 0f
+        @Suppress("ClickableViewAccessibility")
+        stage.setOnTouchListener { v, event ->
+            when (event.actionMasked) {
+                android.view.MotionEvent.ACTION_DOWN -> { downX = event.x; downY = event.y; v.parent.requestDisallowInterceptTouchEvent(true) }
+                android.view.MotionEvent.ACTION_UP -> {
+                    val dx = event.x - downX
+                    if (kotlin.math.abs(dx) > dp(40) && kotlin.math.abs(dx) > kotlin.math.abs(event.y - downY)) go(if (dx < 0) 1 else -1)
+                }
+            }
+            true
+        }
+        bind()
+        // Best distance per friend for the panel (cloud or this device).
+        com.tinyrunners.school.progress.ProgressStore.forCurrentUser(context).loadAll { result ->
+            if (route != Route.SELECT) return@loadAll
+            bests = result.getOrNull().orEmpty().mapValues { it.value.bestMeters }
+            bind()
+        }
+    }
+
+    private fun stageArrow(symbol: String, description: Int) = Button(context).apply {
+        text = symbol; textSize = 15f; setTextColor(com.tinyrunners.school.ui.CardShelf.GREEN)
+        contentDescription = context.getString(description)
+        setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
+        background = RippleDrawable(ColorStateList.valueOf(0x33466F53), GradientDrawable().apply {
+            shape = GradientDrawable.OVAL; setColor(Color.argb(225, 255, 249, 235)); setStroke(dp(2), com.tinyrunners.school.ui.CardShelf.GREEN)
+        }, null)
+        stateListAnimator = null
     }
 
     private fun greetingFor(friend: CharacterDefinition): String {

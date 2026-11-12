@@ -44,6 +44,7 @@
     <string name="characters_copy_run">%1$s 달리기</string>
     <string name="characters_copy_mechanics">어느 친구를 골라도 점프와 달리는 속도는 같아요.</string>
     <string name="characters_greeting_quote">“%1$s”</string>
-    <string name="characters_story_book_short">이야기</string>
     <string name="characters_card_description_short">%1$s, %2$s, %3$s. %4$s</string>
+    <string name="characters_best">이 친구와 최고 기록 %1$dm</string>
+    <string name="characters_best_none">아직 함께 달린 기록이 없어요</string>
 </resources>
