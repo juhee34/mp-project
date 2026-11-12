@@ -23,7 +23,7 @@ object BagButton {
         contentDescription = context.getString(R.string.bag_open)
         isClickable = true; isFocusable = true
         background = GradientDrawable().apply {
-            setColor(Page.PAPER); cornerRadius = 12 * d; setStroke((2 * d).roundToInt(), Color.rgb(196, 196, 202))
+            setColor(Color.rgb(255, 250, 238)); cornerRadius = 12 * d; setStroke((2 * d).roundToInt(), Color.rgb(190, 150, 100))
         }
         setOnClickListener { context.startActivity(BagActivity.intent(context)) }
         val size = (40 * d).roundToInt()
@@ -66,32 +66,34 @@ private class PouchButtonView(context: Context) : View(context) {
     }
 }
 
-/** A 16×16 pixel white drawstring pouch (red tie) with a gold coin on its front. */
+/**
+ * A 16×16 pixel drawstring sack from the approved shop design (docs/art/shop/approved/shop-approved.png): a cream
+ * cloth bag with a ruffled top, a brown tie at the neck and a small lavender flower on the front.
+ */
 object PouchIcon {
     private val paint = Paint().apply { isAntiAlias = false }
     private val ROWS = listOf(
         ".....bb..bb.....",
-        "......bbbb......",
-        "......dddd......",
-        ".....dDDDDd.....",
-        "......dddd......",
-        ".....bBBBBb.....",
-        "...bBBBBBBBBb...",
-        "..bBBBBBBBBBBb..",
-        ".bBBBBByyBBBBBb.",
-        ".bBBBByYYyBBBBb.",
-        ".bBBBByYYyBBBBb.",
-        ".bBLBBByyBBBBBb.",
-        ".bBBBBBBBBBBBBb.",
-        "..bBBBBBBBBBBb..",
+        "....bWWbbWWb....",
+        ".....bWWWWb.....",
+        "......tttt......",
+        ".....btWWtb.....",
+        "....bWWWWWWb....",
+        "...bWWWWWWWWb...",
+        "..bWWWWWWWWWSb..",
+        ".bWWWWWpWWWWWSb.",
+        ".bWWWWpPpWWWWSb.",
+        ".bWWWWWpWWWWWSb.",
+        ".bWWWWWWWWWWWSb.",
+        ".bSWWWWWWWWWSSb.",
+        "..bSSSSSSSSSSb..",
         "...bbbbbbbbbb...",
         "................",
     )
     private val PALETTE = mapOf(
-        // A white cloth pouch: grey outline, white body, a soft grey shade.
-        'b' to Color.rgb(112, 112, 120), 'B' to Color.rgb(250, 250, 248), 'L' to Color.rgb(222, 222, 228),
-        'd' to Color.rgb(150, 54, 48), 'D' to Color.rgb(206, 92, 76),
-        'y' to Color.rgb(196, 140, 30), 'Y' to Color.rgb(250, 210, 80),
+        'b' to Color.rgb(138, 106, 74), 'W' to Color.rgb(247, 239, 222), 'S' to Color.rgb(224, 206, 174),
+        't' to Color.rgb(150, 104, 62),
+        'p' to Color.rgb(172, 146, 196), 'P' to Color.rgb(230, 218, 244),
     )
 
     fun draw(canvas: Canvas, left: Float, top: Float, size: Float) {

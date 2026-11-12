@@ -32,7 +32,7 @@
     <string name="shop_preview_description">%1$s 미리 보기</string>
     <string name="shop_tab_trails">꾸미기</string>
     <string name="shop_tab_music">음악</string>
-    <string name="shop_tab_items">물품</string>
+    <string name="shop_tab_items">아이템</string>
     <string name="shop_tab_coins">코인 충전</string>
     <string name="shop_item_bought">%1$s 1개를 샀어요. 가방에 넣었어요.</string>
     <string name="shop_pack_name">코인 %1$d개</string>
@@ -70,7 +70,7 @@
     <string name="shop_intro">오늘의 달리기에 작은 즐거움을 더해요</string>
     <string name="shop_guide_trails">꾸미기는 모습만 바뀌어요. 점프와 속도는 그대로예요.</string>
     <string name="shop_guide_music">들어 보고 고른 노래가 달리기에 흘러요. 점프와 속도는 그대로예요.</string>
-    <string name="shop_guide_items">친구 물품은 한 개에 %1$d코인. 산 물품은 가방에 들어가요.</string>
+    <string name="shop_guide_items">친구 아이템은 한 개에 %1$d코인. 산 아이템은 가방에 들어가요.</string>
     <string name="shop_guide_coins">%1$dm 달리면 1코인. 충전은 과제 시연용이라 실제로 돈이 나가지 않아요.</string>
     <string name="shop_retry">다시 불러오기</string>
     <string name="shop_processing">처리 중…</string>
@@ -79,6 +79,6 @@
     <string name="shop_owned">보유</string>
     <string name="shop_short">%1$d코인 부족</string>
     <string name="shop_in_bag">가방 %1$d개</string>
-    <string name="shop_item_for">%1$s에게 필요한 물품</string>
+    <string name="shop_item_for">%1$s에게 필요한 아이템</string>
     <string name="shop_next_page">다음 상품 보기</string>
 </resources>

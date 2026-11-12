@@ -36,7 +36,7 @@ import kotlin.math.roundToInt
 
 /**
  * The shop, in A's approved design (docs/art/shop/): cream fabric inside a thin honey-wood frame, dark green text and
- * buttons, lavender accents and a fern and flowers in the bottom corners. Four shelves (꾸미기 · 음악 · 물품 · 코인
+ * buttons, lavender accents and a fern and flowers in the bottom corners. Four shelves (꾸미기 · 음악 · 아이템 · 코인
  * 충전) share one card style; cards sit in a row that scrolls sideways, four across on a wide screen.
  *
  * Coins come from distance run (ShopRules.METERS_PER_COIN metres = 1 coin) and road coins; decorations only change
@@ -61,7 +61,7 @@ class ShopActivity : Activity() {
     /** Which shelf is shown. */
     private enum class Shelf { TRAIL, MUSIC, ITEMS, COINS }
     private var shelf = Shelf.TRAIL
-    /** Friends' items in the bag, for the 물품 shelf. */
+    /** Friends' items in the bag, for the 아이템 shelf. */
     private var bag: com.tinyrunners.school.quest.ItemBag? = null
     /** The song being previewed with "들어보기", if any. */
     private var previewing: String? = null
@@ -165,7 +165,7 @@ class ShopActivity : Activity() {
         load()
     }
 
-    /** Loads the wallet (and the bag for the 물품 shelf). Until it arrives, buttons say "불러오는 중". */
+    /** Loads the wallet (and the bag for the 아이템 shelf). Until it arrives, buttons say "불러오는 중". */
     private fun load() {
         loadFailed = false
         retry.visibility = View.GONE
