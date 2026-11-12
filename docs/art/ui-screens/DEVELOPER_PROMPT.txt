@@ -1,0 +1,15 @@
+[B 담당 연결 요청 — 메인 메뉴 / 로그인 / 이야기 모음 UI]
+
+docs/art/ui-screens/README.md 와 layout.json 을 먼저 읽어 주세요.
+
+1. backgrounds/*.png, parts/*.png 를 app/src/main/res/drawable-nodpi/ 로 복사한다. 파일 이름은 그대로 쓴다.
+2. 각 화면을 1672x941 기준 캔버스로 배치한다. scale = min(viewW/1672, viewH/941), 가운데 정렬.
+   layout.json 의 rect([x0,y0,x1,y1])에 scale 을 곱해 위치·크기를 정한다.
+   배경은 bg_*_wide.png(2091x941)를 높이 941*scale 로 가로 가운데에 깐다 (가운데 1672px가 원래 배경).
+3. 글자는 그림에 없다. layout.json 의 text / text_color / text_size_px(×scale) 로 코드에서 그린다.
+   이야기 모음 카드 제목은 카드 상단 y 286~336 영역 가운데에 둔다.
+4. 이야기 모음은 카드 틀(ui_story_card_frame) 위에 리본, 제목, 썸네일, 본 이야기 알약, 버튼 순서로 올린다.
+   루미·누누·피코용 썸네일과 리본은 아직 없으니 임시로 기존 집 그림(home) 또는 빈 칸으로 두고 A에게 알린다.
+5. 크기를 시안과 다르게 해야 하면 ninepatch/ 의 .9.png 또는 xml/ 의 shape 드로어블을 쓴다.
+6. 기존 화면 흐름·저장·로그인 로직은 바꾸지 않는다. 그림만 교체한다.
+7. 실제 기기에서 16:9 / 20:9 두 비율로 잘림과 터치 영역을 확인하고 PROJECT_STATE.md 에 기록한다.

@@ -1,0 +1,473 @@
+{
+ "main_menu": {
+  "reference_size": [
+   1671,
+   941
+  ],
+  "background": "bg_main_menu.png",
+  "items": [
+   {
+    "id": "menu_0",
+    "part": "ui_menu_btn_primary",
+    "rect": [
+     605,
+     335,
+     1064,
+     424
+    ],
+    "text": "스토리 진행하기",
+    "text_color": "#FFF8E7",
+    "text_size_px": 44
+   },
+   {
+    "id": "menu_1",
+    "part": "ui_menu_btn_secondary",
+    "rect": [
+     635,
+     442,
+     1037,
+     522
+    ],
+    "text": "게임하기",
+    "text_color": "#1E5A2A",
+    "text_size_px": 42
+   },
+   {
+    "id": "menu_2",
+    "part": "ui_menu_btn_secondary",
+    "rect": [
+     637,
+     537,
+     1035,
+     616
+    ],
+    "text": "상점",
+    "text_color": "#1E5A2A",
+    "text_size_px": 42
+   },
+   {
+    "id": "menu_3",
+    "part": "ui_menu_btn_secondary",
+    "rect": [
+     637,
+     629,
+     1035,
+     710
+    ],
+    "text": "튜토리얼",
+    "text_color": "#1E5A2A",
+    "text_size_px": 42
+   },
+   {
+    "id": "menu_4",
+    "part": "ui_menu_btn_secondary",
+    "rect": [
+     636,
+     724,
+     1035,
+     805
+    ],
+    "text": "설정",
+    "text_color": "#1E5A2A",
+    "text_size_px": 42
+   }
+  ]
+ },
+ "login": {
+  "reference_size": [
+   1672,
+   941
+  ],
+  "background": "bg_login.png",
+  "items": [
+   {
+    "id": "label_email",
+    "kind": "text",
+    "rect": [
+     584,
+     346,
+     668,
+     380
+    ],
+    "text": "이메일",
+    "text_color": "#1E5A2A",
+    "text_size_px": 30
+   },
+   {
+    "id": "input_email",
+    "part": "ui_login_input",
+    "rect": [
+     582,
+     389,
+     1089,
+     458
+    ],
+    "hint": "이메일",
+    "text_color": "#3A3A2A",
+    "text_size_px": 26,
+    "padding_px": [
+     26,
+     0,
+     26,
+     0
+    ]
+   },
+   {
+    "id": "label_password",
+    "kind": "text",
+    "rect": [
+     584,
+     476,
+     700,
+     510
+    ],
+    "text": "비밀번호",
+    "text_color": "#1E5A2A",
+    "text_size_px": 30
+   },
+   {
+    "id": "input_password",
+    "part": "ui_login_input",
+    "rect": [
+     582,
+     519,
+     1089,
+     589
+    ],
+    "hint": "비밀번호",
+    "text_color": "#3A3A2A",
+    "text_size_px": 26,
+    "padding_px": [
+     26,
+     0,
+     26,
+     0
+    ]
+   },
+   {
+    "id": "btn_login",
+    "part": "ui_login_btn_primary",
+    "rect": [
+     583,
+     632,
+     1090,
+     712
+    ],
+    "text": "로그인",
+    "text_color": "#FFF8E7",
+    "text_size_px": 38
+   },
+   {
+    "id": "btn_signup",
+    "part": "ui_login_btn_secondary",
+    "rect": [
+     580,
+     731,
+     1091,
+     808
+    ],
+    "text": "회원가입",
+    "text_color": "#1E5A2A",
+    "text_size_px": 38
+   }
+  ]
+ },
+ "story_collection": {
+  "reference_size": [
+   1672,
+   941
+  ],
+  "background": "bg_story_collection.png",
+  "items": [
+   {
+    "id": "btn_back",
+    "part": "ui_story_back_button",
+    "rect": [
+     47,
+     41,
+     371,
+     112
+    ],
+    "text": "마을 이야기로",
+    "text_rect": [
+     128,
+     52,
+     350,
+     101
+    ],
+    "text_color": "#1E5A2A",
+    "text_size_px": 34
+   },
+   {
+    "id": "seen_total",
+    "part": "ui_story_counter_pill",
+    "rect": [
+     1233,
+     41,
+     1526,
+     112
+    ],
+    "text": "본 이야기 8 / 31",
+    "text_color": "#1E5A2A",
+    "text_size_px": 31
+   },
+   {
+    "id": "btn_bag",
+    "part": "ui_story_bag_button",
+    "rect": [
+     1562,
+     34,
+     1637,
+     120
+    ]
+   },
+   {
+    "id": "card_world",
+    "part": "ui_story_card_frame",
+    "rect": [
+     65,
+     231,
+     443,
+     799
+    ],
+    "children": [
+     {
+      "id": "ribbon",
+      "part": "ui_story_ribbon_world",
+      "rect": [
+       104,
+       219,
+       167,
+       298
+      ]
+     },
+     {
+      "id": "title",
+      "kind": "text",
+      "text": "세계 이야기",
+      "text_color": "#1E5A2A",
+      "text_size_px": 40
+     },
+     {
+      "id": "thumb",
+      "part": "story_thumb_world",
+      "rect": [
+       102,
+       351,
+       416,
+       635
+      ]
+     },
+     {
+      "id": "button",
+      "part": "ui_story_btn_primary",
+      "rect": [
+       108,
+       696,
+       413,
+       761
+      ],
+      "text": "다시 보기",
+      "text_color": "#FFF8E7",
+      "text_size_px": 34
+     }
+    ]
+   },
+   {
+    "id": "card_mint",
+    "part": "ui_story_card_frame",
+    "rect": [
+     458,
+     231,
+     830,
+     799
+    ],
+    "children": [
+     {
+      "id": "ribbon",
+      "part": "ui_story_ribbon_mint",
+      "rect": [
+       496,
+       218,
+       562,
+       297
+      ]
+     },
+     {
+      "id": "title",
+      "kind": "text",
+      "text": "라일의 이야기",
+      "text_color": "#1E5A2A",
+      "text_size_px": 40
+     },
+     {
+      "id": "thumb",
+      "part": "story_thumb_mint",
+      "rect": [
+       495,
+       349,
+       803,
+       618
+      ]
+     },
+     {
+      "id": "count",
+      "part": "ui_story_count_pill",
+      "rect": [
+       531,
+       634,
+       774,
+       678
+      ],
+      "text": "본 이야기 5 / 5",
+      "text_color": "#3D3550",
+      "text_size_px": 27
+     },
+     {
+      "id": "button",
+      "part": "ui_story_btn_outline",
+      "rect": [
+       501,
+       696,
+       799,
+       761
+      ],
+      "text": "이야기 보기",
+      "text_color": "#1E5A2A",
+      "text_size_px": 34
+     }
+    ]
+   },
+   {
+    "id": "card_cheese",
+    "part": "ui_story_card_frame",
+    "rect": [
+     843,
+     231,
+     1214,
+     799
+    ],
+    "children": [
+     {
+      "id": "ribbon",
+      "part": "ui_story_ribbon_cheese",
+      "rect": [
+       881,
+       218,
+       947,
+       297
+      ]
+     },
+     {
+      "id": "title",
+      "kind": "text",
+      "text": "치즈의 이야기",
+      "text_color": "#1E5A2A",
+      "text_size_px": 40
+     },
+     {
+      "id": "thumb",
+      "part": "story_thumb_cheese",
+      "rect": [
+       880,
+       351,
+       1187,
+       618
+      ]
+     },
+     {
+      "id": "count",
+      "part": "ui_story_count_pill",
+      "rect": [
+       916,
+       634,
+       1158,
+       678
+      ],
+      "text": "본 이야기 1 / 5",
+      "text_color": "#3D3550",
+      "text_size_px": 27
+     },
+     {
+      "id": "button",
+      "part": "ui_story_btn_outline",
+      "rect": [
+       885,
+       696,
+       1183,
+       761
+      ],
+      "text": "이야기 보기",
+      "text_color": "#1E5A2A",
+      "text_size_px": 34
+     }
+    ]
+   },
+   {
+    "id": "card_popo",
+    "part": "ui_story_card_frame",
+    "rect": [
+     1227,
+     231,
+     1618,
+     799
+    ],
+    "children": [
+     {
+      "id": "ribbon",
+      "part": "ui_story_ribbon_popo",
+      "rect": [
+       1269,
+       219,
+       1335,
+       296
+      ]
+     },
+     {
+      "id": "title",
+      "kind": "text",
+      "text": "포포의 이야기",
+      "text_color": "#1E5A2A",
+      "text_size_px": 40
+     },
+     {
+      "id": "thumb",
+      "part": "story_thumb_popo",
+      "rect": [
+       1265,
+       352,
+       1590,
+       618
+      ]
+     },
+     {
+      "id": "count",
+      "part": "ui_story_count_pill",
+      "rect": [
+       1302,
+       634,
+       1564,
+       678
+      ],
+      "text": "본 이야기 0 / 5",
+      "text_color": "#3D3550",
+      "text_size_px": 27
+     },
+     {
+      "id": "button",
+      "part": "ui_story_btn_disabled",
+      "rect": [
+       1269,
+       696,
+       1591,
+       761
+      ],
+      "text": "아직 열리지 않았어요",
+      "text_color": "#9A958C",
+      "text_size_px": 34
+     }
+    ]
+   }
+  ]
+ }
+}

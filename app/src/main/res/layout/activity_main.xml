@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The opening's sky, clouds and hills sit behind the menu and the character screens (ui/Scenery.kt). -->
+<!-- The shared paper-and-bench picture (ui/PaperBackdrop.kt) sits behind the character screens. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FAF6EC">
 
-    <com.tinyrunners.school.ui.SceneryView
+    <com.tinyrunners.school.ui.PaperBackdropView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

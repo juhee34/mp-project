@@ -52,14 +52,15 @@ class Page(private val activity: Activity) {
 
     /**
      * Shows the page over the opening's sky, clouds and hills. Popups pass [scenery] = false because the opening
-     * itself is visible behind them.
+     * itself is visible behind them. [paper] = true uses the shared paper-and-bench picture instead
+     * (PaperBackdropView), as on the story and character screens.
      */
-    fun show(scenery: Boolean = true): Page {
+    fun show(scenery: Boolean = true, paper: Boolean = false): Page {
         if (!scenery) { activity.setContentView(root); return this }
         root.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         activity.setContentView(android.widget.FrameLayout(activity).also { frame = it }.apply {
             setBackgroundColor(BACKGROUND)
-            addView(SceneryView(activity), android.widget.FrameLayout.LayoutParams(
+            addView(if (paper) PaperBackdropView(activity) else SceneryView(activity), android.widget.FrameLayout.LayoutParams(
                 android.widget.FrameLayout.LayoutParams.MATCH_PARENT, android.widget.FrameLayout.LayoutParams.MATCH_PARENT))
             addView(root, android.widget.FrameLayout.LayoutParams(
                 android.widget.FrameLayout.LayoutParams.MATCH_PARENT, android.widget.FrameLayout.LayoutParams.MATCH_PARENT))

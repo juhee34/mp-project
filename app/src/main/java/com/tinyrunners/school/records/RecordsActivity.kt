@@ -12,7 +12,7 @@ class RecordsActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val characters = CharacterRepository(this).characters
-        val page = Page(this).show()
+        val page = Page(this).show(paper = true)
         page.bagButton()
         page.backPill(getString(R.string.common_back_pill)) { finish() }
         page.eyebrow(getString(R.string.records_eyebrow))
