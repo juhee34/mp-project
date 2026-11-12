@@ -1,0 +1,74 @@
+{
+ "reference_size": [
+  1672,
+  941
+ ],
+ "background": "bg_main_menu_wide (centre 1672 px)",
+ "items": [
+  {
+   "id": "menu_0",
+   "part": "ui_menu_btn_primary",
+   "rect": [
+    610,
+    317,
+    1061,
+    401
+   ],
+   "text": "스토리 진행하기",
+   "text_color": "#FFF8E7",
+   "text_size_px": 44
+  },
+  {
+   "id": "menu_1",
+   "part": "ui_menu_btn_secondary",
+   "rect": [
+    619,
+    410,
+    1053,
+    488
+   ],
+   "text": "게임하기",
+   "text_color": "#1E5A2A",
+   "text_size_px": 42
+  },
+  {
+   "id": "menu_2",
+   "part": "ui_menu_btn_secondary",
+   "rect": [
+    618,
+    497,
+    1053,
+    575
+   ],
+   "text": "상점",
+   "text_color": "#1E5A2A",
+   "text_size_px": 42
+  },
+  {
+   "id": "menu_3",
+   "part": "ui_menu_btn_secondary",
+   "rect": [
+    619,
+    584,
+    1053,
+    663
+   ],
+   "text": "튜토리얼",
+   "text_color": "#1E5A2A",
+   "text_size_px": 42
+  },
+  {
+   "id": "menu_4",
+   "part": "ui_menu_btn_secondary",
+   "rect": [
+    619,
+    672,
+    1053,
+    750
+   ],
+   "text": "설정",
+   "text_color": "#1E5A2A",
+   "text_size_px": 42
+  }
+ ]
+}

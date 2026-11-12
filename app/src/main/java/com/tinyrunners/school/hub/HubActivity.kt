@@ -35,27 +35,27 @@ class HubActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // A's approved menu (docs/art/ui-screens): the open picture book with the title, the six friends and a
+        // A's final menu (docs/art/ui-screens/main-menu-final, 2026-11-12): the open picture book with the title, the six friends and a
         // cream gap in the middle where the five buttons sit at the mockup's own positions (layout.json).
         val frame = MockupFrame(this, R.drawable.bg_main_menu_wide)
         fun add(part: Int, label: Int, ink: Int, px: Float, rect: IntArray, click: () -> Unit) =
             frame.place(MockupFrame.partButton(this, frame, part, getString(label), ink, px) {
                 if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click()
             }, rect[0], rect[1], rect[2], rect[3])
-        add(R.drawable.ui_menu_btn_primary, R.string.hub_story, CREAM, 44f, intArrayOf(605, 335, 1064, 424)) {
+        add(R.drawable.ui_menu_btn_primary, R.string.hub_story, CREAM, 44f, intArrayOf(610, 317, 1061, 401)) {
             startActivity(PrologueActivity.forStory(this))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_game, DEEP_GREEN, 42f, intArrayOf(635, 442, 1037, 522)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_game, DEEP_GREEN, 42f, intArrayOf(619, 410, 1053, 488)) {
             startActivity(MainActivity.selectionIntent(this))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_shop, DEEP_GREEN, 42f, intArrayOf(637, 537, 1035, 616)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_shop, DEEP_GREEN, 42f, intArrayOf(618, 497, 1053, 575)) {
             startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_tutorial, DEEP_GREEN, 42f, intArrayOf(637, 629, 1035, 710)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_tutorial, DEEP_GREEN, 42f, intArrayOf(619, 584, 1053, 663)) {
             // A practice run with 라일 that always starts with the game guide.
             startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_settings, DEEP_GREEN, 42f, intArrayOf(636, 724, 1035, 805)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_settings, DEEP_GREEN, 42f, intArrayOf(619, 672, 1053, 750)) {
             startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java))
         }
         setContentView(frame)
