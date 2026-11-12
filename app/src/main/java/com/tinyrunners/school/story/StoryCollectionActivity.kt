@@ -22,6 +22,7 @@ import android.view.WindowInsets
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.tinyrunners.school.R
@@ -34,16 +35,20 @@ import com.tinyrunners.school.talk.PrologueActivity
 import com.tinyrunners.school.talk.TalkActivity
 import com.tinyrunners.school.talk.TalkProgress
 import com.tinyrunners.school.ui.Page
-import com.tinyrunners.school.ui.PaperBackdropView
+import com.tinyrunners.school.ui.MockupFrame
 import org.json.JSONObject
 import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * 이야기 모음 (from the village story list, top-right), laid out like the shop: a row of cards to swipe through.
+ * 이야기 모음 (from the village story list, top-right), in A's approved design (docs/art/ui-screens/
+ * approved/mockup_story_collection.png, layout.json): the paper-and-bench picture with the title, "◀ 마을 이야기로" at
+ * the top-left, the 본 이야기 counter and the bag at the top-right, and story cards (card frame, ribbon, title,
+ * picture, count pill, button) standing on the bench, four across and sliding sideways for the rest.
+ *
  * The first shelf has the world story and one card per friend; a friend's card opens that friend's shelf with every
- * story in order (first talk, the village stories). All are listed from the start; the ones not reached yet in
- * 스토리 진행 stay locked. Nothing here changes progress; it only replays.
+ * story in order (first talk, the village stories). The ones not reached yet in 스토리 진행 stay locked. Nothing here
+ * changes progress; it only replays. Friends always appear as their original sprites (A, 2026-11-12).
  */
 class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
     /** Story screens play the main theme. */
@@ -56,48 +61,49 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
     /** The friend whose shelf is open, or null for the first shelf. */
     private var shelf: String? = null
 
-    private lateinit var title: TextView
-    private lateinit var subtitle: TextView
+    private lateinit var frame: MockupFrame
     private lateinit var back: Button
+    private lateinit var counter: TextView
     private lateinit var row: LinearLayout
     private lateinit var scroller: HorizontalScrollView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         shelf = savedInstanceState?.getString(KEY_SHELF)
-        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(8), dp(16), dp(12)) }
-        val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        back = com.tinyrunners.school.ui.HomeButton.create(this, getString(R.string.collection_back)) { goBack() }
-        top.addView(back)
-        title = TextView(this).apply {
-            textSize = 24f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD)
-            if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-            setPadding(dp(12), 0, 0, 0)
-        }
-        top.addView(title, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        top.addView(com.tinyrunners.school.ui.BagButton.create(this))
-        content.addView(top)
-        subtitle = TextView(this).apply { textSize = 15f; setTextColor(Page.MUTED); setPadding(0, dp(6), 0, 0) }
-        content.addView(subtitle)
-        row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(4), dp(8), dp(4)) }
-        scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; addView(row) }
-        content.addView(scroller, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(8) })
+        frame = MockupFrame(this, R.drawable.bg_story_collection_wide)
 
-        setContentView(FrameLayout(this).apply {
-            setBackgroundColor(Page.BACKGROUND)
-            addView(PaperBackdropView(this@StoryCollectionActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            addView(content, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            setOnApplyWindowInsetsListener { v, insets ->
-                if (Build.VERSION.SDK_INT >= 30) {
-                    val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
-                    v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-                } else {
-                    @Suppress("DEPRECATION")
-                    v.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom)
-                }
-                insets
-            }
-        })
+        // ◀ 마을 이야기로: the part has the arrow; the words sit in its text area.
+        back = Button(this).apply {
+            isAllCaps = false; stateListAnimator = null; setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER; minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
+            background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(R.drawable.ui_story_back_button), null)
+            setOnClickListener { goBack() }
+        }.also { frame.onScaleText(it, 34f) }
+        frame.place(back, 47, 41, 371, 112)
+        // Keep the label right of the arrow (text_rect 128–350 of 47–371).
+        frame.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            val s = frame.scale
+            back.setPadding(((128 - 47) * s).roundToInt(), 0, ((371 - 350) * s).roundToInt(), 0)
+        }
+        counter = TextView(this).apply {
+            setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
+            background = getDrawable(R.drawable.ui_story_counter_pill)
+        }.also { frame.onScaleText(it, 31f) }
+        frame.place(counter, 1233, 41, 1526, 112)
+        frame.place(android.widget.ImageButton(this).apply {
+            setImageDrawable(null)
+            background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(R.drawable.ui_story_bag_button), null)
+            contentDescription = getString(R.string.bag_open)
+            setOnClickListener { startActivity(com.tinyrunners.school.quest.BagActivity.intent(this@StoryCollectionActivity)) }
+        }, 1562, 34, 1637, 120)
+
+        // Cards on the bench; they slide sideways when there are more than four.
+        row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(row) }
+        frame.place(scroller, 40, 205, 1640, 812)
+
+        setContentView(frame)
+        hideSystemBars()
     }
 
     override fun onResume() {
@@ -110,10 +116,6 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
             loaded = result.isSuccess
             render()
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -139,17 +141,13 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
         val first = CollectionEntry(
             label = getString(R.string.collection_first_talk),
             title = getString(R.string.collection_first_talk_title),
-            hint = getString(R.string.collection_first_talk_hint),
             open = talkSeen,
-            summary = getString(R.string.collection_first_talk_body, friend.name),
         ) { startActivity(TalkActivity.replay(this, friend.id)) }
         val village = stories.filter { it.characterId == friend.id }.mapIndexed { i, story ->
             CollectionEntry(
                 label = if (i == 0) getString(R.string.collection_intro) else getString(R.string.collection_episode, i),
                 title = story.title,
-                hint = getString(R.string.collection_locked_hint),
                 open = story.id in read,
-                summary = story.summary,
             ) { startActivity(TalkActivity.village(this, friend.id, story.id)) }
         }
         return listOf(first) + village
@@ -157,106 +155,152 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
 
     private fun render() {
         row.removeAllViews()
+        row.addView(RefBox(this, frame, 25, 1))   // the first card starts where the mockup's does (x 65)
         val friend = shelf?.let { id -> friends.firstOrNull { it.id == id } }
         if (friend == null) {
             shelf = null
-            title.setText(R.string.collection_title)
-            back.text = getString(R.string.collection_back)
+            back.text = getString(R.string.collection_back).removePrefix("◀ ")
             val total = friends.sumOf { entriesOf(it).size } + 1
             val open = friends.sumOf { f -> entriesOf(f).count { it.open } } + if (prologueSeen()) 1 else 0
-            subtitle.text = if (loaded) getString(R.string.collection_progress, open, total) else getString(R.string.records_loading)
-            row.addView(worldCard(), cardParams())
-            friends.forEach { row.addView(friendCard(it), cardParams()) }
+            counter.text = if (loaded) getString(R.string.collection_seen, open, total) else getString(R.string.records_loading)
+            row.addView(worldCard())
+            friends.forEach { row.addView(friendCard(it)) }
         } else {
-            title.text = getString(R.string.collection_friend_title, friend.name)
-            back.text = getString(R.string.collection_back_all)
+            back.text = getString(R.string.collection_back_all).removePrefix("◀ ")
             val entries = entriesOf(friend)
-            subtitle.text = getString(R.string.collection_friend_progress, friend.home, entries.count { it.open }, entries.size)
-            entries.forEach { row.addView(storyCard(friend, it), cardParams()) }
+            counter.text = getString(R.string.collection_seen_friend, friend.name, entries.count { it.open }, entries.size)
+            entries.forEach { row.addView(storyCard(friend, it)) }
         }
+        row.addView(RefBox(this, frame, 25, 1))
     }
 
     private fun prologueSeen() = !TalkProgress(this).shouldShowPrologue
 
     private fun worldCard(): View {
         val open = prologueSeen()
-        return card(
-            thumb = WorldThumb(this, friends.map { it.id }, locked = !open),
-            label = getString(R.string.collection_world_label),
-            name = getString(R.string.collection_world),
-            body = getString(R.string.collection_world_body),
+        return card(R.drawable.ui_story_ribbon_world, getString(R.string.collection_world),
+            thumbPart = R.drawable.story_thumb_world, thumbView = null, count = null,
             button = if (open) getString(R.string.collection_replay) else getString(R.string.collection_locked),
-            enabled = open, primary = true,
-        ) { startActivity(PrologueActivity.replay(this)) }
+            look = if (open) Look.PRIMARY else Look.LOCKED) { startActivity(PrologueActivity.replay(this)) }
     }
 
     private fun friendCard(friend: CharacterDefinition): View {
         val entries = entriesOf(friend)
         val open = entries.count { it.open }
-        return card(
-            thumb = SceneThumb(this, friend.id, locked = false),
-            label = friend.home,
-            name = getString(R.string.collection_friend_title, friend.name),
-            body = getString(R.string.collection_friend_count, open, entries.size),
-            button = getString(R.string.collection_open_friend), enabled = true, primary = open > 0,
+        return card(RIBBONS[friend.id] ?: R.drawable.ui_story_ribbon_world, getString(R.string.collection_friend_title, friend.name),
+            thumbPart = THUMBS[friend.id], thumbView = if (THUMBS[friend.id] == null) SceneThumb(this, friend.id, locked = false) else null,
+            count = getString(R.string.collection_seen, open, entries.size),
+            button = if (open > 0) getString(R.string.collection_open_friend) else getString(R.string.collection_not_open),
+            look = if (open > 0) Look.OUTLINE else Look.LOCKED,
         ) { shelf = friend.id; render(); scroller.post { scroller.scrollTo(0, 0) } }
     }
 
-    private fun storyCard(friend: CharacterDefinition, entry: CollectionEntry): View = card(
-        thumb = SceneThumb(this, friend.id, locked = !entry.open),
-        label = entry.label,
-        name = entry.title,
+    private fun storyCard(friend: CharacterDefinition, entry: CollectionEntry): View =
         // Locked stories show their title only, never what happens in them.
-        body = if (entry.open) entry.summary else entry.hint,
-        button = if (entry.open) getString(R.string.collection_replay) else getString(R.string.collection_locked),
-        enabled = entry.open, primary = true,
-    ) { entry.play() }
+        card(RIBBONS[friend.id] ?: R.drawable.ui_story_ribbon_world, entry.title,
+            thumbPart = null, thumbView = SceneThumb(this, friend.id, locked = !entry.open), count = entry.label,
+            button = if (entry.open) getString(R.string.collection_replay) else getString(R.string.collection_locked),
+            look = if (entry.open) Look.PRIMARY else Look.LOCKED) { entry.play() }
 
-    private fun card(thumb: View, label: String, name: String, body: String, button: String, enabled: Boolean,
-                     primary: Boolean, click: () -> Unit): View {
-        val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(12), dp(10), dp(12), dp(10))
-            background = GradientDrawable().apply { setColor(Page.PAPER); cornerRadius = dp(20).toFloat(); setStroke(dp(1), Page.LINE) }
+    private enum class Look { PRIMARY, OUTLINE, LOCKED }
+
+    /**
+     * One card in the mockup's proportions (380×581 reference pixels, from the 라일 card): frame, ribbon, title,
+     * picture, an optional count pill and the button.
+     */
+    private fun card(ribbon: Int, title: String, thumbPart: Int?, thumbView: View?, count: String?, button: String,
+                     look: Look, click: () -> Unit): View {
+        val box = RefBox(this, frame, 380, 581).apply { setPadding(0, 0, 0, 0) }
+        // Long titles start right of the ribbon so they never run under it.
+        val long = title.length > 7
+        box.add(ImageView(this).apply { setImageResource(R.drawable.ui_story_card_frame); scaleType = ImageView.ScaleType.FIT_XY }, 0, 13, 377, 581)
+        box.add(TextView(this).apply {
+            text = title; setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
+            maxLines = if (long) 2 else 1; ellipsize = android.text.TextUtils.TruncateAt.END; setPadding(0, 0, 0, 0)
+            setLineSpacing(0f, 0.95f); includeFontPadding = false
+        }.also { frame.onScaleText(it, if (long) 27f else 40f) }, if (long) 106 else 24, if (long) 58 else 66, 366, if (long) 128 else 120)
+        box.add(ImageView(this).apply { setImageResource(ribbon); scaleType = ImageView.ScaleType.FIT_XY }, 38, 0, 104, 79)
+        val picture = thumbView ?: ImageView(this).apply {
+            setImageResource(thumbPart!!); scaleType = ImageView.ScaleType.FIT_CENTER
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }
-        card.addView(thumb, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
-        card.addView(TextView(this).apply {
-            text = label; textSize = 12f; setTextColor(Page.LEAF); setTypeface(typeface, Typeface.BOLD); setPadding(0, dp(6), 0, 0)
-            maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
-        })
-        card.addView(TextView(this).apply {
-            text = name; textSize = 17f; setTextColor(if (enabled) Page.INK else Page.MUTED); setTypeface(typeface, Typeface.BOLD)
-            maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
-        })
-        card.addView(TextView(this).apply {
-            text = body; textSize = 13f; setTextColor(Page.MUTED); maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END
-        })
-        card.addView(Button(this).apply {
-            text = button
-            textSize = 15f; isAllCaps = false; stateListAnimator = null
-            minHeight = dp(44); minimumHeight = dp(44); setPadding(0, 0, 0, 0)
-            val filled = enabled && primary
-            setTextColor(if (filled) Color.WHITE else Page.LEAF)
-            background = RippleDrawable(ColorStateList.valueOf(Page.MINT), GradientDrawable().apply {
-                setColor(if (filled) Page.LEAF else Page.MINT); cornerRadius = dp(14).toFloat()
-            }, null)
-            isEnabled = enabled
-            alpha = if (enabled) 1f else 0.6f
+        box.add(picture, 35, 131, 343, 400)
+        if (count != null) box.add(TextView(this).apply {
+            text = count; setTextColor(Color.parseColor("#3D3550")); gravity = Gravity.CENTER; typeface = Typeface.DEFAULT_BOLD
+            background = getDrawable(R.drawable.ui_story_count_pill)
+        }.also { frame.onScaleText(it, 27f) }, 67, 416, 310, 460)
+        val (part, ink) = when (look) {
+            Look.PRIMARY -> R.drawable.ui_story_btn_primary to CREAM
+            Look.OUTLINE -> R.drawable.ui_story_btn_outline to DEEP_GREEN
+            Look.LOCKED -> R.drawable.ui_story_btn_disabled to Color.parseColor("#8A8478")
+        }
+        box.add(Button(this).apply {
+            text = button; isAllCaps = false; stateListAnimator = null; setTextColor(ink); typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER; setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
+            background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(part), null)
+            isEnabled = look != Look.LOCKED
             setOnClickListener { click() }
-        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
-        if (enabled) { card.isClickable = true; card.setOnClickListener { click() } }
-        return card
+        }.also { frame.onScaleText(it, 32f) }, 38, 478, 342, 543)
+        if (look != Look.LOCKED) { box.isClickable = true; box.setOnClickListener { click() } }
+        return box
     }
 
-    private fun cardParams() = LinearLayout.LayoutParams(dp(210), LinearLayout.LayoutParams.MATCH_PARENT).apply { marginEnd = dp(12) }
+    private fun hideSystemBars() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.insetsController?.let {
+                it.hide(WindowInsets.Type.systemBars())
+                it.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        }
+    }
 
-    private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
+    private class CollectionEntry(val label: String, val title: String, val open: Boolean, val play: () -> Unit)
 
-    private class CollectionEntry(
-        val label: String, val title: String, val hint: String, val open: Boolean, val summary: String, val play: () -> Unit,
-    )
+    private companion object {
+        const val KEY_SHELF = "collectionShelf"
+        val DEEP_GREEN = Color.parseColor("#1E5A2A")
+        val CREAM = Color.parseColor("#FFF8E7")
+        /** Ribbons and thumbnails A has drawn so far (세계·라일·치즈·포포); the others use the world ribbon and the home picture. */
+        val RIBBONS = mapOf("mint" to R.drawable.ui_story_ribbon_mint, "cheese" to R.drawable.ui_story_ribbon_cheese, "popo" to R.drawable.ui_story_ribbon_popo)
+        val THUMBS = mapOf("mint" to R.drawable.story_thumb_mint, "cheese" to R.drawable.story_thumb_cheese, "popo" to R.drawable.story_thumb_popo)
+    }
+}
 
-    private companion object { const val KEY_SHELF = "collectionShelf" }
+/**
+ * A fixed-size box in the mockup's reference pixels (scaled by [frame]'s current scale), with children placed by
+ * reference rects relative to the box. Used for the story cards inside the sideways scroller.
+ */
+@SuppressLint("ViewConstructor")
+internal class RefBox(context: Context, private val frame: MockupFrame, private val refW: Int, private val refH: Int) : android.view.ViewGroup(context) {
+    private class Ref(val x0: Int, val y0: Int, val x1: Int, val y1: Int)
+
+    fun add(view: View, x0: Int, y0: Int, x1: Int, y1: Int) {
+        view.setTag(R.id.mockup_rect, Ref(x0, y0, x1, y1))
+        addView(view)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val s = frame.scale
+        for (i in 0 until childCount) {
+            val c = getChildAt(i); val r = c.getTag(R.id.mockup_rect) as Ref
+            c.measure(MeasureSpec.makeMeasureSpec(((r.x1 - r.x0) * s).roundToInt(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(((r.y1 - r.y0) * s).roundToInt(), MeasureSpec.EXACTLY))
+        }
+        setMeasuredDimension((refW * s).roundToInt(), (refH * s).roundToInt())
+    }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        val s = frame.scale
+        for (i in 0 until childCount) {
+            val c = getChildAt(i); val ref = c.getTag(R.id.mockup_rect) as Ref
+            val x = (ref.x0 * s).roundToInt(); val y = (ref.y0 * s).roundToInt()
+            c.layout(x, y, x + c.measuredWidth, y + c.measuredHeight)
+        }
+    }
 }
 
 /**
