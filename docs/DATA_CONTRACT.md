@@ -11,7 +11,7 @@ storyIds는 stories.json에 존재하는 ID만 참조한다. assetStatus=planned
 현재 Kotlin 모델은 시작 화면에 필요한 필드만 읽는다. 게임 구현 시 추가 필드를 명시적으로 파싱한다.
 
 - 친구 소개 문구(2026-11-12): assets/content/character_copy.json은 docs/character-copy/friendly-copy.ko.json 복사본. id로 읽어 CharacterDefinition.copy(CharacterCopy: tagline, selectionIntro, personality, traits, habits, cherishedItem, runningReason, storyTeaser, greetings). 기존 personality·summary는 바꾸지 않으며 copy가 없으면 화면이 그것을 쓴다. voiceNote·sourceStoryIds는 읽지 않는다. greetings는 scripts/build-greeting-lines.cjs가 short_lines_greetings.json(<id>_select_greeting_0n, event select)으로 따로 만든다.
-- 승인 그림(2026-11-12): res/drawable-nodpi/hazard_{air,spikes,platform}_<id>.png와 item_<id>.png(라일 제외)는 docs/art/approved/extracted/ 원본 그대로. 그림 외곽은 충돌 판정이 아니다(판정은 엔진 수치).
+- 승인 그림(2026-11-12): res/drawable-nodpi/hazard_{air,spikes,platform}_<id>.png와 item_<id>.png는 docs/art/approved/extracted/ 원본 그대로(bag_mint.png는 B가 pending 원본에서 풀밭만 걷어 낸 분리본). 그림 외곽은 충돌 판정이 아니다(판정은 엔진 수치).
 
 ## 이야기
 2026-11-10 도감 구현 기준. `stories.json`은 6명 × 4편 = 24개다.

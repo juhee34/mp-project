@@ -153,7 +153,6 @@ for(const id of expected){
     const b=fs.readFileSync(path.join(root,'app/src/main/res/drawable-nodpi','hazard_'+kind+'_'+id+'.png'));
     assert(a.equals(b),'hazard_'+kind+'_'+id+'.png differs from the approved extract'); hazardCount++;
   }
-  if(id==='mint') continue; // the fern leaf is still pending separation (HANDOFF.md)
   const a=fs.readFileSync(path.join(root,'docs/art/approved/extracted','bag_'+id+'.png'));
   const b=fs.readFileSync(path.join(root,'app/src/main/res/drawable-nodpi','item_'+id+'.png'));
   assert(a.equals(b),'item_'+id+'.png differs from the approved extract');
@@ -165,7 +164,7 @@ console.log(`Talks: prologue ${talks.prologue.length} pages, ${talks.talks.lengt
 console.log(`Short lines in app: ${pack.lines.length}`);
 console.log(`Obstacle props in app: ${obstacleCount}/18`);
 console.log(`Short lines: ${allLines.length} (base 144 + additions ${extra.length})`);
-console.log(`Character copy: ${copy.characters.length} friends, ${greet.lines.length} greeting lines; approved hazard art ${hazardCount}/18, item art 5/6 (mint pending)`);
+console.log(`Character copy: ${copy.characters.length} friends, ${greet.lines.length} greeting lines; approved hazard art ${hazardCount}/18, item art 6/6`);
 console.log(`Village stories with dialogue: ${scripted}/${village.length} (others play from their outline)`);
 
 assert.deepEqual(read('docs/CHARACTER_BIBLE.json').map(c=>c.id),expected);

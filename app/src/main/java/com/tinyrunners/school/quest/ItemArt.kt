@@ -11,9 +11,8 @@ import android.graphics.RectF
 import com.tinyrunners.school.R
 
 /**
- * Draws a friend's item with a soft glow, so it reads as "pick me up", not an obstacle. Items with A's approved art
- * (docs/art/approved/: 햇빛 조각, 조개껍데기, 솔방울, 책갈피, 종이배) use it; 라일's fern leaf keeps its 8×8 pixel icon
- * until its art is separated from the grass (still pending in the handoff).
+ * Draws a friend's item with a soft glow, so it reads as "pick me up", not an obstacle, using A's approved item art
+ * (docs/art/approved/extracted/bag_<id>.png). The 8×8 pixel icons remain only as a fallback if a picture is missing.
  */
 object ItemArt {
     private val paint = Paint().apply { isAntiAlias = false }
@@ -23,7 +22,7 @@ object ItemArt {
     private var art: Map<String, Pair<Bitmap, Rect>> = emptyMap()
 
     private val IDS = mapOf(
-        "cheese" to R.drawable.item_cheese, "popo" to R.drawable.item_popo, "lumi" to R.drawable.item_lumi,
+        "mint" to R.drawable.item_mint, "cheese" to R.drawable.item_cheese, "popo" to R.drawable.item_popo, "lumi" to R.drawable.item_lumi,
         "nunu" to R.drawable.item_nunu, "piko" to R.drawable.item_piko,
     )
 
