@@ -23,7 +23,7 @@ object BagButton {
         contentDescription = context.getString(R.string.bag_open)
         isClickable = true; isFocusable = true
         background = GradientDrawable().apply {
-            setColor(Page.PAPER); cornerRadius = 12 * d; setStroke((2 * d).roundToInt(), Color.rgb(176, 128, 72))
+            setColor(Page.PAPER); cornerRadius = 12 * d; setStroke((2 * d).roundToInt(), Color.rgb(196, 196, 202))
         }
         setOnClickListener { context.startActivity(BagActivity.intent(context)) }
         val size = (40 * d).roundToInt()
@@ -66,7 +66,7 @@ private class PouchButtonView(context: Context) : View(context) {
     }
 }
 
-/** A 16×16 pixel drawstring pouch with a gold coin on its front. */
+/** A 16×16 pixel white drawstring pouch (red tie) with a gold coin on its front. */
 object PouchIcon {
     private val paint = Paint().apply { isAntiAlias = false }
     private val ROWS = listOf(
@@ -88,7 +88,8 @@ object PouchIcon {
         "................",
     )
     private val PALETTE = mapOf(
-        'b' to Color.rgb(102, 64, 36), 'B' to Color.rgb(196, 140, 84), 'L' to Color.rgb(226, 180, 120),
+        // A white cloth pouch: grey outline, white body, a soft grey shade.
+        'b' to Color.rgb(112, 112, 120), 'B' to Color.rgb(250, 250, 248), 'L' to Color.rgb(222, 222, 228),
         'd' to Color.rgb(150, 54, 48), 'D' to Color.rgb(206, 92, 76),
         'y' to Color.rgb(196, 140, 30), 'Y' to Color.rgb(250, 210, 80),
     )

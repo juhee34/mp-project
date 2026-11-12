@@ -27,6 +27,11 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 가방 아이콘 흰색, 가방에서 이전 화면으로 (2026-11-12, B)
+- ui/BagButton의 PouchIcon을 갈색 가죽에서 흰 천 주머니(회색 테두리·연회색 그늘, 빨간 끈·금화 유지)로, 버튼 테두리도 연회색으로 바꿨다.
+- 가방 화면 왼쪽 위 버튼을 ◀ 처음으로(메뉴로 바로) 대신 ◀ 돌아가기(finish)로 바꿔, 가방을 연 화면(상점·결과·마을 이야기 등)으로 돌아간다. 휴대폰 뒤로 가기도 같다.
+- 검증: assembleDebug·testDebugUnitTest·lintDebug, 에뮬레이터에서 상점 → 가방 → 돌아가기 → 상점 확인, 흰 주머니 아이콘 확인.
+
 ## 물품 값 25코인, 공중 가시 막대 키움, 상점을 시안에 더 가깝게 (2026-11-12, B)
 - 물품 값: ShopRules.ITEM_PRICE 10 → 25(사용자 요청 "10코인은 너무 싸다"). 25m=1코인이라 한 개에 약 600m. 꾸미기 30~50·노래 80과 비교해 정했다. ShopRulesTest 갱신.
 - 공중 가시 막대(점프하면 부딪히는 장애물): RunnerConfig floatMinWidth 60→90, floatMaxWidth 100→140, floatThickness 18→26. 아랫면 높이(80~120)는 그대로라 달려서 아래로 지나가는 것은 같다(floatingBarsLetTheRunnerPassUnderneath 통과). 그림도 판정에 맞춰 커진다. 얇은 막대 검사는 30 이하로 완화.

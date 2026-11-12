@@ -52,9 +52,10 @@ class BagActivity : Activity() {
         super.onCreate(savedInstanceState)
         val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(26), dp(8), dp(26), dp(44)) }
 
-        // Top: 처음으로 | 가방 (with its subtitle) ............ coins
+        // Top: 돌아가기 | 가방 (with its subtitle) ............ coins
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(com.tinyrunners.school.ui.HomeButton.create(this).apply {
+        // Back to whatever screen opened the bag (the shop, a run result, the village...), not straight to the menu.
+        top.addView(com.tinyrunners.school.ui.HomeButton.create(this, getString(R.string.common_back_pill)) { finish() }.apply {
             textSize = 14f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD)
             background = RippleDrawable(ColorStateList.valueOf(ShopActivity.OWNED), GradientDrawable().apply {
                 setColor(ShopActivity.CARD); cornerRadius = dp(18).toFloat(); setStroke(dp(2), ShopActivity.HONEY)
