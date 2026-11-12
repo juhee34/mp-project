@@ -63,15 +63,12 @@
     <string name="result_choose_friend">친구 선택으로</string>
 
     <!-- Records -->
-    <string name="records_eyebrow">함께 달린 기록</string>
     <string name="records_title">내 기록</string>
     <string name="records_where_cloud">계정(Firebase)에 저장된 기록이에요.</string>
     <string name="records_where_device">이 기기에만 저장된 기록이에요.</string>
     <string name="records_loading">기록을 불러오는 중…</string>
     <string name="records_total">모두 %1$d번, %2$dm를 함께 달렸어요.</string>
     <string name="records_none">아직 함께 달리지 않았어요. 언제든 함께할 수 있어요.</string>
-    <string name="records_line_runs">%1$d번 · 누적 %2$dm</string>
-    <string name="records_line_best">최고 %1$dm · 최고 점수 %2$d</string>
     <string name="records_load_failed">기록을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</string>
 
     <!-- Settings -->
@@ -103,4 +100,10 @@
     <string name="sky_rain">비</string>
     <string name="sky_snow">눈</string>
     <string name="sky_storm">뇌우</string>
+    <string name="records_chip_runs">%1$d번</string>
+    <string name="records_meters">%1$dm</string>
+    <string name="records_stat_total">함께 달린 거리</string>
+    <string name="records_stat_best">최고 기록</string>
+    <string name="records_stat_score">최고 점수</string>
+    <string name="records_card_description">%1$s. %2$d번, 누적 %3$dm, 최고 %4$dm, 최고 점수 %5$d</string>
 </resources>

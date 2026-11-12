@@ -355,13 +355,17 @@ internal class SceneThumb(context: Context, private val characterId: String, pri
         val art = scene
         if (art != null) {
             val (bitmap, floorFraction) = art
-            // Fill the height and start from the left edge: the home is at the start of the road.
-            val scale = h / bitmap.height
-            val visible = (w / scale).toInt().coerceAtMost(bitmap.width)
-            src.set(0, 0, visible, bitmap.height)
-            dst.set(0f, 0f, visible * scale, h)
+            // Fill the whole picture from the left edge (the home is at the start of the road); on a wide card the
+            // picture is cropped top and bottom around the floor instead of leaving an empty strip at the right.
+            val scale = max(h / bitmap.height, w / bitmap.width)
+            val visibleW = (w / scale).toInt().coerceAtMost(bitmap.width)
+            val visibleH = (h / scale).coerceAtMost(bitmap.height.toFloat())
+            val floorPx = bitmap.height * floorFraction
+            val top = (floorPx - visibleH * 0.9f).coerceIn(0f, bitmap.height - visibleH)
+            src.set(0, top.toInt(), visibleW, (top + visibleH).toInt())
+            dst.set(0f, 0f, w, h)
             canvas.drawBitmap(bitmap, src, dst, pixel)
-            floor = h * floorFraction
+            floor = (floorPx - top) * scale
         } else {
             fill.color = Page.MINT; canvas.drawRect(0f, 0f, w, h, fill)
         }
