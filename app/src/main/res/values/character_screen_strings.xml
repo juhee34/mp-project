@@ -3,11 +3,11 @@
     <string name="characters_brand">TINY RUNNERS</string>
     <string name="characters_intro_eyebrow">함께 달리는 작은 모험</string>
     <string name="characters_intro_title">친구들의\n작은 세계</string>
-    <string name="characters_intro_body">오늘은 누구와 떠날까요? 친구를 골라 어디에 살고, 어떤 마음을 품고 있는지 만나 보세요.</string>
+    <string name="characters_intro_body">여섯 친구의 고향을 달리는 픽셀 러닝 게임. 톡 눌러 장애물을 넘고, 쉬고 싶은 날에는 친구의 작은 이야기를 펼쳐 보세요.</string>
     <string name="characters_intro_friends">처음부터 함께할 수 있는 친구 %1$d명</string>
     <string name="characters_choose">친구 고르기</string>
     <string name="characters_select_title">오늘 함께할 친구</string>
-    <string name="characters_select_hint">%1$d명 모두 선택할 수 있어요. 친구를 선택한 뒤 아래 시작 버튼을 눌러 주세요.</string>
+    <string name="characters_select_hint">친구 %1$d명이 기다리고 있어요. 마음이 가는 친구를 톡 고르고, 함께 달려 볼까요?</string>
     <string name="characters_placeholder_notice">여섯 친구의 픽셀 모습을 만나 보세요.</string>
     <string name="characters_placeholder_portrait">픽셀 캐릭터</string>
     <string name="characters_name_and_species">%1$s · %2$s</string>
@@ -27,4 +27,10 @@
     <string name="characters_next">다음 친구</string>
     <string name="characters_species_home">%1$s · %2$s</string>
     <string name="characters_card_description">친구 %1$d / %2$d. %3$s, %4$s, %5$s. %6$s 옆으로 넘기거나 화살표로 다른 친구를 볼 수 있어요.</string>
+    <string name="characters_greeting_mint">오늘은 이쪽으로 가 볼까? 어, 처음 보는 꽃이다!</string>
+    <string name="characters_greeting_cheese">마침 산책 가려던 참이야. 네 자리도 비워 뒀어.</string>
+    <string name="characters_greeting_popo">저쪽에서 처음 듣는 소리가 나. 같이 들어 볼래?</string>
+    <string name="characters_greeting_lumi">어서 와! 오늘 첫 관객은 너야. 꼬리 조심, 살짝 앉아!</string>
+    <string name="characters_greeting_nunu">나 어디 있게? …히히, 또 웃다가 들켰네.</string>
+    <string name="characters_greeting_piko">앗, 물웅덩이다! 장화 챙겼어? 같이 첨벙하자!</string>
 </resources>

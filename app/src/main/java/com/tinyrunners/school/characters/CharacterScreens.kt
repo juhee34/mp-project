@@ -97,6 +97,7 @@ internal class CharacterScreens(
         val dots = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         top.addView(dots)
         body.addView(top, LinearLayout.LayoutParams(MATCH, WRAP))
+        body.label(context.getString(R.string.characters_select_hint, friends.size), 14f, MUTED, 6)
 
         // Stage: ◀ [card] ▶
         val stage = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
@@ -172,7 +173,8 @@ internal class CharacterScreens(
             name.text = friend.name
             tag.text = context.getString(R.string.characters_species_home, friend.species, friend.home)
             tag.background = shape(blend(tint, PAPER, 0.7f), 12)
-            personality.text = friend.personality
+            val greeting = greetingFor(friend)
+            personality.text = greeting
             summary.text = friend.summary
             summary.maxLines = Int.MAX_VALUE
             summary.post {
@@ -181,7 +183,7 @@ internal class CharacterScreens(
                 summary.maxLines = lines.coerceAtLeast(1)
             }
             card.contentDescription = context.getString(R.string.characters_card_description,
-                index + 1, friends.size, friend.name, friend.species, friend.home, friend.personality)
+                index + 1, friends.size, friend.name, friend.species, friend.home, greeting)
             dots.removeAllViews()
             friends.forEachIndexed { i, f ->
                 dots.addView(View(context).apply {
@@ -236,6 +238,19 @@ internal class CharacterScreens(
         }
         sprite.post { sprite.postDelayed(tick, IDLE_MS) }
         bind()
+    }
+
+    private fun greetingFor(friend: CharacterDefinition): String {
+        val greeting = when (friend.id) {
+            "mint" -> R.string.characters_greeting_mint
+            "cheese" -> R.string.characters_greeting_cheese
+            "popo" -> R.string.characters_greeting_popo
+            "lumi" -> R.string.characters_greeting_lumi
+            "nunu" -> R.string.characters_greeting_nunu
+            "piko" -> R.string.characters_greeting_piko
+            else -> return friend.personality
+        }
+        return context.getString(greeting)
     }
 
     private fun friendColor(friend: CharacterDefinition): Int =

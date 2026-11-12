@@ -1,0 +1,109 @@
+{
+  "file": "Puddle_Jumpers.mp3",
+  "sha256": "73afda21507f15bcd1da33bb6f48b3ec60be1ac9be2a484645b41a44e8836751",
+  "decoder": "Windows ACM MP3 to 16-bit PCM; no gapless metadata trimming",
+  "listeningPerformed": false,
+  "durationSeconds": 37.98204081632653,
+  "sampleRate": 44100,
+  "channels": 2,
+  "rmsDbfs": -14.271112959257884,
+  "samplePeakDbfs": -0.00026507636037961915,
+  "fullScaleSamples": 1,
+  "boundarySampleJumpDbfs": -240.0,
+  "edgeWindows": {
+    "10": {
+      "headDbfs": -240.0,
+      "tailDbfs": -240.0
+    },
+    "50": {
+      "headDbfs": -240.0,
+      "tailDbfs": -240.0
+    },
+    "100": {
+      "headDbfs": -240.0,
+      "tailDbfs": -240.0
+    },
+    "250": {
+      "headDbfs": -240.0,
+      "tailDbfs": -240.0
+    },
+    "500": {
+      "headDbfs": -240.0,
+      "tailDbfs": -240.0
+    },
+    "1000": {
+      "headDbfs": -240.0,
+      "tailDbfs": -240.0
+    },
+    "2000": {
+      "headDbfs": -44.52022718574188,
+      "tailDbfs": -240.0
+    },
+    "5000": {
+      "headDbfs": -33.06940444583485,
+      "tailDbfs": -16.476959512870728
+    }
+  },
+  "quiet10msWindows": {
+    "-60": {
+      "headSeconds": 1.43,
+      "tailSeconds": 2.37,
+      "boundaryTotalSeconds": 3.8
+    },
+    "-50": {
+      "headSeconds": 1.48,
+      "tailSeconds": 2.65,
+      "boundaryTotalSeconds": 4.13
+    },
+    "-45": {
+      "headSeconds": 1.57,
+      "tailSeconds": 2.73,
+      "boundaryTotalSeconds": 4.3
+    },
+    "-40": {
+      "headSeconds": 1.73,
+      "tailSeconds": 2.77,
+      "boundaryTotalSeconds": 4.5
+    }
+  },
+  "oneSecondRmsDbfs": [
+    -240.0,
+    -41.51,
+    -31.83,
+    -35.12,
+    -28.44,
+    -26.71,
+    -14.51,
+    -14.73,
+    -12.98,
+    -13.99,
+    -13.58,
+    -14.76,
+    -13.63,
+    -13.84,
+    -12.14,
+    -12.33,
+    -13.47,
+    -12.82,
+    -12.63,
+    -12.36,
+    -12.92,
+    -13.37,
+    -12.45,
+    -12.09,
+    -13.0,
+    -12.6,
+    -12.93,
+    -13.45,
+    -14.39,
+    -14.07,
+    -13.16,
+    -12.85,
+    -12.17,
+    -12.2,
+    -13.2,
+    -23.97,
+    -240.0,
+    -240.0
+  ]
+}

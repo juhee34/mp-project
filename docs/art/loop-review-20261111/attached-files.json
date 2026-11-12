@@ -1,0 +1,17 @@
+[
+  {
+    "file": "mint-cheese.png",
+    "sha256": "03c51289c90937eac16343fc1b9d6d0606a8efbe2fa9c79687a9a10bf072ce39",
+    "bytes": 2505972
+  },
+  {
+    "file": "nunu-piko.png",
+    "sha256": "70f58f7a24099a32f96823366da24fa05db1fd89fe301209386d89c154cdb1eb",
+    "bytes": 2753432
+  },
+  {
+    "file": "popo-lumi.png",
+    "sha256": "e24bc0866ca407a579133aca60cfa38dee2a7793ac4713f315a3a4a1c40526ad",
+    "bytes": 2872173
+  }
+]

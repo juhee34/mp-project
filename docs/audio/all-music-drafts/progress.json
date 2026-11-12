@@ -1,0 +1,174 @@
+[
+  {
+    "file": "Little_Wooden_Steps.mp3",
+    "sha256": "8dd9a025e33f0f8d5300fed9ed42d78357bf903235f4106f930a4ed6f8b38f0c",
+    "bytes": 1532096,
+    "mp3Frames": 2434,
+    "bitrate": 192000,
+    "sampleRate": 44100,
+    "channels": 2,
+    "decodedSeconds": 63.58204081632653,
+    "allFrameBytesConsumed": true,
+    "characterId": "mint",
+    "displayName": "라일",
+    "mappingConfirmed": false,
+    "exactSilenceRemovedSeconds": 2.7285714285714286,
+    "trimmedSourceBoundsSeconds": [
+      0.45997732426303856,
+      61.31344671201814
+    ],
+    "loopSourceBoundsSeconds": [
+      17.72,
+      48.28
+    ],
+    "crossfadeSeconds": 0.16,
+    "gainDb": -3.739144409218821,
+    "selection": {
+      "selectionScore": 1.377082638636391,
+      "envelopeDifferenceDb": 0.8232458113973742,
+      "brightnessProxyDifferenceDb": 0.765070125884442,
+      "selection": "20ms envelope/brightness proxy match; no beat or harmony verification"
+    },
+    "outputs": [
+      {
+        "file": "loops/mint_loop_draft.wav",
+        "seconds": 30.4,
+        "samplePeakDbfs": -3.739367928464918,
+        "rmsDbfs": -18.000000451155774,
+        "head250msDbfs": -18.404992532241202,
+        "tail250msDbfs": -16.793716964145496,
+        "fullScaleSamples": 0,
+        "sha256": "9c4e6f7d810d8af125468d361242ba64e5dfa54a314ff7bdb80d9d1d33dd2a9d",
+        "headTailDifferenceDb": 1.6112755680957065
+      },
+      {
+        "file": "trimmed/mint_trimmed.wav",
+        "seconds": 60.853469387755105,
+        "samplePeakDbfs": -3.739367928464918,
+        "rmsDbfs": -17.82525720254573,
+        "head250msDbfs": -76.59095084813279,
+        "tail250msDbfs": -62.53633241852378,
+        "fullScaleSamples": 0,
+        "sha256": "a77a6284344c342ec5405f31f7d2947eecfdbf5a33cfa03e9fc042cd1e22a1af",
+        "headTailDifferenceDb": 14.054618429609015
+      }
+    ],
+    "listeningApproved": false,
+    "wrapUsesAdjacentSourceSamples": true
+  },
+  {
+    "file": "Soft_Paws_on_Window_Sills.mp3",
+    "sha256": "544b7e79e6f178d57e2f08fc9385965d2aa8e471406dbfb03e438878cd2cc763",
+    "bytes": 2107625,
+    "mp3Frames": 3352,
+    "bitrate": 192000,
+    "sampleRate": 44100,
+    "channels": 2,
+    "decodedSeconds": 87.56244897959184,
+    "allFrameBytesConsumed": true,
+    "characterId": "cheese",
+    "displayName": "치즈",
+    "mappingConfirmed": false,
+    "exactSilenceRemovedSeconds": 0.810453514739229,
+    "trimmedSourceBoundsSeconds": [
+      0.08310657596371882,
+      86.83510204081632
+    ],
+    "loopSourceBoundsSeconds": [
+      14.36,
+      42.92
+    ],
+    "crossfadeSeconds": 0.16,
+    "gainDb": -4.893960580956337,
+    "selection": {
+      "selectionScore": 1.5505054334915342,
+      "envelopeDifferenceDb": 0.505298405583881,
+      "brightnessProxyDifferenceDb": 2.679704177532555,
+      "selection": "20ms envelope/brightness proxy match; no beat or harmony verification"
+    },
+    "outputs": [
+      {
+        "file": "loops/cheese_loop_draft.wav",
+        "seconds": 28.4,
+        "samplePeakDbfs": -4.989542081977682,
+        "rmsDbfs": -18.000000396099008,
+        "head250msDbfs": -17.20379062049647,
+        "tail250msDbfs": -16.030721906990998,
+        "fullScaleSamples": 0,
+        "sha256": "316a6dfdf6fe89514f7d96691a3e374466dd7c723d00dc1412d6ba32cd31a08c",
+        "headTailDifferenceDb": 1.1730687135054723
+      },
+      {
+        "file": "trimmed/cheese_trimmed.wav",
+        "seconds": 86.75199546485261,
+        "samplePeakDbfs": -4.989542081977682,
+        "rmsDbfs": -19.12809081412177,
+        "head250msDbfs": -25.882962962782376,
+        "tail250msDbfs": -103.96584858434446,
+        "fullScaleSamples": 0,
+        "sha256": "da2a386fafb30e6a28dc0dd1120f7f19218f89c7745c718d92dac0b07b494965",
+        "headTailDifferenceDb": 78.08288562156208
+      }
+    ],
+    "listeningApproved": false,
+    "wrapUsesAdjacentSourceSamples": true
+  },
+  {
+    "file": "Summer_by_the_Harbor.mp3",
+    "sha256": "145d7cbeb2f05c5329273b438e7743a4869f6bfccdd34699309ebe22271f01cc",
+    "bytes": 779769,
+    "mp3Frames": 1234,
+    "bitrate": 192000,
+    "sampleRate": 44100,
+    "channels": 2,
+    "decodedSeconds": 32.23510204081633,
+    "allFrameBytesConsumed": true,
+    "characterId": "popo",
+    "displayName": "포포",
+    "mappingConfirmed": false,
+    "exactSilenceRemovedSeconds": 2.139002267573696,
+    "trimmedSourceBoundsSeconds": [
+      1.4662358276643992,
+      31.56233560090703
+    ],
+    "loopSourceBoundsSeconds": [
+      6.74,
+      27.04
+    ],
+    "crossfadeSeconds": 0.16,
+    "gainDb": -5.4971227977851465,
+    "selection": {
+      "selectionScore": 2.5503664965393975,
+      "renderedBoundaryDifferenceDb": 0.04862555525922829,
+      "envelopeDifferenceDb": 0.5911961367131439,
+      "brightnessProxyDifferenceDb": 2.1003123134952304,
+      "selection": "20ms envelope/brightness proxy match; no beat or harmony verification"
+    },
+    "outputs": [
+      {
+        "file": "loops/popo_loop_draft.wav",
+        "seconds": 20.14,
+        "samplePeakDbfs": -5.497514558826669,
+        "rmsDbfs": -18.00000053625571,
+        "head250msDbfs": -22.099167471779104,
+        "tail250msDbfs": -22.14779868292262,
+        "fullScaleSamples": 0,
+        "sha256": "34ddcb97ec7738f4df8f7a58b394499ce8e6e37127cefadb87279cea5c82d63d",
+        "headTailDifferenceDb": 0.04863121114351543
+      },
+      {
+        "file": "trimmed/popo_trimmed.wav",
+        "seconds": 30.09609977324263,
+        "samplePeakDbfs": -5.497514558826669,
+        "rmsDbfs": -19.477083274442585,
+        "head250msDbfs": -39.76404982490435,
+        "tail250msDbfs": -83.46319099843987,
+        "fullScaleSamples": 0,
+        "sha256": "42d7a8c82fc3c15b7a90ec916328214d5cd1c3493a7857789c01b72608ec59bf",
+        "headTailDifferenceDb": 43.69914117353552
+      }
+    ],
+    "listeningApproved": false,
+    "wrapUsesAdjacentSourceSamples": true
+  }
+]

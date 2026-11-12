@@ -1,0 +1,781 @@
+[
+  {
+    "path": "docs/GIT_COMPLETENESS_PROMPT.md",
+    "sha256": "37bbe09e73bae4903c30162d6167e5c8faeca4c7c0f8319d8f36f9a8c97bf3c1",
+    "bytes": 8564,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/GIT_UPLOAD_AUDIT.md",
+    "sha256": "e2b2bae99efa548e2ae0b705d9e8033cd051cba6f6ee65eadcdad3024d18890d",
+    "bytes": 101619,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/INTRO_SCREEN_HANDOFF.md",
+    "sha256": "7052c237cdfd3d4c0b243a22435470f550af6603ccd86d3da48270ebfdb9ec91",
+    "bytes": 4297,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/PROJECT_INTRO.md",
+    "sha256": "4d5cc5683450435eaccae07879b21a3ac378e47632b2a99f303d3943b0456c0c",
+    "bytes": 13239,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/UPLOAD_RUNNING_BACKGROUNDS_PROMPT.txt",
+    "sha256": "8327dbe02f44ed5d5d7a7e48dd2437e4957c1f58d6cbe8cf82db977122f8a194",
+    "bytes": 3115,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/BACKGROUND_LOOP_TASK.md",
+    "sha256": "5744bbfc7c92ee14985ddd174bce78b5a30aad9db78e5e480464dae4e3ade60d",
+    "bytes": 2297,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/LOOP_VISUAL_REVIEW_20261111.md",
+    "sha256": "e62830ca1efd275af88f4a2be01ebecbe946d9a01508d32feffbfca5b1bdd096",
+    "bytes": 4779,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/attached-files.json",
+    "sha256": "019fc2205adc32d41d6386cf9afb4103b45a6a2c0efcfaef4e625e75cfbc81d7",
+    "bytes": 443,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/attached/mint-cheese.png",
+    "sha256": "03c51289c90937eac16343fc1b9d6d0606a8efbe2fa9c79687a9a10bf072ce39",
+    "bytes": 2505972,
+    "decision": "already_in_main",
+    "same": [
+      "docs/art/running-loop-source/mint-cheese.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/attached/nunu-piko.png",
+    "sha256": "70f58f7a24099a32f96823366da24fa05db1fd89fe301209386d89c154cdb1eb",
+    "bytes": 2753432,
+    "decision": "already_in_main",
+    "same": [
+      "docs/art/running-loop-source/nunu-piko.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/attached/popo-lumi.png",
+    "sha256": "e24bc0866ca407a579133aca60cfa38dee2a7793ac4713f315a3a4a1c40526ad",
+    "bytes": 2872173,
+    "decision": "already_in_main",
+    "same": [
+      "docs/art/running-loop-source/popo-lumi.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/build-review.ps1",
+    "sha256": "15de182ecab199f6b0485cd06b3e431117ae1c29a11638dabba5773120f053c4",
+    "bytes": 2720,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/export-running.ps1",
+    "sha256": "cca7761fe56a123b68e831fa6840891dbbfa76b41ffc20da8bc2287497f3e222",
+    "bytes": 4628,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/DELIVERY_STATUS.md",
+    "sha256": "f66d82688d03ef2dc7350ce444e688aef5303110098841524d3651bc37a57852",
+    "bytes": 1740,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/TinyRunners-running-backgrounds.zip",
+    "sha256": "fd9427fd1bf80819d352c40e5aefaefbf1a5ced355c5356074460a20283bc91b",
+    "bytes": 38880256,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "local recovery archive; implementation already in main; not uploaded twice"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/cheese-intro.png",
+    "sha256": "09ee990277822c48a24214793f76e3f2d464b78af66738ae38343b85deac9456",
+    "bytes": 852868,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/cheese-intro.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/cheese-loop.png",
+    "sha256": "b9cf0feda644950589adcb96d2098300503922ce336c3d682d18da02347f6d4f",
+    "bytes": 529558,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/cheese-loop.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/export-inputs.json",
+    "sha256": "c2d332311871e0155d4be51c43026a02ec13bb55cfb915a42873875c54057148",
+    "bytes": 2292,
+    "decision": "already_in_main",
+    "same": [
+      "docs/art/running-loops/export-inputs.json"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/gallery.png",
+    "sha256": "d12d25bff5e95cc476ac1ea2ac2433c3a66e050ad5fa6eed8555ec1f8cec300f",
+    "bytes": 2944623,
+    "decision": "already_in_main",
+    "same": [
+      "docs/art/running-loops/gallery.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/joins.png",
+    "sha256": "72c90f41bf84976de8197e88d64c9b8fd9942e87f638f62fa4f25975d5b55281",
+    "bytes": 1940418,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/lumi-intro.png",
+    "sha256": "ac0c3f6f020511cae7e6bf4beade769d75cd8ba90fabe5df56c956caf402e54d",
+    "bytes": 1242381,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/lumi-intro.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/lumi-loop.png",
+    "sha256": "f9cba3bb9d49348236b0bee197b1e0e1f820713f713d426c72c8129f7bc9e48a",
+    "bytes": 816957,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/lumi-loop.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/mint-intro.png",
+    "sha256": "409362dd94bdc32acc8da930ad20c164c43b76276f260d68b85307757088b37f",
+    "bytes": 1215273,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/mint-intro.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/mint-loop.png",
+    "sha256": "6c52f2fab3ba2b4c6904f93d4d980ebbf42d54c1303f4676c07f15a473e1147a",
+    "bytes": 746429,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/mint-loop.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/nunu-intro.png",
+    "sha256": "657d04751e71c008f1f2f5f1722604b1881280e38d0d6a1cc81fd18ae2bde844",
+    "bytes": 1114253,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/nunu-intro.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/nunu-loop.png",
+    "sha256": "cc9c894bb2a9c123e5255a217c6d434ccde3c2fc61d4a172931f1e5343665f12",
+    "bytes": 526546,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/nunu-loop.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/piko-intro.png",
+    "sha256": "90a717198acf275e6f72421919de0d173505a1dcebbe9f2d9d65a79e0899896e",
+    "bytes": 1264019,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/piko-intro.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/piko-loop.png",
+    "sha256": "81386cfe0b77b9c029c4656f6dc0d8e9455dde866c6224f355ed17db3bbf4342",
+    "bytes": 812371,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/piko-loop.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/popo-intro.png",
+    "sha256": "337583f3fca9923e0160dfd6a2099104b4f8bd51885d590e72e5d579549ef626",
+    "bytes": 1109498,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/popo-intro.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/popo-loop.png",
+    "sha256": "400068db391f4cf36216d94b1651fe9da42f888984000afe30994d36e7fffd79",
+    "bytes": 537744,
+    "decision": "already_in_main",
+    "same": [
+      "app/src/main/assets/backgrounds/running/popo-loop.png"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/preview.html",
+    "sha256": "154c75511c286e199195eb2109c95f86a215e8292c75f61b8e9e2630e6a4f12a",
+    "bytes": 14360437,
+    "decision": "already_in_main",
+    "same": [
+      "docs/art/running-loops/preview.html"
+    ],
+    "result": "already_published; canonical matching paths in same; local duplicate preserved"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/running-background-loops.bundle",
+    "sha256": "3b71ecf770d502caab6513f7c8e76709e6a79a1c45bf0156c27fb31743c359d7",
+    "bytes": 32704922,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "local recovery archive; implementation already in main; not uploaded twice"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/loop-review.html",
+    "sha256": "a40da0e65ab3f0baa3844f3025e67f2dcee3854e6e4fb8880d0ba78d5978874a",
+    "bytes": 19347774,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/review-rects.json",
+    "sha256": "ec78dd803ac30f15bf86c71c0d78bc0d0e8ef0ebcee8c6ce0a93d09d162af684",
+    "bytes": 3672,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/seams.png",
+    "sha256": "5a94a8bf6ae454189f014d1efeb2df62f0be7d447f35878340e637ae3168f00c",
+    "bytes": 2878708,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/audio/Puddle_Jumpers_edit_drafts.zip",
+    "sha256": "f8f80b56fc3595bc8b6ada3d54933113de63bda92241f24778f5a06e1d902b25",
+    "bytes": 10462167,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/REVIEW.md",
+    "sha256": "bb58719a9aa6973fed8bb046eb3879b6e5375c09b29ba3f0695257092220d5fa",
+    "bytes": 7912,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/audio/Tiny_Runners_6_music_edits.zip",
+    "sha256": "aa32f5a2eff78197da316972dffec3f1c0b60f2275ab4caca823710ae383c0ad",
+    "bytes": 72847972,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/README.md",
+    "sha256": "5b2b85bded5b2ac56cd59c8247c6356724a6d29ba94c8348f9daccebd44bc24a",
+    "bytes": 1938,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/loops/cheese_loop_draft.wav",
+    "sha256": "316a6dfdf6fe89514f7d96691a3e374466dd7c723d00dc1412d6ba32cd31a08c",
+    "bytes": 5009804,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/loops/lumi_loop_draft.wav",
+    "sha256": "08a344747dc32a73a14d93d7d9df3ed3df5e3c0b339295d39cefad1a0af65220",
+    "bytes": 4833404,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/loops/mint_loop_draft.wav",
+    "sha256": "9c4e6f7d810d8af125468d361242ba64e5dfa54a314ff7bdb80d9d1d33dd2a9d",
+    "bytes": 5362604,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/loops/nunu_loop_draft.wav",
+    "sha256": "34acb60e902fbfed7311080a270ebb8dd990e19733a962bbaf456664800301d1",
+    "bytes": 5539004,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/loops/piko_loop_draft.wav",
+    "sha256": "30c02291d6939e6365bf9c6d61cdc8618292c838ee7a81c3921848e0c71fe933",
+    "bytes": 4762844,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/loops/popo_loop_draft.wav",
+    "sha256": "34ddcb97ec7738f4df8f7a58b394499ce8e6e37127cefadb87279cea5c82d63d",
+    "bytes": 3552740,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/measurements.json",
+    "sha256": "8a5989ad50ad540b830b47112bc7e67e81ef431d6d7d3f5244b0123c05491dc0",
+    "bytes": 13019,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/progress.json",
+    "sha256": "410f9e96ba014091c8cba226d5f3895f6b4b37e1291cd1dc63d75feeb994ba69",
+    "bytes": 6008,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/trimmed/cheese_trimmed.wav",
+    "sha256": "da2a386fafb30e6a28dc0dd1120f7f19218f89c7745c718d92dac0b07b494965",
+    "bytes": 15303096,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/trimmed/lumi_trimmed.wav",
+    "sha256": "47298e574d7492ace73fce6b5b9e8b083de3c1590f17ad9994c22f26725e6f03",
+    "bytes": 6893744,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/trimmed/mint_trimmed.wav",
+    "sha256": "a77a6284344c342ec5405f31f7d2947eecfdbf5a33cfa03e9fc042cd1e22a1af",
+    "bytes": 10734596,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/trimmed/nunu_trimmed.wav",
+    "sha256": "79126570cb2911992119fc12f07bf146882c009573cfc0c16b18dde1bef8e557",
+    "bytes": 6351016,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/trimmed/piko_trimmed.wav",
+    "sha256": "acc2b10eff0a40e56fc2eea5272f03f70c5e0265e84f0c538efa7598398194fa",
+    "bytes": 6091940,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/all-music-drafts/trimmed/popo_trimmed.wav",
+    "sha256": "42d7a8c82fc3c15b7a90ec916328214d5cd1c3493a7857789c01b72608ec59bf",
+    "bytes": 5308996,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/metadata.json",
+    "sha256": "1600664952a4f2bf368c2262e73ad8c165b3d8c2130d7607164db52491047a4b",
+    "bytes": 3985,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/audio/piko-drafts/Puddle_Jumpers_loop_draft.wav",
+    "sha256": "96dcecf7277d75359ca12d7b91eee9a8aa7cca90ef1e749e6fce62d9d9338560",
+    "bytes": 5059196,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/piko-drafts/Puddle_Jumpers_trimmed_draft.wav",
+    "sha256": "cf72249fb9c50a87c26a197a0327b5ed9608112b09305c68c955d5b7704966b9",
+    "bytes": 6091940,
+    "decision": "archive_or_preserve_local",
+    "same": [],
+    "result": "uploaded in 2 existing ZIPs to prerelease a-content-review-20261111 (upload exit 0); no duplicate WAV in Git; remote post-upload hash not rechecked"
+  },
+  {
+    "path": "docs/audio/piko-drafts/README.txt",
+    "sha256": "5b99163ef8c43d20f8695416e5001802696e87a60fa83ef2d57c757e11e0199f",
+    "bytes": 915,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/audio/piko-drafts/measurements.json",
+    "sha256": "036bd4c02280d9948a65975cb990fcc6b53f16b4a15ba907cb95397d3041dd72",
+    "bytes": 1798,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/audio/piko-mp3-measurements.json",
+    "sha256": "e9c8d6dab36229e07ea4b748734c50f9c3e6f63093438391d7b6ad8b32bb385d",
+    "bytes": 2121,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/dialogue/OPENING_REVIEW.md",
+    "sha256": "c2ababec3ff0f434ca13e424923ed70dfa17aafb8a4014f8b22a3fe5ee0e356f",
+    "bytes": 2826,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/dialogue/talks.reviewed.json",
+    "sha256": "ec40576a20ed09d3122e0473216caaa0e1b28796d04430536f7f367806121244",
+    "bytes": 5296,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/intro/COPY_REVIEW.md",
+    "sha256": "9ec77e629be8b2bf0dac4391cf668cef0d72bd4febad8bd59ff98c5f59396347",
+    "bytes": 1631,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/intro/intro_strings.reviewed.xml",
+    "sha256": "d3d1ab92c7e1511ca615b43e1241dcc54d1194d29aae0e06b3eab356286c9221",
+    "bytes": 3282,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "scripts/build-music-review-batch.py",
+    "sha256": "21cb69e92974864a6ee554357854b156fd0e6654c971f4729267a9b03134bd5a",
+    "bytes": 15067,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "scripts/build-piko-audio-drafts.py",
+    "sha256": "b79e3c6ef8e05f474b78cce67f4f47a4c0f402150c6e1a578440471b71bb4dc6",
+    "bytes": 6226,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "scripts/inspect-music-metadata.py",
+    "sha256": "1217c895162a3315b786b681cc208bebe73e58f8783ddf3718f3d40594101fb6",
+    "bytes": 2919,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/.openai/hosting.json",
+    "sha256": "da3fd16d5b25b86242e4f60f81e6047819e2fcb8bef4add6dc6dfef23d64b4f6",
+    "bytes": 89,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/README.md",
+    "sha256": "e931ef7b529f75dd66d721da9e6ea3bffbfe33161332a9051186707c78972d9d",
+    "bytes": 4044,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/build-content.ps1",
+    "sha256": "07daa33be0cf95b465457fb74f73a5fb7a9a7998d4f09814ce568358dbdd02de",
+    "bytes": 1023,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/build-content.py",
+    "sha256": "c3441899b4e97ac9ff440180202af8673f5387ff989053f2235d7c7a124d9599",
+    "bytes": 1301,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/TINY_RUNNERS_INTRO.md",
+    "sha256": "4d5cc5683450435eaccae07879b21a3ac378e47632b2a99f303d3943b0456c0c",
+    "bytes": 13239,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/app.js",
+    "sha256": "fa4f933ea9e12e414f6c15520e3405ab705a73f8d42c91021a6ad55b7df993a8",
+    "bytes": 3938,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/cheese-home.png",
+    "sha256": "a8e106f6d65eab07a27cdda31e05ee2e97c6c7a4ed3ab95186d4a771b8924921",
+    "bytes": 1550938,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/cheese.png",
+    "sha256": "d3fae332875884ceb1d80b52fbbe6cdb2dd59262fb77eabaaa47a19be2c214c6",
+    "bytes": 809,
+    "decision": "copy",
+    "same": [
+      "app/src/main/res/drawable-nodpi/sprite_cheese_idle_0.png"
+    ],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/lumi-home.png",
+    "sha256": "2349655b6ef2d744066e5fd731c09001f18bb5ef79f58e039dc41aeee8936dff",
+    "bytes": 1968392,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/lumi.png",
+    "sha256": "0053337c8f118a58e9a9108e7936b37031e31a948def1ae99af2420a1399ff34",
+    "bytes": 1084,
+    "decision": "copy",
+    "same": [
+      "app/src/main/res/drawable-nodpi/sprite_lumi_idle_0.png"
+    ],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/mint-home.png",
+    "sha256": "6dabe4325325dfa1a9a6b3e4e56147c8cde30ad7c626baa848bd17a2a4332334",
+    "bytes": 1469510,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/mint.png",
+    "sha256": "40935f5e6cf0e8d39728111d95d0c077d2397d045b4f1eb19eb7451a7ff5a16d",
+    "bytes": 866,
+    "decision": "copy",
+    "same": [
+      "app/src/main/res/drawable-nodpi/sprite_mint_idle_0.png"
+    ],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/nunu-home.png",
+    "sha256": "15d6c8a90c7e77f87a39919ff9b6104c2e6c0f6819d02a37ed826aa239c758b7",
+    "bytes": 1719491,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/nunu.png",
+    "sha256": "61f3b3f3cc5be45f48bb1ad889c6b5003071f6344769ee83cac47c1502136c5a",
+    "bytes": 1017,
+    "decision": "copy",
+    "same": [
+      "app/src/main/res/drawable-nodpi/sprite_nunu_idle_0.png"
+    ],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/piko-home.png",
+    "sha256": "b7594e4303f4dfacfe8b0e9da70be98bb68fb5f8ae8ccf06035d10f3b3b2d71a",
+    "bytes": 2000387,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/piko.png",
+    "sha256": "d8a61a59ae8795cae031ab2cdb6db526730b2bf94755fe80c35dc58f5eb526a2",
+    "bytes": 973,
+    "decision": "copy",
+    "same": [
+      "app/src/main/res/drawable-nodpi/sprite_piko_idle_0.png"
+    ],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/popo-home.png",
+    "sha256": "e3feca9a0278123a6fe0ea337908f6c59ff88dbe4d2f094ea5dddb12d26774a8",
+    "bytes": 1849289,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/assets/popo.png",
+    "sha256": "907834c13110b15540ce2c5d32adb9fc69403ffca45be9985fb79677fe150330",
+    "bytes": 801,
+    "decision": "copy",
+    "same": [
+      "app/src/main/res/drawable-nodpi/sprite_popo_idle_0.png"
+    ],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/data.js",
+    "sha256": "0623ba55d847e25033167c42002ede0fd68cb2e5c71d81648b86c2d8f799a0bd",
+    "bytes": 77459,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/index.html",
+    "sha256": "f06f90654f2465a413aa90221d8151c8378b06918f7c497d178b683eaa248ebf",
+    "bytes": 9680,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "website/dist/styles.css",
+    "sha256": "df02d34bc28df37ab0a68bacb719c8a4625da4f91779969edcdda7fd3c638fb5",
+    "bytes": 9271,
+    "decision": "copy",
+    "same": [],
+    "result": "published_in_this_branch; copy may include current-status corrections and portable paths"
+  },
+  {
+    "path": "docs/art/loop-review-20261111/final/TinyRunners-running-backgrounds.apk",
+    "sha256": "d4e5a3458e29d39b3bb51e2371370d36b710c55a0001c2e06fe83bce10e1bba1",
+    "bytes": 24223036,
+    "decision": "preserve_local",
+    "result": "historical differently-signed test APK; not an official current release"
+  },
+  {
+    "path": "docs/STORY_EXPANSION_01.md",
+    "bytes": 11383,
+    "sha256": "f85e7e5ef1c740a6b6170e4881100a1f20474fee31bedf071b1d7b5b9ce43f59",
+    "decision": "preserve_concurrent_work",
+    "result": "created after initial inventory by separate work; user-review pending, not included in this publication"
+  },
+  {
+    "path": "docs/STORY_EXPANSION_02.md",
+    "bytes": 12417,
+    "sha256": "dd2f1a8103655fda12dde283ffd9b3671cf201480033f84bc1c724aa2b2fefda",
+    "decision": "preserve_concurrent_work",
+    "result": "created after initial inventory by separate work; user-review pending, not included in this publication"
+  },
+  {
+    "path": "docs/dialogue/short-lines-expansion-01.json",
+    "bytes": 6697,
+    "sha256": "f65bac7d4c6d61cae2bcf91f2143da5ed244462480c5ce254d26a6ce2c2ad71b",
+    "decision": "preserve_concurrent_work",
+    "result": "created after initial inventory by separate work; user-review pending, not included in this publication"
+  },
+  {
+    "path": "docs/dialogue/short-lines-expansion-02.json",
+    "bytes": 6696,
+    "sha256": "4e71afb216a461a307ff7a42b883d91e010ee8b9e3fdefb04c94c8cde8e62585",
+    "decision": "preserve_concurrent_work",
+    "result": "created after initial inventory by separate work; user-review pending, not included in this publication"
+  }
+]

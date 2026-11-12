@@ -1,0 +1,23 @@
+역사적 게시 요청 (현재 상태: PR #3 main 병합 완료, 2026-11-11). 아래 실패/미검수 기록은 당시 기준이며 재게시 지시가 아니다. 최신 상태는 docs/PENDING_DELIVERABLES_20261111.md 참고.
+
+mp-project의 배경 적용본을 검토하고 GitHub에 업로드해줘. 계획만 제시하지 말고 검증·게시 결과까지 알려줘.
+
+최종 요구: 한 판에서 집은 최초 출발 때 한 번만 표시하고, 그 뒤에는 집 없는 달리는 길만 반복한다. 재시작할 때만 집으로 돌아온다. 집→길→집을 반복하면 안 된다.
+
+준비된 작업:
+- 브랜치: codex/running-background-loops
+- 커밋: c95614f2d42145ef493af6d2683de43dabcbd7ab
+- 기준 main: c8fcbb6f1b979e066850b6e9298f5ba24719549d
+- 작업 사본: <temp>/mp-loop-release-20261111
+- Git 묶음: <project-root>/docs/art/loop-review-20261111/final/running-background-loops.bundle
+- 같은 final 폴더에 TinyRunners-running-backgrounds.zip, 테스트 APK, DELIVERY_STATUS.md가 있다.
+
+1. 프로젝트 지침과 현재 Git 상태를 먼저 읽고, 다른 팀원의 미커밋 작업·인덱스를 보존해줘. 필요하면 별도 작업 사본을 사용해. 원래 폴더의 소개·음원·대사·웹사이트 변경을 이번 배경 커밋에 섞지 마.
+2. 위 작업 사본의 커밋을 사용하거나 bundle을 verify한 뒤 새 브랜치로 가져와줘. bundle은 기준 커밋이 필요하므로 저장소에서 먼저 확보해. 임시 사본이 없더라도 bundle로 복구할 수 있어. 원격에 이미 동일 변경이 있으면 중복 커밋하지 마.
+3. 최신 origin/main과 비교해 팀원의 후속 변경을 보존하며 통합해줘. 변경 내용은 배경 PNG 12장, manifest/assets.json, StoryBackground, RunningBackgroundMotion과 테스트, 검사기·내보내기 스크립트·인계 문서다. 게임 물리·음악·계정 저장을 임의로 바꾸지 마.
+4. node scripts/validate-content.cjs 및 변경에 맞는 빌드·테스트·Lint를 실행해줘. 기존 검증은 77개 테스트 통과, Lint 오류 0/경고 44, 최종 APK 자산 바이트 일치다. 이는 이전 사본의 결과이므로 새 통합 결과와 구분해줘.
+5. 가능하면 별도 테스트 기기에서 6명 출발→길 전환→3회 이상 반복, 일시정지·재시작을 확인해줘. 기존 개인 계정이나 앱 데이터를 초기화하지 마. 실제 기기 검수는 아직 미완료다. 기기 연결이 안 되면 완료로 표시하지 마.
+6. GitHub 인증이 되는 환경에서 codex/running-background-loops 브랜치로 push하고 원격 커밋을 확인해줘. 이전 실패는 Windows credential helper 실행 및 인증 조회 실패였어. 인증정보를 출력하거나 저장소에 넣지 마. 강제 push는 하지 마.
+7. 팀의 통합 방식에 맞춰 PR 또는 main 통합을 진행하고, 실제로 완료한 범위를 구분해서 보고해줘. 브랜치만 올라갔다면 main 반영 완료라고 말하지 마. 브랜치/커밋/PR 링크, 검증 결과, 남은 기기 검수 항목을 알려줘.
+
+참고: 이후 작성된 docs/intro/의 소개 문안과 PROJECT_INTRO.md 수정은 별도 후속 작업이므로 이 배경 게시에 자동으로 포함하지 마.

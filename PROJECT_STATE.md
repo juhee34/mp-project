@@ -695,3 +695,13 @@
 - PR: https://github.com/juhee34/mp-project/pull/5 . main 직접 push/병합 및 강제 push 없음. main 반영은 팀원 검토 대기.
 - node scripts/validate-content.cjs 및 staged/전체 diff 공백 검사 통과. 추가 96개와 기존 144개 합계 240개, 6명×8상황×5개, ID/문구 중복 없음, 최대 25 코드포인트, 읽음 조건 빈 배열 확인.
 - 원고 3개·JSON 3개 원문 유지. 총 8파일만 게시하며 ZIP 자체/중복 풀기 폴더/다른 A·B 작업은 포함하지 않았다. 앱 연결·빌드·테스트·기기 검수는 수행하지 않았다. 사용자 승인/integrated=false 유지.
+
+## 2026-11-11 A 보류 제작물 통합 게시 검토
+- 최신 main 892ee41까지 별도 codex/a-content-release 사본에 반영해 B의 게임·코인·대사 작업을 보존했다. 원래 작업 사본/인덱스는 변경하지 않았다.
+- 확정 선택 인사 6개와 안내, 소개 화면·검토 XML·발표 소개서·웹사이트를 병합했다. 기존 ID/키와 선택/달리기 연결 유지. 첫 대화 수정안은 문서만, 144개는 B main에서 4상황 72개 연결/나머지 미연결로 안내했다.
+- 배경은 PR #3 main 반영을 확인해 중복 업로드하지 않았다. 역사 검수/인계·감사·음악 후보 분석과 제작 스크립트는 별도 보존. 음악 최종 승인·앱 연결 없음.
+- 콘텐츠/JSON/XML/JS/링크·자산/원고 일치/ZIP 해시/공백 검사 및 최신 통합 assembleDebug 통과. 이번 테스트·Lint·기기 실행은 미실시(B 담당). 웹 데스크톱/모바일 크기 검수 완료 범위와 최종 문안 재검수 제한은 PENDING_DELIVERABLES_20261111.md 참고.
+- 실제 사이트 재배포는 게시 인증 전달 실행 승인 거절로 미완료. 기존 사이트 ID·소유자 전용 범위 유지. 다운로드 버튼의 실제 저장도 브라우저 권한 거절로 미검증이며 소스 파일/링크 검사와 구분한다.
+- 자세한 파일별 처리·검증·제외 사유·후속 담당: docs/PENDING_DELIVERABLES_20261111.md, docs/PUBLICATION_FILE_MAP_20261111.json, docs/audio/HANDOFF.md. Git 게시와 main 통합, 사이트 배포를 구분하며 게시 실적은 해당 문서에 후속 기록한다.
+- 게시 결과: b412a81/2999b20/492c1c0 push 성공, PR #4 생성(https://github.com/juhee34/mp-project/pull/4), 후보 ZIP 2개 prerelease a-content-review-20261111 업로드 종료 0. main 병합은 하지 않았다. 추가 원격 읽기 검증은 승인 거절로 미실시; 사이트 재배포는 계속 미완료다.
+- 종료 점검에서 별도 작업의 STORY_EXPANSION_01/02.md 및 short-lines-expansion-01/02.json과 원래 상태 기록 추가를 발견해 보존/제외했다. 시작 시 파일 315개 중 314개 해시 동일, 변경된 원래 PROJECT_STATE를 되돌리지 않았다. 원래 staged 없음. 확장 자료까지 전부 게시됐다고 보고하지 않는다.
