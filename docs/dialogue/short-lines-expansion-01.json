@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "status": "user_approved",
+  "integrated": false,
+  "maxTextCodePoints": 48,
+  "baseFile": "short-lines.json",
+  "mergeMode": "append_by_unique_id",
+  "notes": "라일·치즈 8상황별 2개 추가. 기존 선택창 확정 인사는 교체하지 않음. 기존 HANDOFF.md의 이벤트 조건 유지. 미구현 clear/home 이벤트는 예약 콘텐츠.",
+  "lines": [
+    {
+      "id": "mint_select_04",
+      "characterId": "mint",
+      "event": "select",
+      "text": "지도는 챙겼어. 연필은… 아, 여기!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_select_05",
+      "characterId": "mint",
+      "event": "select",
+      "text": "궁금한 게 생기면 잠깐 적어 둘래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_start_04",
+      "characterId": "mint",
+      "event": "start",
+      "text": "오늘 지도엔 어떤 표시가 늘어날까?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_start_05",
+      "characterId": "mint",
+      "event": "start",
+      "text": "설명은 가면서 할게. 너무 길면 말해 줘.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_stumble_04",
+      "characterId": "mint",
+      "event": "stumble",
+      "text": "잠깐 앉아서 연필부터 찾아야겠어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_stumble_05",
+      "characterId": "mint",
+      "event": "stumble",
+      "text": "어휴. 지도 모서리가 또 접혔네.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_retry_04",
+      "characterId": "mint",
+      "event": "retry",
+      "text": "아까 못 본 것도 한번 살펴볼래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_retry_05",
+      "characterId": "mint",
+      "event": "retry",
+      "text": "이번엔 지도부터 꼭 접어 넣고!",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_clear_04",
+      "characterId": "mint",
+      "event": "clear",
+      "text": "오늘 얘기는 어느 모서리에 그리지?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_clear_05",
+      "characterId": "mint",
+      "event": "clear",
+      "text": "집에 가면 연필을 조금 깎아야겠어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_home_04",
+      "characterId": "mint",
+      "event": "home",
+      "text": "지도는 벽에 걸고, 나는 앉을래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_home_05",
+      "characterId": "mint",
+      "event": "home",
+      "text": "돌은 문 옆에. 주머니가 묵직했어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_story_unread_04",
+      "characterId": "mint",
+      "event": "story_unread",
+      "text": "내가 말하다 빠뜨린 것도 적혀 있을까?",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_story_unread_05",
+      "characterId": "mint",
+      "event": "story_unread",
+      "text": "이야기 펼칠 자리는 비워 놨어.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_story_reread_04",
+      "characterId": "mint",
+      "event": "story_reread",
+      "text": "이번엔 그림도 천천히 떠올려 볼래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "mint_story_reread_05",
+      "characterId": "mint",
+      "event": "story_reread",
+      "text": "아는 이야기인데 또 궁금해지네.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_select_04",
+      "characterId": "cheese",
+      "event": "select",
+      "text": "옆에 있어도 돼. 꼬리만 밟지 말고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_select_05",
+      "characterId": "cheese",
+      "event": "select",
+      "text": "손수건은 챙겼어. 별건 아니지만.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_start_04",
+      "characterId": "cheese",
+      "event": "start",
+      "text": "산책 다녀오면 방석부터 털어야지.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_start_05",
+      "characterId": "cheese",
+      "event": "start",
+      "text": "너도 준비됐어? 그럼 슬슬 가자.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_stumble_04",
+      "characterId": "cheese",
+      "event": "stumble",
+      "text": "잠깐만. 수염 좀 정리하고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_stumble_05",
+      "characterId": "cheese",
+      "event": "stumble",
+      "text": "지금은 앉을래. 방석 생각도 나고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_retry_04",
+      "characterId": "cheese",
+      "event": "retry",
+      "text": "좋아. 손수건 매듭부터 다시 묶고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_retry_05",
+      "characterId": "cheese",
+      "event": "retry",
+      "text": "한 번 더 가 보려고. 준비되면 가자.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_clear_04",
+      "characterId": "cheese",
+      "event": "clear",
+      "text": "돌아가면 내 자리부터 찾아야겠네.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_clear_05",
+      "characterId": "cheese",
+      "event": "clear",
+      "text": "손수건은 안 풀렸네. 잘 묶었나 봐.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_home_04",
+      "characterId": "cheese",
+      "event": "home",
+      "text": "방석 두 개 다 털어 둘까.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_home_05",
+      "characterId": "cheese",
+      "event": "home",
+      "text": "창가에 있을게. 다른 데 앉아도 되고.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_story_unread_04",
+      "characterId": "cheese",
+      "event": "story_unread",
+      "text": "내 이야기야. 조금 궁금하면 봐.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_story_unread_05",
+      "characterId": "cheese",
+      "event": "story_unread",
+      "text": "책 펼칠 거면 이쪽에 앉아.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_story_reread_04",
+      "characterId": "cheese",
+      "event": "story_reread",
+      "text": "또 읽게? 그럼 나도 옆에 있을래.",
+      "requiresReadStoryIds": []
+    },
+    {
+      "id": "cheese_story_reread_05",
+      "characterId": "cheese",
+      "event": "story_reread",
+      "text": "아는 부분이라고 빨리 넘기진 않아도 돼.",
+      "requiresReadStoryIds": []
+    }
+  ]
+}
