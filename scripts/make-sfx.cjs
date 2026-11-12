@@ -26,4 +26,7 @@ const rest = (len) => new Array(Math.round(RATE * len)).fill(0);
 out("sfx_choice", seq(note(660, 0.08, 0.4), rest(0.02), note(880, 0.12, 0.35)));
 // Items handed over: a bright little arpeggio (C E G C).
 out("sfx_give", seq(note(523, 0.09, 0.4), note(659, 0.09, 0.4), note(784, 0.09, 0.4), note(1047, 0.28, 0.45)));
-console.log("wrote sfx_choice, sfx_give");
+// Typing (도로록): a tiny round blip while letters appear; the talk scene changes its pitch per speaker.
+// Brought back on 2026-11-12 at the user's request, as a sine (softer than the first square-wave version).
+out("sfx_blip", note(760, 0.04, 0.3));
+console.log("wrote sfx_choice, sfx_give, sfx_blip");

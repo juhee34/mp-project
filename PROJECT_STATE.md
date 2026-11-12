@@ -27,6 +27,11 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 대사 도로록 소리 다시 넣음 (2026-11-12, B)
+- 사용자 요청으로 2315864에서 뺐던 타이핑 소리를 되살렸다. scripts/make-sfx.cjs가 sfx_blip.wav(760Hz 0.04초, 처음 사각파보다 부드러운 사인파)를 만든다. TalkView가 글자가 나올 때(공백 제외) Sfx.blip을 부르고, 70ms에 한 번 이하, 말하는 사람마다 음높이가 다르다(내레이션은 낮고 작게). 다음 줄 "뽁" 소리는 요청 범위가 아니라 넣지 않았다.
+- 설정 > 소리에 "대사 나올 때 도로록 소리" 스위치(기본 켜짐, AudioSettings.typingSound). 효과음 켜기·효과음 음량·전체 음량을 함께 따른다. 켜면 짧게 들려준다.
+- 검증: 빌드·테스트·린트, 설치. 에뮬레이터는 설정의 효과음 켜기가 꺼진 상태(저장값 false)라 그대로 두었고, 소리는 귀로 확인하지 못했다.
+
 ## PR #8 합병과 메인 메뉴·로그인 시안 적용 (2026-11-12, B)
 - PR #8(codex/ui-screens-handoff) 충돌 없이 합병: 마을 이야기·이야기 모음·캐릭터 선택/프로필·내 기록 배경을 공통 종이·벤치 그림(PaperBackdropView)으로. 이후 넓은 폰에서 그림 가장자리가 보여 bg_common_paper_wide(20:9판, JPEG 180KB)로 바꾸고 원래 webp는 뺐다.
 - DEVELOPER_PROMPT 1~3·6에 따라 ui/MockupFrame.kt: 1672×941 기준 캔버스, scale=min(w/1672,h/941) 가운데 정렬, *_wide 배경을 높이에 맞춰 깔고 layout.json rect로 부품을 놓고 글자 크기도 text_size_px×scale.

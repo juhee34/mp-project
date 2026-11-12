@@ -163,6 +163,10 @@ class SettingsActivity : Activity() {
         rule()
         switch(R.string.settings_sfx_toggle, sfx.enabled) { on -> sfx.enabled = on; if (on) Sfx.play(this, Sfx.Sound.CHOICE) }
         slider(R.string.settings_sfx_volume, audio.effects) { v, done -> audio.effects = v; if (done) Sfx.play(this, Sfx.Sound.CHOICE) }
+        switch(R.string.settings_typing_sound, audio.typingSound) { on ->
+            audio.typingSound = on
+            if (on) typingDemo()
+        }
         body.addView(smallButton(getString(R.string.settings_sfx_test)) { Sfx.play(this, Sfx.Sound.GIVE) },
             LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(36)).apply { topMargin = dp(4) })
         rule()
@@ -171,6 +175,11 @@ class SettingsActivity : Activity() {
             if (on) body.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
         }
         note(R.string.settings_vibration_hint)
+    }
+
+    /** A short run of typing blips so the switch can be heard. */
+    private fun typingDemo() {
+        for (i in 0 until 8) handler.postDelayed({ Sfx.blip(this, "mint") }, i * 80L)
     }
 
     // ---- 대화·안내 -----------------------------------------------------------------------------------------------

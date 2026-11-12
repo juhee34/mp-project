@@ -23,4 +23,5 @@
     <string name="settings_about">앱 정보</string>
     <string name="settings_version">Tiny Runners 버전 %1$s</string>
     <string name="settings_about_body">과제용 앱이에요. 코인 충전과 광고는 시연용이라 실제 결제가 없어요.</string>
+    <string name="settings_typing_sound">대사 나올 때 도로록 소리</string>
 </resources>

@@ -23,6 +23,10 @@ class AudioSettings(context: Context) {
     var vibration: Boolean
         get() = prefs.getBoolean(KEY_VIBRATION, true)
         set(value) { prefs.edit().putBoolean(KEY_VIBRATION, value).apply() }
+    /** The 도로록 typing sound in talks (part of the effects, but can be switched off on its own). */
+    var typingSound: Boolean
+        get() = prefs.getBoolean(KEY_TYPING, true)
+        set(value) { prefs.edit().putBoolean(KEY_TYPING, value).apply() }
     var talkSpeed: TalkSpeed
         get() = TalkSpeed.entries.firstOrNull { it.name == prefs.getString(KEY_TALK_SPEED, null) } ?: TalkSpeed.NORMAL
         set(value) { prefs.edit().putString(KEY_TALK_SPEED, value.name).apply() }
@@ -38,6 +42,7 @@ class AudioSettings(context: Context) {
         const val KEY_SFX = "sfx_volume"
         const val KEY_VIBRATION = "vibration"
         const val KEY_TALK_SPEED = "talk_speed"
+        const val KEY_TYPING = "typing_sound"
     }
 }
 

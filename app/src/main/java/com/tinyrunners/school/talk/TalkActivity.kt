@@ -504,7 +504,11 @@ internal class TalkView(
         if (player.isTyping) {
             typed += (now - lastTick) / charMs
             val whole = typed.toInt()
-            if (whole > 0) { player.type(whole); typed -= whole }
+            if (whole > 0) {
+                player.type(whole); typed -= whole
+                // A soft 도로록 as letters appear, in the speaker's voice (spaces are silent).
+                if (line.text.getOrNull(player.shown - 1)?.isWhitespace() == false) com.tinyrunners.school.audio.Sfx.blip(context, line.speaker)
+            }
         } else typed = 0f
         lastTick = now
 
