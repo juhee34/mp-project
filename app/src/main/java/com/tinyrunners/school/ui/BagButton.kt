@@ -62,7 +62,7 @@ object BagButton {
 private class PouchButtonView(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         val inset = width * 0.14f
-        PouchIcon.draw(canvas, inset, inset, width - inset * 2)
+        PouchIcon.draw(canvas, resources, inset, inset, width - inset * 2)
     }
 }
 
@@ -95,6 +95,22 @@ object PouchIcon {
         't' to Color.rgb(150, 104, 62),
         'p' to Color.rgb(172, 146, 196), 'P' to Color.rgb(230, 218, 244),
     )
+
+    private var art: android.graphics.Bitmap? = null
+    private val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false }
+
+    /**
+     * A's pouch from the approved designs (res/drawable-nodpi/ui_bag_pouch_icon.png, 48×59), fitted in the
+     * [size] square with crisp pixels; the hand-drawn rows below are only a fallback.
+     */
+    fun draw(canvas: Canvas, resources: android.content.res.Resources, left: Float, top: Float, size: Float) {
+        val bmp = art ?: android.graphics.BitmapFactory.decodeResource(resources, com.tinyrunners.school.R.drawable.ui_bag_pouch_icon,
+            android.graphics.BitmapFactory.Options().apply { inScaled = false })?.also { art = it }
+        if (bmp == null) { draw(canvas, left, top, size); return }
+        val k = size / maxOf(bmp.width, bmp.height)
+        val w = bmp.width * k; val h = bmp.height * k
+        canvas.drawBitmap(bmp, null, android.graphics.RectF(left + (size - w) / 2f, top + (size - h) / 2f, left + (size + w) / 2f, top + (size + h) / 2f), pixel)
+    }
 
     fun draw(canvas: Canvas, left: Float, top: Float, size: Float) {
         val px = size / 16f

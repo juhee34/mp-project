@@ -27,6 +27,12 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## PR #9 합병(메인 메뉴 최종본·스프라이트 통일)과 배경 크기 안내 (2026-11-12, B)
+- PR #9(codex/main-menu-final, ui-screens-handoff 후속 포함) 충돌 없이 합병: 메인 메뉴 최종 배경·버튼과 HubActivity 버튼 좌표, 오프닝·로그인 배경의 친구를 게임 스프라이트로, 친구 스프라이트 눈 맞춤(라일은 원본 외눈), 공통 종이 배경(마을 이야기·선택·기록)을 시안 장면으로.
+- 인계의 분리된 주머니 아이콘(res/drawable-nodpi/ui_bag_pouch_icon.png, 48×59)을 가방 버튼과 튜토리얼 7쪽에 연결(ui/BagButton PouchIcon.draw(resources…), 흐림 없이 확대, 그림이 없으면 기존 도트).
+- docs/art/BACKGROUND_SIZES.md: 달리기 배경(세로 280·바닥선 256, 가로 941~1997, 20:9에서 3.66배·한 화면 약 656px) 과 화면 배경(기준 1672×941, 앱 파일 2091×941) 크기, 점수판·캐릭터·장애물이 가리는 높이를 A에게 전달하려고 정리.
+- 검증: 빌드·테스트·린트·내용 검사. 에뮬레이터(20:9)에서 오프닝(스프라이트 친구), 메인 메뉴 최종본, 마을 이야기 새 배경 확인. 메뉴 배경 양옆 늘인 책상 부분은 줄무늬처럼 보인다(A 확인 요청). 16:9 기기는 미확인.
+
 ## 이야기 모음 시안 적용 (2026-11-12, B)
 - codex/ui-screens-handoff의 후속 커밋 bae9523(썸네일 캐릭터를 원본 스프라이트로) 합병.
 - StoryCollectionActivity를 MockupFrame(bg_story_collection_wide, 제목 "이야기 모음"·벤치가 그림에 있음)으로 다시 만들었다. 왼쪽 위 마을 이야기로(ui_story_back_button, 화살표는 그림·글자는 text_rect), 오른쪽 위 본 이야기 n/m 알약과 가방(ui_story_bag_button), 벤치 위 카드(ui_story_card_frame + 리본 + 제목 + 그림 + 본 이야기 알약 + 버튼). 카드는 시안 크기(380×581 기준) 그대로 4장이 보이고 나머지는 옆으로 밀어 본다(RefBox).

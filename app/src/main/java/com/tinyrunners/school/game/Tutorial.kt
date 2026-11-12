@@ -267,7 +267,7 @@ private class TutorialPicture(context: Context) : View(context) {
             TutorialStep.BAG -> {
                 // Coins go to the shop, items to the friends; both are kept in the pouch (bag).
                 val size = 56 * u
-                com.tinyrunners.school.ui.PouchIcon.draw(canvas, w / 2 - size / 2, h / 2 - size / 2 - 8 * u, size)
+                com.tinyrunners.school.ui.PouchIcon.draw(canvas, resources, w / 2 - size / 2, h / 2 - size / 2 - 8 * u, size)
                 CoinArt.draw(canvas, w * 0.3f, h / 2 - 8 * u, 10 * u, spin = 0f)
                 com.tinyrunners.school.quest.QuestItems.of("mint")?.let { item ->
                     com.tinyrunners.school.quest.ItemArt.draw(canvas, item, w * 0.7f - 12 * u, h / 2 - 20 * u, 24 * u, withGlow = false)
