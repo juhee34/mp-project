@@ -129,12 +129,43 @@ for(const id of expected)for(const prop of OBSTACLE_PROPS[id]){
   obstacleCount++;
 }
 
+// A's friendly character copy (docs/character-copy/): the app copy is the same file, one entry per friend by id.
+const copyDoc=fs.readFileSync(path.join(root,'docs/character-copy/friendly-copy.ko.json'),'utf8').replace(/\r\n/g,'\n');
+const copyApp=fs.readFileSync(path.join(root,'app/src/main/assets/content/character_copy.json'),'utf8').replace(/\r\n/g,'\n');
+assert.equal(copyApp,copyDoc,'character_copy.json must be a copy of docs/character-copy/friendly-copy.ko.json');
+const copy=JSON.parse(copyApp);
+assert.deepEqual([...copy.characters.map(c=>c.id)].sort(),[...expected].sort(),'character copy: one entry per friend');
+for(const c of copy.characters){
+  for(const k of ['tagline','selectionIntro','personality','cherishedItem','runningReason','storyTeaser']) assert(typeof c[k]==='string'&&c[k].trim(),c.id+': copy '+k);
+  for(const k of ['traits','habits','greetings']) assert(Array.isArray(c[k])&&c[k].length>0,c.id+': copy '+k);
+}
+// The optional greetings are registered as their own select lines (scripts/build-greeting-lines.cjs).
+const greet=read('app/src/main/assets/content/short_lines_greetings.json');
+assert.deepEqual(greet.lines.map(l=>l.text),copy.characters.flatMap(c=>c.greetings),'short_lines_greetings.json is out of date: run node scripts/build-greeting-lines.cjs');
+assert(greet.lines.every(l=>l.event==='select'&&expected.includes(l.characterId)));
+assert.equal(new Set([...allLines.map(l=>l.id),...greet.lines.map(l=>l.id)]).size,allLines.length+greet.lines.length,'greeting ids must not clash with the 240 short lines');
+
+// A's approved hazard and item art (docs/art/approved/): app copies are byte-identical to the extracted files.
+let hazardCount=0;
+for(const id of expected){
+  for(const kind of ['air','spikes','platform']){
+    const a=fs.readFileSync(path.join(root,'docs/art/approved/extracted',kind+'_'+id+'.png'));
+    const b=fs.readFileSync(path.join(root,'app/src/main/res/drawable-nodpi','hazard_'+kind+'_'+id+'.png'));
+    assert(a.equals(b),'hazard_'+kind+'_'+id+'.png differs from the approved extract'); hazardCount++;
+  }
+  if(id==='mint') continue; // the fern leaf is still pending separation (HANDOFF.md)
+  const a=fs.readFileSync(path.join(root,'docs/art/approved/extracted','bag_'+id+'.png'));
+  const b=fs.readFileSync(path.join(root,'app/src/main/res/drawable-nodpi','item_'+id+'.png'));
+  assert(a.equals(b),'item_'+id+'.png differs from the approved extract');
+}
+
 console.log('PASS: 6 characters; story/asset references; asset readiness honest; 205 research records; 20 role prompts.');
 console.log(`Sprites (required frames): ${spriteSummary.join(', ')}`);
 console.log(`Talks: prologue ${talks.prologue.length} pages, ${talks.talks.length} friends`);
 console.log(`Short lines in app: ${pack.lines.length}`);
 console.log(`Obstacle props in app: ${obstacleCount}/18`);
 console.log(`Short lines: ${allLines.length} (base 144 + additions ${extra.length})`);
+console.log(`Character copy: ${copy.characters.length} friends, ${greet.lines.length} greeting lines; approved hazard art ${hazardCount}/18, item art 5/6 (mint pending)`);
 console.log(`Village stories with dialogue: ${scripted}/${village.length} (others play from their outline)`);
 
 assert.deepEqual(read('docs/CHARACTER_BIBLE.json').map(c=>c.id),expected);

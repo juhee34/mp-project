@@ -49,7 +49,7 @@ object ShortLineRepository {
     private var cache: List<ShortLine>? = null
     private val deck = LineDeck()
     private val FILES = listOf("short_lines.json", "short_lines_expansion_01.json",
-        "short_lines_expansion_02.json", "short_lines_expansion_03.json")
+        "short_lines_expansion_02.json", "short_lines_expansion_03.json", "short_lines_greetings.json")
 
     /** A friend's line for [event], or null when the pack is missing (the scene then skips that line). */
     fun pick(context: Context, characterId: String, event: String): String? {

@@ -2,7 +2,6 @@
 <resources>
     <string name="menu_shop">상점</string>
     <string name="shop_title">상점</string>
-    <string name="shop_body">%1$dm 달릴 때마다 1코인, 길 위 코인을 주우면 1코인 더 모여요. 꾸미기는 달리는 모습만 바꾸고, 점프와 속도는 6명 모두 그대로예요.</string>
     <string name="shop_coins">코인 %1$d</string>
     <string name="coin_badge_loading">코인 …</string>
     <string name="coin_badge_description">가진 코인 %1$d개. 누르면 가방이 열려요.</string>
@@ -35,10 +34,9 @@
     <string name="shop_tab_music">음악</string>
     <string name="shop_tab_items">물품</string>
     <string name="shop_tab_coins">코인 충전</string>
-    <string name="shop_item_owner">%1$s에게 필요한 물품 · 가방에 %2$s개</string>
     <string name="shop_item_bought">%1$s 1개를 샀어요. 가방에 넣었어요.</string>
     <string name="shop_pack_name">코인 %1$d개</string>
-    <string name="shop_pack_demo">시연용 결제 · 실제로 돈이 나가지 않아요</string>
+    <string name="shop_pack_demo">시연용 · 실제 결제 없음</string>
     <string name="shop_pack_price">₩%1$s</string>
     <string name="shop_pack_buy">충전하기</string>
     <string name="shop_pack_cancel">취소</string>
@@ -69,4 +67,17 @@
     <string name="shop_preview_stop">■ 멈추기</string>
     <string name="shop_song_of">%1$s의 노래</string>
     <string name="shop_song_everyone">모두의 노래</string>
+    <string name="shop_intro">오늘의 달리기에 작은 즐거움을 더해요</string>
+    <string name="shop_guide_trails">꾸미기는 모습만 바뀌어요. 점프와 속도는 그대로예요.</string>
+    <string name="shop_guide_music">들어 보고 고른 노래가 달리기에 흘러요. 점프와 속도는 그대로예요.</string>
+    <string name="shop_guide_items">친구 물품은 한 개에 %1$d코인. 산 물품은 가방에 들어가요.</string>
+    <string name="shop_guide_coins">%1$dm 달리면 1코인. 충전은 과제 시연용이라 실제로 돈이 나가지 않아요.</string>
+    <string name="shop_retry">다시 불러오기</string>
+    <string name="shop_processing">처리 중…</string>
+    <string name="shop_unavailable">불러오지 못했어요</string>
+    <string name="shop_loading_short">불러오는 중…</string>
+    <string name="shop_owned">보유</string>
+    <string name="shop_short">%1$d코인 부족</string>
+    <string name="shop_in_bag">가방 %1$d개</string>
+    <string name="shop_item_for">%1$s에게 필요한 물품</string>
 </resources>

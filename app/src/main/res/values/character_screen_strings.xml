@@ -6,8 +6,8 @@
     <string name="characters_intro_body">여섯 친구의 고향을 달리는 픽셀 러닝 게임. 톡 눌러 장애물을 넘고, 쉬고 싶은 날에는 친구의 작은 이야기를 펼쳐 보세요.</string>
     <string name="characters_intro_friends">처음부터 함께할 수 있는 친구 %1$d명</string>
     <string name="characters_choose">친구 고르기</string>
-    <string name="characters_select_title">오늘 함께할 친구</string>
-    <string name="characters_select_hint">친구 %1$d명이 기다리고 있어요. 마음이 가는 친구를 톡 고르고, 함께 달려 볼까요?</string>
+    <string name="characters_select_title">오늘은 누구랑 달려 볼까요?</string>
+    <string name="characters_select_hint">친구마다 좋아하는 풍경과 이야기가 달라요.</string>
     <string name="characters_placeholder_notice">여섯 친구의 픽셀 모습을 만나 보세요.</string>
     <string name="characters_placeholder_portrait">픽셀 캐릭터</string>
     <string name="characters_name_and_species">%1$s · %2$s</string>
@@ -20,7 +20,7 @@
     <string name="characters_load_error">캐릭터 정보를 읽을 수 없어요.</string>
     <string name="characters_back_intro">소개로 돌아가기</string>
     <string name="characters_tutorial">튜토리얼하기</string>
-    <string name="characters_back_selection_pill">◀ 다른 친구 고르기</string>
+    <string name="characters_back_selection_pill">◀ 다른 친구 만나기</string>
     <string name="characters_profile">이 친구 이야기 보기</string>
     <string name="characters_profile_short">자세히 보기</string>
     <string name="characters_prev">이전 친구</string>
@@ -33,4 +33,15 @@
     <string name="characters_greeting_lumi">어서 와! 오늘 첫 관객은 너야. 꼬리 조심, 살짝 앉아!</string>
     <string name="characters_greeting_nunu">나 어디 있게? …히히, 또 웃다가 들켰네.</string>
     <string name="characters_greeting_piko">앗, 물웅덩이다! 장화 챙겼어? 같이 첨벙하자!</string>
+    <!-- A's friendly copy (docs/character-copy/friendly-copy.ko.json, shared). -->
+    <string name="characters_copy_home">여기 살아요</string>
+    <string name="characters_copy_personality">이런 친구예요</string>
+    <string name="characters_copy_habits">이럴 때가 많아요</string>
+    <string name="characters_copy_cherished">소중히 챙겨요</string>
+    <string name="characters_copy_running">오늘은 어디로 갈까요?</string>
+    <string name="characters_copy_story">친구의 이야기가 궁금하다면</string>
+    <string name="characters_copy_story_button">이야기 만나러 가기</string>
+    <string name="characters_copy_run">%1$s 달리기</string>
+    <string name="characters_copy_mechanics">어느 친구를 골라도 점프와 달리는 속도는 같아요.</string>
+    <string name="characters_greeting_quote">“%1$s”</string>
 </resources>

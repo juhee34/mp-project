@@ -27,6 +27,17 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## A 전달물 합병과 적용 — 상점 디자인·장애물/물품 그림·친구 소개·첫 대화 (2026-11-12, B)
+- 합병: docs/team-workflow(PR #2), codex/a-content-release(PR #4), codex/approved-bag-obstacles(PR 없음), codex/shop-design-handoff(PR #6), codex/friendly-character-copy(PR #7)를 main에 --no-ff로 합쳤다. 충돌은 PROJECT_STATE.md(양쪽 기록 모두 보존)와 CharacterScreens.kt(PR #4의 옛 소개 화면 showIntro). 소개 화면은 로그인 뒤 허브가 대신하므로 되살리지 않았고, 그 전용 intro_strings.xml(음악 미연결 등 지금과 다른 안내 포함)은 앱에 넣지 않았다. 검토 문안은 docs/intro/에 그대로 있다. PR #4의 확정 선택 인사 6개는 유지했다.
+- 상점(PR #6, docs/art/shop/): 커튼·물약 선반을 걷고 크림 천 바탕, 꿀색 나무 테두리, 짙은 초록 글자·버튼, 연보라 안내선, 왼쪽 아래 고사리 화분과 오른쪽 아래 꽃으로 다시 그렸다. 상단 ◀ 처음으로 | 상점 | 짧은 소개 … 코인 배지·가방, 탭별 안내 문구(꾸미기는 모습만 바뀜 등), 선택 탭 초록 채움. 카드 4장이 한 화면에 들어가고(작은 화면은 최소 폭+가로 스크롤), 미리보기는 친구 고향 배경+실제 스프라이트. 버튼 상태: 사기 / N코인 부족(비활성) / 보유+쓰기 / 쓰는 중(연두, 초록 테두리) / 무료 기본 / 불러오는 중 / 처리 중(중복 요청 막음) / 불러오기 실패(다시 불러오기). 물품 탭은 가방 수량, 코인 충전 탭은 시연 안내 유지. 가격·경제·물리 변경 없음. 페이지 점·화살표는 실제 페이지가 없어 넣지 않았다.
+- 장애물·물품 그림(approved-bag-obstacles): 승인 추출본 18개를 res/drawable-nodpi/hazard_{air,spikes,platform}_<id>.png로, 물품 5개를 item_<id>.png로 바이트 그대로 복사. game/HazardArt.kt가 공중 가시 막대(막대 폭에 맞추고 높이는 판정의 1.2~1.7배), 바닥 가시(반복), 발판(양끝·가운데 장식 유지, 사이 판자 반복, 밝은 윗면=착지 높이)을 그린다. 충돌 판정은 엔진 그대로. 튜토리얼 3·4쪽 그림도 같은 그림. quest/ItemArt는 승인 그림이 있으면 그것을(달리기·가방·대화·상점 공통), 라일 고사리 잎은 분리 미완료라 기존 도트 아이콘.
+- 친구 소개(PR #7, docs/character-copy/): assets/content/character_copy.json(원본 그대로)을 CharacterCopyParser가 id로 읽어 CharacterDefinition.copy에 넣는다. 선택창: 제목 "오늘은 누구랑 달려 볼까요?", 인사(PR #4) → tagline → selectionIntro, 버튼 "라일이랑/치즈랑 달리기"(받침에 맞춤). 프로필: 여기 살아요·이런 친구예요(+특징)·이럴 때가 많아요·소중히 챙겨요·오늘은 어디로 갈까요?·이야기 미리보기와 "이야기 만나러 가기", 같은 점프·속도 안내. 기존 personality/summary·이야기 데이터는 그대로. 인사 후보 12개는 scripts/build-greeting-lines.cjs로 short_lines_greetings.json(<id>_select_greeting_0n, select)에 따로 등록 — 240개와 섞지 않음. voiceNote·sourceStoryIds는 화면에 내지 않는다.
+- 대사 연결 현황: 첫 출발=talks.json 긴 대화, 이후 출발=select+start, 다시 달리기=retry, 넘어짐=stumble, 마을 이야기=story_unread/story_reread(읽음 상태로 고름)·개요 이야기는 select. home은 마을 이야기가 끝난 뒤 친구의 마무리 한마디, clear는 끝이 없는 러너라 맞는 상황이 없어 미사용(새 완주 규칙은 만들지 않음). 대사는 무작위 덱이라 한 번에 다 보이지 않는다.
+- 첫 대화(PR #4 docs/dialogue/talks.reviewed.json): 프롤로그 5장과 6명×6줄 문구를 talks.json에 반영(26곳). 화자 순서·ID 동일, 마지막 프롤로그 장(마을로 인사하러 가기)은 B 흐름 유지. 읽음·첫 만남 기록은 건드리지 않았다.
+- 검사기: character_copy.json=원본, 인사 12개 최신·ID 중복 없음, hazard 18개·물품 5개=승인 추출본 바이트 동일. 단위 테스트 CharacterCopyParserTest 추가.
+- 검증: validate-content 통과, assembleDebug·testDebugUnitTest(117개, 실패 0)·lintDebug 성공. 에뮬레이터: 상점 4탭(꾸미기 쓰는 중/부족, 물품 가방 수량, 음악 들어보기, 코인 충전), 선택창(라일·치즈), 치즈 프로필, 튜토리얼 3·4쪽 새 그림 확인. 실제 달리기에서 100m 이후 나오는 가시 막대·바닥 가시·발판은 화면으로 확인하지 못했다(같은 그리기 코드를 튜토리얼에서 확인). 확인 중 라일로 26m 달려 계정에 기록과 코인 1개가 저장됐다.
+- 미완료: 라일 고사리 잎 물품 그림(A 분리 대기), 소개 웹사이트 재배포(A), 실제 달리기 중 새 장애물 그림의 크기 체감 확인.
+
 ## 상점 계산대 색 더 어둡게 (2026-11-12, B)
 - 계산대를 짙은 호두나무색으로(앞면 98,62,36 / 상판 124,82,48 / 윗면 156,108,66, 패널 선 74,44,24). 에뮬레이터 캡처로 확인.
 

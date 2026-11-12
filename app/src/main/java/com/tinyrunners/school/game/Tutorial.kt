@@ -155,6 +155,8 @@ private class TutorialPicture(context: Context) : View(context) {
     }
     private val curve = Path()
     private val tri = Path()
+    /** The same branch, spikes and plank art as in the game (라일's, as in the other pictures). */
+    private val hazards = HazardArt.load(resources, "mint")
 
     /** One triangle tooth from (x0..x1, baseY) to a tip at tipY, with a thin dark edge. */
     private fun teeth(canvas: Canvas, x0: Float, baseY: Float, x1: Float, tipY: Float, color: Int) {
@@ -212,13 +214,15 @@ private class TutorialPicture(context: Context) : View(context) {
             TutorialStep.FLOATING -> {
                 runner(runnerX)
                 // Thin thorny bar, the same look as in the game.
-                var x = objX - 10 * u
+                val art = hazards
+                if (art != null) art.drawAir(canvas, objX - 10 * u, ground - 62 * u, objX + 60 * u, ground - 44 * u)
+                var x = if (art != null) Float.MAX_VALUE else objX - 10 * u
                 while (x < objX + 60 * u) {
                     teeth(canvas, x, ground - 56 * u, x + 7 * u, ground - 62 * u, Color.rgb(246, 240, 226))
                     teeth(canvas, x, ground - 50 * u, x + 7 * u, ground - 44 * u, Color.rgb(246, 240, 226))
                     x += 7 * u
                 }
-                fill.color = Color.rgb(96, 66, 44); canvas.drawRect(objX - 10 * u, ground - 56 * u, objX + 60 * u, ground - 50 * u, fill)
+                if (art == null) { fill.color = Color.rgb(96, 66, 44); canvas.drawRect(objX - 10 * u, ground - 56 * u, objX + 60 * u, ground - 50 * u, fill) }
                 curve.moveTo(runnerX + 22 * u, ground - 12 * u)
                 curve.lineTo(w * 0.86f, ground - 12 * u)
                 canvas.drawPath(curve, path)
@@ -226,13 +230,20 @@ private class TutorialPicture(context: Context) : View(context) {
             TutorialStep.PLANK -> {
                 runner(runnerX)
                 // Spikes on the ground, a hanging plank above; jump up and run across the plank.
-                var x = w * 0.32f
-                while (x < w * 0.78f) { teeth(canvas, x, ground, x + 9 * u, ground - 14 * u, Color.rgb(196, 202, 220)); x += 9 * u }
+                val art = hazards
+                if (art != null) art.drawSpikes(canvas, w * 0.32f, ground, w * 0.78f, ground - 14 * u)
+                else {
+                    var x = w * 0.32f
+                    while (x < w * 0.78f) { teeth(canvas, x, ground, x + 9 * u, ground - 14 * u, Color.rgb(196, 202, 220)); x += 9 * u }
+                }
                 fill.color = Color.rgb(150, 112, 74)
                 canvas.drawRect(w * 0.31f, ground - 100 * u, w * 0.31f + 2 * u, ground - 50 * u, fill)
                 canvas.drawRect(w * 0.79f - 2 * u, ground - 100 * u, w * 0.79f, ground - 50 * u, fill)
-                fill.color = Color.rgb(98, 64, 42); canvas.drawRect(w * 0.29f, ground - 50 * u, w * 0.81f, ground - 42 * u, fill)
-                fill.color = Color.rgb(196, 146, 94); canvas.drawRect(w * 0.29f + 2 * u, ground - 48 * u, w * 0.81f - 2 * u, ground - 44 * u, fill)
+                if (art != null) art.drawPlatform(canvas, w * 0.29f, ground - 50 * u, w * 0.81f, 18 * u)
+                else {
+                    fill.color = Color.rgb(98, 64, 42); canvas.drawRect(w * 0.29f, ground - 50 * u, w * 0.81f, ground - 42 * u, fill)
+                    fill.color = Color.rgb(196, 146, 94); canvas.drawRect(w * 0.29f + 2 * u, ground - 48 * u, w * 0.81f - 2 * u, ground - 44 * u, fill)
+                }
                 curve.moveTo(runnerX + 22 * u, ground - 26 * u)
                 curve.quadTo(w * 0.3f, ground - 100 * u, w * 0.4f, ground - 76 * u)
                 curve.lineTo(w * 0.8f, ground - 76 * u)

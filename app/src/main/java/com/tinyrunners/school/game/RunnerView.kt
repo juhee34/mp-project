@@ -33,6 +33,8 @@ class RunnerView(
     private val storyBackground = StoryBackground.load(context, character.id)
     /** A's hometown props for boxes and towers; floating branches keep their drawn look. */
     private val obstacleArt = ObstacleArt.load(resources, character.id)
+    /** A's approved thorny branches, ground spikes and landing planks (docs/art/approved/). */
+    private val hazardArt = HazardArt.load(resources, character.id)
     /** The friend's hometown item scattered on the road (quest/Quest.kt). */
     private val questItem = com.tinyrunners.school.quest.QuestItems.of(character.id)
     private val spritePaint = Paint().apply {
@@ -272,7 +274,7 @@ class RunnerView(
                     canvas.drawRect(l + p, y, r - p, y + p, fill)
                 }
             }
-            ObstacleKind.FLOAT -> drawThornBar(canvas, l, t, r, b)
+            ObstacleKind.FLOAT -> hazardArt?.drawAir(canvas, l, t, r, b) ?: drawThornBar(canvas, l, t, r, b)
             ObstacleKind.SPIKES -> drawSpikeField(canvas, o)
         }
     }
@@ -309,6 +311,17 @@ class RunnerView(
     private fun drawSpikeField(canvas: Canvas, o: Obstacle) {
         val l = sx(o.x); val r = sx(o.x + o.width)
         val ground = sy(0f); val tip = sy(o.top)
+        val art = hazardArt
+        if (art != null) {
+            art.drawSpikes(canvas, l, ground, r, tip)
+            val pl = sx(o.plankLeft); val pr = sx(o.plankRight); val pt = sy(o.plankTop)
+            // Ropes from above, then the plank with its flat top at the landing height.
+            fill.color = ROPE
+            val rope = 2f * scale
+            for (rx in floatArrayOf(pl + 14f * scale, pr - 14f * scale - rope)) canvas.drawRect(rx, sy(o.plankTop + 90f), rx + rope, pt + 2f * scale, fill)
+            art.drawPlatform(canvas, pl, pt, pr, engine.config.plankThickness * 2.2f * scale)
+            return
+        }
         fill.color = SPIKE_BASE; canvas.drawRect(l, ground - 5f * scale, r, ground, fill)
         val toothW = 14f * scale
         var x = l

@@ -8,5 +8,6 @@ class TinyRunnersApp : Application() {
     override fun onCreate() {
         super.onCreate()
         registerActivityLifecycleCallbacks(MusicLifecycle())
+        com.tinyrunners.school.quest.ItemArt.load(resources)
     }
 }

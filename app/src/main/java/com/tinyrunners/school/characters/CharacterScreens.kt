@@ -97,7 +97,7 @@ internal class CharacterScreens(
         val dots = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         top.addView(dots)
         body.addView(top, LinearLayout.LayoutParams(MATCH, WRAP))
-        body.label(context.getString(R.string.characters_select_hint, friends.size), 14f, MUTED, 6)
+        body.label(context.getString(R.string.characters_select_hint), 14f, MUTED, 4)
 
         // Stage: ◀ [card] ▶
         val stage = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
@@ -121,15 +121,20 @@ internal class CharacterScreens(
             textSize = 14f; setTextColor(LEAF); setTypeface(typeface, Typeface.BOLD)
             setPadding(dp(10), dp(3), dp(10), dp(3))
         }
-        val personality = TextView(context).apply { textSize = 15f; setTextColor(INK); setLineSpacing(dp(2).toFloat(), 1f) }
+        // The friend's greeting, their tagline, then the short introduction (A's friendly copy).
+        val greetingLine = TextView(context).apply { textSize = 13f; setTextColor(MUTED); setTypeface(typeface, Typeface.ITALIC); maxLines = 2 }
+        val tagline = TextView(context).apply { textSize = 17f; setTextColor(INK); setTypeface(typeface, Typeface.BOLD); setLineSpacing(dp(2).toFloat(), 1f) }
         val summary = TextView(context).apply {
-            textSize = 13f; setTextColor(MUTED); setLineSpacing(dp(2).toFloat(), 1f)
+            textSize = 14f; setTextColor(INK); setLineSpacing(dp(2).toFloat(), 1f)
             ellipsize = android.text.TextUtils.TruncateAt.END
         }
-        info.addView(name, LinearLayout.LayoutParams(WRAP, WRAP))
-        info.addView(tag, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(4) })
-        info.addView(personality, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(10) })
-        // The summary takes whatever height is left and shows only whole lines (ending in …), never a cut-off line.
+        val nameRow = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        nameRow.addView(name, LinearLayout.LayoutParams(WRAP, WRAP))
+        nameRow.addView(tag, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(10) })
+        info.addView(nameRow, LinearLayout.LayoutParams(MATCH, WRAP))
+        info.addView(greetingLine, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(4) })
+        info.addView(tagline, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) })
+        // The introduction takes whatever height is left and shows only whole lines (ending in …), never a cut-off line.
         info.addView(summary, LinearLayout.LayoutParams(MATCH, 0, 1f).apply { topMargin = dp(6) })
         card.addView(info, LinearLayout.LayoutParams(0, MATCH, 1f))
         stage.addView(prev, LinearLayout.LayoutParams(dp(48), dp(48)))
@@ -140,8 +145,8 @@ internal class CharacterScreens(
         // Actions in one row along the bottom.
         val actions = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
         fun current() = friends.first { it.id == selectedId }
-        actions.addView(rowButton(R.string.characters_run, primary = true) { onStartRun(current().id) },
-            LinearLayout.LayoutParams(0, WRAP, 1.6f))
+        val run = rowButton(R.string.characters_run, primary = true) { onStartRun(current().id) }
+        actions.addView(run, LinearLayout.LayoutParams(0, WRAP, 1.6f))
         actions.addView(rowButton(R.string.characters_profile_short) { showProfile(current().id) },
             LinearLayout.LayoutParams(0, WRAP, 1f).apply { marginStart = dp(8) })
         actions.addView(rowButton(R.string.characters_story_book) {
@@ -174,8 +179,10 @@ internal class CharacterScreens(
             tag.text = context.getString(R.string.characters_species_home, friend.species, friend.home)
             tag.background = shape(blend(tint, PAPER, 0.7f), 12)
             val greeting = greetingFor(friend)
-            personality.text = greeting
-            summary.text = friend.summary
+            greetingLine.text = context.getString(R.string.characters_greeting_quote, greeting)
+            tagline.text = friend.copy?.tagline ?: friend.personality
+            summary.text = friend.copy?.selectionIntro ?: friend.summary
+            run.text = runLabel(friend)
             summary.maxLines = Int.MAX_VALUE
             summary.post {
                 val lines = summary.height / summary.lineHeight.coerceAtLeast(1)
@@ -183,7 +190,8 @@ internal class CharacterScreens(
                 summary.maxLines = lines.coerceAtLeast(1)
             }
             card.contentDescription = context.getString(R.string.characters_card_description,
-                index + 1, friends.size, friend.name, friend.species, friend.home, greeting)
+                index + 1, friends.size, friend.name, friend.species, friend.home,
+                listOfNotNull(friend.copy?.tagline, friend.copy?.selectionIntro).joinToString(" ").ifEmpty { greeting })
             dots.removeAllViews()
             friends.forEachIndexed { i, f ->
                 dots.addView(View(context).apply {
@@ -253,6 +261,10 @@ internal class CharacterScreens(
         return context.getString(greeting)
     }
 
+    /** "라일이랑 달리기", "치즈랑 달리기": the friend's name with the right particle. */
+    private fun runLabel(friend: CharacterDefinition): String =
+        context.getString(R.string.characters_copy_run, com.tinyrunners.school.talk.Josa.with(friend.name, "이랑", "랑"))
+
     private fun friendColor(friend: CharacterDefinition): Int =
         try { Color.parseColor(friend.color) } catch (_: IllegalArgumentException) { LEAF }
 
@@ -305,15 +317,53 @@ internal class CharacterScreens(
         profile.label(friend.species, 16f, MUTED, 4)
         body.addView(profile, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) })
 
-        val details = panel()
-        details.background = shape(PAPER, 18, LINE)
-        details.detail(R.string.characters_home, friend.home)
-        details.detail(R.string.characters_personality, friend.personality, 16)
-        details.detail(R.string.characters_story_outline, friend.summary, 16)
-        body.addView(details, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(14) })
+        val copy = friend.copy
+        if (copy == null) {
+            val details = panel()
+            details.background = shape(PAPER, 18, LINE)
+            details.detail(R.string.characters_home, friend.home)
+            details.detail(R.string.characters_personality, friend.personality, 16)
+            details.detail(R.string.characters_story_outline, friend.summary, 16)
+            body.addView(details, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(14) })
+            body.action(R.string.characters_run, primary = true) { onStartRun(friend.id) }
+            body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context, friend.id)) }
+            restoreScroll(scrollY)
+            return
+        }
+        profile.label(copy.tagline, 18f, LEAF, 10, bold = true)
 
-        body.action(R.string.characters_run, primary = true) { onStartRun(friend.id) }
-        body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context, friend.id)) }
+        // A's friendly profile, in small cards rather than one long block.
+        fun section(title: Int, fill: Int = PAPER): LinearLayout = panel().apply {
+            background = shape(fill, 18, LINE)
+            label(context.getString(title), 15f, LEAF, bold = true, heading = true)
+            body.addView(this, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) })
+        }
+        section(R.string.characters_copy_home).label(friend.home, 17f, top = 5)
+        section(R.string.characters_copy_personality).apply {
+            label(copy.personality, 17f, top = 5)
+            copy.traits.forEach { trait ->
+                addView(TextView(context).apply {
+                    text = trait; textSize = 14f; setTextColor(LEAF); setTypeface(typeface, Typeface.BOLD)
+                    setPadding(dp(12), dp(5), dp(12), dp(5))
+                    background = shape(MINT, 14)
+                }, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(6) })
+            }
+        }
+        section(R.string.characters_copy_habits).label(copy.habits.joinToString("\n") { "· " + it }, 16f, top = 5)
+        section(R.string.characters_copy_cherished).label(copy.cherishedItem, 16f, top = 5)
+        section(R.string.characters_copy_running).label(copy.runningReason, 16f, top = 5)
+        section(R.string.characters_copy_story, MINT).apply {
+            label(copy.storyTeaser, 16f, top = 5)
+            action(R.string.characters_copy_story_button) { context.startActivity(StoryActivity.intent(context, friend.id)) }
+        }
+        body.label(context.getString(R.string.characters_copy_mechanics), 14f, MUTED, 14)
+        val run = Button(context).apply {
+            text = runLabel(friend); textSize = 16f; isAllCaps = false; setTextColor(Color.WHITE)
+            minHeight = dp(52); setPadding(dp(14), dp(10), dp(14), dp(10))
+            background = ripple(LEAF, LEAF); stateListAnimator = null
+            setOnClickListener { onStartRun(friend.id) }
+        }
+        body.addView(run, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) })
         restoreScroll(scrollY)
     }
 
