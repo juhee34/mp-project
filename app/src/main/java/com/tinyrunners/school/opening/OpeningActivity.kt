@@ -34,20 +34,17 @@ import kotlin.math.roundToInt
 
 
 /**
- * Landscape title screen shown on every launch, on the same picture as the login (A's approved meadow with the six
- * friends and the paper card with the title, docs/art/ui-screens). "시작하기" sits in the card; pressing it raises
- * the login card over this screen (LoginActivity is a popup laid out on the same canvas).
+ * Landscape title screen shown on every launch: the login picture's meadow and six friends without the card
+ * (bg_opening_wide: the card's place filled with the surrounding sky, treeline and grass), with only a "시작하기"
+ * button. Pressing it raises the login card over this screen (LoginActivity is a popup laid out on the same canvas).
  */
 class OpeningActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val frame = com.tinyrunners.school.ui.MockupFrame(this, R.drawable.bg_login_wide)
-        // Where the login popup puts its 로그인 button, so the card looks the same before and after.
+        val frame = com.tinyrunners.school.ui.MockupFrame(this, R.drawable.bg_opening_wide)
+        // Only the start button, in the middle of the meadow between the two groups of friends.
         frame.place(com.tinyrunners.school.ui.MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_primary,
-            getString(R.string.opening_start), Color.parseColor("#FFF8E7"), 40f) { onButton() }, 583, 632, 1090, 712)
-        frame.place(android.widget.TextView(this).apply {
-            setText(R.string.opening_hint); setTextColor(Color.parseColor("#5E5A4C")); gravity = Gravity.CENTER
-        }.also { frame.onScaleText(it, 26f) }, 583, 728, 1090, 790)
+            getString(R.string.opening_start), Color.parseColor("#FFF8E7"), 44f) { onButton() }, 583, 600, 1090, 690)
         setContentView(frame)
         hideSystemBars()
     }

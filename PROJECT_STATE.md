@@ -27,6 +27,12 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 오프닝은 풀밭 + 시작하기 버튼만 (2026-11-12, B)
+- 사용자 요청: 오프닝에는 카드 없이 배경과 시작하기 버튼만, 로그인 카드는 누른 뒤에만.
+- A의 그림에 카드 없는 풀밭판이 없어서 B가 bg_login_wide(스프라이트판)의 카드 자리를 주변 그림으로 채웠다: 하늘·나무줄·언덕은 카드 오른쪽 바로 옆 띠를, 친구들 높이의 풀밭은 친구가 없는 오른쪽 끝 풀밭을 좌우로 번갈아 이어 붙이고, 가장자리 20px는 원래 그림과 섞었다. 결과 res/drawable-nodpi/bg_opening_wide.jpg(2091×941), 원본 PNG는 docs/art/ui-screens/backgrounds/bg_opening_wide_b_fill.png. 왼쪽 길이 카드 자리에서 흐리게 끊기는 한계가 있다. A가 카드 없는 원본을 주면 같은 이름으로 바꾼다.
+- OpeningActivity: 이 배경 + 가운데 시작하기 버튼 하나(기준 583,600~1090,690). 안내 글은 뺐다. 로그인 카드 팝업은 그대로.
+- 검증: 빌드·테스트·린트, 에뮬레이터에서 오프닝 → 시작하기 → 카드 팝업 확인.
+
 ## PR #9 합병(메인 메뉴 최종본·스프라이트 통일)과 배경 크기 안내 (2026-11-12, B)
 - PR #9(codex/main-menu-final, ui-screens-handoff 후속 포함) 충돌 없이 합병: 메인 메뉴 최종 배경·버튼과 HubActivity 버튼 좌표, 오프닝·로그인 배경의 친구를 게임 스프라이트로, 친구 스프라이트 눈 맞춤(라일은 원본 외눈), 공통 종이 배경(마을 이야기·선택·기록)을 시안 장면으로.
 - 인계의 분리된 주머니 아이콘(res/drawable-nodpi/ui_bag_pouch_icon.png, 48×59)을 가방 버튼과 튜토리얼 7쪽에 연결(ui/BagButton PouchIcon.draw(resources…), 흐림 없이 확대, 그림이 없으면 기존 도트).
