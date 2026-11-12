@@ -19,16 +19,15 @@ import android.widget.LinearLayout
 import com.tinyrunners.school.MainActivity
 import com.tinyrunners.school.R
 import com.tinyrunners.school.game.GameActivity
-import com.tinyrunners.school.opening.OpeningBackground
+import com.tinyrunners.school.ui.MockupFrame
 import com.tinyrunners.school.talk.PrologueActivity
 import kotlin.math.roundToInt
 
 /**
- * First screen after login. Same look as the opening (title, sky, hills, clouds and the six friends on the ground)
- * with five buttons stacked in the middle: white with green text. The user calls this screen the menu.
- * 스토리 진행하기 → world story (black screen) → talks with the village residents.
- * 게임하기 → friend selection. 상점 → the shop (trails and music). 튜토리얼 → the game guide on a practice run.
- * 설정 → settings.
+ * First screen after login (the menu), in A's approved design: an open picture book with the title, the subtitle,
+ * the six friends on the meadow, and five buttons in the middle (스토리 진행하기 filled green, the rest cream).
+ * 스토리 진행하기 → world story → talks with the village residents. 게임하기 → friend selection. 상점 → the shop.
+ * 튜토리얼 → the game guide on a practice run. 설정 → settings.
  */
 class HubActivity : Activity() {
     /** The login popup closes right where a button appears; a tap carried over from it must not open anything. */
@@ -36,50 +35,31 @@ class HubActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val buttons = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER_HORIZONTAL
-            // Narrow enough to fit in the gap between 포포 and 루미 on the ground.
-            translationY = dp(10).toFloat()
+        // A's approved menu (docs/art/ui-screens): the open picture book with the title, the six friends and a
+        // cream gap in the middle where the five buttons sit at the mockup's own positions (layout.json).
+        val frame = MockupFrame(this, R.drawable.bg_main_menu_wide)
+        fun add(part: Int, label: Int, ink: Int, px: Float, rect: IntArray, click: () -> Unit) =
+            frame.place(MockupFrame.partButton(this, frame, part, getString(label), ink, px) {
+                if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click()
+            }, rect[0], rect[1], rect[2], rect[3])
+        add(R.drawable.ui_menu_btn_primary, R.string.hub_story, CREAM, 44f, intArrayOf(605, 335, 1064, 424)) {
+            startActivity(PrologueActivity.forStory(this))
         }
-        buttons.addView(button(R.string.hub_story) { startActivity(PrologueActivity.forStory(this)) }, slot(first = true))
-        buttons.addView(button(R.string.hub_game) { startActivity(MainActivity.selectionIntent(this)) }, slot())
-        buttons.addView(button(R.string.hub_shop) { startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null)) }, slot())
-        buttons.addView(button(R.string.hub_tutorial) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_game, DEEP_GREEN, 42f, intArrayOf(635, 442, 1037, 522)) {
+            startActivity(MainActivity.selectionIntent(this))
+        }
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_shop, DEEP_GREEN, 42f, intArrayOf(637, 537, 1035, 616)) {
+            startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null))
+        }
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_tutorial, DEEP_GREEN, 42f, intArrayOf(637, 629, 1035, 710)) {
             // A practice run with 라일 that always starts with the game guide.
             startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
-        }, slot())
-        buttons.addView(button(R.string.hub_settings) {
-            startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java))
-        }, slot())
-
-        setContentView(FrameLayout(this).apply {
-            addView(OpeningBackground(this@HubActivity, titleY = 0.13f), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            addView(buttons, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER).apply { topMargin = dp(16) })
-        })
-        hideSystemBars()
-    }
-
-    /** White pill with a green border and bold green text (all five buttons the same). */
-    private fun button(label: Int, click: () -> Unit) = Button(this).apply {
-        setText(label)
-        textSize = 17f
-        isAllCaps = false
-        setTextColor(LEAF)
-        typeface = Typeface.DEFAULT_BOLD
-        minHeight = dp(40); minimumHeight = dp(40)
-        setPadding(dp(16), 0, dp(16), 0)
-        background = GradientDrawable().apply {
-            setColor(Color.WHITE)
-            cornerRadius = dp(24).toFloat()
-            setStroke(dp(3), LEAF)
         }
-        stateListAnimator = null
-        setOnClickListener { if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click() }
-    }
-
-    private fun slot(first: Boolean = false) = LinearLayout.LayoutParams(dp(200), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-        if (!first) topMargin = dp(7)
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_settings, DEEP_GREEN, 42f, intArrayOf(636, 724, 1035, 805)) {
+            startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java))
+        }
+        setContentView(frame)
+        hideSystemBars()
     }
 
     private fun hideSystemBars() {
@@ -99,7 +79,9 @@ class HubActivity : Activity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     companion object {
-        private val LEAF = Color.rgb(48, 83, 65)
+        /** Text colours from layout.json. */
+        private val CREAM = Color.parseColor("#FFF8E7")
+        private val DEEP_GREEN = Color.parseColor("#1E5A2A")
         private const val TAP_GUARD_MS = 600L
 
         /** Opens the hub as the only screen in the task (after login it replaces the opening and popups). */
