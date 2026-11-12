@@ -764,3 +764,4 @@
 - 마을 이야기·이야기 모음·캐릭터 소개/선택/프로필·내 기록의 SceneryView를 공통 그림 bg_common_paper(이야기 모음 시안에서 제목 제거)로 교체하는 PaperBackdropView 추가. Page.show(paper=true) 인자 추가(기본 false). 오프닝·허브·다른 Page 화면은 그대로.
 - 검수: docs/art/ui-screens/BACKGROUND_UNIFY_REVIEW.md. 종이 위 글자 대비는 충분, 벤치 위 MUTED 글자는 2.3으로 낮음.
 - 빌드·기기 실행 미검증 (작업 환경에 Android SDK·local.properties 없음). B가 assembleDebug와 16:9/20:9 기기 확인 후 병합.
+- 후속(같은 날, A 확정): 캐릭터는 항상 원본 48×48 스프라이트. 이야기 모음 썸네일 4장은 집·풍경은 시안 유지, 캐릭터만 원본 sprite_<id>_idle_0으로 교체(세계 이야기는 6명 재배치). 메인 메뉴·로그인 배경의 시안 캐릭터는 아직 그대로(교체 여부 A 결정 대기). Git main에 원본 스프라이트·배경 원본이 그대로 있음을 확인.
