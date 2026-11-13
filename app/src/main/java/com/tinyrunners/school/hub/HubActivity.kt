@@ -38,6 +38,8 @@ class HubActivity : Activity() {
         // A's final menu (docs/art/ui-screens/main-menu-final, 2026-11-12): the open picture book with the title, the six friends and a
         // cream gap in the middle where the five buttons sit at the mockup's own positions (layout.json).
         val frame = MockupFrame(this, R.drawable.bg_main_menu_wide)
+        // The page's clouds drift slowly behind the tree and the title, staying on the page.
+        frame.addView(com.tinyrunners.school.ui.CloudDrift(this, frame, R.drawable.ui_clouds_main_menu, R.drawable.ui_sky_main_menu))
         fun add(part: Int, label: Int, ink: Int, px: Float, rect: IntArray, click: () -> Unit) =
             frame.place(MockupFrame.partButton(this, frame, part, getString(label), ink, px) {
                 if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click()
@@ -85,8 +87,8 @@ class HubActivity : Activity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     companion object {
-        /** Friend centres and feet line on the 1672×941 canvas (inside the book page, clear of the buttons). */
-        val FRIEND_X = intArrayOf(135, 310, 485, 1187, 1362, 1537)
+        /** Friend centres and feet line on the 1672×941 canvas (close together as in A's picture, clear of the buttons). */
+        val FRIEND_X = intArrayOf(183, 336, 497, 1176, 1350, 1524)
         const val FRIEND_FEET = 758
         /** Text colours from layout.json. */
         private val CREAM = Color.parseColor("#FFF8E7")

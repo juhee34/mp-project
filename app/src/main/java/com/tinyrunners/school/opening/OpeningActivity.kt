@@ -42,6 +42,8 @@ class OpeningActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val frame = com.tinyrunners.school.ui.MockupFrame(this, R.drawable.bg_opening_wide)
+        // The sky's clouds drift slowly behind the tree and the hills.
+        frame.addView(com.tinyrunners.school.ui.CloudDrift(this, frame, R.drawable.ui_clouds_opening, R.drawable.ui_sky_opening))
         // The title from the login card (Tiny Runners, leaves and tagline), just above the start button.
         frame.place(android.widget.ImageView(this).apply {
             setImageResource(R.drawable.ui_opening_title)
