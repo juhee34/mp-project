@@ -35,13 +35,19 @@ import kotlin.math.roundToInt
 
 /**
  * Landscape title screen shown on every launch: the login picture's meadow and six friends without the card
- * (bg_opening_wide: the card's place filled with the surrounding sky, treeline and grass), with only a "시작하기"
+ * (bg_opening_wide: A's bg_login_scene with the six friends laid on), the card's title in the sky and a "시작하기"
  * button. Pressing it raises the login card over this screen (LoginActivity is a popup laid out on the same canvas).
  */
 class OpeningActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val frame = com.tinyrunners.school.ui.MockupFrame(this, R.drawable.bg_opening_wide)
+        // The title from the login card (Tiny Runners, leaves and tagline) in the sky, at the card's scale.
+        frame.place(android.widget.ImageView(this).apply {
+            setImageResource(R.drawable.ui_opening_title)
+            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+            contentDescription = getString(R.string.app_name) + ", " + getString(R.string.opening_tagline)
+        }, 496, 85, 1176, 307)
         // Only the start button, in the middle of the meadow between the two groups of friends.
         frame.place(com.tinyrunners.school.ui.MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_primary,
             getString(R.string.opening_start), Color.parseColor("#FFF8E7"), 44f) { onButton() }, 583, 600, 1090, 690)

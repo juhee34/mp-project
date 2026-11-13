@@ -27,6 +27,14 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 날씨 직접 고르기, 화면 배경 1080 통일, 오프닝 제목 (2026-11-13, B)
+- 날씨 고르기: 설정 > 날씨에 "날씨 고르기"(실제 날씨·맑음·흐림·안개·비·눈·뇌우)와 "시간"(지금 시각·낮·밤) 추가. 실제 날씨/지금 시각은 기존처럼 도시의 실제 날씨를 따르고, 둘 다 고르면 인터넷 없이 바로 그 하늘. `WeatherSettings.chosenSky/chosenDay`, `WeatherChoice.apply`.
+- 달리기 화면: 흐림·비·뇌우·밤은 그림 위에 색을 덧칠(뇌우는 가끔 번개), 안개는 더 진하게. 점수판에 "뇌우 · 밤 (직접 고름)"처럼 표시.
+- A의 codex/main-menu-final 합병(배경 3종 2400×1080, 로그인 부품 1080 기준). 남은 오프닝·이야기 모음 배경도 2400×1080으로. 코드 변경 없음(MockupFrame은 비율만 사용).
+- 오프닝 배경: A의 bg_login_scene(카드 없는 들판)에 친구 6명을 다시 얹고, 친구 뒤 밝은 네모 이음새를 지움. 로그인 카드의 제목(Tiny Runners·잎·소개 줄)을 잘라 `ui_opening_title.png`로 하늘에 1.2배로 둠. 소개 줄 바탕은 보라에서 연두로.
+- 검증: validate-content PASS, assembleDebug·testDebugUnitTest(WeatherChoiceTest 3개 포함)·lintDebug BUILD SUCCESSFUL. 에뮬레이터에서 오프닝, 설정 날씨 탭, 뇌우·밤 달리기 확인(9m에서 뒤로 나옴).
+- 남은 것: A 장면 자체의 언덕·굴집 옆 이음새는 손대지 않음. 에뮬레이터 설정은 뇌우·밤으로 둠.
+
 ## 친구 선택을 게임식 캐릭터 선택창으로 (2026-11-12, B)
 - 사용자: 마을 이야기와 선택 화면이 같은 카드 줄이라 헷갈림. 조사 docs/research/CHARACTER_SELECT_RESEARCH.md(웹 검색 4회, 큰 미리보기 + 아래 캐릭터 목록 + 옆 정보 패널이 가장 흔함).
 - CharacterScreens.showSelection: 왼쪽 큰 무대(characters/SelectionViews.kt ShowcaseStage: 집 그림 위 친구 크게, 숨쉬기·그림자·친구 색 테두리, ◀ ▶와 좌우 밀기), 오른쪽 정보 패널(이름, 종·고향, 소개 한 줄, 이 친구와 최고 기록, ○○이랑 달리기, 자세히 보기·이야기 도감), 아래 둥근 얼굴 6개 목록(RosterPortrait, 고른 친구 크게·초록 테두리, 크림 띠 위 이름). 마을 이야기·내 기록은 카드 줄 그대로.

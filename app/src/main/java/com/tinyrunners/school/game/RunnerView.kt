@@ -200,6 +200,20 @@ class RunnerView(
     private fun drawWeather(canvas: Canvas, w: Float) {
         val r = weather ?: return
         val h = groundY
+        // Washes over the picture so every sky looks different: grey for clouds, dark grey for storms, blue at night.
+        when (r.sky) {
+            Sky.CLOUDY -> { fill.color = CLOUD_WASH; canvas.drawRect(0f, 0f, w, height.toFloat(), fill) }
+            Sky.RAIN -> { fill.color = RAIN_WASH; canvas.drawRect(0f, 0f, w, height.toFloat(), fill) }
+            Sky.STORM -> {
+                fill.color = STORM_WASH; canvas.drawRect(0f, 0f, w, height.toFloat(), fill)
+                // A lightning flash now and then.
+                if ((animTime % 5f) in 0f..0.12f || (animTime % 5f) in 0.22f..0.3f) {
+                    fill.color = Color.argb(120, 255, 255, 240); canvas.drawRect(0f, 0f, w, height.toFloat(), fill)
+                }
+            }
+            else -> Unit
+        }
+        if (!r.isDay) { fill.color = NIGHT_WASH; canvas.drawRect(0f, 0f, w, height.toFloat(), fill) }
         when (r.sky) {
             Sky.RAIN, Sky.STORM -> {
                 fill.color = RAIN_COLOR
@@ -449,8 +463,13 @@ class RunnerView(
         weather?.let {
             text.textAlign = Paint.Align.RIGHT
             val right = if (buttonsVisible) stopRect.left - 12f * d else w - 16f * d
-            canvas.drawText(context.getString(R.string.weather_hud, context.getString(it.city.label),
-                context.getString(it.sky.label), it.temperatureC), right, 40f * d, text)
+            val time = context.getString(if (it.isDay) R.string.weather_day else R.string.weather_night)
+            val label = when {
+                it.chosen && it.temperatureC.isNaN() -> context.getString(R.string.weather_hud_chosen, context.getString(it.sky.label), time)
+                it.chosen -> context.getString(R.string.weather_hud_mixed, context.getString(it.city.label), context.getString(it.sky.label), time, it.temperatureC)
+                else -> context.getString(R.string.weather_hud, context.getString(it.city.label), context.getString(it.sky.label), it.temperatureC)
+            }
+            canvas.drawText(label, right, 40f * d, text)
             text.textAlign = Paint.Align.LEFT
         }
         text.alpha = 255
@@ -522,7 +541,11 @@ class RunnerView(
         /** Soft lavender dusk: keeps dark text readable and does not look like an overcast day. */
         val NIGHT = Color.rgb(214, 210, 236)
         val RAIN_COLOR = Color.argb(150, 96, 120, 150)
-        val FOG_COLOR = Color.argb(70, 255, 255, 255)
+        val FOG_COLOR = Color.argb(110, 255, 255, 255)
+        val CLOUD_WASH = Color.argb(55, 120, 126, 134)
+        val RAIN_WASH = Color.argb(60, 70, 86, 110)
+        val STORM_WASH = Color.argb(105, 40, 44, 60)
+        val NIGHT_WASH = Color.argb(120, 18, 26, 70)
         val HILL = Color.rgb(221, 232, 214)
         val GROUND = Color.rgb(196, 170, 128)
         val GROUND_MARK = Color.rgb(176, 150, 110)

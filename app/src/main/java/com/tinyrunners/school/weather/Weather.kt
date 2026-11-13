@@ -39,7 +39,11 @@ enum class Sky(val label: Int) {
     }
 }
 
-data class WeatherReport(val city: City, val sky: Sky, val temperatureC: Double, val isDay: Boolean) {
+data class WeatherReport(
+    val city: City, val sky: Sky, val temperatureC: Double, val isDay: Boolean,
+    /** True when the sky or time of day was picked in settings rather than measured. */
+    val chosen: Boolean = false,
+) {
     companion object {
         /** Parses the `current` block of an Open-Meteo forecast response. */
         fun parse(city: City, json: String): WeatherReport {
@@ -63,6 +67,25 @@ class WeatherSettings(context: Context) {
     var city: City
         get() = prefs.getString("city", null)?.let { name -> City.entries.firstOrNull { it.name == name } } ?: City.SEOUL
         set(value) { prefs.edit().putString("city", value.name).apply() }
+    /** A sky picked by hand in settings, or null to use the city's real weather. */
+    var chosenSky: Sky?
+        get() = prefs.getString("chosenSky", null)?.let { name -> Sky.entries.firstOrNull { it.name == name } }
+        set(value) { prefs.edit().putString("chosenSky", value?.name).apply() }
+    /** Day (true) or night (false) picked by hand, or null to follow the city's real time of day. */
+    var chosenDay: Boolean?
+        get() = if (prefs.contains("chosenDay")) prefs.getBoolean("chosenDay", true) else null
+        set(value) { prefs.edit().apply { if (value == null) remove("chosenDay") else putBoolean("chosenDay", value) }.apply() }
+    /** True when nothing needs the network: both the sky and the time of day are picked by hand. */
+    val fullyChosen: Boolean get() = chosenSky != null && chosenDay != null
+}
+
+/** Puts the settings' hand-picked sky and time of day over the real report. Pure, so it is unit tested. */
+object WeatherChoice {
+    fun apply(real: WeatherReport?, city: City, sky: Sky?, day: Boolean?): WeatherReport? {
+        if (sky == null && day == null) return real
+        val base = real ?: WeatherReport(city, Sky.CLEAR, Double.NaN, true)
+        return base.copy(sky = sky ?: base.sky, isDay = day ?: base.isDay, chosen = true)
+    }
 }
 
 /**

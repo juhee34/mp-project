@@ -56,8 +56,13 @@ class GameActivity : Activity() {
         }
         val weatherSettings = WeatherSettings(this)
         if (weatherSettings.enabled) {
-            WeatherClient.fetch(weatherSettings.city) { result ->
-                if (!isDestroyed) result.onSuccess { view.weather = it }
+            val city = weatherSettings.city
+            val sky = weatherSettings.chosenSky
+            val day = weatherSettings.chosenDay
+            // A sky and time picked in settings show at once; the real weather fills in whatever was left to it.
+            view.weather = com.tinyrunners.school.weather.WeatherChoice.apply(null, city, sky, day)
+            if (!weatherSettings.fullyChosen) WeatherClient.fetch(city) { result ->
+                if (!isDestroyed) result.onSuccess { view.weather = com.tinyrunners.school.weather.WeatherChoice.apply(it, city, sky, day) }
             }
         }
         val onboarding = OnboardingStore(this)

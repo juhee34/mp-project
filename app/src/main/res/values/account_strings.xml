@@ -106,4 +106,14 @@
     <string name="records_stat_best">최고 기록</string>
     <string name="records_stat_score">최고 점수</string>
     <string name="records_card_description">%1$s. %2$d번, 누적 %3$dm, 최고 %4$dm, 최고 점수 %5$d</string>
+    <string name="weather_day">낮</string>
+    <string name="weather_night">밤</string>
+    <string name="weather_hud_chosen">%1$s · %2$s (직접 고름)</string>
+    <string name="weather_hud_mixed">%1$s · %2$s · %3$s %4$.0f°C</string>
+    <string name="settings_weather_pick">날씨 고르기</string>
+    <string name="settings_weather_real">실제 날씨</string>
+    <string name="settings_weather_time">시간</string>
+    <string name="settings_weather_time_real">지금 시각</string>
+    <string name="settings_weather_pick_hint">실제 날씨를 고르면 도시의 지금 날씨와 시각을 따라요. 다른 날씨를 고르면 다음 달리기부터 그 하늘로 달려요.</string>
+    <string name="settings_weather_chosen_preview">다음 달리기 하늘: %1$s · %2$s</string>
 </resources>

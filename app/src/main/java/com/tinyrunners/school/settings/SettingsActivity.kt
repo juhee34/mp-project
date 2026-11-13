@@ -236,36 +236,72 @@ class SettingsActivity : Activity() {
         val settings = WeatherSettings(this)
         heading(R.string.settings_weather, R.string.settings_weather_hint)
         val preview = TextView(this).apply { textSize = 15f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD) }
+        val skies = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val times = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         val cities = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         fun refresh() {
             if (!settings.enabled) { preview.text = getString(R.string.settings_weather_off); return }
             val city = settings.city
+            val sky = settings.chosenSky
+            val day = settings.chosenDay
+            if (settings.fullyChosen) {
+                preview.text = getString(R.string.settings_weather_chosen_preview, getString(sky!!.label),
+                    getString(if (day!!) R.string.weather_day else R.string.weather_night))
+                return
+            }
             preview.text = getString(R.string.settings_weather_loading)
             WeatherClient.fetch(city) { result ->
                 if (isDestroyed || settings.city != city) return@fetch
-                preview.text = result.fold(
-                    { getString(R.string.weather_hud, getString(it.city.label), getString(it.sky.label), it.temperatureC) },
-                    { getString(R.string.settings_weather_failed) })
+                preview.text = result.fold({ real ->
+                    val shown = com.tinyrunners.school.weather.WeatherChoice.apply(real, city, sky, day) ?: real
+                    if (shown.chosen) getString(R.string.settings_weather_chosen_preview, getString(shown.sky.label),
+                        getString(if (shown.isDay) R.string.weather_day else R.string.weather_night))
+                    else getString(R.string.weather_hud, getString(real.city.label), getString(real.sky.label), real.temperatureC)
+                }, { getString(R.string.settings_weather_failed) })
             }
         }
-        fun drawCities() {
-            cities.removeAllViews()
-            City.entries.chunked(4).forEach { rowCities ->
+        /** A grid of pills, [perRow] across. */
+        fun grid(into: LinearLayout, labels: List<Pair<String, Boolean>>, perRow: Int, click: (Int) -> Unit) {
+            into.removeAllViews()
+            labels.withIndex().chunked(perRow).forEach { chunk ->
                 val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-                rowCities.forEachIndexed { i, city ->
-                    row.addView(pill(getString(city.label), settings.city == city, enabled = settings.enabled) {
-                        settings.city = city; drawCities(); refresh()
-                    }, LinearLayout.LayoutParams(0, dp(40), 1f).apply { if (i > 0) marginStart = dp(8) })
+                chunk.forEachIndexed { i, (index, item) ->
+                    row.addView(pill(item.first, item.second, enabled = settings.enabled) { click(index) },
+                        LinearLayout.LayoutParams(0, dp(40), 1f).apply { if (i > 0) marginStart = dp(8) })
                 }
-                repeat(4 - rowCities.size) { row.addView(View(this), LinearLayout.LayoutParams(0, dp(40), 1f).apply { marginStart = dp(8) }) }
-                cities.addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+                repeat(perRow - chunk.size) { row.addView(View(this), LinearLayout.LayoutParams(0, dp(40), 1f).apply { marginStart = dp(8) }) }
+                into.addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
             }
         }
-        switch(R.string.settings_weather_toggle, settings.enabled) { on -> settings.enabled = on; drawCities(); refresh() }
+        fun drawAll() {
+            // 실제 날씨 + each sky.
+            val skyOptions = listOf<com.tinyrunners.school.weather.Sky?>(null) + com.tinyrunners.school.weather.Sky.entries
+            grid(skies, skyOptions.map { s -> (if (s == null) getString(R.string.settings_weather_real) else getString(s.label)) to (settings.chosenSky == s) }, 4) { i ->
+                settings.chosenSky = skyOptions[i]; drawAll(); refresh()
+            }
+            val timeOptions = listOf<Boolean?>(null, true, false)
+            val timeLabels = listOf(R.string.settings_weather_time_real, R.string.weather_day, R.string.weather_night)
+            times.removeAllViews()
+            timeOptions.forEachIndexed { i, t ->
+                times.addView(pill(getString(timeLabels[i]), settings.chosenDay == t, enabled = settings.enabled) {
+                    settings.chosenDay = t; drawAll(); refresh()
+                }, LinearLayout.LayoutParams(0, dp(40), 1f).apply { if (i > 0) marginStart = dp(8) })
+            }
+            grid(cities, City.entries.map { getString(it.label) to (settings.city == it) }, 4) { i ->
+                settings.city = City.entries[i]; drawAll(); refresh()
+            }
+        }
+        switch(R.string.settings_weather_toggle, settings.enabled) { on -> settings.enabled = on; drawAll(); refresh() }
+        body.addView(preview, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
+        label(R.string.settings_weather_pick)
+        note(R.string.settings_weather_pick_hint)
+        body.addView(skies)
+        label(R.string.settings_weather_time)
+        body.addView(times, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+        rule()
         label(R.string.settings_weather_city)
         body.addView(cities)
-        drawCities()
-        body.addView(preview, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) })
+        drawAll()
         refresh()
         note(R.string.settings_weather_source)
     }
