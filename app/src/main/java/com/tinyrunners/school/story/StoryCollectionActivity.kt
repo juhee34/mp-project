@@ -66,6 +66,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
     private lateinit var counter: TextView
     private lateinit var row: LinearLayout
     private lateinit var scroller: HorizontalScrollView
+    private lateinit var pager: com.tinyrunners.school.ui.ShelfPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -101,6 +102,9 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
         row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(row) }
         frame.place(scroller, 40, 205, 1640, 812)
+        // Page dots and ◀ ▶ on the grass under the bench, as in 마을 이야기.
+        pager = com.tinyrunners.school.ui.ShelfPager(this, scroller)
+        frame.place(pager, 436, 842, 1236, 912)
 
         setContentView(frame)
         hideSystemBars()
@@ -172,6 +176,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
             entries.forEach { row.addView(storyCard(friend, it)) }
         }
         row.addView(RefBox(this, frame, 25, 1))
+        scroller.post { pager.refresh() }
     }
 
     private fun prologueSeen() = !TalkProgress(this).shouldShowPrologue
