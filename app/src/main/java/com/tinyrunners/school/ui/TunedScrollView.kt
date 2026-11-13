@@ -6,7 +6,7 @@ import android.view.MotionEvent
 import android.widget.ScrollView
 
 /**
- * How strongly lists move under a finger (설정 > 대화·안내 > 스크롤 민감도): 0–100, 50 is the phone's own feel.
+ * How strongly lists move under a finger (설정 > 기능 > 스크롤 민감도): 0–100, 50 is the phone's own feel.
  * Lower moves the page less for the same finger movement and flings it less far; higher moves it more.
  */
 class ScrollFeel(context: Context) {

@@ -42,7 +42,7 @@ import kotlin.math.roundToInt
  * Settings in the shop's cosy style (cream fabric, honey frame, green controls). Laid out like most game options
  * screens (docs/research/SETTINGS_UI_RESEARCH.md): categories down the left, the chosen category's options on the
  * right, each a labelled row with a slider or switch and its value shown. Categories: 소리 (overall / music /
- * effects volumes, vibration), 대화·안내 (dialogue speed with a preview, replay guides), 날씨, 계정 (account,
+ * effects volumes, vibration), 기능 (dialogue speed with a preview, replay guides, scroll sensitivity), 날씨, 계정 (account,
  * app info, sign-out). Every change applies at once; there is no "save" button.
  */
 class SettingsActivity : Activity() {
@@ -176,7 +176,7 @@ class SettingsActivity : Activity() {
         for (i in 0 until 8) handler.postDelayed({ Sfx.blip(this, "mint") }, i * 80L)
     }
 
-    // ---- 대화·안내 -----------------------------------------------------------------------------------------------
+    // ---- 기능 (대화 속도·처음 안내·스크롤) -----------------------------------------------------------------------------------------------
 
     private fun talk() {
         val audio = AudioSettings(this)
