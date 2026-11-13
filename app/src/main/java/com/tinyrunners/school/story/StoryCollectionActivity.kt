@@ -42,7 +42,7 @@ import kotlin.math.roundToInt
 
 /**
  * 이야기 모음 (from the village story list, top-right), in A's approved design (docs/art/ui-screens/
- * approved/mockup_story_collection.png, layout.json): the paper-and-bench picture with the title, "◀ 마을 이야기로" at
+ * approved/mockup_story_collection.png, layout.json): the paper-and-bench picture with the title, "◀ 스토리 진행으로" at
  * the top-left, the 본 이야기 counter and the bag at the top-right, and story cards (card frame, ribbon, title,
  * picture, count pill, button) standing on the bench, four across and sliding sideways for the rest.
  *
@@ -73,7 +73,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
         shelf = savedInstanceState?.getString(KEY_SHELF)
         frame = MockupFrame(this, R.drawable.bg_story_collection_wide)
 
-        // ◀ 마을 이야기로: the part has the arrow; the words sit in its text area.
+        // ◀ 스토리 진행으로: the part has the arrow; the words sit in its text area.
         back = Button(this).apply {
             isAllCaps = false; stateListAnimator = null; setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER; minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
@@ -102,7 +102,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
         row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(row) }
         frame.place(scroller, 40, 205, 1640, 812)
-        // Page dots and ◀ ▶ on the grass under the bench, as in 마을 이야기.
+        // Page dots and ◀ ▶ on the grass under the bench, as in 스토리 진행.
         pager = com.tinyrunners.school.ui.ShelfPager(this, scroller)
         frame.place(pager, 436, 842, 1236, 912)
 
@@ -209,7 +209,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
 
     private enum class Look { PRIMARY, OUTLINE, LOCKED }
 
-    /** One storybook card (StoryBookCard, shared with 마을 이야기). */
+    /** One storybook card (StoryBookCard, shared with 스토리 진행). */
     private fun card(ribbon: Int, title: String, thumbPart: Int?, thumbView: View?, count: String?, button: String,
                      look: Look, click: () -> Unit): View {
         val picture = thumbView ?: ImageView(this).apply {

@@ -23,7 +23,7 @@ import com.tinyrunners.school.ui.MockupFrame
 import kotlin.math.roundToInt
 
 /**
- * 마을 이야기 (스토리 진행하기), built like 이야기 모음 so the two story screens read as one place: A's paper picture
+ * 스토리 진행 (마을 이야기, from 스토리 진행하기), built like 이야기 모음 so the two story screens read as one place: A's paper picture
  * with the frame, the trees and the bench filling the screen (bg_village_stories_wide), the title drawn as the
  * collection's is, "◀ 처음으로" top-left, the storybook (이야기 모음) | bag top-right, one storybook card per friend
  * on the bench (StoryBookCard: the friend's home, "새 이야기" or "다 봤어요", and "이 친구와 대화하기", which opens
@@ -52,7 +52,7 @@ class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
         focus = savedInstanceState?.getString(KEY_FOCUS) ?: intent.getStringExtra(EXTRA_FRIEND)
         frame = MockupFrame(this, R.drawable.bg_village_stories_wide)
 
-        // ◀ 처음으로 in the collection's back part (same place as its ◀ 마을 이야기로).
+        // ◀ 처음으로 in the collection's back part (same place as its ◀ 스토리 진행으로).
         val back = Button(this).apply {
             text = getString(R.string.common_to_menu).removePrefix("◀ ")
             isAllCaps = false; stateListAnimator = null; setTextColor(StoryBookCard.DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD

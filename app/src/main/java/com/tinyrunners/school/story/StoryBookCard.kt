@@ -14,7 +14,7 @@ import com.tinyrunners.school.R
 import com.tinyrunners.school.ui.MockupFrame
 
 /**
- * The storybook card from A's approved story-collection design, shared by 이야기 모음 and 마을 이야기 so the two
+ * The storybook card from A's approved story-collection design, shared by 이야기 모음 and 스토리 진행 so the two
  * screens read alike: a book-page frame (380×581 reference pixels, from the 라일 card) with a ribbon, a title, a
  * picture, an optional pill and one button. Sizes follow [frame]'s scale.
  */

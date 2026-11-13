@@ -16,7 +16,7 @@ import kotlin.math.roundToInt
 /**
  * The top-bar pill from A's approved story-collection design (ui_story_back_button / ui_story_counter_pill): a warm
  * cream pill with a light brown edge and a darker brown lip along the bottom, deep green bold words. Every worded
- * button in a screen's top bar (◀ 처음으로, ◀ 돌아가기, the selection's 상점·마을 이야기·내 기록·설정, coin counters)
+ * button in a screen's top bar (◀ 처음으로, ◀ 돌아가기, the selection's 상점·스토리 진행·내 기록·설정, coin counters)
  * wears it; their words stay as they were. [divider] is the thin upright line that stands before the bag when
  * another button sits beside it, as in the design.
  */

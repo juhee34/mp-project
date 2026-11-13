@@ -33,13 +33,13 @@
     <string name="quest_error">가방을 열지 못했어요. 잠시 후 다시 해 주세요.</string>
 
     <!-- Result screen after a run. -->
-    <string name="result_to_village">마을 이야기로</string>
+    <string name="result_to_village">스토리 진행으로</string>
     <string name="result_give_items">%1$s에게 %2$s 전하러 가기</string>
 
     <!-- 가방 screen. -->
     <string name="bag_title">가방</string>
     <string name="bag_subtitle">달리며 모은 작은 선물들</string>
-    <string name="bag_guide">코인은 상점에서, 아이템은 마을 이야기에서 써요.</string>
+    <string name="bag_guide">코인은 상점에서, 아이템은 스토리 진행에서 써요.</string>
     <string name="bag_count">%1$d개</string>
     <string name="bag_for">%1$s에게</string>
     <string name="bag_ready_chip">전할 준비 완료</string>

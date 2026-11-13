@@ -18,13 +18,15 @@ import com.tinyrunners.school.R
  * and a bench along the bottom, so it is always shown whole in height: it is scaled to the view's height, its left
  * and right ends (trees and frame corners) keep their shape, and only the plain middle (paper, bench, grass) is
  * stretched or squeezed to fill the width. That way the frame and the trees are never cut off, also on screens
- * that show the status bar. The hub and login use their own approved pictures (MockupFrame).
+ * that show the status bar. It uses the clean copy (bg_common_paper_clean_wide: the left trees, cut off square in A's
+ * picture where a card once stood, replaced by the right bushes mirrored), the same picture the story screens use.
+ * The hub and login use their own approved pictures (MockupFrame).
  */
 class PaperBackdropView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,   // needed when placed in an XML layout (activity_main.xml)
 ) : View(context, attrs) {
-    private val art: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bg_common_paper_wide,
+    private val art: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bg_common_paper_clean_wide,
         BitmapFactory.Options().apply { inScaled = false })
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
     private val src = Rect()
