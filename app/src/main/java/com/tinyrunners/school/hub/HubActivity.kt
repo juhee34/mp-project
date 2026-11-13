@@ -38,8 +38,9 @@ class HubActivity : Activity() {
         // A's final menu (docs/art/ui-screens/main-menu-final, 2026-11-12): the open picture book with the title, the six friends and a
         // cream gap in the middle where the five buttons sit at the mockup's own positions (layout.json).
         val frame = MockupFrame(this, R.drawable.bg_main_menu_wide)
-        // The page's clouds drift slowly behind the tree and the title, staying on the page.
-        frame.addView(com.tinyrunners.school.ui.CloudDrift(this, frame, R.drawable.ui_clouds_main_menu, R.drawable.ui_sky_main_menu))
+        // The page's clouds drift slowly behind the tree and the title, fading in and out at the page's edges.
+        frame.addView(com.tinyrunners.school.ui.CloudDrift(this, frame, R.drawable.ui_clouds_main_menu, R.drawable.ui_sky_main_menu,
+            wrapLeft = 312, wrapRight = 2085, fade = 170))
         fun add(part: Int, label: Int, ink: Int, px: Float, rect: IntArray, click: () -> Unit) =
             frame.place(MockupFrame.partButton(this, frame, part, getString(label), ink, px) {
                 if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click()
