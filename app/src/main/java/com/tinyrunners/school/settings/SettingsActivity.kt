@@ -60,13 +60,7 @@ class SettingsActivity : Activity() {
 
         val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(26), dp(10), dp(26), dp(18)) }
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(com.tinyrunners.school.ui.HomeButton.create(this).apply {
-            textSize = 14f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD)
-            background = RippleDrawable(ColorStateList.valueOf(ShopActivity.OWNED), GradientDrawable().apply {
-                setColor(ShopActivity.CARD); cornerRadius = dp(18).toFloat(); setStroke(dp(2), ShopActivity.HONEY)
-            }, null)
-            minHeight = dp(38); minimumHeight = dp(38); setPadding(dp(14), 0, dp(16), 0)
-        })
+        top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
         top.addView(View(this).apply { setBackgroundColor(ShopActivity.HONEY) }, LinearLayout.LayoutParams(dp(2), dp(28)).apply { marginStart = dp(14); marginEnd = dp(14) })
         top.addView(TextView(this).apply {
             setText(R.string.settings_title); textSize = 26f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD)

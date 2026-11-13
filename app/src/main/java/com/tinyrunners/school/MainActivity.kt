@@ -34,9 +34,24 @@ class MainActivity : Activity() {
             startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, characterScreens?.currentFriendId))
         }
         // The bag (pouch) sits at the top-right, after the shop/story/records/settings links.
-        (findViewById<View>(R.id.coin_badge).parent as? android.view.ViewGroup)?.let { com.tinyrunners.school.ui.BagButton.appendTo(it) }
+        // Top-bar words wear the story collection's pill; an upright line stands before the bag.
+        listOf(R.id.menu_shop, R.id.menu_stories, R.id.menu_records, R.id.menu_settings).forEach { id ->
+            findViewById<TextView>(id).apply {
+                com.tinyrunners.school.ui.TopPill.style(this)
+                (layoutParams as? android.widget.LinearLayout.LayoutParams)?.let { lp ->
+                    lp.height = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                    lp.gravity = android.view.Gravity.CENTER_VERTICAL
+                    lp.marginStart = (8 * resources.displayMetrics.density).toInt()
+                    layoutParams = lp
+                }
+            }
+        }
+        (findViewById<View>(R.id.coin_badge).parent as? android.view.ViewGroup)?.let {
+            it.addView(com.tinyrunners.school.ui.TopPill.divider(this))
+            com.tinyrunners.school.ui.BagButton.appendTo(it)
+        }
         findViewById<TextView>(R.id.coin_badge).apply {
-            background = coinBackground()
+            com.tinyrunners.school.ui.TopPill.style(this, sizeSp = 16f)
             setCompoundDrawablesRelative(coinIcon(), null, null, null)
             compoundDrawablePadding = (6 * resources.displayMetrics.density).toInt()
             setOnClickListener { startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this@MainActivity, characterScreens?.currentFriendId)) }
@@ -89,13 +104,6 @@ class MainActivity : Activity() {
                 badge.contentDescription = getString(R.string.coin_badge_description, wallet.coins)
             }
         }
-    }
-
-    private fun coinBackground() = android.graphics.drawable.GradientDrawable().apply {
-        val d = resources.displayMetrics.density
-        setColor(android.graphics.Color.rgb(255, 247, 220))
-        setStroke((2 * d).toInt(), android.graphics.Color.rgb(246, 200, 80))
-        cornerRadius = 20 * d
     }
 
     private fun coinIcon() = android.graphics.drawable.GradientDrawable().apply {

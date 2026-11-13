@@ -59,6 +59,7 @@ class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
         top.addView(com.tinyrunners.school.ui.BookButton.create(this) {
             startActivity(Intent(this, StoryCollectionActivity::class.java))
         })
+        top.addView(com.tinyrunners.school.ui.TopPill.divider(this))
         top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         content.addView(top)
         content.addView(TextView(this).apply {

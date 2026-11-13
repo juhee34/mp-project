@@ -82,13 +82,7 @@ class ShopActivity : Activity() {
 
         // Top: 처음으로 | 상점 | short intro ........ coins  bag
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(com.tinyrunners.school.ui.HomeButton.create(this).apply {
-            textSize = 14f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD)
-            background = RippleDrawable(ColorStateList.valueOf(OWNED), GradientDrawable().apply {
-                setColor(CARD); cornerRadius = dp(18).toFloat(); setStroke(dp(2), HONEY)
-            }, null)
-            minHeight = dp(38); minimumHeight = dp(38); setPadding(dp(14), 0, dp(16), 0)
-        })
+        top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
         top.addView(divider())
         top.addView(TextView(this).apply {
             setText(R.string.shop_title)
@@ -106,13 +100,15 @@ class ShopActivity : Activity() {
             setText(R.string.shop_loading)
             textSize = 17f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD)
             setPadding(dp(12), dp(6), dp(16), dp(6))
-            background = GradientDrawable().apply { setColor(COIN_BG); cornerRadius = dp(20).toFloat(); setStroke(dp(2), HONEY) }
             compoundDrawablePadding = dp(8)
             setCompoundDrawablesRelative(GradientDrawable().apply {
                 shape = GradientDrawable.OVAL; setColor(COIN); setStroke(dp(2), PRICE); setBounds(0, 0, dp(20), dp(20))
             }, null, null, null)
         }
+        com.tinyrunners.school.ui.TopPill.style(coins, pressable = false, sizeSp = 16f)
+        coins.setPadding(dp(12), dp(2), dp(16), dp(4))
         top.addView(coins, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(10) })
+        top.addView(com.tinyrunners.school.ui.TopPill.divider(this))
         top.addView(com.tinyrunners.school.ui.BagButton.create(this))
         content.addView(top)
 
@@ -569,7 +565,6 @@ class ShopActivity : Activity() {
         private val INK_SOFT = Color.parseColor("#5E5A4C")
         private val ERROR = Color.parseColor("#B04A3A")
         private val COIN = Color.rgb(246, 200, 80)
-        private val COIN_BG = Color.parseColor("#FCEFC8")
 
         fun intent(context: Context, friendId: String?) = Intent(context, ShopActivity::class.java).putExtra(EXTRA_FRIEND, friendId)
     }
