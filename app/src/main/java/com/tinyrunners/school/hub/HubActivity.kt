@@ -24,8 +24,8 @@ import com.tinyrunners.school.talk.PrologueActivity
 import kotlin.math.roundToInt
 
 /**
- * First screen after login (the menu), in A's approved design: an open picture book with the title, the subtitle,
- * the six friends on the meadow, and five buttons in the middle (스토리 진행하기 filled green, the rest cream).
+ * First screen after login (the menu), in A's approved design: an open picture book on a pixel wooden desk with the
+ * title, the subtitle, the six friends (game sprites, spread out on the meadow), and five buttons in the middle (스토리 진행하기 filled green, the rest cream).
  * 스토리 진행하기 → world story → talks with the village residents. 게임하기 → friend selection. 상점 → the shop.
  * 튜토리얼 → the game guide on a practice run. 설정 → settings.
  */
@@ -58,6 +58,12 @@ class HubActivity : Activity() {
         add(R.drawable.ui_menu_btn_secondary, R.string.hub_settings, DEEP_GREEN, 42f, intArrayOf(619, 672, 1053, 750)) {
             startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java))
         }
+        // The six friends from their game sprites (the picture's own drawings were taken out), three each side.
+        val friends = com.tinyrunners.school.data.CharacterRepository(this).characters
+        FRIEND_X.forEachIndexed { i, cx ->
+            val id = friends.getOrNull(i)?.id ?: return@forEachIndexed
+            frame.place(com.tinyrunners.school.opening.OpeningFriend(this, id, i), cx - 85, FRIEND_FEET - 170, cx + 85, FRIEND_FEET)
+        }
         setContentView(frame)
         hideSystemBars()
     }
@@ -79,6 +85,9 @@ class HubActivity : Activity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     companion object {
+        /** Friend centres and feet line on the 1672×941 canvas (inside the book page, clear of the buttons). */
+        val FRIEND_X = intArrayOf(135, 310, 485, 1187, 1362, 1537)
+        const val FRIEND_FEET = 758
         /** Text colours from layout.json. */
         private val CREAM = Color.parseColor("#FFF8E7")
         private val DEEP_GREEN = Color.parseColor("#1E5A2A")

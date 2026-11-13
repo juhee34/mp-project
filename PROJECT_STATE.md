@@ -27,6 +27,11 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 메인 메뉴: 도트 나무 책상, 친구는 스프라이트로 간격 넓힘 (2026-11-13, B)
+- A가 따로 준 메뉴 배경 수정본은 없음(1080 크기 변환뿐) → B가 bg_main_menu_wide.jpg를 고침: 책 바깥의 번진 줄무늬를 6px 도트 나무 책상(판자·결·옹이·이음매, 책 아래 계단식 그림자)으로, 책 위 친구 6명(시안 그림, 1.148배 확대로 모양이 달라 보임)은 지우고 풀밭 색으로 채움.
+- HubActivity가 게임 스프라이트(OpeningFriend, 4배)로 친구를 그림: 중심 x 135·310·485 / 1187·1362·1537, 발 758(기준 캔버스).
+- 검증: assembleDebug·testDebugUnitTest·lintDebug BUILD SUCCESSFUL, validate-content PASS, 에뮬레이터 메뉴 화면 확인.
+
 ## 오프닝: 제목을 가운데로, 친구들 간격 넓힘 (2026-11-13, B)
 - 제목(ui_opening_title)을 시작하기 버튼 바로 위로 내려 둘이 화면 가운데에 함께 오게 함(기준 캔버스 제목 215~437, 버튼 475~565).
 - 친구 6명을 배경에서 빼고(bg_opening_wide = 이음새 지운 A의 bg_login_scene) 코드로 그림(OpeningFriend: 스프라이트 4배, 그림자, 숨쉬기). 중심 x 110·300·490 / 1180·1370·1560, 발 805 — 16:9에서도 잘리지 않는 범위.
