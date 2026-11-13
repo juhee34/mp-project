@@ -75,7 +75,7 @@ class SettingsActivity : Activity() {
         val split = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         tabs = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         split.addView(tabs, LinearLayout.LayoutParams(dp(150), LinearLayout.LayoutParams.MATCH_PARENT))
-        scroll = ScrollView(this).apply {
+        scroll = com.tinyrunners.school.ui.TunedScrollView(this).apply {
             isFillViewport = true; isVerticalScrollBarEnabled = true
             background = GradientDrawable().apply { setColor(ShopActivity.CARD); cornerRadius = dp(18).toFloat(); setStroke(dp(2), ShopActivity.HONEY_LIGHT) }
         }
@@ -222,41 +222,48 @@ class SettingsActivity : Activity() {
             com.tinyrunners.school.talk.TalkProgress(this).resetAll()
             status.text = getString(R.string.settings_guide_reset)
         }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(42)).apply { topMargin = dp(6) })
+        rule()
+        // How strongly lists move under a finger (this page, the friend screens, the story book...).
+        label(R.string.settings_scroll)
+        val feel = com.tinyrunners.school.ui.ScrollFeel(this)
+        slider(R.string.settings_scroll_speed, feel.percent) { v, _ -> feel.percent = v }
+        note(R.string.settings_scroll_hint)
     }
 
     // ---- 날씨 ---------------------------------------------------------------------------------------------------
 
+    /**
+     * 날씨: on/off, then how the sky is decided — "지금 날씨 따라가기" (the city's real weather and time; the city pills
+     * show) or "직접 고르기" (pick the sky and day/night; the city does not matter then). A line above shows the sky
+     * of the next run.
+     */
     private fun weather() {
         val settings = WeatherSettings(this)
         heading(R.string.settings_weather, R.string.settings_weather_hint)
         val preview = TextView(this).apply { textSize = 15f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD) }
-        val skies = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        val times = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        val cities = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val modes = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        fun picking() = settings.chosenSky != null || settings.chosenDay != null
         fun refresh() {
             if (!settings.enabled) { preview.text = getString(R.string.settings_weather_off); return }
             val city = settings.city
-            val sky = settings.chosenSky
-            val day = settings.chosenDay
-            if (settings.fullyChosen) {
-                preview.text = getString(R.string.settings_weather_chosen_preview, getString(sky!!.label),
-                    getString(if (day!!) R.string.weather_day else R.string.weather_night))
+            if (picking()) {
+                val sky = settings.chosenSky ?: com.tinyrunners.school.weather.Sky.CLEAR
+                val day = settings.chosenDay ?: true
+                preview.text = getString(R.string.settings_weather_chosen_preview, getString(sky.label),
+                    getString(if (day) R.string.weather_day else R.string.weather_night))
                 return
             }
             preview.text = getString(R.string.settings_weather_loading)
             WeatherClient.fetch(city) { result ->
-                if (isDestroyed || settings.city != city) return@fetch
+                if (isDestroyed || settings.city != city || picking()) return@fetch
                 preview.text = result.fold({ real ->
-                    val shown = com.tinyrunners.school.weather.WeatherChoice.apply(real, city, sky, day) ?: real
-                    if (shown.chosen) getString(R.string.settings_weather_chosen_preview, getString(shown.sky.label),
-                        getString(if (shown.isDay) R.string.weather_day else R.string.weather_night))
-                    else getString(R.string.weather_hud, getString(real.city.label), getString(real.sky.label), real.temperatureC)
+                    getString(R.string.weather_hud, getString(real.city.label), getString(real.sky.label), real.temperatureC)
                 }, { getString(R.string.settings_weather_failed) })
             }
         }
         /** A grid of pills, [perRow] across. */
-        fun grid(into: LinearLayout, labels: List<Pair<String, Boolean>>, perRow: Int, click: (Int) -> Unit) {
-            into.removeAllViews()
+        fun grid(labels: List<Pair<String, Boolean>>, perRow: Int, click: (Int) -> Unit) {
             labels.withIndex().chunked(perRow).forEach { chunk ->
                 val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
                 chunk.forEachIndexed { i, (index, item) ->
@@ -264,40 +271,56 @@ class SettingsActivity : Activity() {
                         LinearLayout.LayoutParams(0, dp(40), 1f).apply { if (i > 0) marginStart = dp(8) })
                 }
                 repeat(perRow - chunk.size) { row.addView(View(this), LinearLayout.LayoutParams(0, dp(40), 1f).apply { marginStart = dp(8) }) }
-                into.addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+                box.addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
             }
         }
+        fun boxLabel(text: Int) = box.addView(TextView(this).apply {
+            setText(text); textSize = 15f; setTextColor(INK); setTypeface(typeface, Typeface.BOLD); setPadding(0, dp(12), 0, 0)
+        })
+        fun boxNote(text: Int) = box.addView(TextView(this).apply {
+            setText(text); textSize = 13f; setTextColor(INK_SOFT); setPadding(0, dp(4), 0, 0)
+        })
         fun drawAll() {
-            // 실제 날씨 + each sky.
-            val skyOptions = listOf<com.tinyrunners.school.weather.Sky?>(null) + com.tinyrunners.school.weather.Sky.entries
-            grid(skies, skyOptions.map { s -> (if (s == null) getString(R.string.settings_weather_real) else getString(s.label)) to (settings.chosenSky == s) }, 4) { i ->
-                settings.chosenSky = skyOptions[i]; drawAll(); refresh()
+            modes.removeAllViews()
+            listOf(false to R.string.settings_weather_mode_real, true to R.string.settings_weather_mode_pick).forEachIndexed { i, (pick, label) ->
+                modes.addView(pill(getString(label), picking() == pick, enabled = settings.enabled) {
+                    if (pick) {
+                        settings.chosenSky = settings.chosenSky ?: com.tinyrunners.school.weather.Sky.CLEAR
+                        settings.chosenDay = settings.chosenDay ?: true
+                    } else {
+                        settings.chosenSky = null; settings.chosenDay = null
+                    }
+                    drawAll(); refresh()
+                }, LinearLayout.LayoutParams(0, dp(46), 1f).apply { if (i > 0) marginStart = dp(10) })
             }
-            val timeOptions = listOf<Boolean?>(null, true, false)
-            val timeLabels = listOf(R.string.settings_weather_time_real, R.string.weather_day, R.string.weather_night)
-            times.removeAllViews()
-            timeOptions.forEachIndexed { i, t ->
-                times.addView(pill(getString(timeLabels[i]), settings.chosenDay == t, enabled = settings.enabled) {
-                    settings.chosenDay = t; drawAll(); refresh()
-                }, LinearLayout.LayoutParams(0, dp(40), 1f).apply { if (i > 0) marginStart = dp(8) })
-            }
-            grid(cities, City.entries.map { getString(it.label) to (settings.city == it) }, 4) { i ->
-                settings.city = City.entries[i]; drawAll(); refresh()
+            box.removeAllViews()
+            if (picking()) {
+                boxLabel(R.string.settings_weather_pick)
+                val skies = com.tinyrunners.school.weather.Sky.entries
+                grid(skies.map { getString(it.label) to (settings.chosenSky == it) }, 3) { i ->
+                    settings.chosenSky = skies[i]; if (settings.chosenDay == null) settings.chosenDay = true; drawAll(); refresh()
+                }
+                boxLabel(R.string.settings_weather_time)
+                grid(listOf(getString(R.string.weather_day) to (settings.chosenDay != false), getString(R.string.weather_night) to (settings.chosenDay == false)), 2) { i ->
+                    settings.chosenDay = i == 0; if (settings.chosenSky == null) settings.chosenSky = com.tinyrunners.school.weather.Sky.CLEAR; drawAll(); refresh()
+                }
+                boxNote(R.string.settings_weather_mode_pick_hint)
+            } else {
+                boxLabel(R.string.settings_weather_city)
+                grid(City.entries.map { getString(it.label) to (settings.city == it) }, 4) { i ->
+                    settings.city = City.entries[i]; drawAll(); refresh()
+                }
+                boxNote(R.string.settings_weather_source)
             }
         }
         switch(R.string.settings_weather_toggle, settings.enabled) { on -> settings.enabled = on; drawAll(); refresh() }
         body.addView(preview, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
-        label(R.string.settings_weather_pick)
-        note(R.string.settings_weather_pick_hint)
-        body.addView(skies)
-        label(R.string.settings_weather_time)
-        body.addView(times, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
         rule()
-        label(R.string.settings_weather_city)
-        body.addView(cities)
+        label(R.string.settings_weather_mode)
+        body.addView(modes, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+        body.addView(box)
         drawAll()
         refresh()
-        note(R.string.settings_weather_source)
     }
 
     // ---- 계정 ---------------------------------------------------------------------------------------------------

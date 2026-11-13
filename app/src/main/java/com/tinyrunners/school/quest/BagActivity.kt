@@ -37,7 +37,8 @@ import kotlin.math.roundToInt
 /**
  * 가방, in A's approved design (docs/art/approved/bag-approved-20261112.png): the shop's cream fabric and honey-wood
  * frame, a coin badge, and six item cards in two rows — the item standing on a tuft of grass, then its name and count,
- * the friend it is for, and either how many more are needed (three dots) or "전할 준비 완료" with the next story
+ * the friend it is for, and either how many more are needed (three dots) or "전할 준비 완료" (the next story's title only
+ * in the description read aloud)
  * and a "전하러 가기" button. A meadow with a cottage runs along the bottom. All numbers come from the account.
  */
 class BagActivity : Activity() {
@@ -180,19 +181,16 @@ class BagActivity : Activity() {
         forRow.addView(TextView(this).apply {
             text = getString(R.string.bag_for, friend?.name.orEmpty()); textSize = 14f; setTextColor(INK); setPadding(dp(6), 0, 0, 0)
         })
-        if (ready) forRow.addView(chip(getString(R.string.bag_ready_chip), ShopActivity.OWNED),
-            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(8) })
         column.addView(forRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
 
         if (ready && next != null) {
-            // Ready: a chip, the story the items open, and the button.
-            val readyRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-            readyRow.addView(BookIcon(this), LinearLayout.LayoutParams(dp(18), dp(14)))
-            readyRow.addView(TextView(this).apply {
-                text = next.title; textSize = 13f; setTextColor(INK); maxLines = 1
-                ellipsize = android.text.TextUtils.TruncateAt.END; setPadding(dp(4), 0, 0, 0)
-            }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-            column.addView(readyRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(3) })
+            // Ready: just the button under a thin rule, so the card holds the same three lines as the others and nothing is
+            // cut. The lavender edge and the button say the items can be given; the chip and the story's title are only
+            // read aloud (the card's description).
+            column.addView(View(this).apply { setBackgroundColor(ShopActivity.HONEY_LIGHT) },
+                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1)).apply { topMargin = dp(4); bottomMargin = dp(2) })
+            card.contentDescription = getString(item.name) + ", " + getString(R.string.bag_for, friend?.name.orEmpty()) + ", " +
+                getString(R.string.bag_ready_chip) + ", " + next.title
             column.addView(Button(this).apply {
                 setText(R.string.bag_give)
                 textSize = 14f; isAllCaps = false; stateListAnimator = null; setTypeface(typeface, Typeface.BOLD)
@@ -204,7 +202,7 @@ class BagActivity : Activity() {
                     startActivities(arrayOf(StoryListActivity.intent(this@BagActivity, item.friendId),
                         TalkActivity.village(this@BagActivity, item.friendId, next.id, askItems = true)))
                 }
-            }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(30)).apply { topMargin = dp(4) })
+            }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(32)).apply { topMargin = dp(4) })
         } else {
             // Not yet: a thin rule, how many more are needed, and three dots filling up as items are found.
             column.addView(View(this).apply { setBackgroundColor(ShopActivity.HONEY_LIGHT) },
@@ -308,23 +306,6 @@ private class FriendFace(context: Context, characterId: String) : View(context) 
     }
 }
 
-/** A tiny open book in front of the story title. */
-private class BookIcon(context: Context) : View(context) {
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    override fun onDraw(canvas: Canvas) {
-        val w = width.toFloat(); val h = height.toFloat(); val d = resources.displayMetrics.density
-        paint.style = Paint.Style.FILL; paint.color = Color.rgb(252, 248, 236)
-        canvas.drawRect(1 * d, 1 * d, w - 1 * d, h - 1 * d, paint)
-        paint.style = Paint.Style.STROKE; paint.strokeWidth = 1.4f * d; paint.color = Color.rgb(80, 70, 52)
-        canvas.drawRect(1 * d, 1 * d, w / 2f, h - 1 * d, paint)
-        canvas.drawRect(w / 2f, 1 * d, w - 1 * d, h - 1 * d, paint)
-        paint.strokeWidth = 1f * d
-        for (k in 1..2) {
-            val y = h * k / 3.2f + 1 * d
-            canvas.drawLine(3 * d, y, w / 2f - 2 * d, y, paint); canvas.drawLine(w / 2f + 2 * d, y, w - 3 * d, y, paint)
-        }
-    }
-}
 
 /** A sprig of lavender before the guide line. */
 private class SprigIcon(context: Context) : View(context) {

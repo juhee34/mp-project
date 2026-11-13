@@ -373,7 +373,7 @@ internal class CharacterScreens(
         }
         row.addView(pageWrap, LinearLayout.LayoutParams(0, WRAP, 1f))
         row.addView(right, LinearLayout.LayoutParams(dp(250), WRAP).apply { marginStart = dp(22) })
-        scroll = ScrollView(context).apply { isFillViewport = true; addView(row) }
+        scroll = com.tinyrunners.school.ui.TunedScrollView(context).apply { isFillViewport = true; addView(row) }
         host.addView(com.tinyrunners.school.result.ResultScenery(context, friend.id, 0f), FrameLayout.LayoutParams(MATCH, MATCH))
         host.addView(scroll, FrameLayout.LayoutParams(MATCH, MATCH))
         restoreScroll(scrollY)
@@ -382,7 +382,7 @@ internal class CharacterScreens(
     private fun screen(next: Route): LinearLayout {
         route = next
         host.removeAllViews()
-        scroll = ScrollView(context).apply { isFillViewport = true }
+        scroll = com.tinyrunners.school.ui.TunedScrollView(context).apply { isFillViewport = true }
         val body = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(20), dp(20), dp(20), dp(28))

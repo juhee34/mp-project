@@ -119,4 +119,11 @@
     <string name="result_with_friend">함께 달린 친구</string>
     <string name="result_stamp_new">새 기록!</string>
     <string name="result_rewards">받은 것</string>
+    <string name="settings_weather_mode">날씨 정하는 방식</string>
+    <string name="settings_weather_mode_real">지금 날씨 따라가기</string>
+    <string name="settings_weather_mode_pick">직접 고르기</string>
+    <string name="settings_weather_mode_pick_hint">고른 하늘과 시간으로 다음 달리기부터 달려요. 도시는 상관없어요.</string>
+    <string name="settings_scroll">스크롤 민감도</string>
+    <string name="settings_scroll_speed">넘김 정도</string>
+    <string name="settings_scroll_hint">낮추면 손가락을 움직인 것보다 덜, 높이면 더 많이 넘어가요. 50%가 기본이에요. 설정·친구 화면·이야기 화면에 쓰여요.</string>
 </resources>

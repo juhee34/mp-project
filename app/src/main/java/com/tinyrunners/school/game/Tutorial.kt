@@ -86,7 +86,7 @@ class TutorialOverlay(context: Context, private val onDone: () -> Unit) : FrameL
         // Landscape: the picture on the left, the title and text on the right, the buttons below. The text scrolls if
         // it is ever too long, so the buttons always stay on screen.
         val middle = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        middle.addView(picture, LinearLayout.LayoutParams(dp(240), dp(130)))
+        middle.addView(picture, LinearLayout.LayoutParams(dp(260), dp(140)))
         val words = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
         words.addView(title)
         words.addView(android.widget.ScrollView(context).apply { addView(body); isVerticalScrollBarEnabled = true },
@@ -142,145 +142,153 @@ class TutorialOverlay(context: Context, private val onDone: () -> Unit) : FrameL
     }
 }
 
-/** Small diagram for each guide page, drawn with the same colours as the game. */
+/**
+ * Small scene for each guide page, made from the game's own pieces so it looks like a real run: 라일's road (the
+ * running background), 라일's sprite, the same crates, tower, thorny bar, spikes and plank, coins and items. A dashed
+ * line shows where to go, with a faint 라일 at the top of each jump.
+ */
 private class TutorialPicture(context: Context) : View(context) {
     var step = TutorialStep.JUMP
         set(value) { field = value; invalidate() }
 
     private val fill = Paint()
-    private val path = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        color = Color.rgb(48, 83, 65)
-        pathEffect = DashPathEffect(floatArrayOf(14f, 10f), 0f)
-    }
+    private val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false }
+    private val ghost = Paint().apply { isFilterBitmap = false; isAntiAlias = false; alpha = 120 }
+    private val path = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; color = Color.WHITE; strokeCap = Paint.Cap.ROUND }
+    private val pathEdge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; color = Color.argb(150, 38, 52, 43); strokeCap = Paint.Cap.ROUND }
+    private val frame = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; color = Color.rgb(212, 168, 104) }
     private val curve = Path()
-    private val tri = Path()
-    /** The same branch, spikes and plank art as in the game (라일's, as in the other pictures). */
+    private val clip = Path()
+    private val dst = android.graphics.RectF()
+    private val road = StoryBackground.load(context, "mint")
+    private val sprites = com.tinyrunners.school.characters.CharacterSprites.load(resources, "mint")
+    private val obstacles = ObstacleArt.load(resources, "mint")
     private val hazards = HazardArt.load(resources, "mint")
 
-    /** One triangle tooth from (x0..x1, baseY) to a tip at tipY, with a thin dark edge. */
-    private fun teeth(canvas: Canvas, x0: Float, baseY: Float, x1: Float, tipY: Float, color: Int) {
-        tri.reset(); tri.moveTo(x0, baseY); tri.lineTo((x0 + x1) / 2f, tipY); tri.lineTo(x1, baseY); tri.close()
-        fill.color = Color.rgb(70, 56, 76); canvas.drawPath(tri, fill)
-        val inset = (x1 - x0) * 0.18f
-        val tipIn = if (tipY < baseY) tipY + inset else tipY - inset
-        tri.reset(); tri.moveTo(x0 + inset, baseY); tri.lineTo((x0 + x1) / 2f, tipIn); tri.lineTo(x1 - inset, baseY); tri.close()
-        fill.color = color; canvas.drawPath(tri, fill)
+    /** Draws 라일 standing on [ground] with their feet at x..x+size. */
+    private fun runner(canvas: Canvas, frameId: com.tinyrunners.school.characters.SpriteFrame, x: Float, feet: Float, size: Float, paint: Paint = pixel) {
+        val s = sprites
+        if (s == null) {
+            fill.color = Color.rgb(182, 160, 216); canvas.drawRect(x, feet - size * 0.7f, x + size * 0.6f, feet, fill); return
+        }
+        val k = size / com.tinyrunners.school.characters.CharacterSprites.SIZE
+        val top = feet - com.tinyrunners.school.characters.CharacterSprites.FOOT_EDGE_Y * k
+        dst.set(x, top, x + size, top + size)
+        canvas.drawBitmap(s[frameId], null, dst, paint)
+    }
+
+    private fun dashed(canvas: Canvas) {
+        canvas.drawPath(curve, pathEdge)
+        canvas.drawPath(curve, path)
     }
 
     override fun onDraw(canvas: Canvas) {
         val w = width.toFloat(); val h = height.toFloat()
+        val d = resources.displayMetrics.density
         val u = h / 110f
-        val ground = h - 14 * u
-        path.strokeWidth = 4 * u
-        fill.color = Color.rgb(250, 246, 236); canvas.drawRect(0f, 0f, w, h, fill)
-        fill.color = Color.rgb(196, 170, 128); canvas.drawRect(0f, ground, w, h, fill)
-        fill.color = Color.rgb(122, 160, 110); canvas.drawRect(0f, ground, w, ground + 3 * u, fill)
+        val ground = h - 15 * u
+        val size = 34 * u
+        clip.reset(); clip.addRoundRect(0f, 0f, w, h, 10 * d, 10 * d, Path.Direction.CW)
+        canvas.save(); canvas.clipPath(clip)
+        // 라일's road a little way from home, as in a run.
+        val bg = road
+        if (bg != null) bg.draw(canvas, w, h, ground, 5200f, h / 360f)
+        else {
+            fill.color = Color.rgb(250, 246, 236); canvas.drawRect(0f, 0f, w, h, fill)
+            fill.color = Color.rgb(196, 170, 128); canvas.drawRect(0f, ground, w, h, fill)
+        }
+        path.strokeWidth = 3.5f * u; pathEdge.strokeWidth = 6f * u
+        path.pathEffect = DashPathEffect(floatArrayOf(9 * u, 7 * u), 0f); pathEdge.pathEffect = path.pathEffect
 
-        val runnerX = w * 0.12f
+        val runnerX = w * 0.07f
         val objX = w * 0.5f
-        fun runner(x: Float) {
-            fill.color = Color.rgb(182, 160, 216); canvas.drawRect(x, ground - 26 * u, x + 22 * u, ground, fill)
-            fill.color = Color.rgb(38, 52, 43); canvas.drawRect(x + 14 * u, ground - 20 * u, x + 17 * u, ground - 16 * u, fill)
-        }
-        fun crate(left: Float, top: Float, right: Float, bottom: Float) {
-            fill.color = Color.rgb(120, 78, 50); canvas.drawRect(left, top, right, bottom, fill)
-            fill.color = Color.rgb(201, 140, 90); canvas.drawRect(left + 3 * u, top + 3 * u, right - 3 * u, bottom, fill)
-        }
+        val run = com.tinyrunners.school.characters.SpriteFrame.RUN_1
+        val jump = com.tinyrunners.school.characters.SpriteFrame.JUMP_0
         curve.reset()
         when (step) {
             TutorialStep.JUMP -> {
-                runner(runnerX)
-                crate(objX, ground - 34 * u, objX + 26 * u, ground)
-                curve.moveTo(runnerX + 22 * u, ground - 26 * u)
-                curve.quadTo(objX + 13 * u, ground - 120 * u, w * 0.82f, ground - 26 * u)
-                canvas.drawPath(curve, path)
+                obstacles?.drawBox(canvas, objX, ground - 30 * u, objX + 26 * u, ground)
+                curve.moveTo(runnerX + size * 0.6f, ground - 24 * u)
+                curve.quadTo(objX + 13 * u, ground - 120 * u, w * 0.86f, ground - 12 * u)
+                dashed(canvas)
+                runner(canvas, jump, objX - size * 0.35f, ground - 56 * u, size, ghost)
+                runner(canvas, run, runnerX, ground, size)
             }
             TutorialStep.DOUBLE_JUMP -> {
-                runner(runnerX)
-                crate(objX, ground - 80 * u, objX + 22 * u, ground)
-                fill.color = Color.rgb(120, 78, 50)
-                canvas.drawRect(objX + 3 * u, ground - 54 * u, objX + 19 * u, ground - 52 * u, fill)
-                canvas.drawRect(objX + 3 * u, ground - 28 * u, objX + 19 * u, ground - 26 * u, fill)
-                // First jump up to a peak, then a second, higher arc over the tower.
-                val peakX = w * 0.32f
-                curve.moveTo(runnerX + 22 * u, ground - 26 * u)
-                curve.quadTo(w * 0.26f, ground - 74 * u, peakX, ground - 60 * u)
-                curve.quadTo(objX + 11 * u, ground - 150 * u, w * 0.84f, ground - 26 * u)
-                canvas.drawPath(curve, path)
+                obstacles?.drawTower(canvas, objX, ground - 76 * u, objX + 24 * u, ground)
+                val peakX = w * 0.3f
+                curve.moveTo(runnerX + size * 0.6f, ground - 24 * u)
+                curve.quadTo(w * 0.24f, ground - 72 * u, peakX, ground - 58 * u)
+                curve.quadTo(objX + 12 * u, ground - 150 * u, w * 0.86f, ground - 12 * u)
+                dashed(canvas)
+                runner(canvas, jump, peakX - size * 0.4f, ground - 46 * u, size, ghost)
+                // The second press, at the top of the first jump.
                 fill.color = Color.rgb(231, 202, 105)
-                canvas.drawRect(peakX - 5 * u, ground - 65 * u, peakX + 5 * u, ground - 55 * u, fill)
+                canvas.drawCircle(peakX, ground - 62 * u, 5 * u, fill)
+                runner(canvas, run, runnerX, ground, size)
             }
             TutorialStep.FLOATING -> {
-                runner(runnerX)
-                // Thin thorny bar, the same look as in the game.
                 val art = hazards
-                if (art != null) art.drawAir(canvas, objX - 10 * u, ground - 62 * u, objX + 60 * u, ground - 44 * u)
-                var x = if (art != null) Float.MAX_VALUE else objX - 10 * u
-                while (x < objX + 60 * u) {
-                    teeth(canvas, x, ground - 56 * u, x + 7 * u, ground - 62 * u, Color.rgb(246, 240, 226))
-                    teeth(canvas, x, ground - 50 * u, x + 7 * u, ground - 44 * u, Color.rgb(246, 240, 226))
-                    x += 7 * u
-                }
-                if (art == null) { fill.color = Color.rgb(96, 66, 44); canvas.drawRect(objX - 10 * u, ground - 56 * u, objX + 60 * u, ground - 50 * u, fill) }
-                curve.moveTo(runnerX + 22 * u, ground - 12 * u)
-                curve.lineTo(w * 0.86f, ground - 12 * u)
-                canvas.drawPath(curve, path)
+                if (art != null) art.drawAir(canvas, objX - 10 * u, ground - 64 * u, objX + 64 * u, ground - 42 * u)
+                curve.moveTo(runnerX + size * 0.6f, ground - 10 * u)
+                curve.lineTo(w * 0.92f, ground - 10 * u)
+                dashed(canvas)
+                runner(canvas, run, objX + 10 * u, ground, size, ghost)
+                runner(canvas, run, runnerX, ground, size)
             }
             TutorialStep.PLANK -> {
-                runner(runnerX)
-                // Spikes on the ground, a hanging plank above; jump up and run across the plank.
                 val art = hazards
-                if (art != null) art.drawSpikes(canvas, w * 0.32f, ground, w * 0.78f, ground - 14 * u)
-                else {
-                    var x = w * 0.32f
-                    while (x < w * 0.78f) { teeth(canvas, x, ground, x + 9 * u, ground - 14 * u, Color.rgb(196, 202, 220)); x += 9 * u }
+                if (art != null) {
+                    art.drawSpikes(canvas, w * 0.32f, ground, w * 0.8f, ground - 14 * u)
+                    art.drawPlatform(canvas, w * 0.3f, ground - 52 * u, w * 0.82f, 16 * u)
                 }
-                fill.color = Color.rgb(150, 112, 74)
-                canvas.drawRect(w * 0.31f, ground - 100 * u, w * 0.31f + 2 * u, ground - 50 * u, fill)
-                canvas.drawRect(w * 0.79f - 2 * u, ground - 100 * u, w * 0.79f, ground - 50 * u, fill)
-                if (art != null) art.drawPlatform(canvas, w * 0.29f, ground - 50 * u, w * 0.81f, 18 * u)
-                else {
-                    fill.color = Color.rgb(98, 64, 42); canvas.drawRect(w * 0.29f, ground - 50 * u, w * 0.81f, ground - 42 * u, fill)
-                    fill.color = Color.rgb(196, 146, 94); canvas.drawRect(w * 0.29f + 2 * u, ground - 48 * u, w * 0.81f - 2 * u, ground - 44 * u, fill)
-                }
-                curve.moveTo(runnerX + 22 * u, ground - 26 * u)
-                curve.quadTo(w * 0.3f, ground - 100 * u, w * 0.4f, ground - 76 * u)
-                curve.lineTo(w * 0.8f, ground - 76 * u)
-                curve.quadTo(w * 0.86f, ground - 70 * u, w * 0.9f, ground - 26 * u)
-                canvas.drawPath(curve, path)
+                curve.moveTo(runnerX + size * 0.6f, ground - 24 * u)
+                curve.quadTo(w * 0.28f, ground - 104 * u, w * 0.4f, ground - 64 * u)
+                curve.lineTo(w * 0.8f, ground - 64 * u)
+                curve.quadTo(w * 0.87f, ground - 60 * u, w * 0.93f, ground - 12 * u)
+                dashed(canvas)
+                runner(canvas, run, w * 0.55f, ground - 52 * u, size, ghost)
+                runner(canvas, run, runnerX, ground, size)
             }
             TutorialStep.PICKUPS -> {
-                runner(runnerX)
-                // A coin and the friend's item on the ground (just run through), a coin up high (jump to it).
-                val bob = 8 * u
-                CoinArt.draw(canvas, w * 0.36f, ground - 12 * u, 9 * u, spin = 0f)
+                CoinArt.draw(canvas, w * 0.38f, ground - 12 * u, 9 * u, spin = 0f)
                 com.tinyrunners.school.quest.QuestItems.of("mint")?.let { item ->
-                    com.tinyrunners.school.quest.ItemArt.draw(canvas, item, w * 0.52f - 11 * u, ground - 24 * u, 22 * u)
+                    com.tinyrunners.school.quest.ItemArt.draw(canvas, item, w * 0.54f - 11 * u, ground - 26 * u, 22 * u)
                 }
-                CoinArt.draw(canvas, w * 0.74f, ground - 64 * u - bob, 9 * u, spin = 0f)
-                curve.moveTo(runnerX + 22 * u, ground - 12 * u)
-                curve.lineTo(w * 0.6f, ground - 12 * u)
-                curve.quadTo(w * 0.72f, ground - 120 * u, w * 0.88f, ground - 26 * u)
-                canvas.drawPath(curve, path)
+                CoinArt.draw(canvas, w * 0.76f, ground - 70 * u, 9 * u, spin = 0f)
+                curve.moveTo(runnerX + size * 0.6f, ground - 10 * u)
+                curve.lineTo(w * 0.62f, ground - 10 * u)
+                curve.quadTo(w * 0.74f, ground - 124 * u, w * 0.9f, ground - 12 * u)
+                dashed(canvas)
+                runner(canvas, run, runnerX, ground, size)
             }
             TutorialStep.BAG -> {
                 // Coins go to the shop, items to the friends; both are kept in the pouch (bag).
-                val size = 56 * u
-                com.tinyrunners.school.ui.PouchIcon.draw(canvas, resources, w / 2 - size / 2, h / 2 - size / 2 - 8 * u, size)
-                CoinArt.draw(canvas, w * 0.3f, h / 2 - 8 * u, 10 * u, spin = 0f)
+                fill.color = Color.argb(150, 255, 248, 231)
+                canvas.drawRoundRect(w * 0.2f, h * 0.12f, w * 0.8f, h * 0.78f, 12 * u, 12 * u, fill)
+                val bag = 54 * u
+                com.tinyrunners.school.ui.PouchIcon.draw(canvas, resources, w / 2 - bag / 2, h * 0.45f - bag / 2, bag)
+                CoinArt.draw(canvas, w * 0.3f, h * 0.45f, 10 * u, spin = 0f)
                 com.tinyrunners.school.quest.QuestItems.of("mint")?.let { item ->
-                    com.tinyrunners.school.quest.ItemArt.draw(canvas, item, w * 0.7f - 12 * u, h / 2 - 20 * u, 24 * u, withGlow = false)
+                    com.tinyrunners.school.quest.ItemArt.draw(canvas, item, w * 0.7f - 12 * u, h * 0.45f - 12 * u, 24 * u, withGlow = false)
                 }
             }
             TutorialStep.PAUSE -> {
-                val size = 44 * u
-                val left = w / 2 - size / 2; val top = h / 2 - size / 2 - 6 * u
-                fill.color = Color.rgb(255, 248, 231); canvas.drawRect(left, top, left + size, top + size, fill)
-                fill.color = Color.rgb(43, 59, 47)
-                canvas.drawRect(left + size * 0.28f, top + size * 0.25f, left + size * 0.42f, top + size * 0.75f, fill)
-                canvas.drawRect(left + size * 0.58f, top + size * 0.25f, left + size * 0.72f, top + size * 0.75f, fill)
+                runner(canvas, com.tinyrunners.school.characters.SpriteFrame.IDLE_0, w * 0.18f, ground, size)
+                // The game's 정지 button, as it sits at the top right during a run.
+                val bw = 74 * u; val bh = 28 * u; val left = w * 0.55f; val top = h * 0.2f
+                fill.color = Color.rgb(46, 90, 66)
+                canvas.drawRoundRect(left, top, left + bw, top + bh, bh / 2f, bh / 2f, fill)
+                fill.color = Color.rgb(255, 248, 231)
+                canvas.drawRect(left + 14 * u, top + 8 * u, left + 18 * u, top + bh - 8 * u, fill)
+                canvas.drawRect(left + 22 * u, top + 8 * u, left + 26 * u, top + bh - 8 * u, fill)
+                fill.isAntiAlias = true; fill.textSize = 13 * u; fill.typeface = Typeface.DEFAULT_BOLD
+                canvas.drawText("정지", left + 32 * u, top + bh / 2f + 4.5f * u, fill)
+                fill.isAntiAlias = false
             }
         }
+        canvas.restore()
+        frame.strokeWidth = 2 * d
+        canvas.drawRoundRect(d, d, w - d, h - d, 10 * d, 10 * d, frame)
     }
 }

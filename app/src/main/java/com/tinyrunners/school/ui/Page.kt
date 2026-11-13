@@ -26,7 +26,7 @@ class Page(private val activity: Activity) {
     /** The screen frame [show] puts the page in; floating buttons go here. */
     private var frame: android.widget.FrameLayout? = null
 
-    val root = ScrollView(activity).apply {
+    val root: ScrollView = TunedScrollView(activity).apply {
         setBackgroundColor(BACKGROUND)
         isFillViewport = true
         // On wide (landscape) screens keep a readable column in the middle instead of stretching fields edge to edge.
