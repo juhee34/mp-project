@@ -50,12 +50,12 @@ class OpeningActivity : Activity() {
         }, 496, 215, 1176, 437)
         // The start button under the title, between the two groups of friends.
         frame.place(com.tinyrunners.school.ui.MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_primary,
-            getString(R.string.opening_start), Color.parseColor("#FFF8E7"), 44f) { onButton() }, 583, 475, 1090, 565)
+            getString(R.string.opening_start), Color.parseColor("#FFF8E7"), 44f) { onButton() }, 583, 515, 1090, 605)
         // Six friends spread along the grass, three each side of the path, with room between them.
         val friends = CharacterRepository(this).characters
         FRIEND_X.forEachIndexed { i, cx ->
             val id = friends.getOrNull(i)?.id ?: return@forEachIndexed
-            frame.place(OpeningFriend(this, id, i), cx - 85, FRIEND_FEET - 170, cx + 85, FRIEND_FEET)
+            frame.place(OpeningFriend(this, id, i), cx - 105, FRIEND_FEET - 215, cx + 105, FRIEND_FEET)
         }
         setContentView(frame)
         hideSystemBars()
