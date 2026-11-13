@@ -116,4 +116,7 @@
     <string name="settings_weather_time_real">지금 시각</string>
     <string name="settings_weather_pick_hint">실제 날씨를 고르면 도시의 지금 날씨와 시각을 따라요. 다른 날씨를 고르면 다음 달리기부터 그 하늘로 달려요.</string>
     <string name="settings_weather_chosen_preview">다음 달리기 하늘: %1$s · %2$s</string>
+    <string name="result_with_friend">함께 달린 친구</string>
+    <string name="result_stamp_new">새 기록!</string>
+    <string name="result_rewards">받은 것</string>
 </resources>

@@ -3,11 +3,8 @@ package com.tinyrunners.school.result
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.RippleDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
@@ -26,11 +23,13 @@ import com.tinyrunners.school.records.RecordsActivity
 import com.tinyrunners.school.story.StoryRunSignal
 import com.tinyrunners.school.ui.BagButton
 import com.tinyrunners.school.ui.Page
+import com.tinyrunners.school.ui.ScoreBoard
 import kotlin.math.roundToInt
 
 /**
- * Shows one finished run and saves it: the distance and score on the left, what to do next on the right, over the
- * usual hills. Saving uses the run's ID, so recreating this screen (rotation, returning from the background) never
+ * Shows one finished run and saves it: the score board on the left (a storybook page with a ribbon, the friend and
+ * their word, the distance and score counting up, a 새 기록 stamp, how close to the best, what the run brought home),
+ * what to do next on the right in the story-collection buttons, over the friend's road where the run ended. Saving uses the run's ID, so recreating this screen (rotation, returning from the background) never
  * counts the same run twice.
  */
 class ResultActivity : Activity() {
@@ -55,60 +54,59 @@ class ResultActivity : Activity() {
         if (character == null || run.runId.isEmpty()) { finish(); return }
         val storyId = intent.getStringExtra(GameActivity.EXTRA_STORY_ID)
 
-        // Left: what this run was, on a paper panel over the friend's own scenery.
-        val left = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(18), dp(14), dp(18), dp(14))
-            background = GradientDrawable().apply { setColor(Color.argb(170, 255, 253, 246)); cornerRadius = dp(22).toFloat() }
-        }
+        // Left: the score board (docs/research/SCORE_SCREEN_RESEARCH.md) on a storybook page over the friend's road.
+        val tint = try { Color.parseColor(character.color) } catch (_: IllegalArgumentException) { ScoreBoard.GREEN }
+        val (pageWrap, left) = ScoreBoard.page(this, getString(R.string.result_eyebrow))
         // The friend and a word from them about the run.
         val head = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        head.addView(FriendIcon(this, character.id), LinearLayout.LayoutParams(dp(64), dp(64)))
+        head.addView(ScoreBoard.portrait(this, character.id, tint), LinearLayout.LayoutParams(dp(58), dp(58)))
         val names = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(10), 0, 0, 0) }
-        names.addView(label(getString(R.string.result_eyebrow), 13f, Page.LEAF, bold = true))
-        names.addView(label(character.name, 24f, Page.INK, bold = true))
+        names.addView(label(getString(R.string.result_with_friend), 12f, ScoreBoard.SOFT, bold = true))
+        names.addView(label(character.name, 22f, ScoreBoard.INK, bold = true))
         head.addView(names)
         val said = com.tinyrunners.school.talk.ShortLineRepository.pick(this, character.id, "stumble")
-        if (said != null) head.addView(label("“$said”", 15f, Page.INK).apply {
-            maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END
-            setPadding(dp(14), dp(8), dp(14), dp(8))
-            background = GradientDrawable().apply { setColor(Page.MINT); cornerRadius = dp(16).toFloat() }
-        }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(14) })
+        if (said != null) head.addView(ScoreBoard.bubble(this, "“$said”"),
+            LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(12) })
         left.addView(head)
 
-        // Distance and score, large.
-        val card = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            setPadding(dp(18), dp(10), dp(18), dp(10))
-            background = GradientDrawable().apply { setColor(Page.PAPER); cornerRadius = dp(18).toFloat(); setStroke(dp(1), Page.LINE) }
-        }
-        card.addView(stat(getString(R.string.result_distance_label), getString(R.string.result_meters, run.meters)),
-            LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        card.addView(android.view.View(this).apply { setBackgroundColor(Page.LINE) },
-            LinearLayout.LayoutParams(dp(1), LinearLayout.LayoutParams.MATCH_PARENT).apply { marginStart = dp(12); marginEnd = dp(12) })
-        card.addView(stat(getString(R.string.result_score_label), run.score.toString()),
-            LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        left.addView(card, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) })
+        // Distance and score, large, counting up; a 새 기록 stamp on the distance when it is a new best.
+        val tiles = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = false; isBaselineAligned = false }
+        val (distanceTile, distanceValue) = ScoreBoard.tile(this, getString(R.string.result_distance_label), getString(R.string.result_meters, 0))
+        val (scoreTile, scoreValue) = ScoreBoard.tile(this, getString(R.string.result_score_label), "0")
+        val distanceBox = FrameLayout(this).apply { clipChildren = false; addView(distanceTile, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)) }
+        val stamp = ScoreBoard.stamp(this, getString(R.string.result_stamp_new)).apply { visibility = android.view.View.GONE }
+        distanceBox.addView(stamp, FrameLayout.LayoutParams(dp(62), dp(62), Gravity.END or Gravity.CENTER_VERTICAL).apply { marginEnd = dp(8) })
+        tiles.addView(distanceBox, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        tiles.addView(scoreTile, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(10) })
+        left.addView(tiles, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) })
+        ScoreBoard.countUp(distanceValue, run.meters, { getString(R.string.result_meters, it) }, 150)
+        ScoreBoard.countUp(scoreValue, run.score, { it.toString() }, 300)
+
+        // How close to this friend's best (filled once the run is saved).
+        val status = label(getString(R.string.result_saving), 13f, ScoreBoard.SOFT, bold = true)
+        val bar = com.tinyrunners.school.ui.BestBar(this)
+        left.addView(status, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) })
+        left.addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(12)).apply { topMargin = dp(4) })
 
         // What this run brought home: coins, the friend's items and the obstacles cleared.
         val chips = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        chips.addView(label(getString(R.string.result_rewards), 13f, ScoreBoard.SOFT, bold = true).apply { setPadding(0, 0, dp(8), 0) })
         val coins = com.tinyrunners.school.shop.ShopRules.coinsForRun(run.meters) + intent.getIntExtra(EXTRA_COINS, 0)
-        chips.addView(chip(CoinIcon(this), getString(R.string.result_chip_coins, coins)))
+        fun reward(icon: android.view.View?, text: String) = chips.addView(ScoreBoard.pill(this, icon, text),
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginEnd = dp(6) })
+        reward(CoinIcon(this), getString(R.string.result_chip_coins, coins))
         com.tinyrunners.school.quest.QuestItems.of(character.id)?.let { item ->
-            chips.addView(chip(com.tinyrunners.school.talk.ItemIconView(this, item),
-                getString(R.string.result_chip_items, getString(item.name), intent.getIntExtra(EXTRA_ITEMS, 0))))
+            reward(com.tinyrunners.school.talk.ItemIconView(this, item), getString(R.string.result_chip_items, getString(item.name), intent.getIntExtra(EXTRA_ITEMS, 0)))
         }
-        intent.getIntExtra(EXTRA_AD_BONUS, 0).takeIf { it > 0 }?.let { chips.addView(chip(CoinIcon(this), getString(R.string.result_chip_ad, it))) }
-        chips.addView(chip(null, getString(R.string.result_chip_cleared, run.cleared)))
-        left.addView(chips, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) })
-        // Best so far with this friend (or the news of a new best), once saved.
-        val status = label(getString(R.string.result_saving), 14f, Page.MUTED).apply { setPadding(dp(4), dp(8), 0, 0) }
-        left.addView(status)
+        intent.getIntExtra(EXTRA_AD_BONUS, 0).takeIf { it > 0 }?.let { reward(CoinIcon(this), getString(R.string.result_chip_ad, it)) }
+        reward(null, getString(R.string.result_chip_cleared, run.cleared))
+        left.addView(android.widget.HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; addView(chips) },
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) })
 
         // Right: the buttons, one under another.
         val right = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_VERTICAL }
-        fun add(text: String, primary: Boolean, click: () -> Unit): Button = button(text, primary, click).also {
-            right.addView(it, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(44)).apply { if (right.childCount > 0) topMargin = dp(8) })
+        fun add(text: String, primary: Boolean, click: () -> Unit): Button = ScoreBoard.button(this, text, primary, click).also {
+            right.addView(it, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(46)).apply { if (right.childCount > 0) topMargin = dp(8) })
         }
         if (storyId != null) {
             // Any result continues the story; there is no "try again to unlock".
@@ -137,9 +135,9 @@ class ResultActivity : Activity() {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             // Room at the top for the bag button in the corner.
-            setPadding(dp(28), dp(60), dp(28), dp(16))
+            setPadding(dp(28), dp(52), dp(28), dp(16))
         }
-        row.addView(left, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        row.addView(pageWrap, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         row.addView(right, LinearLayout.LayoutParams(dp(260), LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(24) })
         val frame = FrameLayout(this).apply {
             setBackgroundColor(Page.BACKGROUND)
@@ -175,8 +173,8 @@ class ResultActivity : Activity() {
                     if (have >= com.tinyrunners.school.quest.QuestRules.NEEDED) {
                         toStory.text = getString(R.string.result_give_items, character.name, getString(item.name))
                         toStory.setOnClickListener { openVillage(character.id, next.id) }
-                        style(toStory, primary = true)
-                        style(again, primary = false)
+                        ScoreBoard.restyle(toStory, primary = true)
+                        ScoreBoard.restyle(again, primary = false)
                     }
                 }
             }
@@ -185,8 +183,16 @@ class ResultActivity : Activity() {
             if (isDestroyed) return@record
             result.onSuccess { outcome ->
                 val p = outcome.progress
-                if (outcome.newBest) { status.setText(R.string.result_new_best); status.setTextColor(Page.LEAF); status.typeface = Typeface.DEFAULT_BOLD }
-                else status.text = getString(R.string.result_best_so_far, p.bestMeters, p.bestScore)
+                if (outcome.newBest) {
+                    status.setText(R.string.result_new_best); status.setTextColor(ScoreBoard.GREEN)
+                    stamp.visibility = android.view.View.VISIBLE
+                    stamp.scaleX = 1.8f; stamp.scaleY = 1.8f; stamp.alpha = 0f
+                    stamp.animate().scaleX(1f).scaleY(1f).alpha(1f).setStartDelay(500).setDuration(260).start()
+                    bar.set(1f)
+                } else {
+                    status.text = getString(R.string.result_best_so_far, p.bestMeters, p.bestScore)
+                    bar.set(if (p.bestMeters > 0) run.meters.toFloat() / p.bestMeters else 0f)
+                }
             }
                 .onFailure {
                     status.setTextColor(Page.ERROR)
@@ -195,42 +201,9 @@ class ResultActivity : Activity() {
         }
     }
 
-    private fun stat(name: String, value: String) = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        addView(label(name, 15f, Page.MUTED))
-        addView(label(value, 34f, Page.INK, bold = true))
-    }
-
-    /** A small rounded tag: an optional icon and a short text. */
-    private fun chip(icon: android.view.View?, text: String) = LinearLayout(this).apply {
-        orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(10), dp(5), dp(12), dp(5))
-        background = GradientDrawable().apply { setColor(Page.PAPER); cornerRadius = dp(14).toFloat(); setStroke(dp(1), Page.LINE) }
-        icon?.let { addView(it, LinearLayout.LayoutParams(dp(20), dp(20)).apply { marginEnd = dp(6) }) }
-        addView(label(text, 14f, Page.INK, bold = true))
-        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginEnd = dp(8) }
-    }
-
     private fun label(text: String, size: Float, color: Int, bold: Boolean = false) = TextView(this).apply {
         this.text = text; textSize = size; setTextColor(color)
         if (bold) typeface = Typeface.DEFAULT_BOLD
-    }
-
-    private fun button(text: String, primary: Boolean, click: () -> Unit) = Button(this).apply {
-        this.text = text
-        textSize = 16f; isAllCaps = false; stateListAnimator = null
-        minHeight = 0; minimumHeight = 0; setPadding(dp(12), 0, dp(12), 0)
-        style(this, primary)
-        setOnClickListener { click() }
-    }
-
-    private fun style(button: Button, primary: Boolean) {
-        button.setTextColor(if (primary) Color.WHITE else Page.LEAF)
-        button.typeface = if (primary) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-        button.background = RippleDrawable(ColorStateList.valueOf(Page.MINT), GradientDrawable().apply {
-            setColor(if (primary) Page.LEAF else Page.PAPER); cornerRadius = dp(16).toFloat()
-            setStroke(dp(1), if (primary) Page.LEAF else Page.LINE)
-        }, null)
     }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
@@ -274,7 +247,7 @@ class ResultActivity : Activity() {
  * or the usual hills when the friend has no background yet.
  */
 @android.annotation.SuppressLint("ViewConstructor")
-private class ResultScenery(context: Context, characterId: String, private val distance: Float) : android.view.View(context) {
+internal class ResultScenery(context: Context, characterId: String, private val distance: Float) : android.view.View(context) {
     private val scenery = com.tinyrunners.school.game.StoryBackground.load(context, characterId)
     private val fallback = com.tinyrunners.school.ui.ScenePainter()
 
@@ -284,20 +257,6 @@ private class ResultScenery(context: Context, characterId: String, private val d
         val groundY = h - 48f * scale
         if (scenery != null) scenery.draw(canvas, w, h, groundY, distance, scale)
         else fallback.draw(canvas, width, height, groundY, h * 0.17f)
-    }
-}
-
-/** The friend's face (first idle frame), or a coloured circle without sprites. */
-@android.annotation.SuppressLint("ViewConstructor")
-private class FriendIcon(context: Context, characterId: String) : android.view.View(context) {
-    private val sprites = com.tinyrunners.school.characters.CharacterSprites.load(resources, characterId)
-    private val pixel = android.graphics.Paint().apply { isFilterBitmap = false; isAntiAlias = false }
-    private val circle = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { color = Page.MINT }
-
-    override fun onDraw(canvas: android.graphics.Canvas) {
-        val s = minOf(width, height).toFloat()
-        canvas.drawCircle(width / 2f, height / 2f, s / 2f, circle)
-        sprites?.let { canvas.drawBitmap(it[com.tinyrunners.school.characters.SpriteFrame.IDLE_0], null, android.graphics.RectF(0f, 0f, s, s), pixel) }
     }
 }
 

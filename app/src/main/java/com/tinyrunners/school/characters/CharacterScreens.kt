@@ -263,6 +263,13 @@ internal class CharacterScreens(
         setOnClickListener { click() }
     }
 
+    /**
+     * The friend's profile (자세히 보기), built like the run result's score board so the two read alike: over the
+     * friend's own road, a storybook page with a 친구 소개 ribbon, the friend's portrait, name, species · home and a
+     * word in a bubble, number tiles for this friend (best distance, distance together, runs) that count up once
+     * loaded, their traits as small pills, and A's profile copy in one stitched box. On the right, the story-collection
+     * buttons: run with this friend, the story book, back to the selection.
+     */
     private fun showProfile(id: String, scrollY: Int = 0) {
         val friend = repository.find(id) ?: run {
             selectedId = null
@@ -270,65 +277,105 @@ internal class CharacterScreens(
             return
         }
         selectedId = friend.id
-        val body = screen(Route.PROFILE)
-        // Back to the selection at the top-left, not at the bottom of the scrolling page.
-        body.addView(com.tinyrunners.school.ui.HomeButton.create(context, context.getString(R.string.characters_back_selection_pill)) { showSelection() },
-            0, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(6) })
-        val profile = panel()
-        profile.background = shape(MINT, 22)
-        profile.addView(portrait(friend), LinearLayout.LayoutParams(dp(96), dp(96)))
-        profile.label(context.getString(R.string.characters_placeholder_portrait), 13f, MUTED, 8)
-        profile.label(friend.name, 32f, top = 12, bold = true, heading = true)
-        profile.label(friend.species, 16f, MUTED, 4)
-        body.addView(profile, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) })
-
+        route = Route.PROFILE
+        host.removeAllViews()
+        val board = com.tinyrunners.school.ui.ScoreBoard
         val copy = friend.copy
-        if (copy == null) {
-            val details = panel()
-            details.background = shape(PAPER, 18, LINE)
-            details.detail(R.string.characters_home, friend.home)
-            details.detail(R.string.characters_personality, friend.personality, 16)
-            details.detail(R.string.characters_story_outline, friend.summary, 16)
-            body.addView(details, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(14) })
-            body.action(R.string.characters_run, primary = true) { onStartRun(friend.id) }
-            body.action(R.string.characters_story_book) { context.startActivity(StoryActivity.intent(context, friend.id)) }
-            restoreScroll(scrollY)
-            return
-        }
-        profile.label(copy.tagline, 18f, LEAF, 10, bold = true)
 
-        // A's friendly profile, in small cards rather than one long block.
-        fun section(title: Int, fill: Int = PAPER): LinearLayout = panel().apply {
-            background = shape(fill, 18, LINE)
-            label(context.getString(title), 15f, LEAF, bold = true, heading = true)
-            body.addView(this, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) })
+        val (pageWrap, page) = board.page(context, context.getString(R.string.characters_profile_ribbon))
+        val head = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        head.addView(board.portrait(context, friend.id, friendColor(friend)), LinearLayout.LayoutParams(dp(62), dp(62)))
+        val names = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(10), 0, 0, 0) }
+        names.addView(TextView(context).apply {
+            text = context.getString(R.string.characters_species_home, friend.species, friend.home)
+            textSize = 12f; setTextColor(board.SOFT); setTypeface(typeface, Typeface.BOLD); maxLines = 1
+        })
+        names.addView(TextView(context).apply {
+            text = friend.name; textSize = 24f; setTextColor(board.INK); setTypeface(typeface, Typeface.BOLD)
+            if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
+        })
+        head.addView(names)
+        head.addView(board.bubble(context, "“" + greetingFor(friend) + "”"),
+            LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(12) })
+        page.addView(head)
+
+        // This friend's numbers, counting up once the records are read.
+        val tiles = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; isBaselineAligned = false }
+        val (bestTile, bestValue) = board.tile(context, context.getString(R.string.characters_stat_best), "–")
+        val (totalTile, totalValue) = board.tile(context, context.getString(R.string.characters_stat_total), "–")
+        val (runsTile, runsValue) = board.tile(context, context.getString(R.string.characters_stat_runs), "–")
+        listOf(bestTile, totalTile, runsTile).forEachIndexed { i, t ->
+            tiles.addView(t, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f).apply { if (i > 0) marginStart = dp(10) })
         }
-        section(R.string.characters_copy_home).label(friend.home, 17f, top = 5)
-        section(R.string.characters_copy_personality).apply {
-            label(copy.personality, 17f, top = 5)
+        page.addView(tiles, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(10) })
+        com.tinyrunners.school.progress.ProgressStore.forCurrentUser(context).loadAll { result ->
+            if (route != Route.PROFILE || selectedId != friend.id) return@loadAll
+            val p = result.getOrNull()?.get(friend.id)
+            board.countUp(bestValue, p?.bestMeters ?: 0, { context.getString(R.string.result_meters, it) })
+            board.countUp(totalValue, (p?.totalMeters ?: 0L).coerceAtMost(Int.MAX_VALUE.toLong()).toInt(), { context.getString(R.string.result_meters, it) }, 120)
+            board.countUp(runsValue, p?.runs ?: 0, { context.getString(R.string.characters_runs_value, it) }, 240)
+        }
+
+        // Traits as small pills.
+        if (copy != null && copy.traits.isNotEmpty()) {
+            val traits = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
             copy.traits.forEach { trait ->
-                addView(TextView(context).apply {
-                    text = trait; textSize = 14f; setTextColor(LEAF); setTypeface(typeface, Typeface.BOLD)
-                    setPadding(dp(12), dp(5), dp(12), dp(5))
-                    background = shape(MINT, 14)
-                }, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(6) })
+                traits.addView(board.pill(context, null, trait, board.GREEN_SOFT),
+                    LinearLayout.LayoutParams(WRAP, WRAP).apply { marginEnd = dp(6) })
+            }
+            page.addView(android.widget.HorizontalScrollView(context).apply { isHorizontalScrollBarEnabled = false; addView(traits) },
+                LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(10) })
+        }
+
+        // A's profile copy in one stitched box: short headings and their lines.
+        val box = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(14), dp(8), dp(14), dp(10))
+            background = GradientDrawable().apply {
+                setColor(board.TILE); cornerRadius = dp(16).toFloat()
+                setStroke(dp(2), board.HONEY, dp(6).toFloat(), dp(4).toFloat())
             }
         }
-        section(R.string.characters_copy_habits).label(copy.habits.joinToString("\n") { "· " + it }, 16f, top = 5)
-        section(R.string.characters_copy_cherished).label(copy.cherishedItem, 16f, top = 5)
-        section(R.string.characters_copy_running).label(copy.runningReason, 16f, top = 5)
-        section(R.string.characters_copy_story, MINT).apply {
-            label(copy.storyTeaser, 16f, top = 5)
-            action(R.string.characters_copy_story_button) { context.startActivity(StoryActivity.intent(context, friend.id)) }
+        fun entry(title: Int, value: String) {
+            box.addView(TextView(context).apply {
+                text = context.getString(title); textSize = 13f; setTextColor(board.GREEN); setTypeface(typeface, Typeface.BOLD)
+                setPadding(0, if (box.childCount > 0) dp(8) else 0, 0, 0)
+            })
+            box.addView(TextView(context).apply { text = value; textSize = 15f; setTextColor(board.INK); setLineSpacing(0f, 1.15f) })
         }
-        body.label(context.getString(R.string.characters_copy_mechanics), 14f, MUTED, 14)
-        val run = Button(context).apply {
-            text = runLabel(friend); textSize = 16f; isAllCaps = false; setTextColor(Color.WHITE)
-            minHeight = dp(52); setPadding(dp(14), dp(10), dp(14), dp(10))
-            background = ripple(LEAF, LEAF); stateListAnimator = null
-            setOnClickListener { onStartRun(friend.id) }
+        if (copy != null) {
+            entry(R.string.characters_copy_personality, copy.tagline + "\n" + copy.personality)
+            entry(R.string.characters_copy_habits, copy.habits.joinToString("\n") { "· " + it })
+            entry(R.string.characters_copy_cherished, copy.cherishedItem)
+            entry(R.string.characters_copy_running, copy.runningReason)
+            entry(R.string.characters_copy_story, copy.storyTeaser)
+        } else {
+            entry(R.string.characters_personality, friend.personality)
+            entry(R.string.characters_story_outline, friend.summary)
         }
-        body.addView(run, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) })
+        page.addView(box, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(10) })
+        page.addView(TextView(context).apply {
+            setText(R.string.characters_copy_mechanics); textSize = 12f; setTextColor(board.SOFT); setPadding(dp(4), dp(8), 0, 0)
+        })
+
+        // Right: what to do with this friend.
+        // The buttons stay at the top beside the page, which can be taller than the screen and scrolls.
+        val right = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(0, dp(34), 0, 0) }
+        fun add(text: String, primary: Boolean, click: () -> Unit) = right.addView(board.button(context, text, primary, click),
+            LinearLayout.LayoutParams(MATCH, dp(46)).apply { if (right.childCount > 0) topMargin = dp(8) })
+        add(runLabel(friend), true) { onStartRun(friend.id) }
+        add(context.getString(R.string.characters_story_book), false) { context.startActivity(StoryActivity.intent(context, friend.id)) }
+        add(context.getString(R.string.result_choose_friend), false) { showSelection() }
+
+        val row = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.TOP
+            setPadding(dp(24), dp(6), dp(24), dp(16))
+        }
+        row.addView(pageWrap, LinearLayout.LayoutParams(0, WRAP, 1f))
+        row.addView(right, LinearLayout.LayoutParams(dp(250), WRAP).apply { marginStart = dp(22) })
+        scroll = ScrollView(context).apply { isFillViewport = true; addView(row) }
+        host.addView(com.tinyrunners.school.result.ResultScenery(context, friend.id, 0f), FrameLayout.LayoutParams(MATCH, MATCH))
+        host.addView(scroll, FrameLayout.LayoutParams(MATCH, MATCH))
         restoreScroll(scrollY)
     }
 

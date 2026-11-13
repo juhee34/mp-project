@@ -47,4 +47,9 @@
     <string name="characters_card_description_short">%1$s, %2$s, %3$s. %4$s</string>
     <string name="characters_best">이 친구와 최고 기록 %1$dm</string>
     <string name="characters_best_none">아직 함께 달린 기록이 없어요</string>
+    <string name="characters_profile_ribbon">친구 소개</string>
+    <string name="characters_stat_best">최고 기록</string>
+    <string name="characters_stat_total">함께 달린 거리</string>
+    <string name="characters_stat_runs">함께 달린 횟수</string>
+    <string name="characters_runs_value">%1$d번</string>
 </resources>
