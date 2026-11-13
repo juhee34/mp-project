@@ -34,23 +34,29 @@ import kotlin.math.roundToInt
 
 
 /**
- * Landscape title screen shown on every launch: the login picture's meadow and six friends without the card
- * (bg_opening_wide: A's bg_login_scene with the six friends laid on), the card's title in the sky and a "시작하기"
- * button. Pressing it raises the login card over this screen (LoginActivity is a popup laid out on the same canvas).
+ * Landscape title screen shown on every launch: A's meadow without the card (bg_opening_wide: bg_login_scene with
+ * its patch seams smoothed), the card's title and a "시작하기" button together in the middle, and the six friends
+ * standing apart along the grass (drawn from their sprites, breathing). The button Pressing it raises the login card over this screen (LoginActivity is a popup laid out on the same canvas).
  */
 class OpeningActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val frame = com.tinyrunners.school.ui.MockupFrame(this, R.drawable.bg_opening_wide)
-        // The title from the login card (Tiny Runners, leaves and tagline) in the sky, at the card's scale.
+        // The title from the login card (Tiny Runners, leaves and tagline), just above the start button.
         frame.place(android.widget.ImageView(this).apply {
             setImageResource(R.drawable.ui_opening_title)
             scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
             contentDescription = getString(R.string.app_name) + ", " + getString(R.string.opening_tagline)
-        }, 496, 85, 1176, 307)
-        // Only the start button, in the middle of the meadow between the two groups of friends.
+        }, 496, 215, 1176, 437)
+        // The start button under the title, between the two groups of friends.
         frame.place(com.tinyrunners.school.ui.MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_primary,
-            getString(R.string.opening_start), Color.parseColor("#FFF8E7"), 44f) { onButton() }, 583, 600, 1090, 690)
+            getString(R.string.opening_start), Color.parseColor("#FFF8E7"), 44f) { onButton() }, 583, 475, 1090, 565)
+        // Six friends spread along the grass, three each side of the path, with room between them.
+        val friends = CharacterRepository(this).characters
+        FRIEND_X.forEachIndexed { i, cx ->
+            val id = friends.getOrNull(i)?.id ?: return@forEachIndexed
+            frame.place(OpeningFriend(this, id, i), cx - 85, FRIEND_FEET - 170, cx + 85, FRIEND_FEET)
+        }
         setContentView(frame)
         hideSystemBars()
     }
@@ -61,6 +67,12 @@ class OpeningActivity : Activity() {
         // The popup animates itself (the card rises); no window transition.
         @Suppress("DEPRECATION")
         overridePendingTransition(0, 0)
+    }
+
+    private companion object {
+        /** Friend centres and feet line on the 1672×941 canvas. */
+        val FRIEND_X = intArrayOf(110, 300, 490, 1180, 1370, 1560)
+        const val FRIEND_FEET = 805
     }
 
     private fun hideSystemBars() {
@@ -77,6 +89,39 @@ class OpeningActivity : Activity() {
         }
     }
 
+}
+/** One friend on the opening meadow: whole-pixel sprite on its feet, a soft shadow, breathing between idle frames. */
+@SuppressLint("ViewConstructor")
+internal class OpeningFriend(context: Context, id: String, private val index: Int) : View(context) {
+    private val sprites = CharacterSprites.load(resources, id)
+    private val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false }
+    private val shadow = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(60, 40, 50, 20) }
+    private val dst = android.graphics.RectF()
+    private var frame = 0
+    private val tick = object : Runnable {
+        override fun run() { frame++; invalidate(); postDelayed(this, IDLE_MS) }
+    }
+
+    init { importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO }
+
+    // Friends breathe a little out of step with each other.
+    override fun onAttachedToWindow() { super.onAttachedToWindow(); postDelayed(tick, IDLE_MS + index * 90L) }
+    override fun onDetachedFromWindow() { removeCallbacks(tick); super.onDetachedFromWindow() }
+
+    override fun onDraw(canvas: Canvas) {
+        val s = sprites ?: return
+        val px = max(1, height / CharacterSprites.SIZE).toFloat()
+        val size = CharacterSprites.SIZE * px
+        val cx = width / 2f
+        val feet = height.toFloat() - px
+        canvas.drawOval(cx - size * 0.28f, feet - px * 2.5f, cx + size * 0.28f, feet + px * 1.5f, shadow)
+        val left = (cx - CharacterSprites.CENTER_X * px).roundToInt().toFloat()
+        val top = feet - CharacterSprites.FOOT_EDGE_Y * px - if (frame % 2 == 0) 0f else px
+        dst.set(left, top, left + size, top + size)
+        canvas.drawBitmap(s[if (frame % 2 == 0) SpriteFrame.IDLE_0 else SpriteFrame.IDLE_1], null, dst, pixel)
+    }
+
+    private companion object { const val IDLE_MS = 560L }
 }
 
 /** Draws A's opening artwork with crisp pixels (centre-crop), or the placeholder line-up of all six friends. Shared with the hub. */

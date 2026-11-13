@@ -27,6 +27,11 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 오프닝: 제목을 가운데로, 친구들 간격 넓힘 (2026-11-13, B)
+- 제목(ui_opening_title)을 시작하기 버튼 바로 위로 내려 둘이 화면 가운데에 함께 오게 함(기준 캔버스 제목 215~437, 버튼 475~565).
+- 친구 6명을 배경에서 빼고(bg_opening_wide = 이음새 지운 A의 bg_login_scene) 코드로 그림(OpeningFriend: 스프라이트 4배, 그림자, 숨쉬기). 중심 x 110·300·490 / 1180·1370·1560, 발 805 — 16:9에서도 잘리지 않는 범위.
+- 검증: assembleDebug·testDebugUnitTest·lintDebug BUILD SUCCESSFUL, 에뮬레이터 오프닝 화면 확인.
+
 ## 날씨 직접 고르기, 화면 배경 1080 통일, 오프닝 제목 (2026-11-13, B)
 - 날씨 고르기: 설정 > 날씨에 "날씨 고르기"(실제 날씨·맑음·흐림·안개·비·눈·뇌우)와 "시간"(지금 시각·낮·밤) 추가. 실제 날씨/지금 시각은 기존처럼 도시의 실제 날씨를 따르고, 둘 다 고르면 인터넷 없이 바로 그 하늘. `WeatherSettings.chosenSky/chosenDay`, `WeatherChoice.apply`.
 - 달리기 화면: 흐림·비·뇌우·밤은 그림 위에 색을 덧칠(뇌우는 가끔 번개), 안개는 더 진하게. 점수판에 "뇌우 · 밤 (직접 고름)"처럼 표시.
