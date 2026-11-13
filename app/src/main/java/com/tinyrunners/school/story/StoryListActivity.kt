@@ -8,25 +8,26 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.WindowInsets
-import android.widget.FrameLayout
+import android.content.res.ColorStateList
+import android.graphics.drawable.RippleDrawable
+import android.widget.Button
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.tinyrunners.school.R
 import com.tinyrunners.school.data.CharacterDefinition
 import com.tinyrunners.school.data.CharacterRepository
 import com.tinyrunners.school.progress.ProgressStore
 import com.tinyrunners.school.talk.ShortLineRepository
-import com.tinyrunners.school.ui.CardShelf
 import com.tinyrunners.school.ui.HomeButton
-import com.tinyrunners.school.ui.Page
-import com.tinyrunners.school.ui.PaperBackdropView
+import com.tinyrunners.school.ui.MockupFrame
 import kotlin.math.roundToInt
 
 /**
- * 마을 이야기 (스토리 진행하기), laid out like the shop: one small card per friend in a row that slides sideways
- * (CardShelf). Each card: the friend at home, their name and whether a new story waits, a line in their own voice
- * (A's short line pack, "select" lines), and "이 친구와 대화하기", which opens that friend's village story.
- * Top: "◀ 처음으로", the storybook button (이야기 모음) and the bag.
+ * 마을 이야기 (스토리 진행하기), built like 이야기 모음 so the two story screens read as one place: A's paper picture
+ * with the frame, the trees and the bench filling the screen (bg_village_stories_wide), the title drawn as the
+ * collection's is, "◀ 처음으로" top-left, the storybook (이야기 모음) | bag top-right, one storybook card per friend
+ * on the bench (StoryBookCard: the friend's home, "새 이야기" or "다 봤어요", and "이 친구와 대화하기", which opens
+ * that friend's village story), sliding sideways with page dots and ◀ ▶ on the grass.
  */
 class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
     /** Story screens play the main theme. */
@@ -37,55 +38,54 @@ class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
     private var read: Set<String> = emptySet()
     private var loaded = false
     private val quotes = mutableMapOf<String, String?>()
-    /** The friend this screen was opened on (from a run result or the bag): shown first, with a green edge. */
+    /** The friend this screen was opened on (from a run result or the bag): its card is brought into view first. */
     private var focus: String? = null
     private var firstShow = true
 
-    private lateinit var shelf: CardShelf
+    private lateinit var frame: MockupFrame
+    private lateinit var row: LinearLayout
+    private lateinit var scroller: HorizontalScrollView
+    private lateinit var pager: com.tinyrunners.school.ui.ShelfPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         focus = savedInstanceState?.getString(KEY_FOCUS) ?: intent.getStringExtra(EXTRA_FRIEND)
-        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(6), dp(16), dp(10)) }
+        frame = MockupFrame(this, R.drawable.bg_village_stories_wide)
 
-        val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(HomeButton.create(this))
-        top.addView(TextView(this).apply {
-            setText(R.string.story_list_title); textSize = 22f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD)
-            if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-            setPadding(dp(12), 0, dp(12), 0)
-        }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        // 이야기 모음: a small storybook button beside the bag.
-        top.addView(com.tinyrunners.school.ui.BookButton.create(this) {
+        // ◀ 처음으로 in the collection's back part (same place as its ◀ 마을 이야기로).
+        val back = Button(this).apply {
+            text = getString(R.string.common_to_menu).removePrefix("◀ ")
+            isAllCaps = false; stateListAnimator = null; setTextColor(StoryBookCard.DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER; minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
+            background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(R.drawable.ui_story_back_button), null)
+            setOnClickListener { HomeButton.goToMenu(this@StoryListActivity) }
+        }.also { frame.onScaleText(it, 34f) }
+        frame.place(back, 47, 41, 371, 112)
+        frame.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            val sc = frame.scale
+            back.setPadding(((128 - 47) * sc).roundToInt(), 0, ((371 - 350) * sc).roundToInt(), 0)
+        }
+        frame.place(TitleBanner(this, frame, getString(R.string.story_list_title)), 436, 20, 1236, 150)
+        // 이야기 모음 (storybook) | bag, where the collection has its counter | bag.
+        frame.place(com.tinyrunners.school.ui.BookButton.create(this) {
             startActivity(Intent(this, StoryCollectionActivity::class.java))
-        })
-        top.addView(com.tinyrunners.school.ui.TopPill.divider(this))
-        top.addView(com.tinyrunners.school.ui.BagButton.create(this))
-        content.addView(top)
-        content.addView(TextView(this).apply {
-            setText(R.string.village_hint); textSize = 14f; setTextColor(Page.MUTED); setPadding(dp(10), dp(3), dp(10), dp(3))
-            // A soft paper strip so the hint stays readable over the tree in the picture.
-            background = android.graphics.drawable.GradientDrawable().apply { setColor(android.graphics.Color.argb(215, 255, 249, 235)); cornerRadius = dp(12).toFloat() }
-        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
+        }, 1451, 34, 1526, 120)
+        frame.place(android.widget.ImageButton(this).apply {
+            setImageDrawable(null)
+            background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(R.drawable.ui_story_bag_button), null)
+            contentDescription = getString(R.string.bag_open)
+            setOnClickListener { startActivity(com.tinyrunners.school.quest.BagActivity.intent(this@StoryListActivity)) }
+        }, 1562, 34, 1637, 120)
 
-        shelf = CardShelf(this)
-        content.addView(shelf, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(8) })
+        // Cards on the bench; they slide sideways.
+        row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(row) }
+        frame.place(scroller, 40, 205, 1640, 812)
+        pager = com.tinyrunners.school.ui.ShelfPager(this, scroller)
+        frame.place(pager, 436, 842, 1236, 912)
 
-        setContentView(FrameLayout(this).apply {
-            setBackgroundColor(Page.BACKGROUND)
-            addView(PaperBackdropView(this@StoryListActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            addView(content, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            setOnApplyWindowInsetsListener { v, insets ->
-                if (Build.VERSION.SDK_INT >= 30) {
-                    val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
-                    v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-                } else {
-                    @Suppress("DEPRECATION")
-                    v.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom)
-                }
-                insets
-            }
-        })
+        setContentView(frame)
+        hideSystemBars()
         render()
     }
 
@@ -112,32 +112,41 @@ class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
     }
 
     private fun render() {
-        val cards = friends.map { card(it) }
+        row.removeAllViews()
+        row.addView(RefBox(this, frame, 25, 1))   // the first card starts where the collection's does
+        friends.forEach { row.addView(card(it)) }
+        row.addView(RefBox(this, frame, 25, 1))
         val start = if (firstShow) friends.indexOfFirst { it.id == focus } else -1
         firstShow = false
-        shelf.setCards(cards, start)
+        scroller.post {
+            if (start > 0) row.getChildAt(start + 1)?.let { scroller.scrollTo(it.left - (25 * frame.scale).roundToInt(), 0) }
+            pager.refresh()
+        }
     }
 
     private fun card(friend: CharacterDefinition): View {
         val (story, again) = storyFor(friend)
-        val card = CardShelf.card(this, selected = friend.id == focus)
-        card.addView(SceneThumb(this, friend.id, locked = false), LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
-        val nameRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        nameRow.addView(CardShelf.title(this, friend.name), LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        if (loaded && story != null) nameRow.addView(CardShelf.chip(this, getString(if (again) R.string.village_chip_read else R.string.village_chip_new),
-            if (again) com.tinyrunners.school.shop.ShopActivity.DISABLED else com.tinyrunners.school.shop.ShopActivity.OWNED))
-        card.addView(nameRow)
-        val line = quotes.getOrPut(friend.id) { ShortLineRepository.pick(this, friend.id, "select") }
-        card.addView(CardShelf.body(this, line?.let { getString(R.string.village_quote, it) } ?: friend.personality, lines = 2))
-        card.addView(CardShelf.body(this, when {
+        val pill = when {
             !loaded -> getString(R.string.records_loading)
-            story == null -> getString(R.string.village_none)
-            else -> story.title
-        }, lines = 1).apply { setTextColor(CardShelf.GREEN) })
-        card.addView(CardShelf.button(this, getString(if (again) R.string.village_talk_again else R.string.village_talk),
-            primary = !again, enabled = story != null) { openTalk(friend) }, CardShelf.buttonParams(this, 6))
-        card.contentDescription = getString(R.string.village_card_description_short, friend.name, friend.home, line ?: "")
-        return card
+            story == null -> null
+            again -> getString(R.string.village_chip_read)
+            else -> getString(R.string.village_chip_new)
+        }
+        val look = when {
+            story == null -> StoryBookCard.Look.LOCKED
+            again -> StoryBookCard.Look.OUTLINE
+            else -> StoryBookCard.Look.PRIMARY
+        }
+        val button = getString(when {
+            story == null -> R.string.collection_locked
+            again -> R.string.village_talk_again
+            else -> R.string.village_talk
+        })
+        val line = quotes.getOrPut(friend.id) { ShortLineRepository.pick(this, friend.id, "select") }
+        return StoryBookCard.build(this, frame, StoryBookCard.ribbon(friend.id), friend.name, StoryBookCard.picture(this, friend.id),
+            pill, button, look) { openTalk(friend) }.apply {
+            contentDescription = getString(R.string.village_card_description_short, friend.name, friend.home, line ?: "")
+        }
     }
 
     private fun openTalk(friend: CharacterDefinition) {
@@ -149,7 +158,18 @@ class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
         startActivity(com.tinyrunners.school.talk.TalkActivity.village(this, story.characterId, story.id, askItems = !again))
     }
 
-    private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
+    private fun hideSystemBars() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.insetsController?.let {
+                it.hide(WindowInsets.Type.systemBars())
+                it.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        }
+    }
 
     companion object {
         private const val KEY_FOCUS = "villageFocus"

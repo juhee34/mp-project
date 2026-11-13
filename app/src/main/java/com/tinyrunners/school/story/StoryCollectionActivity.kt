@@ -209,45 +209,14 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
 
     private enum class Look { PRIMARY, OUTLINE, LOCKED }
 
-    /**
-     * One card in the mockup's proportions (380×581 reference pixels, from the 라일 card): frame, ribbon, title,
-     * picture, an optional count pill and the button.
-     */
+    /** One storybook card (StoryBookCard, shared with 마을 이야기). */
     private fun card(ribbon: Int, title: String, thumbPart: Int?, thumbView: View?, count: String?, button: String,
                      look: Look, click: () -> Unit): View {
-        val box = RefBox(this, frame, 380, 581).apply { setPadding(0, 0, 0, 0) }
-        // Long titles start right of the ribbon so they never run under it.
-        val long = title.length > 7
-        box.add(ImageView(this).apply { setImageResource(R.drawable.ui_story_card_frame); scaleType = ImageView.ScaleType.FIT_XY }, 0, 13, 377, 581)
-        box.add(TextView(this).apply {
-            text = title; setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
-            maxLines = if (long) 2 else 1; ellipsize = android.text.TextUtils.TruncateAt.END; setPadding(0, 0, 0, 0)
-            setLineSpacing(0f, 0.95f); includeFontPadding = false
-        }.also { frame.onScaleText(it, if (long) 27f else 40f) }, if (long) 106 else 24, if (long) 58 else 66, 366, if (long) 128 else 120)
-        box.add(ImageView(this).apply { setImageResource(ribbon); scaleType = ImageView.ScaleType.FIT_XY }, 38, 0, 104, 79)
         val picture = thumbView ?: ImageView(this).apply {
             setImageResource(thumbPart!!); scaleType = ImageView.ScaleType.FIT_CENTER
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }
-        box.add(picture, 35, 131, 343, 400)
-        if (count != null) box.add(TextView(this).apply {
-            text = count; setTextColor(Color.parseColor("#3D3550")); gravity = Gravity.CENTER; typeface = Typeface.DEFAULT_BOLD
-            background = getDrawable(R.drawable.ui_story_count_pill)
-        }.also { frame.onScaleText(it, 27f) }, 67, 416, 310, 460)
-        val (part, ink) = when (look) {
-            Look.PRIMARY -> R.drawable.ui_story_btn_primary to CREAM
-            Look.OUTLINE -> R.drawable.ui_story_btn_outline to DEEP_GREEN
-            Look.LOCKED -> R.drawable.ui_story_btn_disabled to Color.parseColor("#8A8478")
-        }
-        box.add(Button(this).apply {
-            text = button; isAllCaps = false; stateListAnimator = null; setTextColor(ink); typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER; setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
-            background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(part), null)
-            isEnabled = look != Look.LOCKED
-            setOnClickListener { click() }
-        }.also { frame.onScaleText(it, 32f) }, 38, 478, 342, 543)
-        if (look != Look.LOCKED) { box.isClickable = true; box.setOnClickListener { click() } }
-        return box
+        return StoryBookCard.build(this, frame, ribbon, title, picture, count, button, StoryBookCard.Look.valueOf(look.name), click)
     }
 
     private fun hideSystemBars() {
