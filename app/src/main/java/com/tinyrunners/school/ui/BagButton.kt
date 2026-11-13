@@ -122,3 +122,69 @@ object PouchIcon {
         }
     }
 }
+
+/**
+ * The story-collection (이야기 모음) button: the same small square as the bag, with a pixel storybook on it (a green
+ * cover with a gold title label, cream page edges and a lavender bookmark ribbon) instead of the words and an arrow.
+ */
+object BookButton {
+    fun create(context: Context, click: () -> Unit): View = BookButtonView(context).apply {
+        val d = context.resources.displayMetrics.density
+        contentDescription = context.getString(R.string.collection_open)
+        isClickable = true; isFocusable = true
+        background = android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(Color.rgb(232, 220, 190)),
+            GradientDrawable().apply {
+                setColor(Color.rgb(255, 250, 238)); cornerRadius = 12 * d; setStroke((2 * d).roundToInt(), Color.rgb(190, 150, 100))
+            }, null)
+        setOnClickListener { click() }
+        val size = (40 * d).roundToInt()
+        layoutParams = LinearLayout.LayoutParams(size, size).apply { marginStart = (10 * d).roundToInt() }
+    }
+}
+
+@SuppressLint("ViewConstructor")
+private class BookButtonView(context: Context) : View(context) {
+    override fun onDraw(canvas: Canvas) {
+        val inset = width * 0.14f
+        BookIcon.draw(canvas, inset, inset, width - inset * 2)
+    }
+}
+
+/** A 16×16 pixel storybook, in the pouch's warm palette. */
+object BookIcon {
+    private val paint = Paint().apply { isAntiAlias = false }
+    private val ROWS = listOf(
+        "................",
+        "..KKKKKKKKKKKK..",
+        "..KDGGGGGGGGGGK.",
+        "..KDGgGGGGGGGGK.",
+        "..KDGGYYYYYYGGK.",
+        "..KDGGYyyyyYGGK.",
+        "..KDGGYYYYYYGGK.",
+        "..KDGGGGGGGGGGK.",
+        "..KDGGGGGLGGGGK.",
+        "..KDGGGGLlLGGGK.",
+        "..KDGGGGGLGGGGK.",
+        "..KDKKKKKKKKKKKK",
+        "..KDPPPPPPPPPPPK",
+        "..KDppppppppRppK",
+        "..KKKKKKKKKKRKKK",
+        "............R...",
+    )
+    private val PALETTE = mapOf(
+        'K' to Color.rgb(96, 66, 44), 'D' to Color.rgb(52, 92, 62), 'G' to Color.rgb(74, 124, 84), 'g' to Color.rgb(112, 160, 110),
+        'Y' to Color.rgb(222, 178, 84), 'y' to Color.rgb(246, 222, 150),
+        'L' to Color.rgb(172, 146, 196), 'l' to Color.rgb(230, 218, 244),
+        'P' to Color.rgb(250, 242, 222), 'p' to Color.rgb(222, 204, 170), 'R' to Color.rgb(160, 120, 190),
+    )
+
+    fun draw(canvas: Canvas, left: Float, top: Float, size: Float) {
+        val px = size / 16f
+        ROWS.forEachIndexed { r, line ->
+            line.forEachIndexed { c, ch ->
+                paint.color = PALETTE[ch] ?: return@forEachIndexed
+                canvas.drawRect(left + c * px, top + r * px, left + (c + 1) * px, top + (r + 1) * px, paint)
+            }
+        }
+    }
+}

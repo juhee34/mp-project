@@ -18,7 +18,8 @@ import kotlin.math.roundToInt
 
 /**
  * A row of small cards that slides sideways, as in the shop: four across on a wide screen (each at least 176 dp),
- * with page dots and a ▶ button under them when there are more cards than fit. Used by the village stories, the
+ * with page dots under them when there are more cards than fit: a ▶ button right of the dots goes on to the next
+ * page, and on the last page it becomes a ◀ button left of the dots that goes back. Used by the village stories, the
  * friend selection and the records so the three read like the shop. Screens fill it with [setCards] and build each
  * card with [card] and the small parts below.
  */
@@ -29,6 +30,8 @@ class CardShelf(context: Context) : LinearLayout(context) {
     private var cards: List<View> = emptyList()
     private var pages = 1
     private var pendingIndex = -1
+    private var back: View? = null
+    private var next: View? = null
 
     init {
         orientation = VERTICAL
@@ -59,23 +62,16 @@ class CardShelf(context: Context) : LinearLayout(context) {
         val perPage = if (available > 0) maxOf(1, (available + gap) / (width + gap)) else 4
         pages = (cards.size + perPage - 1) / perPage
         pager.removeAllViews()
+        back = null; next = null
         if (pages > 1) {
+            back = arrow("◀", R.string.shelf_prev_page) { scroller.smoothScrollTo((currentPage() - 1).coerceAtLeast(0) * pageWidth(), 0) }
+            pager.addView(back, LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(22) })
             repeat(pages) { i ->
                 pager.addView(View(context).apply { importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO },
                     LayoutParams(dp(12), dp(12)).apply { if (i > 0) marginStart = dp(12) })
             }
-            pager.addView(Button(context).apply {
-                text = "▶"; textSize = 13f; setTextColor(GREEN); stateListAnimator = null; setPadding(0, 0, 0, 0)
-                minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
-                contentDescription = context.getString(R.string.shelf_next_page)
-                background = RippleDrawable(ColorStateList.valueOf(ShopActivity.OWNED), GradientDrawable().apply {
-                    setColor(ShopActivity.CARD); cornerRadius = dp(8).toFloat(); setStroke(dp(2), GREEN)
-                }, null)
-                setOnClickListener {
-                    val page = currentPage()
-                    scroller.smoothScrollTo(if (page + 1 >= pages) 0 else (page + 1) * pageWidth(), 0)
-                }
-            }, LayoutParams(dp(30), dp(30)).apply { marginStart = dp(22) })
+            next = arrow("▶", R.string.shelf_next_page) { scroller.smoothScrollTo((currentPage() + 1).coerceAtMost(pages - 1) * pageWidth(), 0) }
+            pager.addView(next, LayoutParams(dp(30), dp(30)).apply { marginStart = dp(22) })
         }
         pager.visibility = if (pages > 1) View.VISIBLE else View.INVISIBLE
         scroller.post {
@@ -88,6 +84,16 @@ class CardShelf(context: Context) : LinearLayout(context) {
         }
     }
 
+    private fun arrow(symbol: String, description: Int, click: () -> Unit) = Button(context).apply {
+        text = symbol; textSize = 13f; setTextColor(GREEN); stateListAnimator = null; setPadding(0, 0, 0, 0)
+        minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
+        contentDescription = context.getString(description)
+        background = RippleDrawable(ColorStateList.valueOf(ShopActivity.OWNED), GradientDrawable().apply {
+            setColor(ShopActivity.CARD); cornerRadius = dp(8).toFloat(); setStroke(dp(2), GREEN)
+        }, null)
+        setOnClickListener { click() }
+    }
+
     private fun pageWidth() = scroller.width + dp(14)
 
     private fun currentPage(): Int {
@@ -98,8 +104,14 @@ class CardShelf(context: Context) : LinearLayout(context) {
 
     private fun markPage() {
         val page = currentPage()
-        for (i in 0 until minOf(pages, pager.childCount)) {
-            pager.getChildAt(i).background = GradientDrawable().apply {
+        // ▶ (right of the dots) until the last page, then ◀ (left of the dots) to go back.
+        val last = pages > 1 && page >= pages - 1
+        next?.visibility = if (last) View.GONE else View.VISIBLE
+        back?.visibility = if (last) View.VISIBLE else View.GONE
+        val first = if (back != null) 1 else 0
+        for (i in 0 until pages) {
+            if (first + i >= pager.childCount) break
+            pager.getChildAt(first + i).background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
                 setColor(if (i == page) GREEN else ShopActivity.CARD); setStroke(dp(2), if (i == page) GREEN else ShopActivity.HONEY_LIGHT)
             }

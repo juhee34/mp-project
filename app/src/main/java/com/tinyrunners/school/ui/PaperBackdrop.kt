@@ -1,35 +1,56 @@
 package com.tinyrunners.school.ui
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import com.tinyrunners.school.R
-import kotlin.math.max
-import kotlin.math.roundToInt
 
 /**
  * The shared paper-and-bench scenery from the approved story-collection design (A art, docs/art/ui-screens).
  * Sits behind the village stories, the story collection, the character screens and the records so they read as
- * one place. Uses the 20:9 version (bg_common_paper_wide, paper continued on both sides) so wide phones show no
- * picture edge; it fills the view and crops evenly from the centre; the middle of the picture is plain paper, so
- * cards and text on top stay readable. The hub and login use their own approved pictures (MockupFrame).
+ * one place. The picture (bg_common_paper_wide, 2400×1080) has a frame drawn round its edge, trees at both sides
+ * and a bench along the bottom, so it is always shown whole in height: it is scaled to the view's height, its left
+ * and right ends (trees and frame corners) keep their shape, and only the plain middle (paper, bench, grass) is
+ * stretched or squeezed to fill the width. That way the frame and the trees are never cut off, also on screens
+ * that show the status bar. The hub and login use their own approved pictures (MockupFrame).
  */
 class PaperBackdropView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,   // needed when placed in an XML layout (activity_main.xml)
 ) : View(context, attrs) {
-    private val art = requireNotNull(context.getDrawable(R.drawable.bg_common_paper_wide))
+    private val art: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.bg_common_paper_wide,
+        BitmapFactory.Options().apply { inScaled = false })
+    private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
+    private val src = Rect()
+    private val dst = RectF()
 
     init { importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO }
 
     override fun onDraw(canvas: Canvas) {
-        val iw = art.intrinsicWidth.toFloat(); val ih = art.intrinsicHeight.toFloat()
-        if (iw <= 0f || ih <= 0f || width == 0 || height == 0) return
-        val scale = max(width / iw, height / ih)
-        val dw = (iw * scale).roundToInt(); val dh = (ih * scale).roundToInt()
-        val left = (width - dw) / 2; val top = (height - dh) / 2
-        art.setBounds(left, top, left + dw, top + dh)
-        art.draw(canvas)
+        val iw = art.width; val ih = art.height
+        if (iw <= 0 || ih <= 0 || width == 0 || height == 0) return
+        val k = height.toFloat() / ih
+        // Ends drawn at the same scale; the middle takes whatever width is left.
+        val sideL = (SIDE_L * k).coerceAtMost(width / 2f)
+        val sideR = ((iw - SIDE_R) * k).coerceAtMost(width / 2f)
+        val h = height.toFloat()
+        src.set(0, 0, SIDE_L, ih); dst.set(0f, 0f, sideL, h)
+        canvas.drawBitmap(art, src, dst, paint)
+        src.set(SIDE_L, 0, SIDE_R, ih); dst.set(sideL, 0f, width - sideR, h)
+        canvas.drawBitmap(art, src, dst, paint)
+        src.set(SIDE_R, 0, iw, ih); dst.set(width - sideR, 0f, width.toFloat(), h)
+        canvas.drawBitmap(art, src, dst, paint)
+    }
+
+    private companion object {
+        /** The stretchable middle of the picture (picture px): plain paper, the bench and the grass only. */
+        const val SIDE_L = 700
+        const val SIDE_R = 1700
     }
 }

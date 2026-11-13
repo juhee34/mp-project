@@ -82,4 +82,5 @@
     <string name="shop_item_for">%1$s에게 필요한 아이템</string>
     <string name="shop_next_page">다음 상품 보기</string>
     <string name="shelf_next_page">다음 카드 보기</string>
+    <string name="shelf_prev_page">앞 카드 보기</string>
 </resources>

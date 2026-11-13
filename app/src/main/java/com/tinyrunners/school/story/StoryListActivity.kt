@@ -26,7 +26,7 @@ import kotlin.math.roundToInt
  * 마을 이야기 (스토리 진행하기), laid out like the shop: one small card per friend in a row that slides sideways
  * (CardShelf). Each card: the friend at home, their name and whether a new story waits, a line in their own voice
  * (A's short line pack, "select" lines), and "이 친구와 대화하기", which opens that friend's village story.
- * Top: "◀ 처음으로", "이야기 모음 ▶" and the bag.
+ * Top: "◀ 처음으로", the storybook button (이야기 모음) and the bag.
  */
 class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
     /** Story screens play the main theme. */
@@ -55,7 +55,8 @@ class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
             setPadding(dp(12), 0, dp(12), 0)
         }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        top.addView(HomeButton.create(this, getString(R.string.collection_open)) {
+        // 이야기 모음: a small storybook button beside the bag.
+        top.addView(com.tinyrunners.school.ui.BookButton.create(this) {
             startActivity(Intent(this, StoryCollectionActivity::class.java))
         })
         top.addView(com.tinyrunners.school.ui.BagButton.create(this))

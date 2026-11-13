@@ -26,7 +26,7 @@
     <string name="village_talk">이 친구와 대화하기</string>
     <string name="village_talk_again">다시 대화하기</string>
     <string name="village_none">아직 준비된 이야기가 없어요.</string>
-    <string name="collection_open">이야기 모음 ▶</string>
+    <string name="collection_open">이야기 모음</string>
     <string name="collection_back">◀ 마을 이야기로</string>
     <string name="collection_world">세계 이야기</string>
     <string name="collection_replay">다시 보기</string>
