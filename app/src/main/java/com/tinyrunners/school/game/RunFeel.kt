@@ -13,8 +13,8 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /**
- * Weight for the runner: pixel dust kicked up at the feet on each jump and landing, and a tiny camera shake (one or
- * two art pixels, under a fifth of a second) when the feet hit the ground. Looks only; the physics never change.
+ * A light touch for the runner: a few pale pixel motes puff softly at the feet on each jump and landing and drift
+ * away. No camera shake: the game is meant to feel gentle (2026-11-16, play feedback "too thumpy"). Looks only.
  */
 class RunFeel {
     private class Mote(var x: Float, var y: Float, var vx: Float, var vy: Float, var life: Float, val maxLife: Float, val size: Float, val color: Int)
@@ -22,26 +22,21 @@ class RunFeel {
     private val motes = ArrayList<Mote>()
     private val random = Random(7)
     private val paint = Paint()
-    private var shakeLeft = 0f
-    private var shakeAmp = 0f
 
-    /** Dust puffing back and out from the feet at ([x], [y]) in screen pixels; [px] is one art pixel. */
-    fun jump(x: Float, y: Float, px: Float, color: Int) = puff(x, y, px, color, count = 6, spread = 0.7f)
+    /** A small puff from the feet at ([x], [y]) in screen pixels; [px] is one art pixel. */
+    fun jump(x: Float, y: Float, px: Float, color: Int) = puff(x, y, px, color, count = 3, spread = 0.6f)
 
-    /** A wider puff and a short shake; [hard] (a fall from high up) shakes two art pixels instead of one. */
-    fun land(x: Float, y: Float, px: Float, color: Int, hard: Boolean) {
-        puff(x, y, px, color, count = if (hard) 10 else 7, spread = 1f)
-        shakeAmp = px * if (hard) 2f else 1f
-        shakeLeft = SHAKE_SECONDS
-    }
+    /** A soft puff on landing (a little wider after a high fall, never a shake). */
+    fun land(x: Float, y: Float, px: Float, color: Int, hard: Boolean) =
+        puff(x, y, px, color, count = if (hard) 5 else 4, spread = 0.8f)
 
     private fun puff(x: Float, y: Float, px: Float, color: Int, count: Int, spread: Float) {
         repeat(count) {
             val side = if (it % 2 == 0) -1f else 1f
-            val life = 0.25f + random.nextFloat() * 0.2f
+            val life = 0.35f + random.nextFloat() * 0.25f
             motes += Mote(x + side * random.nextFloat() * 4f * px, y - random.nextFloat() * px,
-                side * (10f + random.nextFloat() * 26f) * px * spread - 12f * px, -(6f + random.nextFloat() * 14f) * px,
-                life, life, px * (if (random.nextFloat() < 0.35f) 2f else 1f), color)
+                side * (6f + random.nextFloat() * 12f) * px * spread - 8f * px, -(3f + random.nextFloat() * 6f) * px,
+                life, life, px, color)
         }
         while (motes.size > MAX_MOTES) motes.removeAt(0)
     }
@@ -53,30 +48,25 @@ class RunFeel {
             m.life -= dt
             if (m.life <= 0f) { it.remove(); continue }
             m.x += m.vx * dt; m.y += m.vy * dt
-            m.vy += 60f * m.size * dt
-            m.vx *= 0.92f
+            // Floats up and slows: a breath of dust, not a thud.
+            m.vy -= 4f * m.size * dt
+            m.vx *= 0.9f
         }
-        if (shakeLeft > 0f) shakeLeft = (shakeLeft - dt).coerceAtLeast(0f)
     }
-
-    /** The camera offset for this frame: a whole-pixel jolt that settles, or (0, 0). */
-    fun shakeX(): Float = if (shakeLeft <= 0f) 0f else (if ((shakeLeft * 60f).toInt() % 2 == 0) 1f else -1f) * shakeAmp * (shakeLeft / SHAKE_SECONDS)
-    fun shakeY(): Float = if (shakeLeft <= 0f) 0f else shakeAmp * (shakeLeft / SHAKE_SECONDS)
 
     fun draw(canvas: Canvas) {
         for (m in motes) {
             paint.color = m.color
-            paint.alpha = (230 * (m.life / m.maxLife)).toInt().coerceIn(0, 255)
+            paint.alpha = (140 * (m.life / m.maxLife)).toInt().coerceIn(0, 255)
             val x = m.x.roundToInt().toFloat(); val y = m.y.roundToInt().toFloat()
             canvas.drawRect(x, y, x + m.size, y + m.size, paint)
         }
     }
 
-    fun clear() { motes.clear(); shakeLeft = 0f }
+    fun clear() { motes.clear() }
 
     private companion object {
-        const val SHAKE_SECONDS = 0.16f
-        const val MAX_MOTES = 60
+        const val MAX_MOTES = 30
     }
 }
 

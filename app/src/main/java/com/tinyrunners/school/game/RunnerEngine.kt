@@ -101,6 +101,11 @@ data class RunnerConfig(
     /** Story crossroads: the raised path's top (one jump reaches it) and how long it lasts in seconds of running. */
     val forkTop: Float = 95f,
     val forkSeconds: Float = 2.6f,
+    /**
+     * Highest the feet can go: a double jump from the ground peaks at about 244, enough for the tallest tower (170);
+     * from a raised path or plank it would reach about 350 and leave the screen, so it stops softly here.
+     */
+    val ceiling: Float = 250f,
 ) {
     val airTime: Float get() = 2f * jumpVelocity / gravity
     val apexHeight: Float get() = jumpVelocity * jumpVelocity / (2f * gravity)
@@ -303,6 +308,7 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         val previousY = playerY
         playerVy -= config.gravity * dt
         playerY += playerVy * dt
+        if (playerY > config.ceiling) { playerY = config.ceiling; if (playerVy > 0f) playerVy = 0f }
 
         val dx = speed * dt
         distance += dx

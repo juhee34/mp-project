@@ -184,9 +184,6 @@ class RunnerView(
         val w = width.toFloat()
         val h = height.toFloat()
         canvas.drawColor(skyColor())
-        // The landing shake moves the whole world by a pixel or two (never the top bar).
-        canvas.save()
-        canvas.translate(feel.shakeX().roundToInt().toFloat(), feel.shakeY().roundToInt().toFloat())
         val background = storyBackground
         if (background != null) {
             background.draw(canvas, w, h, groundY, engine.distance, scale)
@@ -204,7 +201,6 @@ class RunnerView(
         feel.draw(canvas)
         drawCoinPops(canvas)
         drawWeatherFront(canvas, w)
-        canvas.restore()
         drawHud(canvas, w)
         if (engine.phase == RunnerEngine.Phase.RUNNING || engine.phase == RunnerEngine.Phase.PAUSED) drawStory(canvas, w)
 
@@ -688,7 +684,8 @@ class RunnerView(
     private companion object {
         private const val POP_SECONDS = 1.1f
         private val COIN_INK = Color.rgb(140, 96, 20)
-        const val WORLD_HEIGHT = 360f
+        /** Sky above the road: the head at the jump ceiling (RunnerConfig.ceiling + the body) fits on screen. */
+        const val WORLD_HEIGHT = 385f
         const val MIN_WORLD_WIDTH = 640f
         const val GROUND_THICKNESS = 48f
         val SKY = Color.rgb(250, 246, 236)

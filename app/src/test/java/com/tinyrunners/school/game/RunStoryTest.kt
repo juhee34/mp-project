@@ -75,6 +75,23 @@ class RunStoryTest {
         assertTrue(Difficulty.entries.zipWithNext().all { (a, b) -> a.speed < b.speed })
     }
 
+    @Test fun aDoubleJumpNeverGoesAboveTheCeiling() {
+        val c = RunnerConfig()
+        // From the ground the ceiling never cuts a double jump short (towers still need all of it).
+        assertTrue(c.apexHeight + c.airJumpVelocity * c.airJumpVelocity / (2 * c.gravity) < c.ceiling)
+        assertTrue(c.ceiling > c.towerMaxHeight + 20f)
+        // Jumping again and again (which also covers jumps from raised paths) stays under it.
+        val e = RunnerEngine(seed = 5)
+        e.tap()
+        var highest = 0f
+        var t = 0f
+        while (t < 20f && e.phase == RunnerEngine.Phase.RUNNING) {
+            e.tap(); e.update(1f / 30f); t += 1f / 30f
+            highest = maxOf(highest, e.playerY)
+        }
+        assertTrue("highest $highest", highest <= c.ceiling)
+    }
+
     @Test fun hardestWeatherStillClearsEveryObstacle() {
         val c = RunnerConfig()
         val top = c.maxSpeed * Difficulty.HARDEST.speed
