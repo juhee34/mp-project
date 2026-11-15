@@ -229,6 +229,8 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
 
     /** Today's weather difficulty (WeatherDifficulty): scales the speed and the room between obstacles. */
     var difficulty: Difficulty = Difficulty.NORMAL
+    /** The story's last stretch runs a little faster, like a final round (1 = normal). */
+    var stretch = 1f
 
     /** Asks for a story crossroads at [meters] in this run (the next spawn after that distance). */
     fun scheduleFork(meters: Int) { forkAt = meters; forkChoice = null }
@@ -303,7 +305,7 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     private fun tick(dt: Float) {
         elapsed += dt
         // Speed steps up every 100 m (eased, not instant); the first 100 m stay at the calm start speed.
-        speed = min(config.targetSpeed(meters) * difficulty.speed, speed + config.acceleration * dt)
+        speed = min(config.targetSpeed(meters) * difficulty.speed * stretch, speed + config.acceleration * dt)
 
         val previousY = playerY
         playerVy -= config.gravity * dt

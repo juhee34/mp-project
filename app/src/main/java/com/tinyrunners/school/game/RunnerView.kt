@@ -85,6 +85,12 @@ class RunnerView(
     var onForkChosen: ((Boolean) -> Unit)? = null
     /** Called once when the chosen ending has been told to the end. */
     var onStoryFinished: (() -> Unit)? = null
+    /** Called every frame of running (the story director checks distances here). */
+    var onTick: (() -> Unit)? = null
+    /** While a story talk is on screen: no pause/ready overlay and no top buttons under it. */
+    var cinematic = false
+    /** The last stretch: (metres when it began, metres of the goal), shown as a bar to the treasure. */
+    var goal: Pair<Int, Int>? = null
 
     init {
         isFocusable = true
@@ -118,6 +124,7 @@ class RunnerView(
                     if (chosen != null && toldChoice == null) { toldChoice = chosen; onForkChosen?.invoke(chosen) }
                     if (s.finished && !toldFinished) { toldFinished = true; onStoryFinished?.invoke() }
                 }
+                onTick?.invoke()
             }
         }
         lastFrameNanos = frameTimeNanos
@@ -204,7 +211,7 @@ class RunnerView(
         drawHud(canvas, w)
         if (engine.phase == RunnerEngine.Phase.RUNNING || engine.phase == RunnerEngine.Phase.PAUSED) drawStory(canvas, w)
 
-        when (engine.phase) {
+        if (!cinematic) when (engine.phase) {
             RunnerEngine.Phase.READY -> overlay(canvas, w, h,
                 context.getString(R.string.game_ready_title, character.name),
                 context.getString(R.string.game_ready_hint), null)
@@ -218,7 +225,8 @@ class RunnerView(
             RunnerEngine.Phase.RUNNING -> Unit
         }
         // Drawn last so the 진행 button stays clear above the pause overlay.
-        if (buttonsVisible) {
+        goal?.let { drawGoal(canvas, w, it) }
+        if (buttonsVisible && !cinematic) {
             val running = engine.phase == RunnerEngine.Phase.RUNNING
             drawBarButton(canvas, stopRect, context.getString(R.string.game_stop_button), active = running, pauseIcon = true)
             drawBarButton(canvas, goRect, context.getString(R.string.game_go_button), active = !running, pauseIcon = false)
@@ -433,11 +441,29 @@ class RunnerView(
         fill.color = FORK_FLAG; canvas.drawRect(l + 9f * scale, top - 40f * scale, l + 30f * scale, top - 26f * scale, fill)
     }
 
+    /** The last stretch: "보물까지 32m" and a bar filling towards the goal, under the top bar. */
+    private fun drawGoal(canvas: Canvas, w: Float, g: Pair<Int, Int>) {
+        val d = resources.displayMetrics.density
+        val (from, to) = g
+        val left = (to - engine.meters).coerceAtLeast(0)
+        val t = ((engine.meters - from).toFloat() / (to - from).coerceAtLeast(1)).coerceIn(0f, 1f)
+        val bw = w * 0.34f; val top = goRect.bottom + 8f * d
+        val box = RectF((w - bw) / 2f, top, (w + bw) / 2f, top + 34f * d)
+        fill.color = Color.argb(225, 255, 248, 231); canvas.drawRoundRect(box, 17f * d, 17f * d, fill)
+        val bar = RectF(box.left + 12f * d, box.bottom - 10f * d, box.right - 12f * d, box.bottom - 6f * d)
+        fill.color = Color.rgb(230, 218, 196); canvas.drawRect(bar, fill)
+        fill.color = Color.rgb(236, 196, 84); canvas.drawRect(bar.left, bar.top, bar.left + bar.width() * t, bar.bottom, fill)
+        text.textSize = 14f * d; text.textAlign = Paint.Align.CENTER; text.color = INK
+        canvas.drawText(context.getString(R.string.story_goal_left, left), box.centerX(), box.top + 19f * d, text)
+        text.textAlign = Paint.Align.LEFT
+    }
+
     /** The running story: a bubble over the friend, the narrator under the top bar, or the crossroads question. */
     private fun drawStory(canvas: Canvas, w: Float) {
         val s = story ?: return
+        if (cinematic) return
         val d = resources.displayMetrics.density
-        val top = goRect.bottom + 8f * d
+        val top = goRect.bottom + 8f * d + if (goal != null) 42f * d else 0f
         val fork = s.script.fork
         if (s.asking && fork != null) {
             storyPainter.question(canvas, fork, top, w, context.getString(R.string.run_route_up), context.getString(R.string.run_route_down))

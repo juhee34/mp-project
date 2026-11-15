@@ -17,6 +17,10 @@ import java.util.UUID
 /** Game entry point. Receives a validated character ID and runs the shared runner. */
 class GameActivity : Activity() {
     private var runnerView: RunnerView? = null
+    /** The screen's root: story talks and the ending picture are laid over the run here. */
+    private var stage: FrameLayout? = null
+    private var goToResult: () -> Unit = {}
+    private var weatherPending = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +38,7 @@ class GameActivity : Activity() {
         // The home-screen widget shows the friend of the latest run.
         com.tinyrunners.school.widget.TodayFriend.remember(this, character.id)
         com.tinyrunners.school.widget.FriendWidget.refreshAll(this)
-        view.onRunOver = {
+        goToResult = {
             // Items picked up on the road go into the bag right away, so leaving the talk early keeps them.
             val picked = engine.collected
             if (picked > 0) com.tinyrunners.school.quest.ItemBagStore.forCurrentUser(this).add(character.id, picked) { }
@@ -60,6 +64,7 @@ class GameActivity : Activity() {
                 }
             }, RESULT_DELAY_MS)
         }
+        view.onRunOver = { goToResult() }
         val weatherSettings = WeatherSettings(this)
         if (weatherSettings.enabled) {
             val city = weatherSettings.city
@@ -72,13 +77,17 @@ class GameActivity : Activity() {
                 engine.difficulty = Difficulty.of(report)
             }
             show(com.tinyrunners.school.weather.WeatherChoice.apply(null, city, sky, day))
-            if (!weatherSettings.fullyChosen) WeatherClient.fetch(city) { result ->
-                if (!isDestroyed) result.onSuccess { show(com.tinyrunners.school.weather.WeatherChoice.apply(it, city, sky, day)) }
+            if (!weatherSettings.fullyChosen) {
+                weatherPending = true
+                WeatherClient.fetch(city) { result ->
+                    weatherPending = false
+                    if (!isDestroyed) result.onSuccess { show(com.tinyrunners.school.weather.WeatherChoice.apply(it, city, sky, day)) }
+                }
             }
         }
         if (!intent.getBooleanExtra(EXTRA_SHOW_GUIDE, false)) attachStory(character, engine, view)
         val onboarding = OnboardingStore(this)
-        setContentView(FrameLayout(this).apply {
+        setContentView(FrameLayout(this).also { stage = it }.apply {
             addView(view, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             if (onboarding.shouldShowGameGuide || intent.getBooleanExtra(EXTRA_SHOW_GUIDE, false)) {
                 // The guide sits on top and absorbs taps; the run only starts with a tap after it closes.
@@ -104,45 +113,102 @@ class GameActivity : Activity() {
     }
 
     /**
-     * The story told during this run: the friend's next unread village story (or the one this run was started for),
-     * told from run_stories.json — that story's own script, or the shared one with its title. Its crossroads is
-     * scheduled in the engine; the choice colours the music and picks the ending; when the ending has been told the
-     * story counts as seen (the same read record as before, so the story book and postcards follow).
+     * The story of this run in four acts (RunStory): 발단 — an RPG talk before the start; 전개·위기 — bubbles and the
+     * crossroads while running; 절정 — the run pauses for a talk that follows the route; 결말 — a last, slightly faster
+     * stretch to a goal, then the ending picture with its talk, after which the story counts as seen (the same read
+     * record as before, so the story book and postcards follow) and the result screen opens. A crash before the end
+     * leaves the story unseen, to be run again. The friend's next unread village story is told, or the one this run
+     * was started for; the weather of the day joins the opening and the run.
      */
     private fun attachStory(character: com.tinyrunners.school.data.CharacterDefinition, engine: RunnerEngine, view: RunnerView) {
         val stories = com.tinyrunners.school.story.StoryRepository.load(this)
         val routes = RunRoutes(this)
+        val color = runCatching { android.graphics.Color.parseColor(character.color) }.getOrDefault(android.graphics.Color.rgb(30, 90, 42))
         com.tinyrunners.school.progress.ProgressStore.forCurrentUser(this).loadAll { result ->
             if (isDestroyed) return@loadAll
             val read = result.getOrNull().orEmpty().values.flatMap { it.readStoryIds }.toSet()
             val story = intent.getStringExtra(EXTRA_STORY_ID)?.let { id -> stories.firstOrNull { it.id == id } }
                 ?: com.tinyrunners.school.story.Story.nextUnread(stories, character.id, read)
-            val script = RunScriptParser.load(this, story?.id, character.name, story?.title ?: character.home) ?: return@loadAll
-            val own = stories.filter { it.characterId == character.id }
-            // The finale: every earlier story's route right (and this one) → happy by day, hidden at night; else bad.
-            val endingFor: (Boolean) -> String = if (!script.finale) ({ up -> if (up) "up" else "down" }) else ({ up ->
-                val earlierRight = own.filter { it.id != story?.id }.all { s ->
-                    val chosen = routes.get(s.id)
-                    val right = RunScriptParser.load(this, s.id, character.name, s.title)?.fork?.correct
-                    chosen != null && (right == null || chosen == right)
+            // Wait (a few seconds at most) for the real weather, so the story can speak of it.
+            var waited = 0
+            fun begin() {
+                if (isDestroyed) return
+                if (weatherPending && waited < 30) { waited++; view.postDelayed({ begin() }, 100); return }
+                val weatherKey = StoryWeather.key(view.weather)
+                val script = RunScriptParser.load(this, story?.id, character.name, story?.title ?: character.home, character.id, weatherKey) ?: return
+                val own = stories.filter { it.characterId == character.id }
+                fun allRight(up: Boolean): Boolean {
+                    val earlierRight = own.filter { it.id != story?.id }.all { s ->
+                        val chosen = routes.get(s.id)
+                        val right = RunScriptParser.load(this, s.id, character.name, s.title)?.fork?.correct
+                        chosen != null && (right == null || chosen == right)
+                    }
+                    return earlierRight && script.fork?.correct.let { it == null || it == up }
                 }
-                val finalRight = script.fork?.correct.let { it == null || it == up }
-                EndingRule.pick(earlierRight && finalRight, night = view.weather?.isDay == false)
-            })
-            view.story = RunStoryPlayer(script, endingFor, getString(com.tinyrunners.school.R.string.run_missed_clue))
-            script.fork?.let { engine.scheduleFork(it.atMeters) }
-            view.onForkChosen = { up ->
-                story?.let { routes.set(it.id, up) }
-                com.tinyrunners.school.audio.Music.setRoute(up)
-            }
-            view.onStoryFinished = {
-                val s = view.story
-                if (story != null) {
-                    s?.endingKey?.let { routes.setEnding(story.id, it) }
-                    com.tinyrunners.school.progress.ProgressStore.forCurrentUser(this).markStoryRead(character.id, story.id) { }
-                    android.widget.Toast.makeText(this, getString(com.tinyrunners.school.R.string.run_story_done, script.title), android.widget.Toast.LENGTH_SHORT).show()
+                view.story = RunStoryPlayer(script, missedLine = getString(com.tinyrunners.school.R.string.run_missed_clue), tellEndingInRun = false)
+                script.fork?.let { engine.scheduleFork(it.atMeters) }
+
+                fun talk(lines: List<RunLine>, dim: Boolean, done: () -> Unit) {
+                    val root = stage
+                    if (lines.isEmpty() || root == null) { done(); return }
+                    view.cinematic = true
+                    // Under the game guide (if it is open), above the run.
+                    root.addView(StoryDialogView(this, character.name, color, lines, dim) { view.cinematic = false; done() },
+                        minOf(1, root.childCount), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+                }
+
+                // 1. 발단: before the start.
+                talk(script.opening, dim = true) { }
+
+                var choiceMeters = -1
+                var choice: Boolean? = null
+                var climaxDone = false
+                var endingShown = false
+                view.onForkChosen = { up ->
+                    choice = up; choiceMeters = engine.meters
+                    story?.let { routes.set(it.id, up) }
+                    com.tinyrunners.school.audio.Music.setRoute(up)
+                }
+                view.onTick = tick@{
+                    val chosen = choice ?: return@tick
+                    // 3. 절정: a few metres after the crossroads, once the bubbles have finished.
+                    // (Never later than CLIMAX_LATEST_METERS: any bubble still waiting is dropped then.)
+                    val bubblesDone = view.story?.current == null || engine.meters >= choiceMeters + CLIMAX_LATEST_METERS
+                    if (!climaxDone && engine.meters >= choiceMeters + CLIMAX_AFTER_METERS && bubblesDone) {
+                        climaxDone = true
+                        view.story = null
+                        engine.pause()
+                        val key = if (script.finale) (if (allRight(chosen)) "right" else "wrong") else (if (chosen) "up" else "down")
+                        talk(script.climax[key].orEmpty(), dim = true) {
+                            // 4. 결말: the last stretch, a little faster, to the goal.
+                            view.goal = engine.meters to engine.meters + script.goalMeters
+                            engine.stretch = FINAL_STRETCH
+                            engine.resume()
+                        }
+                    }
+                    val goal = view.goal
+                    if (climaxDone && !endingShown && goal != null && engine.meters >= goal.second) {
+                        endingShown = true
+                        engine.pause()
+                        view.goal = null
+                        val ending = if (script.finale) EndingRule.pick(allRight(chosen), night = view.weather?.isDay == false) else (if (chosen) "up" else "down")
+                        val lines = if (script.finale) script.endings[ending].orEmpty() else script.closing[ending].orEmpty()
+                        val root = stage ?: return@tick
+                        val picture = EndingPicture(this, character.id, ending, script.title)
+                        root.addView(picture, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+                        view.cinematic = true
+                        root.addView(StoryDialogView(this, character.name, color, lines, dim = false) {
+                            if (story != null) {
+                                routes.setEnding(story.id, ending)
+                                com.tinyrunners.school.progress.ProgressStore.forCurrentUser(this).markStoryRead(character.id, story.id) { }
+                                android.widget.Toast.makeText(this, getString(com.tinyrunners.school.R.string.run_story_done, script.title), android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                            goToResult()
+                        }, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+                    }
                 }
             }
+            begin()
         }
     }
 
@@ -165,6 +231,11 @@ class GameActivity : Activity() {
         /** Set by the "튜토리얼하기" button: show the game guide even if this account has already seen it. */
         const val EXTRA_SHOW_GUIDE = "showGuide"
         private const val RESULT_DELAY_MS = 900L
+        /** Metres between the crossroads and the climax talk. */
+        private const val CLIMAX_AFTER_METERS = 8
+        private const val CLIMAX_LATEST_METERS = 25
+        /** The last stretch runs this much faster than the road would. */
+        private const val FINAL_STRETCH = 1.06f
         fun intent(context: Context, characterId: String) =
             Intent(context, GameActivity::class.java).putExtra(EXTRA_CHARACTER_ID, characterId)
     }

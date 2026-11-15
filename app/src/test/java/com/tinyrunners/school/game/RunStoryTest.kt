@@ -75,6 +75,45 @@ class RunStoryTest {
         assertTrue(Difficulty.entries.zipWithNext().all { (a, b) -> a.speed < b.speed })
     }
 
+    @Test fun everyStoryPlaysInFourActsWithTodaysWeather() {
+        val file = listOf("src/main/assets/content/run_stories.json", "app/src/main/assets/content/run_stories.json").map(::File).first { it.exists() }
+        val json = file.readText()
+        // An ordinary story: opening = its first two lines (+ the legend's rainy-day line), the rest while running
+        // (+ the friend's rain line), climax = its up/down endings, closing = the shared up/down.
+        val intro = RunScriptParser.parse(json, "piko_intro", "피코", "t", "piko_intro", friendId = "piko", weather = "rain")!!
+        assertEquals(3, intro.opening.size)
+        assertTrue(intro.opening.last().narrator && intro.opening.last().text.contains("비"))
+        assertTrue(intro.lines.any { it.atMeters == RunScriptParser.WEATHER_LINE_AT && it.text.contains("물길이 살아났어") })
+        assertEquals(setOf("up", "down"), intro.climax.keys)
+        assertEquals(setOf("up", "down"), intro.closing.keys)
+        assertTrue("{name} is filled", intro.closing.getValue("up").first().text.contains("피코"))
+        assertTrue(intro.goalMeters > 0)
+        // A finale: climax by right/wrong, the three endings kept for the ending picture.
+        val finale = RunScriptParser.parse(json, "nunu_episode_3", "누누", "t", "nunu_episode_3", friendId = "nunu", weather = "night")!!
+        assertEquals(setOf("right", "wrong"), finale.climax.keys)
+        assertEquals(setOf("happy", "hidden", "bad"), finale.endings.keys)
+        assertTrue(finale.opening.any { it.text.contains("별이 뜨는 밤") })
+        // Without a report nothing about the weather is added.
+        val plain = RunScriptParser.parse(json, "piko_intro", "피코", "t", "piko_intro")!!
+        assertEquals(2, plain.opening.size)
+    }
+
+    @Test fun storyWeatherKeys() {
+        fun r(sky: com.tinyrunners.school.weather.Sky, day: Boolean) =
+            com.tinyrunners.school.weather.WeatherReport(com.tinyrunners.school.weather.City.SEOUL, sky, 10.0, day)
+        assertNull(StoryWeather.key(null))
+        assertEquals("night", StoryWeather.key(r(com.tinyrunners.school.weather.Sky.RAIN, false)))
+        assertEquals("cloudy", StoryWeather.key(r(com.tinyrunners.school.weather.Sky.FOG, true)))
+        assertEquals("storm", StoryWeather.key(r(com.tinyrunners.school.weather.Sky.STORM, true)))
+    }
+
+    @Test fun aStoryToldInTalksKeepsItsEndingOutOfTheBubbles() {
+        val p = RunStoryPlayer(script.copy(lines = emptyList()), tellEndingInRun = false)
+        p.update(85, false, true, 0.05f)
+        assertNull(p.current)
+        assertEquals(true, p.choice)
+    }
+
     @Test fun aDoubleJumpNeverGoesAboveTheCeiling() {
         val c = RunnerConfig()
         // From the ground the ceiling never cuts a double jump short (towers still need all of it).
@@ -111,7 +150,7 @@ class RunStoryTest {
             assertNotNull(finale.fork)
         }
         val fallback = RunScriptParser.parse(json, "unknown_story", "라일", "제목", null)!!
-        assertTrue("the shared script fills the name", fallback.lines.first().text.contains("라일"))
+        assertTrue("the shared script fills the name", fallback.opening.first().text.contains("라일"))
     }
 
     @Test fun engineCountsJumpsAndLandingsAndDecidesTheCrossroads() {

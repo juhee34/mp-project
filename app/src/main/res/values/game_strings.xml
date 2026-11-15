@@ -24,4 +24,10 @@
     <string name="difficulty_hard">어려움</string>
     <string name="difficulty_hardest">아주 어려움</string>
     <string name="run_missed_clue">(어딘가에서 중요한 단서를 놓친 것 같다...)</string>
+    <!-- Four-act story (발단 talk, run, 절정 talk, 결말 stretch and ending picture). -->
+    <string name="story_goal_left">보물을 향해 · 남은 거리 %1$dm</string>
+    <string name="ending_happy">해피 엔딩</string>
+    <string name="ending_hidden">히든 엔딩</string>
+    <string name="ending_bad">배드 엔딩</string>
+    <string name="ending_story">「%1$s」 끝</string>
 </resources>

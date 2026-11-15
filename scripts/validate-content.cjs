@@ -201,7 +201,15 @@ console.log('PASS: 6 background regions, floor anchors and approved source hashe
 {
  const rs=read('app/src/main/assets/content/run_stories.json');
  const ids=new Set(stories.map(s=>s.id));
- const keys=Object.keys(rs).filter(k=>!['version','note'].includes(k));
+ const shared=['version','note','goal','legendWeather','weather','finaleClimax','closing'];
+ const keys=Object.keys(rs).filter(k=>!shared.includes(k));
+ // Four acts (2026-11-16): weather lines for every sky and friend, the finale climax and the ordinary closing.
+ const skies=['clear','cloudy','rain','snow','storm','night'];
+ for(const k of skies)assert(rs.legendWeather[k]&&rs.legendWeather[k].trim(),`run_stories: legendWeather.${k}`);
+ for(const id of expected)for(const k of skies)assert(rs.weather[id]&&rs.weather[id][k]&&rs.weather[id][k].trim(),`run_stories: weather.${id}.${k}`);
+ for(const k of ['right','wrong'])assert(rs.finaleClimax[k].length>0,`run_stories: finaleClimax.${k}`);
+ for(const k of ['up','down'])assert(rs.closing[k].length>0,`run_stories: closing.${k}`);
+ assert(Number.isInteger(rs.goal)&&rs.goal>0,'run_stories: goal');
  for(const k of keys){
   assert(k==='default'||ids.has(k),`run_stories: ${k} is not a story id`);
   const s=rs[k];
@@ -211,5 +219,5 @@ console.log('PASS: 6 background regions, floor anchors and approved source hashe
   for(const e of need)assert(Array.isArray(s.endings[e])&&s.endings[e].length>0&&s.endings[e].every(l=>l.text.trim()),`run_stories: ${k} ending ${e}`);
  }
  for(const id of expected)assert(rs[`${id}_episode_3`]&&rs[`${id}_episode_3`].finale,`run_stories: ${id}_episode_3 is the finale`);
- console.log(`PASS: run stories ${keys.filter(k=>k!=='default').length}/${ids.size} story ids, ${keys.filter(k=>rs[k].finale).length} finales with 3 endings.`);
+ console.log(`PASS: run stories ${keys.filter(k=>k!=='default').length}/${ids.size} story ids in four acts, ${keys.filter(k=>rs[k].finale).length} finales with 3 endings, weather lines for 6 skies x 6 friends.`);
 }
