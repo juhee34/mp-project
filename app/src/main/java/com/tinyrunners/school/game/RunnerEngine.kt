@@ -9,14 +9,18 @@ import kotlin.random.Random
  * The engine deliberately takes no character input, so all six friends run, jump and collide identically.
  */
 data class RunnerConfig(
-    val gravity: Float = 2400f,
-    val jumpVelocity: Float = 820f,
+    /**
+     * A floaty jump (play feedback 2026-11-15, "too hard"): lower gravity and take-off speed give the same peak as
+     * before (about 140, so every box/tower/plank rule still holds) but about 0.85 s in the air instead of 0.68 s.
+     */
+    val gravity: Float = 1550f,
+    val jumpVelocity: Float = 660f,
     /** Calm start: the first [stageMeters] run at this speed with boxes only and wider gaps. */
-    val startSpeed: Float = 240f,
-    /** Every [stageMeters] the target speed rises by [stageSpeedUp], up to [maxSpeed] (reached at 800 m). The start stays fast enough that one jump clears the tallest box. */
+    val startSpeed: Float = 210f,
+    /** Every [stageMeters] the target speed rises by [stageSpeedUp], up to [maxSpeed] (reached at 800 m; gentler since 2026-11-15). The start stays fast enough that one jump clears the tallest box. */
     val stageMeters: Int = 100,
-    val stageSpeedUp: Float = 50f,
-    val maxSpeed: Float = 620f,
+    val stageSpeedUp: Float = 35f,
+    val maxSpeed: Float = 490f,
     /** How quickly the speed eases up to the next stage, in world units per second squared, so it never jolts. */
     val acceleration: Float = 60f,
     /** Extra reaction time added to gaps during the calm start (first [stageMeters]). */
@@ -80,7 +84,7 @@ data class RunnerConfig(
     val plankOverhang: Float = 50f,
     val spawnX: Float = 1000f,
     /** Seconds of reaction time added to every gap, on top of one full jump. */
-    val reactionTime: Float = 0.35f,
+    val reactionTime: Float = 0.5f,
     /** Extra random gap in seconds of travel at the current speed. */
     val gapVariance: Float = 0.9f,
     val unitsPerMeter: Float = 40f,
@@ -93,7 +97,7 @@ data class RunnerConfig(
     val restartDelay: Float = 0.6f,
     /** Second jump in the air: one per airtime, same for every character. */
     val airJumps: Int = 1,
-    val airJumpVelocity: Float = 700f,
+    val airJumpVelocity: Float = 565f,
 ) {
     val airTime: Float get() = 2f * jumpVelocity / gravity
     val apexHeight: Float get() = jumpVelocity * jumpVelocity / (2f * gravity)
