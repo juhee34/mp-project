@@ -24,6 +24,7 @@ enum class TutorialStep(val title: Int, val body: Int) {
     DOUBLE_JUMP(R.string.tutorial_double_title, R.string.tutorial_double_body),
     FLOATING(R.string.tutorial_float_title, R.string.tutorial_float_body),
     PLANK(R.string.tutorial_plank_title, R.string.tutorial_plank_body),
+    FORK(R.string.tutorial_fork_title, R.string.tutorial_fork_body),
     PICKUPS(R.string.tutorial_pickups_title, R.string.tutorial_pickups_body),
     BAG(R.string.tutorial_bag_title, R.string.tutorial_bag_body),
     PAUSE(R.string.tutorial_pause_title, R.string.tutorial_pause_body),
@@ -248,6 +249,22 @@ private class TutorialPicture(context: Context) : View(context) {
                 curve.quadTo(w * 0.87f, ground - 60 * u, w * 0.93f, ground - 12 * u)
                 dashed(canvas)
                 runner(canvas, run, w * 0.55f, ground - 52 * u, size, ghost)
+                runner(canvas, run, runnerX, ground, size)
+            }
+            TutorialStep.FORK -> {
+                // The raised path with its lavender flag, and the two routes: jump up onto it, or run on below.
+                val art = hazards
+                if (art != null) art.drawPlatform(canvas, w * 0.34f, ground - 52 * u, w * 0.86f, 16 * u)
+                fill.color = Color.rgb(176, 148, 220)
+                canvas.drawRect(w * 0.35f, ground - 92 * u, w * 0.35f + 22 * u, ground - 78 * u, fill)
+                curve.moveTo(runnerX + size * 0.6f, ground - 24 * u)
+                curve.quadTo(w * 0.3f, ground - 104 * u, w * 0.42f, ground - 64 * u)
+                curve.lineTo(w * 0.9f, ground - 64 * u)
+                curve.moveTo(runnerX + size * 0.6f, ground - 10 * u)
+                curve.lineTo(w * 0.92f, ground - 10 * u)
+                dashed(canvas)
+                runner(canvas, run, w * 0.62f, ground - 52 * u, size, ghost)
+                runner(canvas, run, w * 0.62f, ground, size, ghost)
                 runner(canvas, run, runnerX, ground, size)
             }
             TutorialStep.PICKUPS -> {

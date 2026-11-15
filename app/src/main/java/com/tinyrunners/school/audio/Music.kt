@@ -52,11 +52,39 @@ object Music {
         } catch (e: Exception) {
             Log.w("Music", "cannot play $resId", e); null
         } ?: return
+        // A new song starts plain (the crossroads colour belongs to one run).
+        equalizer?.release(); equalizer = null
         player = next
         playing = resId
         // Cross-fade: the new song comes up while the old one goes down, so changes never cut abruptly.
         fade(next, AudioSettings(context).musicGain, start = true)
         current?.let { old -> fade(old, 0f) { old.release() } }
+    }
+
+    private var equalizer: android.media.audiofx.Equalizer? = null
+
+    /**
+     * The story crossroads changes the music's colour (an equalizer on the same song, since each song is one mixed
+     * file without separate instruments): the upper route [UP] brightens it (high and low bands up, as if more
+     * instruments joined), the lower route [DOWN] makes it soft and distant (high bands well down, the bass kept).
+     * Null puts it back as it was. Any failure leaves the music as it is.
+     */
+    fun setRoute(up: Boolean?) {
+        val p = player ?: return
+        try {
+            if (up == null) { equalizer?.release(); equalizer = null; return }
+            val eq = equalizer ?: android.media.audiofx.Equalizer(0, p.audioSessionId).also { equalizer = it }
+            val bands = eq.numberOfBands.toInt()
+            val (lo, hi) = eq.bandLevelRange.let { it[0].toInt() to it[1].toInt() }
+            for (b in 0 until bands) {
+                val t = if (bands > 1) b / (bands - 1f) else 0f   // 0 = lowest band, 1 = highest
+                val db = if (up) (if (t < 0.25f) 4f else if (t > 0.6f) 6f else 2f) else (if (t < 0.25f) 2f else -12f * t)
+                eq.setBandLevel(b.toShort(), (db * 100).toInt().coerceIn(lo, hi).toShort())
+            }
+            eq.enabled = true
+        } catch (e: Exception) {
+            Log.w("Music", "route colour unavailable", e)
+        }
     }
 
     /** Sets the playing song to the volume chosen in settings straight away (while a slider moves). */

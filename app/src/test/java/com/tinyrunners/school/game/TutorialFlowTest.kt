@@ -8,15 +8,15 @@ import org.junit.Test
 class TutorialFlowTest {
     @Test fun walksThroughAllPagesInOrderThenFinishes() {
         val flow = TutorialFlow()
-        assertEquals(7, flow.count)
+        assertEquals(8, flow.count)
         val seen = mutableListOf<TutorialStep>()
         while (!flow.finished) { seen += flow.current; flow.next() }
-        assertEquals(listOf(TutorialStep.JUMP, TutorialStep.DOUBLE_JUMP, TutorialStep.FLOATING, TutorialStep.PLANK, TutorialStep.PICKUPS, TutorialStep.BAG, TutorialStep.PAUSE), seen)
+        assertEquals(listOf(TutorialStep.JUMP, TutorialStep.DOUBLE_JUMP, TutorialStep.FLOATING, TutorialStep.PLANK, TutorialStep.FORK, TutorialStep.PICKUPS, TutorialStep.BAG, TutorialStep.PAUSE), seen)
     }
 
     @Test fun onlyTheLastPageIsLast() {
         val flow = TutorialFlow()
-        repeat(6) { assertFalse(flow.isLast); flow.next() }
+        repeat(7) { assertFalse(flow.isLast); flow.next() }
         assertTrue(flow.isLast)
         assertFalse(flow.finished)
     }
@@ -30,11 +30,12 @@ class TutorialFlowTest {
 
     @Test fun guideCoversEveryObstacleKind() {
         // If a new obstacle type is added, the guide should get a page for it too.
-        assertEquals(4, ObstacleKind.entries.size)
+        assertEquals(5, ObstacleKind.entries.size)
         assertTrue(TutorialStep.JUMP in TutorialStep.entries)
         assertTrue(TutorialStep.DOUBLE_JUMP in TutorialStep.entries)
         assertTrue(TutorialStep.FLOATING in TutorialStep.entries)
         assertTrue(TutorialStep.PLANK in TutorialStep.entries)
+        assertTrue(TutorialStep.FORK in TutorialStep.entries)
         // Coins and the friends' items on the road are explained too.
         assertTrue(TutorialStep.PICKUPS in TutorialStep.entries)
     }

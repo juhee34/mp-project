@@ -116,10 +116,9 @@ class ResultActivity : Activity() {
             StoryRunSignal.finishedFor = storyId
             add(getString(R.string.result_continue_story), primary = true) { finish() }
         }
-        val again = add(getString(R.string.result_again), primary = storyId == null) {
-            // A short "again!" line from the friend, then the run.
-            startActivity(com.tinyrunners.school.talk.TalkActivity.retry(this, character.id,
-                GameActivity.intent(this, character.id).putExtra(GameActivity.EXTRA_STORY_ID, storyId)))
+        add(getString(R.string.result_again), primary = storyId == null) {
+            // Straight back on the road: the story goes on during the run (no talk window in between).
+            startActivity(GameActivity.intent(this, character.id).putExtra(GameActivity.EXTRA_STORY_ID, storyId))
             finish()
         }
         // A square picture card of this run (friend, distance, score, the day's weather, their word) for other apps.
@@ -134,8 +133,6 @@ class ResultActivity : Activity() {
                 android.widget.Toast.makeText(this, R.string.share_failed, android.widget.Toast.LENGTH_SHORT).show()
             }
         }
-        // Back to the village: straight to the friend's next story when enough items are in the bag.
-        val toStory = add(getString(R.string.result_to_village), primary = false) { openVillage(character.id, null) }
         add(getString(R.string.result_shop), primary = false) {
             startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, character.id))
         }
@@ -175,25 +172,7 @@ class ResultActivity : Activity() {
         BagButton.floatIn(frame)
 
         val store = ProgressStore.forCurrentUser(this)
-        val item = com.tinyrunners.school.quest.QuestItems.of(character.id)
-        if (item != null && storyId == null) {
-            com.tinyrunners.school.quest.ItemBagStore.forCurrentUser(this).load { bag ->
-                if (isDestroyed) return@load
-                val have = bag.getOrNull()?.count(character.id) ?: return@load
-                store.loadAll { all ->
-                    if (isDestroyed) return@loadAll
-                    val read = all.getOrNull().orEmpty().values.flatMap { it.readStoryIds }.toSet()
-                    val next = com.tinyrunners.school.story.Story.nextUnread(
-                        com.tinyrunners.school.story.StoryRepository.load(this), character.id, read) ?: return@loadAll
-                    if (have >= com.tinyrunners.school.quest.QuestRules.NEEDED) {
-                        toStory.text = getString(R.string.result_give_items, character.name, getString(item.name))
-                        toStory.setOnClickListener { openVillage(character.id, next.id) }
-                        ScoreBoard.restyle(toStory, primary = true)
-                        ScoreBoard.restyle(again, primary = false)
-                    }
-                }
-            }
-        }
+        // (The "스토리 진행으로 / 아이템 전하기" button left with the talk windows: the story is told during the run.)
         store.record(run) { result ->
             if (isDestroyed) return@record
             result.onSuccess { outcome ->

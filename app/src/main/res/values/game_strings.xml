@@ -12,4 +12,16 @@
     <string name="game_hud">%1$dm · 점수 %2$d</string>
     <string name="game_placeholder_art">임시 그림</string>
     <string name="game_pause_button">일시정지</string>
+    <!-- The running story's crossroads (RunStory): jump onto the raised path, or keep running below. -->
+    <string name="run_route_up">▲ 점프하면</string>
+    <string name="run_route_down">▶ 그대로 가면</string>
+    <string name="run_story_done">「%1$s」 이야기를 봤어요</string>
+    <!-- Weather difficulty (WeatherDifficulty): shown under the weather in the top bar. -->
+    <string name="difficulty_hud">길: %1$s</string>
+    <string name="difficulty_easy">쉬움</string>
+    <string name="difficulty_normal">보통</string>
+    <string name="difficulty_harder">조금 어려움</string>
+    <string name="difficulty_hard">어려움</string>
+    <string name="difficulty_hardest">아주 어려움</string>
+    <string name="run_missed_clue">(어딘가에서 중요한 단서를 놓친 것 같다...)</string>
 </resources>

@@ -150,3 +150,14 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - 엽서: `app/src/main/assets/content/postcards.json` — `postcards[]`: `id`(친구id_번호), `characterId`, `title`, `back`(뒷면 친구 말), `draft`(B 임시 문구면 true), `condition`{`type`: `meters`(함께 달린 거리 ≥ value) | `stories`(그 친구 마을 이야기 모두, value 0) | `weather`(특별한 날씨 달리기 ≥ value), `value`}. 친구마다 2장 이상. validate-content가 검사.
 - 받은 엽서는 저장하지 않고 진행 기록에서 계산(PostcardRules.earnedIds) — 기록이 있으면 기기를 바꿔도 같음. 새 엽서 안내를 이미 보여 준 id만 기기에 둠(PostcardSeen).
 - 엽서첩 위치: 가방 화면 위쪽 "엽서첩" 버튼(B 기본값, A와 다르게 정하면 버튼만 옮김).
+
+
+## 달리며 흐르는 이야기와 보물 전설 엔딩 (2026-11-16, B)
+- `app/src/main/assets/content/run_stories.json`: 키 = 마을 이야기 id(stories.json, 24개 전부) — 읽음 기록(readStoryIds)을 그대로 씀. `default`는 대본 없는 이야기용({name}, {title} 채움).
+  - `lines[]`: `at`(달린 m), `who`(friend = 머리 위 말풍선 | narrator = 위쪽 자막), `text`.
+  - `fork`: `at`(갈림길이 생기는 m, 모든 줄 뒤), `question`, `up`(점프해 높은 길), `down`(그대로 아래 길), `correct`(그 화의 옳은 길 up|down).
+  - `endings`: 보통 화는 `up`/`down`(틀린 길이면 "단서를 놓친 것 같다" 자막이 덧붙음), 마지막 화(`finale: true`, episode_3)는 `happy`/`hidden`/`bad`.
+- 엔딩 규칙(EndingRule): 앞 화들과 마지막 화의 길이 모두 옳으면 낮 = 해피, 밤 = 히든(실제 밤 또는 설정에서 고른 밤). 하나라도 틀리면 배드. 고른 길과 본 엔딩은 계정별로 기기에 저장(RunRoutes, SharedPreferences "routes_<uid>").
+- 고른 길에 따라 달리는 음악 색이 바뀜(Music.setRoute: 같은 곡에 이퀄라이저 — 위 = 밝게, 아래 = 멀고 부드럽게). 곡이 악기별로 나뉜 파일이 아니라 악기 구성 자체를 바꾸지는 못함.
+- 날씨 난이도(Difficulty.of): 맑은 낮 쉬움(속도 ×0.88, 여유 +0.2초) … 밤의 비·뇌우 아주 어려움(×1.18, −0.1초). 모든 친구 동일, 가장 어려워도 상자는 한 번 점프로 넘음(RunStoryTest).
+- validate-content: 24개 이야기 id 모두 대본, 갈림길이 줄 뒤, 엔딩 키, 마지막 화 3엔딩 검사.

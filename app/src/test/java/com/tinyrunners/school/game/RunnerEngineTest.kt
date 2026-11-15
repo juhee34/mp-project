@@ -31,6 +31,7 @@ class RunnerEngineTest {
                 else if (!grounded && airJumpsUsed == 0 && playerVy <= 0f) tap()
             }
             ObstacleKind.FLOAT -> Unit
+            ObstacleKind.FORK -> Unit
             // Jump just before the spikes, onto the plank; never jump again while walking along it.
             ObstacleKind.SPIKES -> {
                 val pr = c.playerX + c.playerSize - c.playerInset
@@ -152,7 +153,8 @@ class RunnerEngineTest {
                 if (o.kind != ObstacleKind.BOX) firstNonBoxAt = minOf(firstNonBoxAt, engine.meters.toFloat())
             }
         }
-        assertEquals(ObstacleKind.entries.toSet(), seen)
+        // A story crossroads (FORK) only comes when a story schedules one.
+        assertEquals(ObstacleKind.entries.toSet() - ObstacleKind.FORK, seen)
         assertTrue("towers and bars only after the calm start", firstNonBoxAt >= e.config.mixedAfterMeters)
     }
 

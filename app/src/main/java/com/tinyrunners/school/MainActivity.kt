@@ -46,7 +46,12 @@ class MainActivity : Activity() {
                 }
             }
         }
+        // 스토리 진행 left the top bar (the story is told during runs); the story book (이야기 모음) sits before the bag.
+        findViewById<View>(R.id.menu_stories).visibility = View.GONE
         (findViewById<View>(R.id.coin_badge).parent as? android.view.ViewGroup)?.let {
+            it.addView(com.tinyrunners.school.ui.BookButton.create(this) {
+                startActivity(Intent(this, com.tinyrunners.school.story.StoryCollectionActivity::class.java))
+            })
             it.addView(com.tinyrunners.school.ui.TopPill.divider(this))
             com.tinyrunners.school.ui.BagButton.appendTo(it)
         }
@@ -133,8 +138,8 @@ class MainActivity : Activity() {
     }
 
     private fun onStartRun(characterId: String) {
-        // Every run opens with a talk: the long one the first time with a friend, short lines afterwards.
-        startActivity(TalkActivity.intent(this, characterId))
+        // Straight onto the road: the friend's story is told during the run (speech bubbles, a crossroads).
+        startActivity(com.tinyrunners.school.game.GameActivity.intent(this, characterId))
     }
 
     @Deprecated("Uses the Activity back callback for the character screen stack.")

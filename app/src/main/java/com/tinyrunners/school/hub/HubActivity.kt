@@ -43,20 +43,18 @@ class HubActivity : Activity() {
             frame.place(MockupFrame.partButton(this, frame, part, getString(label), ink, px) {
                 if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click()
             }, rect[0], rect[1], rect[2], rect[3])
-        add(R.drawable.ui_menu_btn_primary, R.string.hub_story, CREAM, 44f, intArrayOf(620, 315, 1052, 402)) {
-            startActivity(PrologueActivity.forStory(this))
-        }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_game, DEEP_GREEN, 42f, intArrayOf(629, 411, 1044, 483)) {
+        // 스토리 진행하기 now is the game: choose a friend, then the story is told while running (게임하기 merged in).
+        add(R.drawable.ui_menu_btn_primary, R.string.hub_story, CREAM, 44f, intArrayOf(620, 330, 1052, 417)) {
             startActivity(MainActivity.selectionIntent(this))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_shop, DEEP_GREEN, 42f, intArrayOf(628, 491, 1044, 565)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_shop, DEEP_GREEN, 42f, intArrayOf(628, 441, 1044, 515)) {
             startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_tutorial, DEEP_GREEN, 42f, intArrayOf(628, 573, 1044, 648)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_tutorial, DEEP_GREEN, 42f, intArrayOf(628, 539, 1044, 613)) {
             // A practice run with 라일 that always starts with the game guide.
             startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_settings, DEEP_GREEN, 42f, intArrayOf(627, 656, 1044, 732)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_settings, DEEP_GREEN, 42f, intArrayOf(628, 637, 1044, 711)) {
             startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java))
         }
         // The six friends from their game sprites (the picture's own drawings were taken out), three each side.

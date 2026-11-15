@@ -196,3 +196,20 @@ console.log('PASS: 6 background regions, floor anchors and approved source hashe
  }
  console.log(`PASS: ${pc.length} postcards (${pc.filter(p=>p.draft).length} with draft text).`);
 }
+
+// Stories told while running (run_stories.json, 2026-11-16): one per village story id, finales with three endings.
+{
+ const rs=read('app/src/main/assets/content/run_stories.json');
+ const ids=new Set(stories.map(s=>s.id));
+ const keys=Object.keys(rs).filter(k=>!['version','note'].includes(k));
+ for(const k of keys){
+  assert(k==='default'||ids.has(k),`run_stories: ${k} is not a story id`);
+  const s=rs[k];
+  for(const l of s.lines){assert(Number.isInteger(l.at)&&l.at>=0&&l.text.trim()&&['friend','narrator'].includes(l.who),`run_stories: ${k} line`);}
+  assert(s.fork&&s.fork.question&&s.fork.up&&s.fork.down&&s.fork.at>Math.max(...s.lines.map(l=>l.at)),`run_stories: ${k} fork after its lines`);
+  const need=s.finale?['happy','hidden','bad']:['up','down'];
+  for(const e of need)assert(Array.isArray(s.endings[e])&&s.endings[e].length>0&&s.endings[e].every(l=>l.text.trim()),`run_stories: ${k} ending ${e}`);
+ }
+ for(const id of expected)assert(rs[`${id}_episode_3`]&&rs[`${id}_episode_3`].finale,`run_stories: ${id}_episode_3 is the finale`);
+ console.log(`PASS: run stories ${keys.filter(k=>k!=='default').length}/${ids.size} story ids, ${keys.filter(k=>rs[k].finale).length} finales with 3 endings.`);
+}

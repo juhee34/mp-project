@@ -72,6 +72,20 @@ class RunnerView(
     /** Called once each time a run ends. */
     var onRunOver: (() -> Unit)? = null
 
+    /** Dust at the feet and the landing shake (looks only). */
+    private val feel = RunFeel()
+    private var lastJumps = 0
+    private var lastLands = 0
+    private val storyPainter = RunStoryPainter(resources.displayMetrics.density)
+    /** The story told during this run (speech bubble, subtitles, crossroads), or null for a run without one. */
+    var story: RunStoryPlayer? = null
+    private var toldChoice: Boolean? = null
+    private var toldFinished = false
+    /** Called once when the crossroads is decided (true = the upper route). */
+    var onForkChosen: ((Boolean) -> Unit)? = null
+    /** Called once when the chosen ending has been told to the end. */
+    var onStoryFinished: (() -> Unit)? = null
+
     init {
         isFocusable = true
         contentDescription = context.getString(R.string.game_ready_title, character.name)
@@ -95,9 +109,21 @@ class RunnerView(
             val dt = (frameTimeNanos - lastFrameNanos) / 1_000_000_000f
             engine.update(dt)
             if (engine.phase != RunnerEngine.Phase.PAUSED) animTime += min(dt, 0.05f)
+            if (engine.phase == RunnerEngine.Phase.RUNNING) {
+                feel.update(min(dt, 0.05f))
+                feelEvents()
+                story?.let { s ->
+                    s.update(engine.meters, engine.forkAhead, engine.forkChoice, min(dt, 0.05f))
+                    val chosen = s.choice
+                    if (chosen != null && toldChoice == null) { toldChoice = chosen; onForkChosen?.invoke(chosen) }
+                    if (s.finished && !toldFinished) { toldFinished = true; onStoryFinished?.invoke() }
+                }
+            }
         }
         lastFrameNanos = frameTimeNanos
-        if (engine.phase == RunnerEngine.Phase.READY && lastPhase != RunnerEngine.Phase.READY) animTime = 0f
+        if (engine.phase == RunnerEngine.Phase.READY && lastPhase != RunnerEngine.Phase.READY) {
+            animTime = 0f; feel.clear(); lastJumps = 0; lastLands = 0
+        }
         if (engine.phase == RunnerEngine.Phase.OVER && lastPhase != RunnerEngine.Phase.OVER) {
             com.tinyrunners.school.audio.Haptics.crash(this)
             onRunOver?.invoke()
@@ -107,6 +133,16 @@ class RunnerView(
         lastPhase = engine.phase
         invalidate()
         Choreographer.getInstance().postFrameCallback(this)
+    }
+
+    /** Dust and shake for a new jump or landing since the last frame. */
+    private fun feelEvents() {
+        val c = engine.config
+        val feetX = sx(c.playerX + c.playerSize / 2f)
+        val px = spriteScale.toFloat()
+        if (engine.jumpCount > lastJumps) feel.jump(feetX, sy(engine.floorY), px, DUST)
+        if (engine.landCount > lastLands) feel.land(feetX, sy(engine.floorY), px, DUST, hard = engine.lastLandSpeed > c.jumpVelocity * 0.95f)
+        lastJumps = engine.jumpCount; lastLands = engine.landCount
     }
 
     override fun onAttachedToWindow() { super.onAttachedToWindow(); startLoop() }
@@ -148,6 +184,9 @@ class RunnerView(
         val w = width.toFloat()
         val h = height.toFloat()
         canvas.drawColor(skyColor())
+        // The landing shake moves the whole world by a pixel or two (never the top bar).
+        canvas.save()
+        canvas.translate(feel.shakeX().roundToInt().toFloat(), feel.shakeY().roundToInt().toFloat())
         val background = storyBackground
         if (background != null) {
             background.draw(canvas, w, h, groundY, engine.distance, scale)
@@ -162,9 +201,12 @@ class RunnerView(
         for (o in engine.obstacles) drawObstacle(canvas, o)
         drawPickups(canvas)
         drawRunner(canvas)
+        feel.draw(canvas)
         drawCoinPops(canvas)
         drawWeatherFront(canvas, w)
+        canvas.restore()
         drawHud(canvas, w)
+        if (engine.phase == RunnerEngine.Phase.RUNNING || engine.phase == RunnerEngine.Phase.PAUSED) drawStory(canvas, w)
 
         when (engine.phase) {
             RunnerEngine.Phase.READY -> overlay(canvas, w, h,
@@ -370,7 +412,47 @@ class RunnerView(
             }
             ObstacleKind.FLOAT -> hazardArt?.drawAir(canvas, l, t, r, b) ?: drawThornBar(canvas, l, t, r, b)
             ObstacleKind.SPIKES -> drawSpikeField(canvas, o)
+            ObstacleKind.FORK -> drawFork(canvas, o)
         }
+    }
+
+    /** The story crossroads: a raised path on posts over safe ground, with an ↑ sign at its start. */
+    private fun drawFork(canvas: Canvas, o: Obstacle) {
+        val l = sx(o.x); val r = sx(o.x + o.width)
+        val top = sy(o.plankTop); val bottom = sy(o.plankTop - engine.config.plankThickness)
+        val ground = sy(0f)
+        fill.color = PLANK_EDGE
+        var post = l + 18f * scale
+        while (post < r - 10f * scale) { canvas.drawRect(post, bottom, post + 4f * scale, ground, fill); post += 120f * scale }
+        val art = hazardArt
+        if (art != null) art.drawPlatform(canvas, l, top, r, engine.config.plankThickness * 2.2f * scale)
+        else {
+            canvas.drawRect(l, top, r, bottom, fill)
+            val p = 2f * scale
+            fill.color = PLANK; canvas.drawRect(l + p, top + p, r - p, bottom - p, fill)
+            fill.color = PLANK_TOP; canvas.drawRect(l + p, top + p, r - p, top + p * 2f, fill)
+        }
+        // A little lavender flag marks the upper route.
+        fill.color = PLANK_EDGE; canvas.drawRect(l + 6f * scale, top - 40f * scale, l + 9f * scale, top, fill)
+        fill.color = FORK_FLAG; canvas.drawRect(l + 9f * scale, top - 40f * scale, l + 30f * scale, top - 26f * scale, fill)
+    }
+
+    /** The running story: a bubble over the friend, the narrator under the top bar, or the crossroads question. */
+    private fun drawStory(canvas: Canvas, w: Float) {
+        val s = story ?: return
+        val d = resources.displayMetrics.density
+        val top = goRect.bottom + 8f * d
+        val fork = s.script.fork
+        if (s.asking && fork != null) {
+            storyPainter.question(canvas, fork, top, w, context.getString(R.string.run_route_up), context.getString(R.string.run_route_down))
+            return
+        }
+        val line = s.current ?: return
+        if (line.narrator) { storyPainter.subtitle(canvas, line.text, top, w); return }
+        val c = engine.config
+        val headX = sx(c.playerX + c.playerSize / 2f)
+        val headY = sy(engine.playerY + c.playerSize * 0.75f)
+        storyPainter.bubble(canvas, line.text, headX, headY, w, minTop = top)
     }
 
     private val shape = android.graphics.Path()
@@ -543,6 +625,8 @@ class RunnerView(
                 else -> context.getString(R.string.weather_hud, context.getString(it.city.label), context.getString(it.sky.label), it.temperatureC)
             }
             canvas.drawText(label, right, 40f * d, text)
+            // Under it, how hard today's road is (clear day easiest, a stormy night hardest).
+            canvas.drawText(context.getString(R.string.difficulty_hud, context.getString(Difficulty.of(it).label)), right, 62f * d, text)
             text.textAlign = Paint.Align.LEFT
         }
         text.alpha = 255
@@ -644,6 +728,9 @@ class RunnerView(
         val SPIKE_BASE = Color.rgb(84, 74, 100)
         val PLANK = Color.rgb(196, 146, 94)
         val PLANK_TOP = Color.rgb(230, 186, 126)
+        /** Pale earth dust at the feet, and the lavender flag on a story crossroads. */
+        val DUST = Color.rgb(222, 204, 168)
+        val FORK_FLAG = Color.rgb(176, 148, 220)
         val PLANK_EDGE = Color.rgb(98, 64, 42)
         val ROPE = Color.rgb(150, 112, 74)
         val BUTTON_ON = Color.rgb(48, 83, 65)

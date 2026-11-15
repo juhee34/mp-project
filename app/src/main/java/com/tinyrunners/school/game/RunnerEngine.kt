@@ -98,6 +98,9 @@ data class RunnerConfig(
     /** Second jump in the air: one per airtime, same for every character. */
     val airJumps: Int = 1,
     val airJumpVelocity: Float = 565f,
+    /** Story crossroads: the raised path's top (one jump reaches it) and how long it lasts in seconds of running. */
+    val forkTop: Float = 95f,
+    val forkSeconds: Float = 2.6f,
 ) {
     val airTime: Float get() = 2f * jumpVelocity / gravity
     val apexHeight: Float get() = jumpVelocity * jumpVelocity / (2f * gravity)
@@ -144,7 +147,11 @@ data class RunnerConfig(
         speed * ((if (nearTower) doubleAirTime else airTime) + reactionTime) + playerSize
 }
 
-enum class ObstacleKind { BOX, TOWER, FLOAT, SPIKES }
+/**
+ * FORK: a story crossroads (RunStory). A long raised path over safe ground: jumping up onto it chooses the upper
+ * route, running on below chooses the lower one. It never hurts (height 0); only where the runner is decides.
+ */
+enum class ObstacleKind { BOX, TOWER, FLOAT, SPIKES, FORK }
 
 data class Obstacle(
     var x: Float,
@@ -201,6 +208,25 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     var collected = 0; private set
     /** Bonus coins picked up on the road in this run (distance coins are counted separately, see ShopRules). */
     var coins = 0; private set
+    /** Count of jumps (ground and air) and of landings, so the view can raise dust and shake once per event. */
+    var jumpCount = 0; private set
+    var landCount = 0; private set
+    /** How fast the feet were falling at the last landing (world units/s), for how hard it feels. */
+    var lastLandSpeed = 0f; private set
+    private var inAir = false
+
+    /** Metres at which a story crossroads should appear (null: none), and which way the runner went (true = up). */
+    private var forkAt: Int? = null
+    var forkChoice: Boolean? = null; private set
+
+    /** A crossroads is on the road ahead and not decided yet (its question is shown). */
+    val forkAhead: Boolean get() = forkChoice == null && _obstacles.any { it.kind == ObstacleKind.FORK }
+
+    /** Today's weather difficulty (WeatherDifficulty): scales the speed and the room between obstacles. */
+    var difficulty: Difficulty = Difficulty.NORMAL
+
+    /** Asks for a story crossroads at [meters] in this run (the next spawn after that distance). */
+    fun scheduleFork(meters: Int) { forkAt = meters; forkChoice = null }
 
     /** Height the runner is standing on: 0 on the ground, or a plank's top. */
     var floorY = 0f; private set
@@ -243,11 +269,13 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         if (grounded) {
             airJumpsUsed = 0
             playerVy = config.jumpVelocity
+            jumpCount++
             return true
         }
         if (airJumpsUsed >= config.airJumps) return false
         airJumpsUsed++
         playerVy = config.airJumpVelocity
+        jumpCount++
         return true
     }
 
@@ -258,6 +286,8 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         distance = 0f; cleared = 0; elapsed = 0f
         accumulator = 0f; overTime = 0f
         airJumpsUsed = 0
+        jumpCount = 0; landCount = 0; lastLandSpeed = 0f; inAir = false
+        forkAt = null; forkChoice = null
         _obstacles.clear()
         _pickups.clear(); collected = 0; coins = 0
         // First obstacle spawns after about one second of running, then needs a few more seconds to arrive.
@@ -268,7 +298,7 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     private fun tick(dt: Float) {
         elapsed += dt
         // Speed steps up every 100 m (eased, not instant); the first 100 m stay at the calm start speed.
-        speed = min(config.targetSpeed(meters), speed + config.acceleration * dt)
+        speed = min(config.targetSpeed(meters) * difficulty.speed, speed + config.acceleration * dt)
 
         val previousY = playerY
         playerVy -= config.gravity * dt
@@ -283,7 +313,12 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
 
         // Land on the ground or on a plank the feet were above a moment ago; walking off a plank's end falls.
         floorY = supportBelow(previousY)
-        if (playerY <= floorY) { playerY = floorY; playerVy = 0f; airJumpsUsed = 0 }
+        if (playerY <= floorY) {
+            if (inAir) { landCount++; lastLandSpeed = -playerVy }
+            playerY = floorY; playerVy = 0f; airJumpsUsed = 0; inAir = false
+        } else {
+            inAir = true
+        }
 
         val last = _obstacles.lastOrNull()
         val clearSinceLast = if (last == null) Float.MAX_VALUE else config.spawnX - (last.x + last.width)
@@ -297,6 +332,13 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
             if (!p.taken && pr > p.x && pl < p.x + p.size && pb < p.bottom + p.size && pt > p.bottom) {
                 p.taken = true
                 if (p.coin) coins++ else collected++
+            }
+        }
+        // A crossroads is decided where its middle passes the runner: on the raised path (or above it) = up.
+        for (o in _obstacles) {
+            if (o.kind != ObstacleKind.FORK || forkChoice != null) continue
+            if (o.x + o.width / 2f <= config.playerX + config.playerSize / 2f) {
+                forkChoice = playerY >= o.plankTop - LANDING_TOLERANCE
             }
         }
         for (o in _obstacles) {
@@ -337,8 +379,11 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
                 bottom = between(c.floatMinBottom, c.floatMaxBottom), kind = ObstacleKind.FLOAT)
             ObstacleKind.SPIKES -> Obstacle(c.spawnX, c.spikeWidth(speed), c.spikeHeight, kind = ObstacleKind.SPIKES,
                 plankTop = between(c.plankMinTop, c.plankMaxTop), plankOverhang = c.plankOverhang)
+            ObstacleKind.FORK -> Obstacle(c.spawnX, speed * c.forkSeconds, 0f, kind = ObstacleKind.FORK, plankTop = c.forkTop)
         }
-        nextKind = if (meters < c.mixedAfterMeters) ObstacleKind.BOX else {
+        if (kind == ObstacleKind.FORK) forkAt = null
+        val fork = forkAt
+        nextKind = if (fork != null && meters >= fork) ObstacleKind.FORK else if (meters < c.mixedAfterMeters) ObstacleKind.BOX else {
             val r = random.nextFloat()
             when {
                 r < c.towerChance -> ObstacleKind.TOWER
@@ -348,10 +393,12 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
             }
         }
         val nearTower = kind == ObstacleKind.TOWER || nextKind == ObstacleKind.TOWER
-        nextGap = c.minGap(speed, nearTower) + random.nextFloat() * c.gapVariance * speed +
+        nextGap = c.minGap(speed, nearTower) + random.nextFloat() * c.gapVariance * speed + difficulty.reaction * speed +
             (if (meters < c.stageMeters) c.calmExtraReaction * speed else 0f) +
             // After spikes the runner first walks off the plank's far end and drops to the ground.
-            (if (kind == ObstacleKind.SPIKES) c.plankOverhang + speed * kotlin.math.sqrt(2f * c.plankMaxTop / c.gravity) else 0f)
+            (if (kind == ObstacleKind.SPIKES) c.plankOverhang + speed * kotlin.math.sqrt(2f * c.plankMaxTop / c.gravity) else 0f) +
+            // After a crossroads the runner may drop from the raised path, and the story needs a quiet moment.
+            (if (kind == ObstacleKind.FORK) speed * (kotlin.math.sqrt(2f * c.forkTop / c.gravity) + 1.2f) else 0f)
         placePickup(_obstacles.last())
     }
 
