@@ -169,7 +169,24 @@ class GameActivity : Activity() {
                     story?.let { routes.set(it.id, up) }
                     com.tinyrunners.school.audio.Music.setRoute(up)
                 }
+                var asked = false
                 view.onTick = tick@{
+                    // 2. 위기: when the crossroads comes on screen, stop and ask with two buttons.
+                    val ahead = engine.forkDistance
+                    if (!asked && ahead != null && ahead <= FORK_ASK_AHEAD) {
+                        val fork = script.fork
+                        val root = stage
+                        if (fork != null && root != null) {
+                            asked = true
+                            engine.pause()
+                            view.cinematic = true
+                            root.addView(ForkChoiceView(this, fork) { up ->
+                                view.cinematic = false
+                                engine.chooseFork(up)
+                                engine.resume()
+                            }, minOf(1, root.childCount), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+                        }
+                    }
                     val chosen = choice ?: return@tick
                     // 3. 절정: a few metres after the crossroads, once the bubbles have finished.
                     // (Never later than CLIMAX_LATEST_METERS: any bubble still waiting is dropped then.)
@@ -192,7 +209,10 @@ class GameActivity : Activity() {
                         engine.pause()
                         view.goal = null
                         val ending = if (script.finale) EndingRule.pick(allRight(chosen), night = view.weather?.isDay == false) else (if (chosen) "up" else "down")
-                        val lines = if (script.finale) script.endings[ending].orEmpty() else script.closing[ending].orEmpty()
+                        // A wrong route in an ordinary story ends its talk with a hint (never told at the choice itself).
+                        val missed = !script.finale && script.fork?.correct.let { it != null && it != chosen }
+                        val lines = if (script.finale) script.endings[ending].orEmpty()
+                            else script.closing[ending].orEmpty() + if (missed) listOf(RunLine(0, true, getString(com.tinyrunners.school.R.string.run_missed_clue))) else emptyList()
                         val root = stage ?: return@tick
                         val picture = EndingPicture(this, character.id, ending, script.title)
                         root.addView(picture, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
@@ -233,6 +253,8 @@ class GameActivity : Activity() {
         private const val RESULT_DELAY_MS = 900L
         /** Metres between the crossroads and the climax talk. */
         private const val CLIMAX_AFTER_METERS = 8
+        /** The crossroads question comes up when the raised path is this close (world units, about two seconds). */
+        private const val FORK_ASK_AHEAD = 420f
         private const val CLIMAX_LATEST_METERS = 25
         /** The last stretch runs this much faster than the road would. */
         private const val FINAL_STRETCH = 1.06f

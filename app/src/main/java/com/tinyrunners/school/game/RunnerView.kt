@@ -204,11 +204,12 @@ class RunnerView(
         drawWeatherBehind(canvas, w)
         for (o in engine.obstacles) drawObstacle(canvas, o)
         drawPickups(canvas)
+        // The top bar is drawn before the runner, so a high jump shows over it instead of disappearing under it.
+        drawHud(canvas, w)
         drawRunner(canvas)
         feel.draw(canvas)
         drawCoinPops(canvas)
         drawWeatherFront(canvas, w)
-        drawHud(canvas, w)
         if (engine.phase == RunnerEngine.Phase.RUNNING || engine.phase == RunnerEngine.Phase.PAUSED) drawStory(canvas, w)
 
         if (!cinematic) when (engine.phase) {
@@ -464,11 +465,7 @@ class RunnerView(
         if (cinematic) return
         val d = resources.displayMetrics.density
         val top = goRect.bottom + 8f * d + if (goal != null) 42f * d else 0f
-        val fork = s.script.fork
-        if (s.asking && fork != null) {
-            storyPainter.question(canvas, fork, top, w, context.getString(R.string.run_route_up), context.getString(R.string.run_route_down))
-            return
-        }
+        // (The crossroads question is a paused choice with two buttons now — ForkChoiceView in GameActivity.)
         val line = s.current ?: return
         if (line.narrator) { storyPainter.subtitle(canvas, line.text, top, w); return }
         val c = engine.config

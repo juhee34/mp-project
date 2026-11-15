@@ -227,6 +227,16 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
     /** A crossroads is on the road ahead and not decided yet (its question is shown). */
     val forkAhead: Boolean get() = forkChoice == null && _obstacles.any { it.kind == ObstacleKind.FORK }
 
+    /** How far ahead of the runner the undecided crossroads starts (world units), or null. */
+    val forkDistance: Float? get() = if (forkChoice != null) null else
+        _obstacles.firstOrNull { it.kind == ObstacleKind.FORK }?.let { it.x - (config.playerX + config.playerSize - config.playerInset) }
+
+    /** Board the raised path by itself when the upper route was picked with a button. */
+    private var autoBoard = false
+
+    /** The route picked on the crossroads question (true = up); the runner then takes it without a jump. */
+    fun chooseFork(up: Boolean) { forkChoice = up; autoBoard = up }
+
     /** Today's weather difficulty (WeatherDifficulty): scales the speed and the room between obstacles. */
     var difficulty: Difficulty = Difficulty.NORMAL
     /** The story's last stretch runs a little faster, like a final round (1 = normal). */
@@ -294,7 +304,7 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
         accumulator = 0f; overTime = 0f
         airJumpsUsed = 0
         jumpCount = 0; landCount = 0; lastLandSpeed = 0f; inAir = false
-        forkAt = null; forkChoice = null
+        forkAt = null; forkChoice = null; autoBoard = false
         _obstacles.clear()
         _pickups.clear(); collected = 0; coins = 0
         // First obstacle spawns after about one second of running, then needs a few more seconds to arrive.
@@ -342,7 +352,14 @@ class RunnerEngine(seed: Long = 1L, val config: RunnerConfig = RunnerConfig()) {
                 if (p.coin) coins++ else collected++
             }
         }
-        // A crossroads is decided where its middle passes the runner: on the raised path (or above it) = up.
+        // The upper route picked with a button: hop onto the raised path just before it.
+        if (autoBoard) {
+            val pr = config.playerX + config.playerSize - config.playerInset
+            val fork = _obstacles.firstOrNull { it.kind == ObstacleKind.FORK && it.x + it.width > config.playerX }
+            if (fork == null) autoBoard = false
+            else if (grounded && floorY == 0f && fork.x - pr <= speed * 0.1f) { jump(); autoBoard = false }
+        }
+        // Without a button choice, a crossroads is decided where its middle passes the runner: on the raised path = up.
         for (o in _obstacles) {
             if (o.kind != ObstacleKind.FORK || forkChoice != null) continue
             if (o.x + o.width / 2f <= config.playerX + config.playerSize / 2f) {

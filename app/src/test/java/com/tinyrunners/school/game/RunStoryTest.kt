@@ -114,6 +114,30 @@ class RunStoryTest {
         assertEquals(true, p.choice)
     }
 
+    @Test fun aRoutePickedWithAButtonIsTakenWithoutAJump() {
+        for (up in listOf(true, false)) {
+            val e = RunnerEngine(seed = 9)
+            e.scheduleFork(1)
+            e.tap()
+            var highestOnFork = 0f
+            var t = 0f
+            while (t < 30f && e.phase == RunnerEngine.Phase.RUNNING) {
+                val c = e.config
+                val next = e.obstacles.firstOrNull { it.x + it.width > c.playerX + c.playerInset }
+                val d = e.forkDistance
+                if (d != null && e.forkChoice == null && d < 400f) e.chooseFork(up)
+                if (next?.kind == ObstacleKind.BOX && e.grounded &&
+                    (next.x + next.width / 2) - (c.playerX + c.playerSize / 2) <= e.speed * c.airTime / 2) e.tap()
+                if (next?.kind == ObstacleKind.FORK) highestOnFork = maxOf(highestOnFork, e.floorY)
+                e.update(1f / 60f); t += 1f / 60f
+                if (e.forkChoice != null && e.obstacles.none { it.kind == ObstacleKind.FORK }) break
+            }
+            assertEquals(up, e.forkChoice)
+            if (up) assertEquals("stood on the raised path", e.config.forkTop, highestOnFork, 0.01f)
+            else assertEquals("stayed on the ground", 0f, highestOnFork, 0.01f)
+        }
+    }
+
     @Test fun aDoubleJumpNeverGoesAboveTheCeiling() {
         val c = RunnerConfig()
         // From the ground the ceiling never cuts a double jump short (towers still need all of it).

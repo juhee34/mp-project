@@ -221,3 +221,66 @@ class EndingPicture(context: Context, private val friendId: String, private val 
         if (open) canvas.drawRect(l, t - 6 * px, l + w, t - 4 * px, fill) else canvas.drawRect(l, t - 3 * px, l + w, t, fill)
     }
 }
+
+/**
+ * The crossroads question: the run stops, everything behind goes dark, and the question shows with two route buttons
+ * (the raised path or the ground). A tap on one picks it and the run goes on.
+ */
+@SuppressLint("ViewConstructor")
+class ForkChoiceView(context: Context, fork: RunFork, private val onPick: (Boolean) -> Unit) : FrameLayout(context) {
+    private val d = resources.displayMetrics.density
+
+    init {
+        setBackgroundColor(Color.argb(170, 16, 18, 26))
+        isClickable = true
+        val card = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
+            setPadding(dp(28), dp(22), dp(28), dp(24))
+            background = GradientDrawable().apply { setColor(Color.parseColor("#FFF8E7")); cornerRadius = dp(24).toFloat(); setStroke(dp(3), LAVENDER) }
+        }
+        card.addView(TextView(context).apply {
+            setText(R.string.fork_choice_eyebrow); textSize = 14f; setTextColor(LAVENDER); setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER
+        })
+        card.addView(TextView(context).apply {
+            text = fork.question; textSize = 24f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER
+            setPadding(0, dp(4), 0, dp(16))
+        })
+        val row = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
+        row.addView(route(context.getString(R.string.fork_choice_up), fork.up, filled = true) { pick(true) },
+            LinearLayout.LayoutParams(dp(280), LinearLayout.LayoutParams.WRAP_CONTENT))
+        row.addView(route(context.getString(R.string.fork_choice_down), fork.down, filled = false) { pick(false) },
+            LinearLayout.LayoutParams(dp(280), LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(16) })
+        card.addView(row)
+        addView(card, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER))
+    }
+
+    /** One route: its name in bold, what lies on it below. */
+    private fun route(name: String, about: String, filled: Boolean, click: () -> Unit) = LinearLayout(context).apply {
+        orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER
+        setPadding(dp(16), dp(14), dp(16), dp(14))
+        background = android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(Color.argb(60, 255, 255, 255)),
+            GradientDrawable().apply { setColor(if (filled) GREEN else Color.parseColor("#FFF8E7")); cornerRadius = dp(18).toFloat(); setStroke(dp(2), GREEN) }, null)
+        isClickable = true
+        setOnClickListener { click() }
+        addView(TextView(context).apply { text = name; textSize = 19f; setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER; setTextColor(if (filled) Color.WHITE else GREEN) })
+        addView(TextView(context).apply {
+            text = about.substringAfter(": ", about); textSize = 14f; gravity = Gravity.CENTER; setPadding(0, dp(4), 0, 0)
+            setTextColor(if (filled) Color.argb(230, 255, 255, 255) else Color.parseColor("#5E5A4C"))
+        })
+    }
+
+    private var picked = false
+    private fun pick(up: Boolean) {
+        if (picked) return
+        picked = true
+        (parent as? android.view.ViewGroup)?.removeView(this)
+        onPick(up)
+    }
+
+    private fun dp(v: Int) = (v * d).roundToInt()
+
+    private companion object {
+        val GREEN = Color.parseColor("#1E5A2A")
+        val LAVENDER = Color.parseColor("#9B7BD0")
+    }
+}

@@ -21,6 +21,6 @@
     <string name="settings_guide">처음 안내</string>
     <string name="settings_guide_replay">처음 안내 다시 보기 (이야기·대화·게임 안내)</string>
     <string name="settings_guide_reset">다시 볼 수 있게 했어요. 친구와 처음 달릴 때의 긴 대화와 게임 안내가 다시 나와요. 다음에 스토리 진행하기를 누르면 세계 이야기도 다시 나와요. 스토리 진행의 이야기 모음에서는 언제든 볼 수 있어요.</string>
-    <string name="tutorial_fork_title">이야기 갈림길은 점프로 골라요</string>
-    <string name="tutorial_fork_body">달리다 보면 친구의 이야기가 말풍선으로 흘러가요. 보라 깃발이 달린 높은 길이 나오면 위에 질문이 떠요. 점프해서 높은 길에 오르면 위쪽 길, 그대로 달리면 아래쪽 길을 골라요. 어느 쪽이든 다치지 않아요. 고른 길에 따라 음악과 이야기의 끝이 달라져요.</string>
+    <string name="tutorial_fork_title">이야기 갈림길은 버튼으로 골라요</string>
+    <string name="tutorial_fork_body">달리다 보면 친구의 이야기가 말풍선으로 흘러가요. 보라 깃발이 달린 높은 길이 보이면 게임이 잠깐 멈추고 질문과 두 갈래 길 버튼이 떠요. 하나를 누르면 친구가 그 길로 달려가요. 어느 쪽이든 다치지 않아요. 고른 길에 따라 음악과 이야기의 끝이 달라져요.</string>
 </resources>

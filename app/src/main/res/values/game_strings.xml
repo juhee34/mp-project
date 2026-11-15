@@ -30,4 +30,8 @@
     <string name="ending_hidden">히든 엔딩</string>
     <string name="ending_bad">배드 엔딩</string>
     <string name="ending_story">「%1$s」 끝</string>
+    <!-- The crossroads question (ForkChoiceView). -->
+    <string name="fork_choice_eyebrow">갈림길</string>
+    <string name="fork_choice_up">▲ 높은 길</string>
+    <string name="fork_choice_down">▶ 낮은 길</string>
 </resources>

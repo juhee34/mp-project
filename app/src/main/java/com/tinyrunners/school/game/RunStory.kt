@@ -182,7 +182,7 @@ class RunStoryPlayer(
                 endingKey = key
                 if (tellEndingInRun) queue.addAll(script.endings[key].orEmpty())
                 val right = fork.correct
-                if (!script.finale && right != null && right != forkChoice && missedLine != null) queue.addLast(RunLine(0, true, missedLine))
+                if (tellEndingInRun && !script.finale && right != null && right != forkChoice && missedLine != null) queue.addLast(RunLine(0, true, missedLine))
                 endingQueued = true
             }
         } else if (fork == null && !endingQueued && nextLine >= script.lines.size) {
