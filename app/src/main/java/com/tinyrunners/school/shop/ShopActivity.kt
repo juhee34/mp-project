@@ -200,7 +200,7 @@ class ShopActivity : Activity() {
         fun params(last: Boolean) = LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.MATCH_PARENT).apply { if (!last) marginEnd = gap }
         fun add(views: List<View>) = views.forEachIndexed { i, v -> row.addView(v, params(i == views.lastIndex)) }
         when (shelf) {
-            Shelf.TRAIL -> add(ShopCatalog.of(ItemKind.TRAIL).map { card(it, w) })
+            Shelf.TRAIL -> add(ShopCatalog.onShelf(ItemKind.TRAIL, Season.now()) { w?.state?.owns(it) == true }.map { card(it, w) })
             Shelf.MUSIC -> add(ShopCatalog.of(ItemKind.MUSIC).map { card(it, w) })
             Shelf.ITEMS -> add(com.tinyrunners.school.quest.QuestItems.all.map { itemCard(it, w) })
             Shelf.COINS -> add(ShopRules.COIN_PACKS.map { coinCard(it) })
@@ -357,7 +357,12 @@ class ShopActivity : Activity() {
             if (!ready) alpha = 0.45f
             contentDescription = getString(R.string.shop_preview_description, getString(item.name))
         }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
-        card.addView(nameRow(getString(item.name), if (owned) getString(R.string.shop_owned) else null))
+        // A seasonal decoration says so ("겨울 한정") until it is owned.
+        card.addView(nameRow(getString(item.name), when {
+            owned -> getString(R.string.shop_owned)
+            item.season != null -> getString(R.string.shop_season_only, getString(item.season.label))
+            else -> null
+        }))
         val sub = if (music) songFriend?.let { id ->
             getString(R.string.shop_song_of, com.tinyrunners.school.data.CharacterRepository(this).find(id)?.name.orEmpty())
         } ?: getString(R.string.shop_song_everyone) else getString(item.blurb)

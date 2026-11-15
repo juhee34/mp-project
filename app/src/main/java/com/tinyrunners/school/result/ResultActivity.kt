@@ -49,6 +49,8 @@ class ResultActivity : Activity() {
             meters = intent.getIntExtra(EXTRA_METERS, 0),
             score = intent.getIntExtra(EXTRA_SCORE, 0),
             cleared = intent.getIntExtra(EXTRA_CLEARED, 0),
+            // Real special weather only (a sky picked by hand in settings does not count) — for the postcards.
+            specialWeather = weatherOf(intent)?.let { !it.chosen && com.tinyrunners.school.notice.NoticeRules.specialKey(it) != null } == true,
         )
         val character = CharacterRepository(this).find(run.characterId)
         if (character == null || run.runId.isEmpty()) { finish(); return }
@@ -195,6 +197,8 @@ class ResultActivity : Activity() {
         store.record(run) { result ->
             if (isDestroyed) return@record
             result.onSuccess { outcome ->
+                // A postcard this run earned shows up at the top.
+                com.tinyrunners.school.postcard.PostcardNotice.checkNew(this)
                 val p = outcome.progress
                 if (outcome.newBest) {
                     status.setText(R.string.result_new_best); status.setTextColor(ScoreBoard.GREEN)

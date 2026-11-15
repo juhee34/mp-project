@@ -75,6 +75,10 @@ object TrailPainter {
         'p' to Color.rgb(240, 120, 150), 'P' to Color.rgb(255, 200, 215),
         'b' to Color.rgb(120, 180, 230), 'B' to Color.rgb(225, 245, 255),
         'k' to Color.rgb(70, 60, 90),
+        'w' to Color.WHITE,
+        'r' to Color.rgb(206, 72, 78), 'R' to Color.rgb(246, 168, 160),
+        'g' to Color.rgb(84, 160, 78), 'G' to Color.rgb(160, 214, 120),
+        'o' to Color.rgb(226, 112, 48), 'O' to Color.rgb(250, 176, 86),
     )
     private val SHAPES = mapOf(
         TrailStyle.STARS to listOf("..y..", ".yYy.", "yYYYy", ".yYy.", "..y.."),
@@ -82,5 +86,10 @@ object TrailPainter {
         TrailStyle.PETALS to listOf(".PP", "PpP", "PP."),
         TrailStyle.BUBBLES to listOf(".bb.", "bBBb", "bBbb", ".bb."),
         TrailStyle.NOTES to listOf("..kk", "..k.", "..k.", "kkk.", "kk.."),
+        TrailStyle.SNOWFLAKES to listOf("b.B.b", ".bBb.", "BBwBB", ".bBb.", "b.B.b"),
+        TrailStyle.YARN to listOf(".rr.", "rRRr", "rRrr", ".rr."),
+        TrailStyle.CLOVER to listOf(".G.G.", "GgGgG", ".GgG.", "GgGgG", ".G.G."),
+        TrailStyle.FIREFLIES to listOf(".Y.", "YyY", ".Y."),
+        TrailStyle.MAPLE to listOf("..o..", "o.O.o", "oOOOo", ".oOo.", "..k.."),
     )
 }

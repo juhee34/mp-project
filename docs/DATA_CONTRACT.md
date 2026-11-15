@@ -142,3 +142,11 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 ## 친구의 날씨 안부 알림 대사 (2026-11-16, B)
 - 알림(notice/FriendNotice.kt)은 짧은 대사 묶음에서 `event`가 `notice_rain`, `notice_snow`, `notice_hot`, `notice_cold`인 줄을 그 날씨에 씀(형식은 다른 짧은 대사와 같음). 아직 없으면 친구의 `home` 대사.
 - 특별한 날: 비(폭풍 포함)·눈·30°C 이상·-5°C 이하(NoticeRules). 재촉하거나 놓치면 손해라는 말은 쓰지 않는다. validate-content의 events 목록 규칙은 위젯 대사와 같다.
+
+## 계절 꾸미기와 엽서 (2026-11-16, B — 보완 가이드 ⑤)
+- 계절: 봄 3–5월, 여름 6–8월, 가을 9–10월, 겨울 11–2월(Season.of). 꾸미기(ShopItem)에 `season`(null = 일 년 내내). 상점은 그 계절 것과 이미 산 것만 보여 줌(ShopCatalog.onShelf). 산 꾸미기는 계절과 상관없이 계속 씀. 능력치 영향 없음.
+- 지금 계절 꾸미기: 겨울 `snowflakes`(눈송이 자국)·`yarn`(털실 방울), 봄 `clover`, 여름 `fireflies`, 가을 `maple`. 모양은 TrailPainter의 픽셀 도형(임시, A 그림 오면 교체).
+- 진행 기록 `CharacterProgress.specialWeatherRuns`(새 필드, 옛 저장은 0): 실제 특별한 날씨(비·폭풍·눈·30°C 이상·-5°C 이하, 설정에서 직접 고른 하늘은 제외)에 함께 달린 횟수. Firestore runs 문서에 `specialWeather`도 남김.
+- 엽서: `app/src/main/assets/content/postcards.json` — `postcards[]`: `id`(친구id_번호), `characterId`, `title`, `back`(뒷면 친구 말), `draft`(B 임시 문구면 true), `condition`{`type`: `meters`(함께 달린 거리 ≥ value) | `stories`(그 친구 마을 이야기 모두, value 0) | `weather`(특별한 날씨 달리기 ≥ value), `value`}. 친구마다 2장 이상. validate-content가 검사.
+- 받은 엽서는 저장하지 않고 진행 기록에서 계산(PostcardRules.earnedIds) — 기록이 있으면 기기를 바꿔도 같음. 새 엽서 안내를 이미 보여 준 id만 기기에 둠(PostcardSeen).
+- 엽서첩 위치: 가방 화면 위쪽 "엽서첩" 버튼(B 기본값, A와 다르게 정하면 버튼만 옮김).

@@ -182,3 +182,17 @@ for(const c of bgManifest.characters){
  assert.equal(require('crypto').createHash('sha256').update(bytes).digest('hex'),c.sha256);
 }
 console.log('PASS: 6 background regions, floor anchors and approved source hashes.');
+
+// Friend postcards (guide 5, 2026-11-16): at least 2 per friend, unique ids, known condition types.
+{
+ const pc=read('app/src/main/assets/content/postcards.json').postcards;
+ assert.equal(new Set(pc.map(p=>p.id)).size,pc.length,'postcards: ids must be unique');
+ for(const id of expected)assert(pc.filter(p=>p.characterId===id).length>=2,`postcards: ${id} needs at least 2`);
+ for(const p of pc){
+  assert(expected.includes(p.characterId),`postcards: unknown friend ${p.characterId}`);
+  assert(p.title&&p.title.trim()&&p.back&&p.back.trim(),`postcards: ${p.id} needs a title and a back`);
+  assert(['meters','stories','weather'].includes(p.condition.type),`postcards: ${p.id} condition ${p.condition.type}`);
+  assert(Number.isInteger(p.condition.value)&&(p.condition.type==='stories'?p.condition.value>=0:p.condition.value>0),`postcards: ${p.id} value`);
+ }
+ console.log(`PASS: ${pc.length} postcards (${pc.filter(p=>p.draft).length} with draft text).`);
+}

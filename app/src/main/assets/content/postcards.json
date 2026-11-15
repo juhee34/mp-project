@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "note": "Friend postcards (guide 5). B's draft titles and back texts until A writes them: replace text, keep ids. condition.type: meters (distance run together >= value), stories (all of the friend's village stories read; value 0), weather (runs together in real rain/snow/very hot/very cold >= value).",
+  "postcards": [
+    { "id": "mint_1", "characterId": "mint", "title": "고사리 언덕의 아침", "back": "같이 달린 길을 지도에 작게 그려 뒀어. 다음엔 어디로 가 볼까?", "draft": true, "condition": { "type": "meters", "value": 300 } },
+    { "id": "mint_2", "characterId": "mint", "title": "지도 한 귀퉁이", "back": "이야기를 끝까지 들어 줘서 고마워. 지도 귀퉁이에 네 자리도 그려 둘게.", "draft": true, "condition": { "type": "stories", "value": 0 } },
+    { "id": "cheese_1", "characterId": "cheese", "title": "햇볕 지붕 위에서", "back": "오늘 햇볕은 딱 좋았어. 너도 잠깐 누워 봐.", "draft": true, "condition": { "type": "meters", "value": 300 } },
+    { "id": "cheese_2", "characterId": "cheese", "title": "비 오는 날의 창가", "back": "비 오는 날엔 창가가 최고야. 빗소리 들으면서 쉬어도 돼.", "draft": true, "condition": { "type": "weather", "value": 1 } },
+    { "id": "popo_1", "characterId": "popo", "title": "눈꽃 항구의 인사", "back": "항구 바람이 차가워도, 같이 달리면 금방 따뜻해져.", "draft": true, "condition": { "type": "meters", "value": 300 } },
+    { "id": "popo_2", "characterId": "popo", "title": "조개지붕 아래에서", "back": "끝까지 들어 줘서 고마워. 조개지붕 아래 자리 하나 비워 둘게.", "draft": true, "condition": { "type": "stories", "value": 0 } },
+    { "id": "lumi_1", "characterId": "lumi", "title": "메아리 숲 산책", "back": "숲에서 외치면 메아리가 대답해 줘. 오늘은 네 이름을 불러 봤어.", "draft": true, "condition": { "type": "meters", "value": 300 } },
+    { "id": "lumi_2", "characterId": "lumi", "title": "빗방울 연주회", "back": "빗방울이 나뭇잎을 두드리는 소리, 같이 들어서 좋았어.", "draft": true, "condition": { "type": "weather", "value": 1 } },
+    { "id": "nunu_1", "characterId": "nunu", "title": "안개 도서관 책갈피", "back": "같이 달린 날을 책갈피에 적어 뒀어. 천천히 다시 읽을래.", "draft": true, "condition": { "type": "meters", "value": 300 } },
+    { "id": "nunu_2", "characterId": "nunu", "title": "마지막 장 다음 장", "back": "이야기를 다 읽어도 책은 계속돼. 다음 장은 같이 쓰자.", "draft": true, "condition": { "type": "stories", "value": 0 } },
+    { "id": "piko_1", "characterId": "piko", "title": "종이배 선착장", "back": "종이배를 하나 더 접었어. 이건 네 거야.", "draft": true, "condition": { "type": "meters", "value": 300 } },
+    { "id": "piko_2", "characterId": "piko", "title": "웅덩이 위 종이배", "back": "비 온 날 웅덩이에 종이배를 띄웠어. 너랑 같이라 더 잘 떴어.", "draft": true, "condition": { "type": "weather", "value": 1 } }
+  ]
+}

@@ -77,7 +77,7 @@ class FirestoreProgressStore(private val uid: String) : ProgressStore {
                 val outcome = ProgressRules.outcome(previous, run)
                 tx.set(runRef, mapOf(
                     "characterId" to run.characterId, "meters" to run.meters, "score" to run.score,
-                    "cleared" to run.cleared, "savedAt" to FieldValue.serverTimestamp(),
+                    "cleared" to run.cleared, "specialWeather" to run.specialWeather, "savedAt" to FieldValue.serverTimestamp(),
                 ))
                 tx.set(progressRef, outcome.progress.toMap())
                 outcome

@@ -153,6 +153,8 @@ class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
             loaded = true
             show(index)
         }
+        // Back from a story: a postcard it earned (all of a friend's stories) shows up at the top.
+        com.tinyrunners.school.postcard.PostcardNotice.checkNew(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

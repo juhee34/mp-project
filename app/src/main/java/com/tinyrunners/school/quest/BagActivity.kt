@@ -82,6 +82,15 @@ class BagActivity : Activity() {
             // Coins are spent in the shop.
             setOnClickListener { startActivity(ShopActivity.intent(this@BagActivity, null)) }
         }
+        // 엽서첩 lives in the bag (guide ⑤, B's default until A and B decide otherwise).
+        top.addView(TextView(this).apply {
+            setText(R.string.postcard_open); textSize = 18f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD)
+            setPadding(dp(18), dp(6), dp(18), dp(6))
+            background = RippleDrawable(ColorStateList.valueOf(ShopActivity.OWNED), GradientDrawable().apply {
+                setColor(ShopActivity.CARD); cornerRadius = dp(22).toFloat(); setStroke(dp(2), ShopActivity.HONEY)
+            }, null)
+            setOnClickListener { startActivity(com.tinyrunners.school.postcard.PostcardActivity.intent(this@BagActivity)) }
+        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginEnd = dp(12) })
         top.addView(coins)
         content.addView(top)
 

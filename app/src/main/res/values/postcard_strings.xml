@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 엽서첩 (guide ⑤). Not having a postcard never costs anything. -->
+    <string name="postcard_title">엽서첩</string>
+    <string name="postcard_subtitle">친구들이 보낸 엽서를 모아요</string>
+    <string name="postcard_open">엽서첩</string>
+    <string name="postcard_count">받은 엽서 %1$d / %2$d</string>
+    <string name="postcard_how_meters">함께 %1$dm 달리기</string>
+    <string name="postcard_how_stories">이 친구의 이야기를 모두 보기</string>
+    <string name="postcard_how_weather">날씨가 특별한 날 함께 달리기 (비·눈·폭염·한파)</string>
+    <string name="postcard_progress_meters">%1$d / %2$dm</string>
+    <string name="postcard_progress_count">%1$d / %2$d</string>
+    <string name="postcard_progress_times">%1$d / %2$d번</string>
+    <string name="postcard_from">%1$s의 엽서</string>
+    <string name="postcard_got_by">받은 방법: %1$s</string>
+    <string name="postcard_close">엽서 닫기</string>
+    <string name="postcard_received_description">%1$s의 엽서 %2$s. 누르면 뒷면을 봐요.</string>
+    <string name="postcard_new_one">새 엽서를 받았어요 · %1$s 「%2$s」</string>
+    <string name="postcard_new_many">새 엽서를 %1$d장 받았어요</string>
+    <string name="postcard_open_album">엽서첩 보기</string>
+</resources>

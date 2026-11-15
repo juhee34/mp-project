@@ -6,7 +6,27 @@ import com.tinyrunners.school.R
  * Decorations from the shop only change how a run looks (a little trail behind the friend) or sounds (the music
  * during runs). They never change jumping, speed or obstacles, so all six friends stay equal.
  */
-enum class TrailStyle { NONE, STARS, HEARTS, PETALS, BUBBLES, NOTES, RAINBOW }
+enum class TrailStyle { NONE, STARS, HEARTS, PETALS, BUBBLES, NOTES, RAINBOW, SNOWFLAKES, YARN, CLOVER, FIREFLIES, MAPLE }
+
+/**
+ * Seasons for limited decorations (guide ⑤), by month in Korea: spring 3–5, summer 6–8, autumn 9–10, winter 11–2
+ * (winter starts with 입동 in early November, so the presentation weeks are winter). Pure, so it is unit tested.
+ */
+enum class Season(val label: Int) {
+    SPRING(R.string.season_spring), SUMMER(R.string.season_summer), AUTUMN(R.string.season_autumn), WINTER(R.string.season_winter);
+
+    companion object {
+        /** [month] is 1–12. */
+        fun of(month: Int): Season = when (month) {
+            3, 4, 5 -> SPRING
+            6, 7, 8 -> SUMMER
+            9, 10 -> AUTUMN
+            else -> WINTER
+        }
+
+        fun now(): Season = of(java.util.Calendar.getInstance().get(java.util.Calendar.MONTH) + 1)
+    }
+}
 
 /** Shop shelves: trails behind the runner, and background music for runs. */
 enum class ItemKind { TRAIL, MUSIC }
@@ -23,6 +43,8 @@ data class ShopItem(
     val style: TrailStyle = TrailStyle.NONE,
     val kind: ItemKind = ItemKind.TRAIL,
     val track: String? = null,
+    /** Sold only in this season (null: all year). Once bought it stays and can be worn in any season. */
+    val season: Season? = null,
 )
 
 object ShopCatalog {
@@ -38,6 +60,13 @@ object ShopCatalog {
         ShopItem("petals", R.string.shop_item_petals, R.string.shop_blurb_petals, 60, TrailStyle.PETALS),
         ShopItem("notes", R.string.shop_item_notes, R.string.shop_blurb_notes, 70, TrailStyle.NOTES),
         ShopItem("rainbow", R.string.shop_item_rainbow, R.string.shop_blurb_rainbow, 120, TrailStyle.RAINBOW),
+        // Seasonal decorations: on the shelf only in their season (owned ones always). Pixel shapes for now; A's
+        // drawings replace them when they come.
+        ShopItem("snowflakes", R.string.shop_item_snowflakes, R.string.shop_blurb_snowflakes, 60, TrailStyle.SNOWFLAKES, season = Season.WINTER),
+        ShopItem("yarn", R.string.shop_item_yarn, R.string.shop_blurb_yarn, 60, TrailStyle.YARN, season = Season.WINTER),
+        ShopItem("clover", R.string.shop_item_clover, R.string.shop_blurb_clover, 60, TrailStyle.CLOVER, season = Season.SPRING),
+        ShopItem("fireflies", R.string.shop_item_fireflies, R.string.shop_blurb_fireflies, 60, TrailStyle.FIREFLIES, season = Season.SUMMER),
+        ShopItem("maple", R.string.shop_item_maple, R.string.shop_blurb_maple, 60, TrailStyle.MAPLE, season = Season.AUTUMN),
         // Music: the main theme is free; six songs (2026-11-11) are res/raw/music_<id>.mp3. The friend in each id only picks
         // the sprite in the shop preview; the shop shows the song's own title (Korean, with the original English title).
         ShopItem(MAIN_MUSIC_ID, R.string.shop_music_main, R.string.shop_music_main_blurb, 0, kind = ItemKind.MUSIC, track = "main_theme"),
@@ -52,6 +81,10 @@ object ShopCatalog {
     fun find(id: String?): ShopItem? = items.firstOrNull { it.id == id }
     fun style(id: String?): TrailStyle = find(id)?.style ?: TrailStyle.NONE
     fun of(kind: ItemKind) = items.filter { it.kind == kind }
+
+    /** What the shelf shows: everything all-year, this season's limited items, and limited items already [owned]. */
+    fun onShelf(kind: ItemKind, season: Season, owned: (String) -> Boolean) =
+        of(kind).filter { it.season == null || it.season == season || owned(it.id) }
 }
 
 /** What an account owns and wears. Free items are always owned. [equipped] is the trail, [music] the run music. */

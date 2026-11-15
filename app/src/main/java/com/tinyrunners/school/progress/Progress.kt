@@ -10,6 +10,8 @@ data class RunResult(
     val meters: Int,
     val score: Int,
     val cleared: Int,
+    /** Run in real special weather (rain, snow, very hot or cold; not a sky picked by hand), for the postcards. */
+    val specialWeather: Boolean = false,
 )
 
 /** Everything remembered about running with one friend. Failed runs still add distance; nothing decays. */
@@ -21,10 +23,13 @@ data class CharacterProgress(
     val bestScore: Int = 0,
     /** Stories seen to the end (or skipped). Order of first reading. */
     val readStoryIds: List<String> = emptyList(),
+    /** Runs together in real special weather (postcards, 2026-11-16). Missing in older saves = 0. */
+    val specialWeatherRuns: Int = 0,
 ) {
     fun toMap(): Map<String, Any> = mapOf(
         "characterId" to characterId, "runs" to runs, "totalMeters" to totalMeters,
         "bestMeters" to bestMeters, "bestScore" to bestScore, "readStoryIds" to readStoryIds,
+        "specialWeatherRuns" to specialWeatherRuns,
     )
 
     fun withRead(storyId: String) = if (storyId in readStoryIds) this else copy(readStoryIds = readStoryIds + storyId)
@@ -41,6 +46,7 @@ data class CharacterProgress(
                 is JSONArray -> List(r.length()) { r.optString(it) }.filter { it.isNotEmpty() }
                 else -> emptyList()
             },
+            specialWeatherRuns = (m["specialWeatherRuns"] as? Number)?.toInt() ?: 0,
         )
     }
 }
@@ -55,6 +61,7 @@ object ProgressRules {
             totalMeters = p.totalMeters + run.meters.coerceAtLeast(0),
             bestMeters = maxOf(p.bestMeters, run.meters),
             bestScore = maxOf(p.bestScore, run.score),
+            specialWeatherRuns = p.specialWeatherRuns + if (run.specialWeather) 1 else 0,
         )
     }
 

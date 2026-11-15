@@ -83,4 +83,20 @@
     <string name="shop_next_page">다음 상품 보기</string>
     <string name="shelf_next_page">다음 카드 보기</string>
     <string name="shelf_prev_page">앞 카드 보기</string>
+    <!-- Seasonal decorations (guide ⑤). -->
+    <string name="season_spring">봄</string>
+    <string name="season_summer">여름</string>
+    <string name="season_autumn">가을</string>
+    <string name="season_winter">겨울</string>
+    <string name="shop_season_only">%1$s 한정</string>
+    <string name="shop_item_snowflakes">눈송이 자국</string>
+    <string name="shop_blurb_snowflakes">지나간 자리에 눈송이가 반짝여요</string>
+    <string name="shop_item_yarn">털실 방울</string>
+    <string name="shop_blurb_yarn">목도리 털실 방울이 통통 따라와요</string>
+    <string name="shop_item_clover">네잎클로버</string>
+    <string name="shop_blurb_clover">봄바람에 클로버가 살랑여요</string>
+    <string name="shop_item_fireflies">반딧불</string>
+    <string name="shop_blurb_fireflies">여름밤 반딧불이 깜빡여요</string>
+    <string name="shop_item_maple">단풍잎</string>
+    <string name="shop_blurb_maple">빨간 단풍잎이 팔랑 날려요</string>
 </resources>
