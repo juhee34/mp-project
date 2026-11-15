@@ -27,6 +27,14 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 공유 카드: 결과 카드·친구 카드 (2026-11-15, B — 보완 가이드 ②)
+- share/ShareCard.kt: 1080×1080 정사각형 카드를 비트맵으로 그림. 바탕은 친구의 최종 틀 그림(ShopBackground.drawFrame으로 9조각 그리기를 공용화), 위에 "Tiny Runners"와 꽃·마름모 장식(ui_village_title, 종이 바탕을 투명하게 다시 저장 — 마을 화면 제목도 같은 그림), 친구 집 그림 창 + 48×48 스프라이트(6배), 아래 #TinyRunners #오늘의달리기.
+  - 결과 카드: "라일과 달렸어요" 알약, 친구 한마디(결과 화면과 같은 말), 거리·점수 타일, 그 판의 날씨(도시·하늘·기온)와 날짜.
+  - 친구 카드: 이름, 종·고향, 인사말 말풍선, 성격 알약(폭에 맞게 글자를 줄이거나 개수를 줄임).
+- 공유: 앱 캐시 cache/share/에 PNG 한 장만 남기고 FileProvider(${applicationId}.share, res/xml/share_paths.xml)로 ACTION_SEND(image/png + 공유 문구). 저장소 권한 없음. androidx.core 1.2.0을 명시(이미 Firebase로 들어와 있던 버전).
+- 버튼: 결과 화면 "공유하기"(두 번째), 자세히 보기 "친구 카드 공유". 결과 화면 버튼은 6~7개가 한 화면에 들어가게 높이 46→41dp, 간격 8→6dp. 그 판의 날씨는 GameActivity → ResultActivity.putWeather/weatherOf로 넘김. 조사(과/와, 을/를)는 기존 Josa 사용.
+- 검증: assembleDebug·testDebugUnitTest·lintDebug 통과. 에뮬레이터에서 친구 카드·결과 카드 PNG를 꺼내 확인, 시스템 공유 창(이미지 미리보기와 문구) 뜨는 것 확인. 카카오톡·인스타로 실제 보내기는 에뮬레이터에 앱이 없어 못 함 — 실기기에서 확인 필요. A의 전용 카드 틀이 오면 frame/title만 바꾸면 됨.
+
 ## 가방 배경을 친구의 최종 틀 그림으로 (2026-11-15, B)
 - 최종 UI 묶음에는 가방 배경이 따로 없어, 상점·설정과 같은 ShopBackground(bg_shop_frame 9조각)를 씀. 코드로 그리던 풀밭·오두막 BagBackground는 지움.
 - 검증: assembleDebug·testDebugUnitTest·lintDebug 통과. 에뮬레이터(2400×1080)에서 상점 → 가방 화면 확인. 가방 전용 그림이 필요하면 A에게 요청.

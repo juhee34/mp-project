@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Share cards are written to cache/share/ and handed to other apps through ShareCard (no storage permission). -->
+<paths>
+    <cache-path name="share" path="share/" />
+</paths>

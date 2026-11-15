@@ -45,6 +45,8 @@ class GameActivity : Activity() {
                         .putExtra(ResultActivity.EXTRA_ITEMS, picked)
                         .putExtra(ResultActivity.EXTRA_COINS, bonus)
                         .putExtra(ResultActivity.EXTRA_DISTANCE, engine.distance)
+                    // The weather the run had, for the share card.
+                    view.weather?.let { ResultActivity.putWeather(result, it) }
                     // The friend says a few words where they fell; then (when the run earned coins) an optional ad that
                     // doubles them, then the result screen.
                     val runCoins = com.tinyrunners.school.shop.ShopRules.coinsForRun(engine.meters) + bonus

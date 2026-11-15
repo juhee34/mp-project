@@ -106,7 +106,8 @@ class ResultActivity : Activity() {
         // Right: the buttons, one under another.
         val right = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_VERTICAL }
         fun add(text: String, primary: Boolean, click: () -> Unit): Button = ScoreBoard.button(this, text, primary, click).also {
-            right.addView(it, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(46)).apply { if (right.childCount > 0) topMargin = dp(8) })
+            // Six or seven buttons fit on one landscape screen without scrolling.
+            right.addView(it, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(41)).apply { if (right.childCount > 0) topMargin = dp(6) })
         }
         if (storyId != null) {
             // Any result continues the story; there is no "try again to unlock".
@@ -118,6 +119,18 @@ class ResultActivity : Activity() {
             startActivity(com.tinyrunners.school.talk.TalkActivity.retry(this, character.id,
                 GameActivity.intent(this, character.id).putExtra(GameActivity.EXTRA_STORY_ID, storyId)))
             finish()
+        }
+        // A square picture card of this run (friend, distance, score, the day's weather, their word) for other apps.
+        add(getString(R.string.share_button), primary = false) {
+            try {
+                val card = com.tinyrunners.school.share.ShareCard.runCard(this, character,
+                    com.tinyrunners.school.share.ShareCard.Run(run.meters, run.score, said, weatherOf(intent)))
+                com.tinyrunners.school.share.ShareCard.share(this, card, "tiny_runners_run.png",
+                    getString(R.string.share_run_text, com.tinyrunners.school.talk.Josa.with(character.name, "과", "와"), run.meters))
+            } catch (e: Exception) {
+                android.util.Log.w("ResultActivity", "Share card failed", e)
+                android.widget.Toast.makeText(this, R.string.share_failed, android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
         // Back to the village: straight to the friend's next story when enough items are in the bag.
         val toStory = add(getString(R.string.result_to_village), primary = false) { openVillage(character.id, null) }
@@ -225,6 +238,25 @@ class ResultActivity : Activity() {
         /** Bonus coins picked up on the road in this run. */
         const val EXTRA_COINS = "bonusCoins"
         const val EXTRA_RUN_ID = "runId"
+        private const val EXTRA_WEATHER_CITY = "weatherCity"
+        private const val EXTRA_WEATHER_SKY = "weatherSky"
+        private const val EXTRA_WEATHER_TEMP = "weatherTemp"
+        private const val EXTRA_WEATHER_DAY = "weatherDay"
+        private const val EXTRA_WEATHER_CHOSEN = "weatherChosen"
+
+        /** Passes the run's weather on (for the share card). */
+        fun putWeather(intent: Intent, w: com.tinyrunners.school.weather.WeatherReport): Intent = intent
+            .putExtra(EXTRA_WEATHER_CITY, w.city.name).putExtra(EXTRA_WEATHER_SKY, w.sky.name)
+            .putExtra(EXTRA_WEATHER_TEMP, w.temperatureC).putExtra(EXTRA_WEATHER_DAY, w.isDay)
+            .putExtra(EXTRA_WEATHER_CHOSEN, w.chosen)
+
+        /** The run's weather, or null when the run had none (weather off, or nothing known yet). */
+        fun weatherOf(intent: Intent): com.tinyrunners.school.weather.WeatherReport? {
+            val city = intent.getStringExtra(EXTRA_WEATHER_CITY)?.let { n -> com.tinyrunners.school.weather.City.entries.firstOrNull { it.name == n } } ?: return null
+            val sky = intent.getStringExtra(EXTRA_WEATHER_SKY)?.let { n -> com.tinyrunners.school.weather.Sky.entries.firstOrNull { it.name == n } } ?: return null
+            return com.tinyrunners.school.weather.WeatherReport(city, sky, intent.getDoubleExtra(EXTRA_WEATHER_TEMP, Double.NaN),
+                intent.getBooleanExtra(EXTRA_WEATHER_DAY, true), intent.getBooleanExtra(EXTRA_WEATHER_CHOSEN, false))
+        }
         const val EXTRA_METERS = "meters"
         const val EXTRA_SCORE = "score"
         const val EXTRA_CLEARED = "cleared"

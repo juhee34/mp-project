@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share_button">공유하기</string>
+    <string name="share_friend_button">친구 카드 공유</string>
+    <string name="share_chooser">카드 보내기</string>
+    <!-- %1$s is the friend's name with its particle (라일과, 치즈와). -->
+    <string name="share_ran_with">%1$s 달렸어요</string>
+    <string name="share_hashtags">#TinyRunners  #오늘의달리기</string>
+    <string name="share_run_text">%1$s %2$dm를 달렸어요! 작은 마을의 여섯 친구와 달리는 Tiny Runners #TinyRunners #오늘의달리기</string>
+    <string name="share_friend_text">Tiny Runners의 %1$s 소개해요. %2$s #TinyRunners #오늘의달리기</string>
+    <string name="share_failed">카드를 만들지 못했어요. 잠시 뒤에 다시 해 주세요.</string>
+</resources>

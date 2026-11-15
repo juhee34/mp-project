@@ -736,31 +736,35 @@ private class ItemPreview(context: Context, private val item: com.tinyrunners.sc
 internal class ShopBackground(context: Context) : View(context) {
     private val art = android.graphics.BitmapFactory.decodeResource(resources, R.drawable.bg_shop_frame)
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
-    private val src = android.graphics.Rect()
-    private val dst = android.graphics.RectF()
 
     override fun onDraw(canvas: Canvas) {
-        val w = width.toFloat(); val h = height.toFloat()
-        if (art == null || w <= 0f || h <= 0f) { canvas.drawColor(ShopActivity.FABRIC); return }
-        val k = h / art.height
-        // Source cuts (picture pixels) and the same cuts on screen; the corners never grow wider than half the screen.
-        val sx = intArrayOf(0, SIDE, art.width - SIDE, art.width)
-        val sy = intArrayOf(0, TOP, art.height - BOTTOM, art.height)
-        val side = minOf(SIDE * k, w / 2f)
-        val dx = floatArrayOf(0f, side, w - side, w)
-        val dy = floatArrayOf(0f, TOP * k, h - BOTTOM * k, h)
-        for (row in 0..2) for (col in 0..2) {
-            src.set(sx[col], sy[row], sx[col + 1], sy[row + 1])
-            dst.set(dx[col], dy[row], dx[col + 1], dy[row + 1])
-            canvas.drawBitmap(art, src, dst, paint)
-        }
+        val art = art
+        if (art == null || width <= 0 || height <= 0) { canvas.drawColor(ShopActivity.FABRIC); return }
+        drawFrame(canvas, art, width.toFloat(), height.toFloat(), paint)
     }
 
-    private companion object {
+    companion object {
         /** Corner sizes in the 1919×1080 picture: wide enough for the fern and the flowers, tall enough for the board. */
-        const val SIDE = 330
-        const val TOP = 70
-        const val BOTTOM = 180
+        private const val SIDE = 330
+        private const val TOP = 70
+        private const val BOTTOM = 180
+
+        /** Draws the frame picture [art] over [w]×[h] in nine pieces (also used for the share cards). */
+        fun drawFrame(canvas: Canvas, art: Bitmap, w: Float, h: Float, paint: Paint) {
+            val k = h / art.height
+            // Source cuts (picture pixels) and the same cuts on screen; the corners never grow wider than half the screen.
+            val sx = intArrayOf(0, SIDE, art.width - SIDE, art.width)
+            val sy = intArrayOf(0, TOP, art.height - BOTTOM, art.height)
+            val side = minOf(SIDE * k, w / 2f)
+            val dx = floatArrayOf(0f, side, w - side, w)
+            val dy = floatArrayOf(0f, TOP * k, h - BOTTOM * k, h)
+            val src = Rect(); val dst = RectF()
+            for (row in 0..2) for (col in 0..2) {
+                src.set(sx[col], sy[row], sx[col + 1], sy[row + 1])
+                dst.set(dx[col], dy[row], dx[col + 1], dy[row + 1])
+                canvas.drawBitmap(art, src, dst, paint)
+            }
+        }
     }
 }
 
