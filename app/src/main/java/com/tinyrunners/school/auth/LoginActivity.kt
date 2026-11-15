@@ -43,6 +43,7 @@ class LoginActivity : Activity() {
     private lateinit var emailLabel: TextView
     private lateinit var passwordLabel: TextView
     private lateinit var account: TextView
+    private lateinit var guest: TextView
     private var showingForm = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,6 +78,16 @@ class LoginActivity : Activity() {
         second = MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_secondary, "", DEEP_GREEN, 38f) { secondClick() }
             .also { frame.place(it, 580, 731, 1091, 808) }
 
+        // 가입 없이 시작하기: a quiet link under the two buttons; the guest can make an account later in 설정.
+        guest = TextView(this).apply {
+            setText(R.string.login_guest_start); setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER; paintFlags = paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
+            isClickable = true; isFocusable = true
+            background = android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(0x22000000), null,
+                android.graphics.drawable.ColorDrawable(Color.WHITE))
+            setOnClickListener { guestClick() }
+        }.also { frame.onScaleText(it, 26f); frame.place(it, 640, 810, 1034, 852) }
+
         dim = View(this).apply { setBackgroundColor(Color.argb(120, 30, 34, 24)); alpha = 0f; setOnClickListener { } }
         setContentView(android.widget.FrameLayout(this).apply {
             addView(dim, android.widget.FrameLayout.LayoutParams(-1, -1))
@@ -107,10 +118,12 @@ class LoginActivity : Activity() {
         val form = showingForm
         listOf<View>(emailLabel, email, passwordLabel, password).forEach { it.visibility = if (form) View.VISIBLE else View.GONE }
         account.visibility = if (form) View.GONE else View.VISIBLE
+        guest.visibility = if (form && AuthService.isConfigured(this)) View.VISIBLE else View.GONE
         if (!form) {
             emailLabel.visibility = View.VISIBLE
             emailLabel.setText(R.string.login_current_label)
-            account.text = if (AuthService.isGuest(this)) getString(R.string.settings_guest)
+            account.text = if (AuthService.isCloudGuest(this)) getString(R.string.login_guest_current)
+                else if (AuthService.isGuest(this)) getString(R.string.settings_guest)
                 else getString(R.string.login_current, AuthService.currentName(this) ?: getString(R.string.settings_no_name),
                     AuthService.currentEmail(this).orEmpty())
             submit.setText(R.string.login_continue)
@@ -146,6 +159,20 @@ class LoginActivity : Activity() {
             !showingForm -> { showingForm = true; error.text = ""; render(); email.requestFocus() }
             !AuthService.isConfigured(this) -> { AuthService.enterGuest(this); openMain(this) }
             else -> startActivity(Intent(this, SignupActivity::class.java))
+        }
+    }
+
+    /** Plays at once as a guest (Firebase anonymous account). */
+    private fun guestClick() {
+        guest.isEnabled = false
+        guest.setText(R.string.auth_working)
+        error.text = ""
+        AuthService.startGuest(this) { message ->
+            if (isDestroyed) return@startGuest
+            if (message == null) { openMain(this); return@startGuest }
+            guest.isEnabled = true
+            guest.setText(R.string.login_guest_start)
+            error.text = message
         }
     }
 

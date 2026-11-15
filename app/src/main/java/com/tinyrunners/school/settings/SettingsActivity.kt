@@ -107,6 +107,13 @@ class SettingsActivity : Activity() {
         outState.putString("tab", tab.name)
     }
 
+    @Deprecated("Activity result for the 계정 만들고 기록 지키기 popup")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        @Suppress("DEPRECATION")
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_KEEP_GUEST && resultCode == RESULT_OK) render()
+    }
+
     override fun onDestroy() {
         handler.removeCallbacksAndMessages(null)
         super.onDestroy()
@@ -328,7 +335,15 @@ class SettingsActivity : Activity() {
     private fun account() {
         heading(R.string.settings_tab_account, 0)
         label(R.string.settings_account)
-        if (AuthService.isGuest(this)) {
+        if (AuthService.isCloudGuest(this)) {
+            // A guest: their records are kept on this guest account; making an account keeps them for good.
+            value(getString(R.string.login_guest_current), bold = true)
+            note(R.string.settings_guest_keep_note)
+            body.addView(smallButton(getString(R.string.signup_keep_title)) {
+                startActivityForResult(Intent(this, com.tinyrunners.school.auth.SignupActivity::class.java)
+                    .putExtra(com.tinyrunners.school.auth.SignupActivity.EXTRA_KEEP_GUEST, true), REQUEST_KEEP_GUEST)
+            }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(42)).apply { topMargin = dp(8) })
+        } else if (AuthService.isGuest(this)) {
             value(getString(R.string.settings_guest))
         } else {
             value(AuthService.currentName(this) ?: getString(R.string.settings_no_name), bold = true)
@@ -340,7 +355,7 @@ class SettingsActivity : Activity() {
         value(getString(R.string.settings_version, version))
         note(R.string.settings_about_body)
         rule()
-        body.addView(smallButton(getString(R.string.settings_sign_out), danger = true) {
+        body.addView(smallButton(getString(if (AuthService.isCloudGuest(this)) R.string.settings_sign_out_guest else R.string.settings_sign_out), danger = true) {
             AuthService.signOut(this)
             startActivity(Intent(this, OpeningActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
         }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(42)).apply { topMargin = dp(6) })
@@ -427,6 +442,7 @@ class SettingsActivity : Activity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     private companion object {
+        const val REQUEST_KEEP_GUEST = 41
         val GREEN = ShopActivity.GREEN
         val INK = Color.parseColor("#3E3A2E")
         val INK_SOFT = Color.parseColor("#5E5A4C")

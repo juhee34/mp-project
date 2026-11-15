@@ -126,4 +126,12 @@
     <string name="settings_scroll">스크롤 민감도</string>
     <string name="settings_scroll_speed">넘김 정도</string>
     <string name="settings_scroll_hint">낮추면 손가락을 움직인 것보다 덜, 높이면 더 많이 넘어가요. 50%가 기본이에요. 설정·친구 화면·이야기 화면에 쓰여요.</string>
+    <string name="login_guest_start">가입 없이 시작하기</string>
+    <string name="login_guest_current">게스트로 달리는 중</string>
+    <string name="auth_error_guest_disabled">게스트 시작이 아직 준비되지 않았어요. 잠시 뒤 다시 해 보거나 가입해서 시작해 주세요.</string>
+    <string name="signup_keep_title">계정 만들고 기록 지키기</string>
+    <string name="signup_keep_body">지금까지 모은 코인과 기록이 이 계정으로 그대로 이어져요. 닉네임과 이메일, 비밀번호(%1$d자 이상)를 정해 주세요.</string>
+    <string name="signup_keep_submit">계정 만들기</string>
+    <string name="settings_guest_keep_note">게스트 기록은 앱을 지우거나 로그아웃하면 다시 찾을 수 없어요. 계정을 만들면 지금 기록이 그대로 이어져요.</string>
+    <string name="settings_sign_out_guest">로그아웃 (게스트 기록은 사라져요)</string>
 </resources>

@@ -27,6 +27,13 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 게스트로 바로 시작 + 나중에 계정 연동 (2026-11-15, B)
+- 로그인 카드(폼 화면) 아래 "가입 없이 시작하기" → Firebase 익명 로그인(AuthService.startGuest)으로 바로 메뉴. 게스트도 uid가 있어 코인·기록·이야기가 Firestore에 그대로 저장.
+- 설정 › 계정: 게스트면 "게스트로 달리는 중" + 안내 + "계정 만들고 기록 지키기"(SignupActivity EXTRA_KEEP_GUEST → AuthService.linkGuest: 익명 계정에 이메일 자격 증명 연결, 같은 uid 유지). 게스트 로그아웃 버튼은 "(게스트 기록은 사라져요)" 표시.
+- 익명 로그인이 콘솔에서 꺼져 있으면 ERROR_OPERATION_NOT_ALLOWED → "게스트 시작이 아직 준비되지 않았어요" 안내.
+- 필요(사용자): Firebase 콘솔 › Authentication › 로그인 방법에서 "익명" 사용 설정.
+- 검증: assembleDebug·testDebugUnitTest·lintDebug BUILD SUCCESSFUL, 에뮬레이터에서 로그인 카드의 링크 표시 확인. 실제 게스트 로그인·계정 연동은 아직 실행하지 않음(에뮬레이터 로그인 계정이 바뀌기 때문, 콘솔 설정도 필요).
+
 ## 설정 탭 "대화·안내" → "기능" (2026-11-13, B)
 - 탭 이름과 제목을 "기능"으로, 안내 문장을 "대사 나오는 속도, 처음 안내, 스크롤 민감도를 바꿔요…"로. 빌드·린트 통과, 에뮬레이터 설정 화면 확인.
 
