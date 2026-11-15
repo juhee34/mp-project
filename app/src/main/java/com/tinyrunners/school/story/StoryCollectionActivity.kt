@@ -98,7 +98,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
                 frame.post { frame.move(scroller, left, SHELF_TOP, right, SHELF_TOP + (581 * CARD_ZOOM).roundToInt()) }
             }
         }
-        // | 이야기 모음, then the page dots beside it, as in A's final mockup (the shelf below has no room for them).
+        // | 이야기 모음, as in A's final mockup.
         frame.place(View(this).apply { setBackgroundColor(DEEP_GREEN) }, 366, 40, 370, 88)
         frame.place(TextView(this).apply {
             text = getString(R.string.collection_open); setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
@@ -120,8 +120,9 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
         row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(row) }
         frame.place(scroller, 40, SHELF_TOP, 1640, SHELF_TOP + (581 * CARD_ZOOM).roundToInt())
+        // Page dots and ◀ ▶ under the shelf, where the picture had its diamond line (taken out for them).
         pager = com.tinyrunners.school.ui.ShelfPager(this, scroller)
-        frame.place(pager, 700, 30, 1200, 100)
+        frame.place(pager, 436, 828, 1236, 902)
 
         setContentView(frame)
         hideSystemBars()

@@ -572,12 +572,17 @@ class ShopActivity : Activity() {
 
 /**
  * A picture in a card: the friend's home scene (the same art as their run) with a rounded edge. Subclasses draw what
- * is on sale over it.
+ * is on sale over it. The scene is kept quiet (paler and less colourful, as if seen through a little mist) and a soft
+ * light sits behind what is on sale ([spotlight]), so the decoration or item is what the eye finds first.
  */
 @SuppressLint("ViewConstructor")
 private open class ScenePicture(context: Context, sceneFriend: String?) : View(context) {
     private val scene: Pair<Bitmap, Float>? = sceneFriend?.let { RoadThumbs.of(context, it) ?: BackgroundThumbs.of(context, it) }
     protected val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false }
+    private val scenePaint = Paint().apply {
+        isFilterBitmap = false; isAntiAlias = false
+        colorFilter = android.graphics.ColorMatrixColorFilter(android.graphics.ColorMatrix().apply { setSaturation(0.3f) })
+    }
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val src = Rect()
     private val dst = RectF()
@@ -605,8 +610,20 @@ private open class ScenePicture(context: Context, sceneFriend: String?) : View(c
         val srcTop = (bitmap.height * floor - (h * 0.86f) / scale).coerceIn(0f, bitmap.height - h / scale)
         src.set(0, srcTop.toInt(), srcW.toInt(), (srcTop + h / scale).toInt().coerceAtMost(bitmap.height))
         dst.set(0f, 0f, w, h)
-        canvas.drawBitmap(bitmap, src, dst, pixel)
+        canvas.drawBitmap(bitmap, src, dst, scenePaint)
         floorY = (bitmap.height * floor - srcTop) * scale
+        // A light cream wash over the whole scene.
+        fill.color = Color.argb(130, 255, 248, 234); canvas.drawRect(0f, 0f, w, h, fill)
+    }
+
+    /** A soft warm light around ([cx], [cy]) and a small shadow on the ground under what is on sale. */
+    protected fun spotlight(canvas: Canvas, cx: Float, cy: Float, radius: Float, shadowWidth: Float) {
+        fill.shader = android.graphics.RadialGradient(cx, cy, radius,
+            intArrayOf(Color.argb(200, 255, 252, 240), Color.argb(90, 255, 250, 236), Color.argb(0, 255, 250, 236)),
+            floatArrayOf(0f, 0.55f, 1f), android.graphics.Shader.TileMode.CLAMP)
+        canvas.drawCircle(cx, cy, radius, fill); fill.shader = null
+        fill.color = Color.argb(70, 60, 50, 30)
+        canvas.drawOval(cx - shadowWidth / 2f, floorY - shadowWidth * 0.08f, cx + shadowWidth / 2f, floorY + shadowWidth * 0.08f, fill)
     }
 }
 
@@ -689,7 +706,9 @@ private class ShopPreview(context: Context, friendId: String, private val style:
         val size = CharacterSprites.SIZE * px
         val left = w * 0.6f - size / 2f
         val top = floorY - CharacterSprites.FOOT_EDGE_Y * px
-        TrailPainter.draw(canvas, style, left + px * 10f, top + size * 0.55f, px, t * 1.5f)
+        // The decoration drawn bigger than it is in a run (the picture is small), in a soft light behind the friend.
+        spotlight(canvas, left - size * 0.05f, top + size * 0.58f, minOf(w * 0.45f, size * 1.1f), size * 0.5f)
+        TrailPainter.draw(canvas, style, left + px * 12f, top + size * 0.55f, px * 1.8f, t * 1.5f)
         val frames = arrayOf(SpriteFrame.RUN_0, SpriteFrame.RUN_1, SpriteFrame.RUN_2, SpriteFrame.RUN_3)
         box.set(left, top, left + size, top + size)
         canvas.drawBitmap(art[frames[((t * 8).toInt()) % 4]], null, box, pixel)
@@ -703,6 +722,7 @@ private class ItemPreview(context: Context, private val item: com.tinyrunners.sc
     override fun onDraw(canvas: Canvas) {
         drawScene(canvas)
         val size = minOf(height * 0.72f, width * 0.5f)
+        spotlight(canvas, width / 2f, floorY - size / 2f, size * 0.95f, size * 0.7f)
         com.tinyrunners.school.quest.ItemArt.draw(canvas, item, (width - size) / 2f, floorY - size, size, withGlow = false)
     }
 }
