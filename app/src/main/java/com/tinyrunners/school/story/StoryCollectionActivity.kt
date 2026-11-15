@@ -67,6 +67,8 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
     private lateinit var row: LinearLayout
     private lateinit var scroller: HorizontalScrollView
     private lateinit var pager: com.tinyrunners.school.ui.ShelfPager
+    private var shelfLeft = 40
+    private var shelfRight = 1640
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,31 +84,44 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
             // One line always: "스토리 진행으로" is longer than the mockup's label, so a little smaller.
             maxLines = 1; isSingleLine = true; ellipsize = null
         }.also { frame.onScaleText(it, 28f) }
-        frame.place(back, 47, 41, 371, 112)
-        // Keep the label right of the arrow (text_rect 128–350 of 47–371).
+        frame.place(back, 34, 31, 344, 97)
+        // Keep the label right of the arrow.
         frame.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             val s = frame.scale
-            back.setPadding(((128 - 47) * s).roundToInt(), 0, ((371 - 350) * s).roundToInt(), 0)
+            back.setPadding(((112 - 34) * s).roundToInt(), 0, (18 * s).roundToInt(), 0)
+            // The shelf runs on past the 16:9 canvas on wider phones (inside edges at about -125 and 1797): the cards
+            // use all of it that is on screen.
+            val left = maxOf(SHELF_LEFT, (frame.visibleLeft + 12).roundToInt())
+            val right = minOf(SHELF_RIGHT, (frame.visibleRight - 12).roundToInt())
+            if (left != shelfLeft || right != shelfRight) {
+                shelfLeft = left; shelfRight = right
+                frame.post { frame.move(scroller, left, SHELF_TOP, right, SHELF_TOP + (581 * CARD_ZOOM).roundToInt()) }
+            }
         }
+        // | 이야기 모음, then the page dots beside it, as in A's final mockup (the shelf below has no room for them).
+        frame.place(View(this).apply { setBackgroundColor(DEEP_GREEN) }, 366, 40, 370, 88)
+        frame.place(TextView(this).apply {
+            text = getString(R.string.collection_open); setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER_VERTICAL; maxLines = 1; includeFontPadding = false
+        }.also { frame.onScaleText(it, 50f) }, 392, 26, 690, 102)
         counter = TextView(this).apply {
             setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
             background = getDrawable(R.drawable.ui_story_counter_pill)
         }.also { frame.onScaleText(it, 31f) }
-        frame.place(counter, 1233, 41, 1526, 112)
+        frame.place(counter, 1236, 33, 1530, 97)
         frame.place(android.widget.ImageButton(this).apply {
             setImageDrawable(null)
             background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(R.drawable.ui_story_bag_button), null)
             contentDescription = getString(R.string.bag_open)
             setOnClickListener { startActivity(com.tinyrunners.school.quest.BagActivity.intent(this@StoryCollectionActivity)) }
-        }, 1562, 34, 1637, 120)
+        }, 1557, 24, 1639, 104)
 
         // Cards on the bench; they slide sideways when there are more than four.
         row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(row) }
-        frame.place(scroller, 40, 205, 1640, 812)
-        // Page dots and ◀ ▶ on the grass under the bench, as in 스토리 진행.
+        frame.place(scroller, 40, SHELF_TOP, 1640, SHELF_TOP + (581 * CARD_ZOOM).roundToInt())
         pager = com.tinyrunners.school.ui.ShelfPager(this, scroller)
-        frame.place(pager, 436, 842, 1236, 912)
+        frame.place(pager, 700, 30, 1200, 100)
 
         setContentView(frame)
         hideSystemBars()
@@ -218,7 +233,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
             setImageResource(thumbPart!!); scaleType = ImageView.ScaleType.FIT_CENTER
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }
-        return StoryBookCard.build(this, frame, ribbon, title, picture, count, button, StoryBookCard.Look.valueOf(look.name), click)
+        return StoryBookCard.build(this, frame, ribbon, title, picture, count, button, StoryBookCard.Look.valueOf(look.name), CARD_ZOOM, click)
     }
 
     private fun hideSystemBars() {
@@ -238,6 +253,11 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
 
     private companion object {
         const val KEY_SHELF = "collectionShelf"
+        /** The cards stand inside the shelf of A's final picture (boards at about 205 and 765), a little smaller. */
+        const val CARD_ZOOM = 0.9f
+        const val SHELF_TOP = 232
+        const val SHELF_LEFT = -125
+        const val SHELF_RIGHT = 1797
         val DEEP_GREEN = Color.parseColor("#1E5A2A")
         val CREAM = Color.parseColor("#FFF8E7")
         /** Ribbons and thumbnails A has drawn so far (세계·라일·치즈·포포); the others use the world ribbon and the home picture. */
@@ -248,10 +268,11 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
 
 /**
  * A fixed-size box in the mockup's reference pixels (scaled by [frame]'s current scale), with children placed by
- * reference rects relative to the box. Used for the story cards inside the sideways scroller.
+ * reference rects relative to the box, all shrunk or grown by [zoom]. Used for the story cards inside the sideways scroller.
  */
 @SuppressLint("ViewConstructor")
-internal class RefBox(context: Context, private val frame: MockupFrame, private val refW: Int, private val refH: Int) : android.view.ViewGroup(context) {
+internal class RefBox(context: Context, private val frame: MockupFrame, private val refW: Int, private val refH: Int,
+                      private val zoom: Float = 1f) : android.view.ViewGroup(context) {
     private class Ref(val x0: Int, val y0: Int, val x1: Int, val y1: Int)
 
     fun add(view: View, x0: Int, y0: Int, x1: Int, y1: Int) {
@@ -260,7 +281,7 @@ internal class RefBox(context: Context, private val frame: MockupFrame, private 
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val s = frame.scale
+        val s = frame.scale * zoom
         for (i in 0 until childCount) {
             val c = getChildAt(i); val r = c.getTag(R.id.mockup_rect) as Ref
             c.measure(MeasureSpec.makeMeasureSpec(((r.x1 - r.x0) * s).roundToInt(), MeasureSpec.EXACTLY),
@@ -270,7 +291,7 @@ internal class RefBox(context: Context, private val frame: MockupFrame, private 
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        val s = frame.scale
+        val s = frame.scale * zoom
         for (i in 0 until childCount) {
             val c = getChildAt(i); val ref = c.getTag(R.id.mockup_rect) as Ref
             val x = (ref.x0 * s).roundToInt(); val y = (ref.y0 * s).roundToInt()

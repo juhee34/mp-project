@@ -17,9 +17,10 @@ import kotlin.math.roundToInt
  * pixels, scaled by min(width/1672, height/941) and centred. The wide background (2091×941, the original picture
  * in its middle 1672 px) fills the height and is centred, so parts placed with [place] land exactly on it on 16:9
  * and 20:9 phones. Children added without [place] fill the whole frame. With [backgroundRes] 0 nothing is drawn behind
- * the parts (a popup laid out on the same canvas as the screen under it).
+ * the parts (a popup laid out on the same canvas as the screen under it). With [cover] the canvas fills the screen
+ * instead (cropped top and bottom on 20:9), for a 16:9 picture that cannot be widened.
  */
-class MockupFrame(context: Context, backgroundRes: Int) : FrameLayout(context) {
+class MockupFrame(context: Context, backgroundRes: Int, private val cover: Boolean = false) : FrameLayout(context) {
     private val art = if (backgroundRes == 0) null else context.getDrawable(backgroundRes)
     private val paint = Paint()
 
@@ -38,9 +39,21 @@ class MockupFrame(context: Context, backgroundRes: Int) : FrameLayout(context) {
         addView(view, LayoutParams(0, 0))
     }
 
+    /** Moves a view added with [place] to a new reference rect. */
+    fun move(view: View, x0: Int, y0: Int, x1: Int, y1: Int) {
+        view.setTag(TAG, Ref(x0, y0, x1, y1))
+        view.requestLayout()
+    }
+
+    /** The reference x at the screen's left and right edges (beyond 0..1672 on phones wider than 16:9). */
+    val visibleLeft get() = -offX / scale
+    val visibleRight get() = (width - offX) / scale
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val w = MeasureSpec.getSize(widthMeasureSpec); val h = MeasureSpec.getSize(heightMeasureSpec)
-        val newScale = minOf(w / REF_W, h / REF_H)
+        // Cover: the canvas fills the screen and is cropped top and bottom on wide phones (a picture with no plain
+        // sides to widen, like the menu book); otherwise it fits inside and the wide picture fills the sides.
+        val newScale = if (cover) maxOf(w / REF_W, h / REF_H) else minOf(w / REF_W, h / REF_H)
         if (newScale != scale && newScale > 0f) {
             scale = newScale
             scaledTexts.forEach { (v, p) -> v.setTextSize(TypedValue.COMPLEX_UNIT_PX, p * scale) }

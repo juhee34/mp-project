@@ -24,7 +24,7 @@ import com.tinyrunners.school.talk.PrologueActivity
 import kotlin.math.roundToInt
 
 /**
- * First screen after login (the menu), in A's approved design: an open picture book on a pixel wooden desk with the
+ * First screen after login (the menu), in A's approved design: an open picture book on a bookshelf with the
  * title, the subtitle, the six friends (game sprites, spread out on the meadow), and five buttons in the middle (스토리 진행하기 filled green, the rest cream).
  * 스토리 진행하기 → world story → talks with the village residents. 게임하기 → friend selection. 상점 → the shop.
  * 튜토리얼 → the game guide on a practice run. 설정 → settings.
@@ -35,30 +35,28 @@ class HubActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // A's final menu (docs/art/ui-screens/main-menu-final, 2026-11-12): the open picture book with the title, the six friends and a
-        // cream gap in the middle where the five buttons sit at the mockup's own positions (layout.json).
-        val frame = MockupFrame(this, R.drawable.bg_main_menu_wide)
-        // The page's clouds drift slowly behind the tree and the title, fading in and out at the page's edges.
-        frame.addView(com.tinyrunners.school.ui.CloudDrift(this, frame, R.drawable.ui_clouds_main_menu, R.drawable.ui_sky_main_menu,
-            wrapLeft = 312, wrapRight = 2085, fade = 170))
+        // A's final UI pack (TinyRunners-final-ui-assets, 2026-11-15): the open picture book on the shelf with the title,
+        // the meadow and an empty middle where the five buttons sit at the mockup's positions (asset-manifest.json). The
+        // book fills the whole 16:9 picture, so on wider phones it covers the screen and loses a little top and bottom.
+        val frame = MockupFrame(this, R.drawable.bg_main_menu_book, cover = true)
         fun add(part: Int, label: Int, ink: Int, px: Float, rect: IntArray, click: () -> Unit) =
             frame.place(MockupFrame.partButton(this, frame, part, getString(label), ink, px) {
                 if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click()
             }, rect[0], rect[1], rect[2], rect[3])
-        add(R.drawable.ui_menu_btn_primary, R.string.hub_story, CREAM, 44f, intArrayOf(610, 317, 1061, 401)) {
+        add(R.drawable.ui_menu_btn_primary, R.string.hub_story, CREAM, 44f, intArrayOf(620, 315, 1052, 402)) {
             startActivity(PrologueActivity.forStory(this))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_game, DEEP_GREEN, 42f, intArrayOf(619, 410, 1053, 488)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_game, DEEP_GREEN, 42f, intArrayOf(629, 411, 1044, 483)) {
             startActivity(MainActivity.selectionIntent(this))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_shop, DEEP_GREEN, 42f, intArrayOf(618, 497, 1053, 575)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_shop, DEEP_GREEN, 42f, intArrayOf(628, 491, 1044, 565)) {
             startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_tutorial, DEEP_GREEN, 42f, intArrayOf(619, 584, 1053, 663)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_tutorial, DEEP_GREEN, 42f, intArrayOf(628, 573, 1044, 648)) {
             // A practice run with 라일 that always starts with the game guide.
             startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
         }
-        add(R.drawable.ui_menu_btn_secondary, R.string.hub_settings, DEEP_GREEN, 42f, intArrayOf(619, 672, 1053, 750)) {
+        add(R.drawable.ui_menu_btn_secondary, R.string.hub_settings, DEEP_GREEN, 42f, intArrayOf(627, 656, 1044, 732)) {
             startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java))
         }
         // The six friends from their game sprites (the picture's own drawings were taken out), three each side.
@@ -88,9 +86,9 @@ class HubActivity : Activity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     companion object {
-        /** Friend centres and feet line on the 1672×941 canvas (close together as in A's picture, clear of the buttons). */
-        val FRIEND_X = intArrayOf(183, 336, 497, 1176, 1350, 1524)
-        const val FRIEND_FEET = 758
+        /** Friend centres and feet line on the 1672×941 canvas, where A's final mockup stands them on the meadow. */
+        val FRIEND_X = intArrayOf(215, 375, 522, 1140, 1305, 1458)
+        const val FRIEND_FEET = 702
         /** Text colours from layout.json. */
         private val CREAM = Color.parseColor("#FFF8E7")
         private val DEEP_GREEN = Color.parseColor("#1E5A2A")

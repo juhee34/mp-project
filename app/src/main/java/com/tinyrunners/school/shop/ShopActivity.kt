@@ -708,122 +708,39 @@ private class ItemPreview(context: Context, private val item: com.tinyrunners.sc
 }
 
 /**
- * The shop's backdrop from the approved design: cream fabric with a faint weave, a thin honey-wood frame, a potted
- * fern in the bottom-left corner and lavender and white flowers in the bottom-right. Drawn once (no animation);
- * everything with text is a real view on top.
+ * The shop's (and settings') backdrop: A's final frame picture (TinyRunners-final-ui-assets, shop_background) —
+ * cream fabric, a thin honey-wood frame, a potted fern in the bottom-left corner and flowers in the bottom-right — drawn
+ * as nine pieces: the corners keep their shape at the screen's height, and only the plain edges and middle stretch.
+ * Drawn once (no animation); everything with text is a real view on top.
  */
 internal class ShopBackground(context: Context) : View(context) {
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val path = android.graphics.Path()
+    private val art = android.graphics.BitmapFactory.decodeResource(resources, R.drawable.bg_shop_frame)
+    private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
+    private val src = android.graphics.Rect()
+    private val dst = android.graphics.RectF()
 
     override fun onDraw(canvas: Canvas) {
         val w = width.toFloat(); val h = height.toFloat()
-        val d = resources.displayMetrics.density
-        // Fabric: cream with a very light weave, low enough not to disturb the text.
-        paint.color = ShopActivity.FABRIC
-        canvas.drawRect(0f, 0f, w, h, paint)
-        paint.color = Color.argb(14, 140, 100, 50)
-        val weave = 4 * d
-        var y = 0f
-        while (y < h) { canvas.drawRect(0f, y, w, y + d * 0.6f, paint); y += weave }
-        var x = 0f
-        while (x < w) { canvas.drawRect(x, 0f, x + d * 0.6f, h, paint); x += weave }
-        // Honey-wood frame: a darker outer line, the wood, and a light inner edge.
-        val inset = 5 * d
-        val r = 18 * d
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 7 * d; paint.color = Color.rgb(214, 176, 124)
-        canvas.drawRoundRect(inset, inset, w - inset, h - inset, r, r, paint)
-        paint.strokeWidth = 1.5f * d; paint.color = ShopActivity.HONEY
-        canvas.drawRoundRect(inset - 3.5f * d, inset - 3.5f * d, w - inset + 3.5f * d, h - inset + 3.5f * d, r + 3 * d, r + 3 * d, paint)
-        canvas.drawRoundRect(inset + 3.5f * d, inset + 3.5f * d, w - inset - 3.5f * d, h - inset - 3.5f * d, r - 3 * d, r - 3 * d, paint)
-        paint.style = Paint.Style.FILL
-        // Corner plants.
-        fern(canvas, 56 * d, h - 12 * d, d * 1.3f)
-        flowers(canvas, w - 80 * d, h - 12 * d, d * 1.25f)
+        if (art == null || w <= 0f || h <= 0f) { canvas.drawColor(ShopActivity.FABRIC); return }
+        val k = h / art.height
+        // Source cuts (picture pixels) and the same cuts on screen; the corners never grow wider than half the screen.
+        val sx = intArrayOf(0, SIDE, art.width - SIDE, art.width)
+        val sy = intArrayOf(0, TOP, art.height - BOTTOM, art.height)
+        val side = minOf(SIDE * k, w / 2f)
+        val dx = floatArrayOf(0f, side, w - side, w)
+        val dy = floatArrayOf(0f, TOP * k, h - BOTTOM * k, h)
+        for (row in 0..2) for (col in 0..2) {
+            src.set(sx[col], sy[row], sx[col + 1], sy[row + 1])
+            dst.set(dx[col], dy[row], dx[col + 1], dy[row + 1])
+            canvas.drawBitmap(art, src, dst, paint)
+        }
     }
 
-    /** A terracotta pot with a fern of arching fronds. [cx] is the pot's centre, [base] its bottom. */
-    private fun fern(canvas: Canvas, cx: Float, base: Float, d: Float) {
-        // Fronds first, so the pot sits in front of them.
-        paint.style = Paint.Style.STROKE; paint.strokeCap = Paint.Cap.ROUND
-        val top = base - 22 * d
-        val fronds = listOf(-70f, -45f, -20f, 0f, 20f, 45f, 70f)
-        for ((i, angle) in fronds.withIndex()) {
-            val length = (if (i % 2 == 0) 40f else 34f) * d
-            val rad = Math.toRadians((angle - 90).toDouble())
-            val ex = cx + (kotlin.math.cos(rad) * length).toFloat()
-            val ey = top + (kotlin.math.sin(rad) * length).toFloat() * 0.85f
-            val mx = cx + (ex - cx) * 0.5f; val my = top + (ey - top) * 0.5f - 6 * d
-            paint.color = Color.rgb(70, 128, 64); paint.strokeWidth = 2 * d
-            path.reset(); path.moveTo(cx, top); path.quadTo(mx, my, ex, ey)
-            canvas.drawPath(path, paint)
-            // Leaflets along the frond.
-            paint.color = if (i % 2 == 0) Color.rgb(104, 164, 84) else Color.rgb(84, 146, 72)
-            paint.strokeWidth = 2.6f * d
-            for (k in 1..5) {
-                val f = k / 6f
-                val px = (1 - f) * (1 - f) * cx + 2 * (1 - f) * f * mx + f * f * ex
-                val py = (1 - f) * (1 - f) * top + 2 * (1 - f) * f * my + f * f * ey
-                val leaf = (7 - k) * 1.3f * d
-                canvas.drawLine(px, py, px - leaf * 0.7f, py - leaf * 0.5f, paint)
-                canvas.drawLine(px, py, px + leaf * 0.7f, py - leaf * 0.5f, paint)
-            }
-        }
-        paint.style = Paint.Style.FILL; paint.strokeCap = Paint.Cap.BUTT
-        // The pot: a tapered body and a rim.
-        path.reset()
-        path.moveTo(cx - 16 * d, base - 20 * d); path.lineTo(cx + 16 * d, base - 20 * d)
-        path.lineTo(cx + 12 * d, base); path.lineTo(cx - 12 * d, base); path.close()
-        paint.color = Color.rgb(196, 112, 64); canvas.drawPath(path, paint)
-        paint.color = Color.rgb(170, 90, 50); canvas.drawRect(cx - 14 * d, base - 10 * d, cx + 13 * d, base - 8 * d, paint)
-        paint.color = Color.rgb(214, 132, 80); canvas.drawRoundRect(cx - 19 * d, base - 26 * d, cx + 19 * d, base - 19 * d, 2 * d, 2 * d, paint)
-        // Grass and a daisy beside it.
-        grass(canvas, cx + 26 * d, base, d, 22 * d)
-        daisy(canvas, cx + 34 * d, base - 12 * d, d, Color.WHITE)
-    }
-
-    /** A clump of grass with lavender sprigs and two white daisies. */
-    private fun flowers(canvas: Canvas, cx: Float, base: Float, d: Float) {
-        grass(canvas, cx, base, d, 70 * d)
-        paint.style = Paint.Style.STROKE; paint.strokeCap = Paint.Cap.ROUND
-        val sprigs = listOf(Triple(-14f, 34f, -6f), Triple(2f, 44f, 0f), Triple(18f, 38f, 8f), Triple(32f, 28f, 10f))
-        for ((dx, height, lean) in sprigs) {
-            val sx = cx + dx * d; val tx = sx + lean * d; val ty = base - height * d
-            paint.color = Color.rgb(84, 140, 72); paint.strokeWidth = 1.8f * d
-            canvas.drawLine(sx, base - 4 * d, tx, ty, paint)
-            paint.style = Paint.Style.FILL
-            for (k in 0..3) {
-                paint.color = if (k % 2 == 0) ShopActivity.LAVENDER else Color.rgb(150, 116, 186)
-                canvas.drawCircle(tx + (if (k % 2 == 0) -1.6f else 1.6f) * d, ty + k * 4.2f * d, 2.6f * d, paint)
-            }
-            paint.style = Paint.Style.STROKE
-        }
-        paint.style = Paint.Style.FILL; paint.strokeCap = Paint.Cap.BUTT
-        daisy(canvas, cx - 26 * d, base - 10 * d, d, Color.WHITE)
-        daisy(canvas, cx + 46 * d, base - 8 * d, d, Color.rgb(250, 246, 236))
-    }
-
-    private fun grass(canvas: Canvas, cx: Float, base: Float, d: Float, width: Float) {
-        paint.style = Paint.Style.STROKE; paint.strokeCap = Paint.Cap.ROUND; paint.strokeWidth = 2 * d
-        var x = cx - width / 2
-        var i = 0
-        while (x <= cx + width / 2) {
-            paint.color = if (i % 2 == 0) Color.rgb(104, 164, 84) else Color.rgb(132, 186, 100)
-            val height = (6 + (i * 7) % 9) * d
-            canvas.drawLine(x, base, x + (if (i % 3 == 0) -2 else 2) * d, base - height, paint)
-            x += 4 * d; i++
-        }
-        paint.style = Paint.Style.FILL; paint.strokeCap = Paint.Cap.BUTT
-    }
-
-    private fun daisy(canvas: Canvas, x: Float, y: Float, d: Float, petal: Int) {
-        paint.color = petal
-        for (k in 0 until 5) {
-            val a = Math.toRadians(k * 72.0)
-            canvas.drawCircle(x + (kotlin.math.cos(a) * 2.6f * d).toFloat(), y + (kotlin.math.sin(a) * 2.6f * d).toFloat(), 2.2f * d, paint)
-        }
-        paint.color = Color.rgb(244, 196, 64); canvas.drawCircle(x, y, 1.8f * d, paint)
+    private companion object {
+        /** Corner sizes in the 1919×1080 picture: wide enough for the fern and the flowers, tall enough for the board. */
+        const val SIDE = 330
+        const val TOP = 70
+        const val BOTTOM = 180
     }
 }
 

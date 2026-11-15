@@ -27,6 +27,14 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 친구의 최종 UI 묶음으로 메뉴·이야기 모음·상점 배경 교체 (2026-11-15, B)
+- 받은 자료: TinyRunners-final-ui-assets.zip (A). 시안 4장(main·village·collection·shop), 글자 없는 배경 5장, 버튼 잘라낸 그림, asset-manifest.json(1672×941 기준 좌표). 묶음 속 스크립트는 실행하지 않음.
+- 메뉴: 새 그림책 배경 bg_main_menu_book.jpg(1919×1080) = main_background + 시안의 제목·부제 글씨만 옮김. 책이 16:9 전체를 채우므로 MockupFrame에 cover 모드(화면을 채우고 20:9에서는 위아래를 조금 자름)를 추가해 메뉴에만 씀. 버튼 다섯 개 좌표는 manifest 값, 친구 6명 위치는 시안의 초원 위로. 옛 배경 bg_main_menu_wide와 그 위 구름 층(ui_clouds_main_menu·ui_sky_main_menu, CloudDrift)은 새 그림과 맞지 않아 지움 — 메뉴 구름은 지금 움직이지 않음(오프닝 구름은 그대로).
+- 이야기 모음: bg_story_collection_wide.jpg를 새 선반 그림(collection_background)으로 교체, 20:9용으로 판자·종이 두 띠만 늘려 2400×1080. 위쪽은 시안처럼 [◀ 스토리 진행으로 | 이야기 모음 · 페이지 점 ▶] … [본 이야기 n/31][가방]. 카드는 선반 안에 맞게 0.9배(RefBox·StoryBookCard에 zoom 인자, 기본 1이라 스토리 진행 화면은 그대로), 넓은 폰에서는 화면에 보이는 선반 폭 전체를 씀(MockupFrame.move·visibleLeft/Right).
+- 상점·설정: ShopBackground를 손으로 그리던 틀 대신 shop_background 그림(bg_shop_frame.png, 가운데 안내선 지움)을 9조각으로 그림 — 모서리 화분·꽃은 모양 유지, 가장자리·가운데만 늘어남.
+- 검증: assembleDebug·testDebugUnitTest·lintDebug 통과, validate-content 통과. 에뮬레이터(Medium_Phone 2400×1080)에서 메뉴·상점·이야기 모음(두 쪽 넘김) 화면 확인. 16:9 기기는 확인하지 않음. 설정 화면은 같은 ShopBackground라 따로 찍지 않음.
+- 미완료: 마을(스토리 진행) 새 시안은 친구 한 명 + 오른쪽 안내판 구성이라 지금 카드 선반과 화면 구성이 달라 적용하지 않음(사용자 결정 대기). 메뉴 구름 움직임을 새 그림에 다시 넣을지도 결정 대기.
+
 ## 뒤로 버튼·날씨 효과 다듬기 (2026-11-15, B)
 - 이야기 모음 "◀ 스토리 진행으로": 한 줄 고정·글자 28px로 잘림 없앰.
 - 왼쪽 위 버튼을 "◀ 돌아가기"(이전 화면)로: HomeButton 기본 동작 goBack(아래에 화면이 있으면 finish, 없으면 메뉴). 설정·상점·친구 선택·Page 화면·스토리 진행 공통. 예: 친구 선택 → 설정 → 돌아가기 = 친구 선택.
