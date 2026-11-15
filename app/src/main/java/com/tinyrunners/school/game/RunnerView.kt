@@ -55,6 +55,7 @@ class RunnerView(
     private var scale = 1f
     private var groundY = 0f
     private var animTime = 0f
+    private val fogPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
     private var lastPhase = engine.phase
     /** Items picked up so far, to vibrate once per new item. */
     private var lastCollected = 0
@@ -157,11 +158,12 @@ class RunnerView(
             drawGroundMarks(canvas, w)
         }
 
+        drawWeatherBehind(canvas, w)
         for (o in engine.obstacles) drawObstacle(canvas, o)
         drawPickups(canvas)
         drawRunner(canvas)
         drawCoinPops(canvas)
-        drawWeather(canvas, w)
+        drawWeatherFront(canvas, w)
         drawHud(canvas, w)
 
         when (engine.phase) {
@@ -196,24 +198,29 @@ class RunnerView(
         return if (r.isDay) base else blend(base, NIGHT, 0.6f)
     }
 
-    /** Rain streaks or snowflakes from a fixed pattern moved by time; no allocation per frame. */
-    private fun drawWeather(canvas: Canvas, w: Float) {
+    /**
+     * Weather behind the play: washes over the scenery only (clouds grey, rain blue-grey, storm dark, fog a light white
+     * haze, night blue), so the runner, obstacles, coins and items keep their own colours and stay easy to read; and
+     * the snow settling on the ground as it falls.
+     */
+    private fun drawWeatherBehind(canvas: Canvas, w: Float) {
+        val r = weather ?: return
+        val full = height.toFloat()
+        when (r.sky) {
+            Sky.CLOUDY -> { fill.color = CLOUD_WASH; canvas.drawRect(0f, 0f, w, full, fill) }
+            Sky.RAIN -> { fill.color = RAIN_WASH; canvas.drawRect(0f, 0f, w, full, fill) }
+            Sky.STORM -> { fill.color = STORM_WASH; canvas.drawRect(0f, 0f, w, full, fill) }
+            Sky.FOG -> { fill.color = FOG_WASH; canvas.drawRect(0f, 0f, w, full, fill) }
+            Sky.SNOW, Sky.CLEAR -> Unit
+        }
+        if (!r.isDay) { fill.color = NIGHT_WASH; canvas.drawRect(0f, 0f, w, full, fill) }
+        if (r.sky == Sky.SNOW) drawSettledSnow(canvas, w)
+    }
+
+    /** Weather in front of the play: rain, snowflakes, drifting fog and lightning. */
+    private fun drawWeatherFront(canvas: Canvas, w: Float) {
         val r = weather ?: return
         val h = groundY
-        // Washes over the picture so every sky looks different: grey for clouds, dark grey for storms, blue at night.
-        when (r.sky) {
-            Sky.CLOUDY -> { fill.color = CLOUD_WASH; canvas.drawRect(0f, 0f, w, height.toFloat(), fill) }
-            Sky.RAIN -> { fill.color = RAIN_WASH; canvas.drawRect(0f, 0f, w, height.toFloat(), fill) }
-            Sky.STORM -> {
-                fill.color = STORM_WASH; canvas.drawRect(0f, 0f, w, height.toFloat(), fill)
-                // A lightning flash now and then.
-                if ((animTime % 5f) in 0f..0.12f || (animTime % 5f) in 0.22f..0.3f) {
-                    fill.color = Color.argb(120, 255, 255, 240); canvas.drawRect(0f, 0f, w, height.toFloat(), fill)
-                }
-            }
-            else -> Unit
-        }
-        if (!r.isDay) { fill.color = NIGHT_WASH; canvas.drawRect(0f, 0f, w, height.toFloat(), fill) }
         when (r.sky) {
             Sky.RAIN, Sky.STORM -> {
                 fill.color = RAIN_COLOR
@@ -223,19 +230,85 @@ class RunnerView(
                     val y = ((i * 53.7f + animTime * 520f * scale) % (h + len)) - len
                     canvas.drawRect(x, y, x + 1.6f * scale, y + len, fill)
                 }
-            }
-            Sky.SNOW -> {
-                fill.color = Color.WHITE
-                val size = 3f * scale
-                for (i in 0 until 50) {
-                    val drift = kotlin.math.sin(animTime * 1.3f + i) * 10f * scale
-                    val x = ((i * 89.1f + engine.distance * 0.3f * scale) % (w + 20f)) - 10f + drift
-                    val y = ((i * 61.3f + animTime * 60f * scale) % (h + size)) - size
-                    canvas.drawRect(x, y, x + size, y + size, fill)
+                // A lightning flash now and then.
+                if (r.sky == Sky.STORM && ((animTime % 5f) in 0f..0.12f || (animTime % 5f) in 0.22f..0.3f)) {
+                    fill.color = Color.argb(110, 255, 255, 240); canvas.drawRect(0f, 0f, w, height.toFloat(), fill)
                 }
             }
-            Sky.FOG -> { fill.color = FOG_COLOR; canvas.drawRect(0f, 0f, w, h, fill) }
+            Sky.SNOW -> drawSnowflakes(canvas, w, h)
+            Sky.FOG -> drawFogDrift(canvas, w, h)
             Sky.CLEAR, Sky.CLOUDY -> Unit
+        }
+    }
+
+    /** A small stable pseudo-random number in 0..1 for flake/puff/patch [i] and [salt]. */
+    private fun noise(i: Int, salt: Int): Float {
+        var x = i * 374761393 + salt * 668265263
+        x = (x xor (x ushr 13)) * 1274126177
+        return ((x xor (x ushr 16)) and 0xFFFF) / 65535f
+    }
+
+    /**
+     * Snowflakes falling at their own speeds and swaying at their own pace (not one slant), each a little smaller
+     * than 라일's eye: a square about 2.5 sprite pixels across, with a lighter centre.
+     */
+    private fun drawSnowflakes(canvas: Canvas, w: Float, h: Float) {
+        val px = spriteScale.toFloat().coerceAtLeast(2f)
+        for (i in 0 until SNOWFLAKES) {
+            val size = (2.4f + noise(i, 1) * 0.9f) * px
+            val fall = (34f + noise(i, 2) * 46f) * scale
+            val swayAmp = (4f + noise(i, 3) * 14f) * scale
+            val swaySpeed = 0.6f + noise(i, 4) * 1.6f
+            val baseX = noise(i, 5) * (w + 60f)
+            val y = ((noise(i, 6) * (h + size) + animTime * fall) % (h + size)) - size
+            val sway = kotlin.math.sin(animTime * swaySpeed + noise(i, 7) * 6.28f) * swayAmp
+            // The flakes drift slowly back past the runner as the road moves.
+            val x = ((baseX - engine.distance * 0.18f * scale) % (w + 60f) + (w + 60f)) % (w + 60f) - 30f + sway
+            fill.color = SNOW_EDGE; canvas.drawRect(x, y, x + size, y + size, fill)
+            fill.color = Color.WHITE; canvas.drawRect(x + size * 0.2f, y + size * 0.2f, x + size * 0.8f, y + size * 0.8f, fill)
+        }
+    }
+
+    /**
+     * Snow lying on the ground: soft white patches that grow for the first half minute of the run and move with the
+     * ground (the same travel as the running background).
+     */
+    private fun drawSettledSnow(canvas: Canvas, w: Float) {
+        val amount = (0.45f + animTime / 30f).coerceAtMost(1f)
+        val travel = engine.distance * scale * 0.25f
+        val period = 64f * scale
+        val first = kotlin.math.floor((travel - period) / period).toInt()
+        val last = kotlin.math.floor((travel + w + period) / period).toInt()
+        for (n in first..last) {
+            if (noise(n, 11) < 0.3f) continue
+            val width = (14f + noise(n, 12) * 34f) * scale * amount
+            val x = n * period - travel + noise(n, 13) * period * 0.5f
+            val rise = (3f + noise(n, 14) * 2.2f) * scale * amount
+            fill.color = SNOW_SHADE; canvas.drawRect(x, groundY - rise + 1.2f * scale, x + width, groundY + 2.2f * scale, fill)
+            fill.color = Color.WHITE; canvas.drawRect(x, groundY - rise, x + width, groundY + 1.2f * scale, fill)
+            // A little heap in the middle.
+            canvas.drawRect(x + width * 0.25f, groundY - rise * 1.7f, x + width * 0.7f, groundY, fill)
+        }
+    }
+
+    /**
+     * Fog: pale white puffs drifting across the road in front of the runner, like the clouds of the opening and menu,
+     * so the way ahead is a little harder to see.
+     */
+    private fun drawFogDrift(canvas: Canvas, w: Float, h: Float) {
+        val span = w + 200f * scale
+        for (i in 0 until FOG_PUFFS) {
+            val width = (110f + noise(i, 21) * 90f) * scale
+            val height = (26f + noise(i, 22) * 22f) * scale
+            val speed = (14f + noise(i, 23) * 18f) * scale
+            val offset = (noise(i, 24) * span + animTime * speed + engine.distance * 0.35f * scale) % span
+            val left = w - offset + 60f * scale
+            val bottom = h - noise(i, 25) * 95f * scale
+            fogPaint.alpha = (60 + noise(i, 26) * 50).toInt()
+            val r = height / 2f
+            canvas.drawRoundRect(left, bottom - height, left + width, bottom, r, r, fogPaint)
+            canvas.drawRoundRect(left + width * 0.18f, bottom - height * 1.55f, left + width * 0.62f, bottom - height * 0.4f, r, r, fogPaint)
+            canvas.drawRoundRect(left + width * 0.45f, bottom - height * 1.25f, left + width * 0.88f, bottom - height * 0.3f, r, r, fogPaint)
         }
     }
 
@@ -541,11 +614,16 @@ class RunnerView(
         /** Soft lavender dusk: keeps dark text readable and does not look like an overcast day. */
         val NIGHT = Color.rgb(214, 210, 236)
         val RAIN_COLOR = Color.argb(150, 96, 120, 150)
-        val FOG_COLOR = Color.argb(110, 255, 255, 255)
+        val FOG_WASH = Color.argb(70, 255, 255, 255)
+        val SNOW_EDGE = Color.rgb(214, 226, 240)
+        val SNOW_SHADE = Color.rgb(196, 212, 230)
+        const val SNOWFLAKES = 70
+        const val FOG_PUFFS = 7
         val CLOUD_WASH = Color.argb(55, 120, 126, 134)
         val RAIN_WASH = Color.argb(60, 70, 86, 110)
         val STORM_WASH = Color.argb(105, 40, 44, 60)
-        val NIGHT_WASH = Color.argb(120, 18, 26, 70)
+        /** Night over the scenery only (the runner and obstacles keep their colours), lighter than before. */
+        val NIGHT_WASH = Color.argb(95, 18, 26, 70)
         val HILL = Color.rgb(221, 232, 214)
         val GROUND = Color.rgb(196, 170, 128)
         val GROUND_MARK = Color.rgb(176, 150, 110)

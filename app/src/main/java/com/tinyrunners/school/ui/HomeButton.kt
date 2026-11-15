@@ -8,16 +8,23 @@ import com.tinyrunners.school.R
 import com.tinyrunners.school.hub.HubActivity
 
 /**
- * The small "◀ 처음으로" button at the top-left of the story list, friend selection, shop and settings. It goes
- * back to the menu (hub) the same way from every screen. It wears the top-bar pill ([TopPill]).
+ * The small "◀ 돌아가기" button at the top-left of the friend selection, shop, settings and other screens. It works as
+ * a back button: it closes this screen and shows the one it was opened from (settings opened from the friend
+ * selection go back to the selection), or the menu when nothing is underneath. It wears the top-bar pill ([TopPill]).
  */
 object HomeButton {
-    fun create(context: Context, label: String = context.getString(R.string.common_to_menu), click: () -> Unit = { goToMenu(context) }): Button =
+    fun create(context: Context, label: String = context.getString(R.string.common_back_pill), click: () -> Unit = { goBack(context) }): Button =
         Button(context).apply {
             text = label
             TopPill.style(this)
             setOnClickListener { click() }
         }
+
+    /** Back to the screen this one was opened from; the menu when this screen is the first one in the app's stack. */
+    fun goBack(context: Context) {
+        val activity = context as? Activity
+        if (activity != null && !activity.isTaskRoot) activity.finish() else goToMenu(context)
+    }
 
     /** Back to the menu that is already open under this screen (screens above it close), or a fresh menu. */
     fun goToMenu(context: Context) {

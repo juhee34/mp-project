@@ -79,7 +79,9 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
             gravity = Gravity.CENTER; minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
             background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(R.drawable.ui_story_back_button), null)
             setOnClickListener { goBack() }
-        }.also { frame.onScaleText(it, 34f) }
+            // One line always: "스토리 진행으로" is longer than the mockup's label, so a little smaller.
+            maxLines = 1; isSingleLine = true; ellipsize = null
+        }.also { frame.onScaleText(it, 28f) }
         frame.place(back, 47, 41, 371, 112)
         // Keep the label right of the arrow (text_rect 128–350 of 47–371).
         frame.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->

@@ -52,13 +52,13 @@ class StoryListActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
         focus = savedInstanceState?.getString(KEY_FOCUS) ?: intent.getStringExtra(EXTRA_FRIEND)
         frame = MockupFrame(this, R.drawable.bg_village_stories_wide)
 
-        // ◀ 처음으로 in the collection's back part (same place as its ◀ 스토리 진행으로).
+        // ◀ 돌아가기 (to the screen it was opened from) in the collection's back part (same place as its ◀ 스토리 진행으로).
         val back = Button(this).apply {
-            text = getString(R.string.common_to_menu).removePrefix("◀ ")
+            text = getString(R.string.common_back_pill).removePrefix("◀ ")
             isAllCaps = false; stateListAnimator = null; setTextColor(StoryBookCard.DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER; minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
             background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(R.drawable.ui_story_back_button), null)
-            setOnClickListener { HomeButton.goToMenu(this@StoryListActivity) }
+            setOnClickListener { HomeButton.goBack(this@StoryListActivity) }
         }.also { frame.onScaleText(it, 34f) }
         frame.place(back, 47, 41, 371, 112)
         frame.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->

@@ -68,9 +68,9 @@ class Page(private val activity: Activity) {
         return this
     }
 
-    /** Small top-left button (see HomeButton): "◀ 처음으로" to the menu unless another [text]/[click] is given. */
-    fun backPill(text: String = activity.getString(com.tinyrunners.school.R.string.common_to_menu),
-                 click: () -> Unit = { HomeButton.goToMenu(activity) }): Button =
+    /** Small top-left button (see HomeButton): "◀ 돌아가기" to the previous screen unless another [text]/[click] is given. */
+    fun backPill(text: String = activity.getString(com.tinyrunners.school.R.string.common_back_pill),
+                 click: () -> Unit = { HomeButton.goBack(activity) }): Button =
         HomeButton.create(activity, text, click).also {
             body.addView(it, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(6) })
         }
