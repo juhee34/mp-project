@@ -45,6 +45,8 @@
     <string name="collection_not_open">아직 열리지 않았어요</string>
     <string name="village_hint">친구 카드를 옆으로 넘겨 보고, 대화하고 싶은 친구를 골라요.</string>
     <string name="village_chip_new">새 이야기</string>
+    <string name="village_prev_friend">앞 친구 보기</string>
+    <string name="village_next_friend">다음 친구 보기</string>
     <string name="village_chip_read">다 봤어요</string>
     <string name="village_card_description_short">%1$s, %2$s. %3$s</string>
 </resources>

@@ -27,6 +27,13 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 스토리 진행 화면을 친구의 최종 마을 시안 구성으로 (2026-11-15, B)
+- 카드 선반 대신 시안 구성: 크림색 머리띠(◀ 돌아가기 | 꽃 사이 "스토리 진행" | 이야기 모음(친구 버튼 그림) | 가방), 마을 그림 위에 친구 한 명(48×48 스프라이트, 숨쉬기), 오른쪽 안내판(◀ 이름 ▶, 말풍선 속 짧은 대사, 📍 고향 · 상태(다 봤어요/새 이야기/잠겨 있어요), 대화 버튼, 친구 점 6개). ◀ ▶와 점으로 여섯 친구를 돌아가며 보고, 친구나 버튼을 누르면 그 친구의 다음 마을 이야기(다 봤으면 마지막 이야기)를 엶 — 이야기 고르는 규칙은 그대로.
+- 그림: bg_village_scene_wide.jpg(village_background를 20:9용으로 넓힘 — 오른쪽 틀 앞 초원·나무를 한 번 더 이어 붙이고 이음매는 40px 섞음, 대부분 안내판 뒤), ui_village_panel.png(시안의 안내판에서 글자·버튼만 지운 것, 둥근 모서리 밖 투명), ui_village_title.png(제목 꽃·마름모 줄), ui_village_collection_button.png(시안 버튼 그대로). 머리띠 버튼과 안내판은 넓은 폰에서는 그림 틀에, 16:9에서는 화면 끝에 맞춤. 말풍선 줄바꿈은 어절 단위(API 33+).
+- 지움: 옛 배경 bg_village_stories_wide.jpg, TitleBanner(다른 곳에서 안 씀). 새 문자열 village_prev_friend/village_next_friend.
+- 검증: assembleDebug·testDebugUnitTest·lintDebug 통과, validate-content 통과. 에뮬레이터(2400×1080)에서 화면, ▶·점으로 친구 바꾸기(라일→치즈, 피코), 대화 버튼으로 치즈 이야기 열림 확인. 16:9 기기, 잠긴 친구 표시는 직접 보지 못함.
+- 시안 속 집 그림은 공통 마을 풍경이고, 친구별 고향 화면(대화 배경)은 기존 집 원본을 그대로 씀(묶음 안내 8번).
+
 ## 친구의 최종 UI 묶음으로 메뉴·이야기 모음·상점 배경 교체 (2026-11-15, B)
 - 받은 자료: TinyRunners-final-ui-assets.zip (A). 시안 4장(main·village·collection·shop), 글자 없는 배경 5장, 버튼 잘라낸 그림, asset-manifest.json(1672×941 기준 좌표). 묶음 속 스크립트는 실행하지 않음.
 - 메뉴: 새 그림책 배경 bg_main_menu_book.jpg(1919×1080) = main_background + 시안의 제목·부제 글씨만 옮김. 책이 16:9 전체를 채우므로 MockupFrame에 cover 모드(화면을 채우고 20:9에서는 위아래를 조금 자름)를 추가해 메뉴에만 씀. 버튼 다섯 개 좌표는 manifest 값, 친구 6명 위치는 시안의 초원 위로. 옛 배경 bg_main_menu_wide와 그 위 구름 층(ui_clouds_main_menu·ui_sky_main_menu, CloudDrift)은 새 그림과 맞지 않아 지움 — 메뉴 구름은 지금 움직이지 않음(오프닝 구름은 그대로).
