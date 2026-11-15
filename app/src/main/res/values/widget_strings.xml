@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_small_label">오늘의 친구 (작게)</string>
+    <string name="widget_wide_label">오늘의 친구와 날씨</string>
+    <string name="widget_small_description">오늘의 친구와 한마디를 작게 보여 줘요. 누르면 게임이 열려요.</string>
+    <string name="widget_wide_description">오늘의 친구, 고른 도시의 지금 날씨, 친구의 한마디. 누르면 게임이 열려요.</string>
+    <!-- What the widget shows before its first update (and in the widget picker). -->
+    <string name="widget_preview_name">오늘의 친구 · 라일</string>
+    <string name="widget_preview_weather">맑음 · 12°C · 서울</string>
+    <string name="widget_preview_line">“오늘은 이쪽으로 가 볼까?”</string>
+    <string name="widget_today_friend">오늘의 친구 · %1$s</string>
+    <string name="widget_description">오늘의 친구 %1$s. 누르면 Tiny Runners가 열려요.</string>
+</resources>

@@ -31,6 +31,9 @@ class GameActivity : Activity() {
         view.trail = com.tinyrunners.school.shop.ShopStore.equippedStyle(this)
         // One ID per run; the result screen saves with it, so a recreated result screen cannot double count.
         val runId = UUID.randomUUID().toString()
+        // The home-screen widget shows the friend of the latest run.
+        com.tinyrunners.school.widget.TodayFriend.remember(this, character.id)
+        com.tinyrunners.school.widget.FriendWidget.refreshAll(this)
         view.onRunOver = {
             // Items picked up on the road go into the bag right away, so leaving the talk early keeps them.
             val picked = engine.collected

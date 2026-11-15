@@ -133,3 +133,8 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - RunningBackgroundMotion은 출발 이미지를 한 번 배치하고 이후 loopSource만 배치한다. 파일 누락 시 기존 집 반복으로 대체하지 않는다. loopSource 필드 없는 구형 자산은 원본 끝에서 멈춘다.
 - 루프의 원경 지붕·작은 창문은 마을 풍경이다. 캐릭터의 큰 출발 집·무대·선착장 집은 반복 이미지에 넣지 않는다.
 - 아트 내보내기/경계 검수와 실제 Android 기기 검수는 구분한다.
+
+## 홈 화면 위젯 대사 (2026-11-15, B)
+- 위젯(widget/FriendWidget.kt)은 기존 짧은 대사 묶음(content/short_lines*.json)에서 `event`가 `widget_clear`, `widget_cloudy`, `widget_rain`, `widget_snow`, `widget_hot`인 줄을 그 날씨에 씀. 형식은 다른 짧은 대사와 같음(`id`, `characterId`, `event`, `text`, `requiresReadStoryIds`). 안개는 cloudy, 폭풍은 rain, 28°C 이상은 hot.
+- A가 아직 넣지 않았으므로 지금은 친구의 `home` 대사(없으면 `select`)를 씀. 새 이벤트를 `events` 목록에 올리면 validate-content가 친구마다 5줄을 요구하므로, 목록에 올리지 않고 줄만 추가하거나 5줄씩 채운다. 위젯 한 줄은 15자 안팎(2줄까지 보임).
+- 오늘의 친구: 마지막으로 함께 달린 친구, 달린 적이 없으면 날마다 돌아가며(TodayFriend.choose). A·B가 다른 규칙으로 정하면 이 함수만 바꾼다.

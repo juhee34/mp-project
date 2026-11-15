@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 2x2: the friend on top, their name, the weather and one word below. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:gravity="center"
+    android:background="@drawable/widget_bg" android:padding="10dp">
+    <ImageView android:id="@+id/widget_friend"
+        android:layout_width="58dp" android:layout_height="58dp"
+        android:background="@drawable/widget_friend_bg" android:padding="2dp"
+        android:scaleType="fitCenter" android:importantForAccessibility="no"
+        android:src="@drawable/widget_preview_friend" />
+    <TextView android:id="@+id/widget_name" android:text="@string/widget_preview_name"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginTop="2dp" android:textColor="#1E5A2A" android:textSize="13sp" android:textStyle="bold"
+        android:maxLines="1" android:ellipsize="end" />
+    <TextView android:id="@+id/widget_weather" android:text="@string/widget_preview_weather"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:textColor="#7A6E5E" android:textSize="11sp" android:maxLines="1" android:ellipsize="end" />
+    <TextView android:id="@+id/widget_line" android:text="@string/widget_preview_line"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="2dp" android:gravity="center" android:textColor="#3D3550" android:textSize="11sp"
+        android:maxLines="2" android:ellipsize="end" />
+</LinearLayout>

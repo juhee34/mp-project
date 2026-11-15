@@ -25,6 +25,15 @@
         <activity android:name=".opening.OpeningActivity" android:exported="true" android:screenOrientation="sensorLandscape" android:theme="@style/OpeningTheme">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
         </activity>
+        <!-- Home-screen widgets: today's friend, the weather and a word (widget/FriendWidget.kt). -->
+        <receiver android:name=".widget.SmallFriendWidget" android:exported="false" android:label="@string/widget_small_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_small_info" />
+        </receiver>
+        <receiver android:name=".widget.WideFriendWidget" android:exported="false" android:label="@string/widget_wide_label">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_wide_info" />
+        </receiver>
         <!-- Share cards (ShareCard): the picture in cache/share/ is lent to the app the player picks, read-only. -->
         <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.share" android:exported="false" android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/share_paths" />

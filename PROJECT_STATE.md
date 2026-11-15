@@ -27,6 +27,14 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 홈 화면 위젯: 오늘의 친구 + 실제 날씨 + 한마디 (2026-11-15, B — 보완 가이드 ③)
+- widget/FriendWidget.kt: AppWidgetProvider 두 개 — SmallFriendWidget(2×2: 친구, 이름, 날씨, 한마디)과 WideFriendWidget(4×2: 왼쪽 친구, 오른쪽 이름·날씨·한마디·Tiny Runners). RemoteViews 레이아웃 res/layout/widget_small.xml·widget_wide.xml, 크림 종이+꿀색 테두리 배경. 친구 그림은 48×48 스프라이트를 4배로 키운 비트맵(번지지 않게). 누르면 OpeningActivity가 열림.
+- 날씨: 설정에서 고른 도시의 실제 날씨(기존 WeatherClient, Open-Meteo)를 위젯 자동 갱신 때(3시간마다, updatePeriodMillis)만 묻고 goAsync로 기다림. 마지막 결과는 WeatherCache(SharedPreferences)에 두어 친구가 바뀔 때 네트워크 없이 바로 다시 그림. 설정에서 날씨를 끄면 날씨를 묻지 않고 고향을 보여 줌. WorkManager는 넣지 않음(라이브러리 추가 없이 시스템 갱신으로 충분).
+- 오늘의 친구(TodayFriend): 마지막으로 함께 달린 친구(GameActivity가 달리기 시작 때 기억하고 위젯을 다시 그림), 달린 적이 없으면 날마다 돌아가며. 한마디: A의 widget_<날씨> 대사가 생기면 그것, 지금은 친구의 home 대사. 형식은 docs/DATA_CONTRACT.md "홈 화면 위젯 대사".
+- 위젯 고르는 화면 미리보기(previewLayout)에 라일·서울 12°C 예시가 보이도록 기본 글자·그림(widget_preview_friend.png) 넣음.
+- 검증: assembleDebug·testDebugUnitTest(TodayFriendTest 4개 새로 추가)·lintDebug 통과, validate-content 통과. 에뮬레이터 홈 화면에 넓은 위젯을 올려 "오늘의 친구 · 라일 / 맑음 · 9°C · 인천 / 라일 대사" 표시와 누르면 게임 열림 확인, 재설치 뒤 8°C로 갱신 확인. 작은 위젯은 고르는 화면 미리보기만 확인(에뮬레이터에서 끌어다 놓기가 안 잡힘). 3시간 자동 갱신은 시간 관계로 직접 기다려 보지 않음.
+- A에게 필요: 위젯 디자인(지금은 임시 크림 카드), 날씨별 친구 한마디(맑음·흐림·비·눈·더움 × 6명).
+
 ## 공유 카드: 결과 카드·친구 카드 (2026-11-15, B — 보완 가이드 ②)
 - share/ShareCard.kt: 1080×1080 정사각형 카드를 비트맵으로 그림. 바탕은 친구의 최종 틀 그림(ShopBackground.drawFrame으로 9조각 그리기를 공용화), 위에 "Tiny Runners"와 꽃·마름모 장식(ui_village_title, 종이 바탕을 투명하게 다시 저장 — 마을 화면 제목도 같은 그림), 친구 집 그림 창 + 48×48 스프라이트(6배), 아래 #TinyRunners #오늘의달리기.
   - 결과 카드: "라일과 달렸어요" 알약, 친구 한마디(결과 화면과 같은 말), 거리·점수 타일, 그 판의 날씨(도시·하늘·기온)와 날짜.
