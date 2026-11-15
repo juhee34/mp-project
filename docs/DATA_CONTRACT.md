@@ -138,3 +138,7 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - 위젯(widget/FriendWidget.kt)은 기존 짧은 대사 묶음(content/short_lines*.json)에서 `event`가 `widget_clear`, `widget_cloudy`, `widget_rain`, `widget_snow`, `widget_hot`인 줄을 그 날씨에 씀. 형식은 다른 짧은 대사와 같음(`id`, `characterId`, `event`, `text`, `requiresReadStoryIds`). 안개는 cloudy, 폭풍은 rain, 28°C 이상은 hot.
 - A가 아직 넣지 않았으므로 지금은 친구의 `home` 대사(없으면 `select`)를 씀. 새 이벤트를 `events` 목록에 올리면 validate-content가 친구마다 5줄을 요구하므로, 목록에 올리지 않고 줄만 추가하거나 5줄씩 채운다. 위젯 한 줄은 15자 안팎(2줄까지 보임).
 - 오늘의 친구: 마지막으로 함께 달린 친구, 달린 적이 없으면 날마다 돌아가며(TodayFriend.choose). A·B가 다른 규칙으로 정하면 이 함수만 바꾼다.
+
+## 친구의 날씨 안부 알림 대사 (2026-11-16, B)
+- 알림(notice/FriendNotice.kt)은 짧은 대사 묶음에서 `event`가 `notice_rain`, `notice_snow`, `notice_hot`, `notice_cold`인 줄을 그 날씨에 씀(형식은 다른 짧은 대사와 같음). 아직 없으면 친구의 `home` 대사.
+- 특별한 날: 비(폭풍 포함)·눈·30°C 이상·-5°C 이하(NoticeRules). 재촉하거나 놓치면 손해라는 말은 쓰지 않는다. validate-content의 events 목록 규칙은 위젯 대사와 같다.

@@ -27,6 +27,13 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 선택형 알림: 친구의 날씨 안부 (2026-11-16, B — 보완 가이드 ④)
+- 설정 › 기능 맨 아래 "친구의 날씨 안부": 스위치(기본 꺼짐), 아침 8시쯤 / 저녁 7시쯤, "지금 한 번 보내 보기"(발표용). 켜면 Android 13+ 알림 권한(POST_NOTIFICATIONS)을 묻고, 거절하면 꺼진 채 안내.
+- notice/NoticeRules.kt(순수, NoticeRulesTest 3개): 특별한 날 = 비·폭풍·눈·30°C 이상·-5°C 이하, 하루 최대 1번, 다음 예약 시각 계산. notice/FriendNotice.kt: 고른 시각에 1시간 범위 알람(AlarmManager.setWindow, 정확한 알람 권한 불필요) → NoticeReceiver가 다음 날 알람을 먼저 다시 걸고 실제 날씨를 확인해 특별한 날이면 오늘의 친구(위젯과 같은 규칙) 한마디를 알림. 재부팅·앱 업데이트 뒤 다시 예약(RECEIVE_BOOT_COMPLETED). 끄면 알람 취소. 처음 만든 하루 반복 알람은 시스템이 최대 18시간 늦출 수 있어(아침 알림이 밤에) 바꿈. WorkManager는 넣지 않음.
+- 알림: 채널 "친구의 날씨 안부", 제목 "비 오는 날, 포포의 한마디 ☂" 식, 본문은 친구 대사(A의 notice_<날씨> 대사가 오면 그것, 지금은 home 대사), 옆 글은 "맑음 · 8°C · 인천", 큰 아이콘은 친구 스프라이트, 작은 아이콘은 임시 흰 잎(ic_notice_leaf). 누르면 게임 열림. 재촉 문구 없음. 형식은 docs/DATA_CONTRACT.md.
+- 검증: assembleDebug·testDebugUnitTest·lintDebug 통과, validate-content 통과. 에뮬레이터에서 스위치 → 권한 요청 → 허용(테스트용) → 알람이 2026-11-16 08:00, 범위 1시간으로 잡힌 것(dumpsys alarm), 재설치 뒤 다시 잡힌 것, "지금 한 번 보내 보기" 알림(라일, 맑음 · 8°C · 인천) 확인. 실제 아침 8시에 특별한 날씨로 오는 것은 기다려 확인하지 못함(일반 날은 오지 않는 게 정상).
+- A에게 필요: 알림 문구(친구 6명 × 비·눈·더움·추움), 흰색 단색 알림 아이콘.
+
 ## 홈 화면 위젯: 오늘의 친구 + 실제 날씨 + 한마디 (2026-11-15, B — 보완 가이드 ③)
 - widget/FriendWidget.kt: AppWidgetProvider 두 개 — SmallFriendWidget(2×2: 친구, 이름, 날씨, 한마디)과 WideFriendWidget(4×2: 왼쪽 친구, 오른쪽 이름·날씨·한마디·Tiny Runners). RemoteViews 레이아웃 res/layout/widget_small.xml·widget_wide.xml, 크림 종이+꿀색 테두리 배경. 친구 그림은 48×48 스프라이트를 4배로 키운 비트맵(번지지 않게). 누르면 OpeningActivity가 열림.
 - 날씨: 설정에서 고른 도시의 실제 날씨(기존 WeatherClient, Open-Meteo)를 위젯 자동 갱신 때(3시간마다, updatePeriodMillis)만 묻고 goAsync로 기다림. 마지막 결과는 WeatherCache(SharedPreferences)에 두어 친구가 바뀔 때 네트워크 없이 바로 다시 그림. 설정에서 날씨를 끄면 날씨를 묻지 않고 고향을 보여 줌. WorkManager는 넣지 않음(라이브러리 추가 없이 시스템 갱신으로 충분).
