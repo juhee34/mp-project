@@ -100,18 +100,18 @@ internal class CharacterScreens(
         }, 24, 114, 368, 160)
         val counter = text(12, PANEL_SOFT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL; letterSpacing = 0.2f }
 
-        // The friend on the grass, big, on a soft pool of light so they stand out from the picture, with a bubble above.
-        frame.placeV2(SpotLight(context), 205, 420, 595, 700)
+        // The friend big in the middle of the open space, on a soft pool of light so they stand out, with a bubble above.
+        frame.placeV2(SpotLight(context), 185, 230, 615, 640)
         val stand = FrameLayout(context)
-        frame.placeV2(stand, 293, 470, 507, 684)
-        val bubble = text(20, PANEL_INK).apply {
+        frame.placeV2(stand, 293, 318, 507, 532)
+        val bubble = text(26, PANEL_INK).apply {
             gravity = Gravity.CENTER_VERTICAL; setLineSpacing(0f, 1.2f)
             val pad = MockupFrame.v2(18)
             setPadding(pad, 0, pad, MockupFrame.v2(12))
             background = SpeechBubble()
             maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END
         }
-        frame.placeV2(bubble, 165, 316, 635, 462)
+        frame.placeV2(bubble, 165, 172, 635, 312)
 
         // ◀ ▶ at the screen edges.
         val prev = stageArrow("◀", R.string.characters_prev)
@@ -159,15 +159,18 @@ internal class CharacterScreens(
         // Buttons under the panel.
         val run = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_primary, R.drawable.ui_v2_btn_primary_pressed,
             "", CREAM, MockupFrame.v2(17).toFloat()) { onStartRun(selectedId.orEmpty()) }
-        frame.placeV2(run, 729, 578, 905, 644)
-        frame.placeV2(MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
+        // The buttons wear the chosen friend's own colour (set in bindSelection), so they sit on the exact button rects.
+        frame.placeV2(run, 735, 584, 899, 638)
+        val more = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
             context.getString(R.string.characters_profile_short), PANEL_INK, MockupFrame.v2(16).toFloat()) {
             showProfile(selectedId.orEmpty())
-        }, 907, 578, 1043, 644)
-        frame.placeV2(MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
+        }
+        frame.placeV2(more, 913, 584, 1037, 638)
+        val book = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
             context.getString(R.string.characters_story_book), PANEL_INK, MockupFrame.v2(16).toFloat()) {
             context.startActivity(StoryActivity.intent(context, selectedId.orEmpty()))
-        }, 1045, 578, 1181, 644)
+        }
+        frame.placeV2(book, 1051, 584, 1175, 638)
 
         var bests: Map<String, Int> = emptyMap()
 
@@ -177,7 +180,23 @@ internal class CharacterScreens(
             backdrop(SELECT_BACKGROUNDS[friend.id] ?: R.drawable.bg_v2_friends_mint_wide)
             stand.removeAllViews()
             stand.addView(com.tinyrunners.school.opening.OpeningFriend(context, friend.id, 0), FrameLayout.LayoutParams(MATCH, MATCH))
+            // The friend's greeting first, then another of their lines every few seconds (A's short lines).
+            bubble.removeCallbacks(chatter)
+            bubble.alpha = 1f
             bubble.text = greetingFor(friend)
+            chatter = object : Runnable {
+                var turn = 0
+                override fun run() {
+                    val event = if (turn++ % 2 == 0) "select" else "home"
+                    val line = com.tinyrunners.school.talk.ShortLineRepository.pick(context, friend.id, event)
+                    if (line != null) bubble.animate().alpha(0f).setDuration(FADE_MS).withEndAction {
+                        bubble.text = line
+                        bubble.animate().alpha(1f).setDuration(FADE_MS).start()
+                    }.start()
+                    bubble.postDelayed(this, LINE_MS)
+                }
+            }
+            bubble.postDelayed(chatter, LINE_MS)
             counter.text = context.getString(R.string.characters_counter, index + 1, friends.size)
             val sb = SpannableStringBuilder(friend.name)
             val start = sb.length
@@ -191,11 +210,26 @@ internal class CharacterScreens(
             val b = bests[friend.id]
             best.text = if (b != null && b > 0) context.getString(R.string.characters_best, b) else context.getString(R.string.characters_best_none)
             run.text = runLabel(friend)
+            // Buttons in the friend's colour: filled (deepened so white words read) for the run, outlined for the rest.
+            val tint = friendColor(friend)
+            val deep = blend(tint, Color.rgb(30, 26, 34), 0.38f)
+            val deeper = blend(tint, Color.rgb(30, 26, 34), 0.55f)
+            run.background = pressable(pill(deep, deep), pill(deeper, deeper))
+            run.setTextColor(Color.WHITE)
+            for (b in listOf(more, book)) {
+                b.background = pressable(pill(Color.rgb(255, 251, 242), deep), pill(blend(tint, Color.WHITE, 0.7f), deep))
+                b.setTextColor(deeper)
+            }
+            for (a in listOf(prev, next)) {
+                a.setTextColor(deep)
+                a.background = RippleDrawable(ColorStateList.valueOf(Color.argb(60, Color.red(tint), Color.green(tint), Color.blue(tint))),
+                    GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(Color.argb(235, 255, 251, 242)); setStroke(dp(2), deep) }, null)
+            }
             name.contentDescription = context.getString(R.string.characters_card_description_short,
                 friend.name, friend.species, friend.home, greetingFor(friend))
             cells.forEachIndexed { i, cell ->
                 val on = friends[i].id == selectedId
-                cell.background = if (on) shape(Color.rgb(236, 242, 220), 10, Color.rgb(120, 150, 100)) else null
+                cell.background = if (on) shape(blend(tint, Color.WHITE, 0.78f), 10, deep) else null
                 cell.isSelected = on
             }
         }
@@ -234,6 +268,17 @@ internal class CharacterScreens(
 
     private var bindSelection: () -> Unit = {}
 
+    /** A round-ended button face: [fill] with a [edge] line. */
+    private fun pill(fill: Int, edge: Int) = GradientDrawable().apply { setColor(fill); cornerRadius = 999f; setStroke(dp(2), edge) }
+
+    private fun pressable(normal: Drawable, pressed: Drawable) = android.graphics.drawable.StateListDrawable().apply {
+        addState(intArrayOf(android.R.attr.state_pressed), pressed)
+        addState(intArrayOf(), normal)
+    }
+
+    /** Changes the friend's line in the selection bubble now and then; replaced when another friend is chosen. */
+    private var chatter: Runnable = Runnable { }
+
     /** The full-screen picture behind the character screens: a friend's home on the selection, the shared paper otherwise. */
     private fun backdrop(res: Int?) {
         val view = host.rootView.findViewById<FrameLayout>(R.id.screen_backdrop) ?: return
@@ -251,9 +296,14 @@ internal class CharacterScreens(
         private val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
         init { importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO }
         override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-            paint.shader = android.graphics.RadialGradient(w / 2f, h * 0.78f, minOf(w / 2f, h * 0.78f),
+            // An oval that fades out inside the view on every side (no straight edge where the view ends).
+            val cx = w / 2f; val cy = h * 0.6f
+            val rx = w / 2f; val ry = minOf(cy, h - cy)
+            paint.shader = android.graphics.RadialGradient(cx, cy, rx,
                 intArrayOf(Color.argb(200, 255, 246, 222), Color.argb(110, 255, 240, 210), Color.argb(0, 255, 240, 210)),
-                floatArrayOf(0f, 0.55f, 1f), android.graphics.Shader.TileMode.CLAMP)
+                floatArrayOf(0f, 0.55f, 1f), android.graphics.Shader.TileMode.CLAMP).apply {
+                setLocalMatrix(android.graphics.Matrix().apply { setScale(1f, ry / rx, cx, cy) })
+            }
         }
         override fun onDraw(canvas: android.graphics.Canvas) {
             canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
@@ -569,6 +619,9 @@ internal class CharacterScreens(
         val MUTED = Color.rgb(79, 96, 84)
         /** Colours of the separated pack panels. */
         val PANEL_INK = Color.rgb(58, 62, 48)
+        /** How long one line stays in the selection bubble, and its fade. */
+        const val LINE_MS = 6000L
+        const val FADE_MS = 220L
         val PANEL_SOFT = Color.rgb(120, 110, 88)
         val CREAM = Color.rgb(255, 248, 231)
         /** Each friend home behind the selection (A separated pack, widened). */
