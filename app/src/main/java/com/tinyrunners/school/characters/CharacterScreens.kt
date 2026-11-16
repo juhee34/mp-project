@@ -94,12 +94,12 @@ internal class CharacterScreens(
         // Header: back and the question.
         frame.placeV2(com.tinyrunners.school.ui.HomeButton.create(context), 24, 114, 206, 160)
         frame.placeV2(text(26, INK, bold = true).apply {
-            text = context.getString(R.string.characters_select_title); gravity = Gravity.CENTER_VERTICAL
+            text = context.getString(R.string.characters_select_title); gravity = Gravity.CENTER
             if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-            setShadowLayer(6f, 0f, 0f, Color.argb(200, 255, 248, 230))
-        }, 216, 116, 760, 158)
+            // A cream pill: the picture behind is the leafy top of the home now (filled edge to edge).
+            background = GradientDrawable().apply { setColor(Color.argb(235, 255, 248, 232)); cornerRadius = 999f }
+        }, 216, 114, 560, 160)
         val counter = text(12, PANEL_SOFT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL; letterSpacing = 0.2f }
-        frame.placeV2(counter, 1000, 118, 1176, 138)
 
         // The friend on the grass with a speech bubble above.
         val stand = FrameLayout(context)
@@ -125,6 +125,8 @@ internal class CharacterScreens(
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }, 724, 139, 1184, 571)
         frame.placeV2(text(12, PANEL_SOFT).apply { text = context.getString(R.string.characters_today_mate); letterSpacing = 0.15f }, 766, 176, 1100, 196)
+        // 01 / 06 at the top right inside the panel.
+        frame.placeV2(counter, 1040, 176, 1142, 196)
         val name = text(36, PANEL_INK, bold = true).apply { gravity = Gravity.BOTTOM; maxLines = 1 }
         frame.placeV2(name, 766, 196, 1142, 250)
         frame.placeV2(View(context).apply { setBackgroundColor(Color.argb(70, 70, 90, 60)) }, 766, 262, 1142, 263)
@@ -234,9 +236,11 @@ internal class CharacterScreens(
 
     /** The full-screen picture behind the character screens: a friend's home on the selection, the shared paper otherwise. */
     private fun backdrop(res: Int?) {
-        val view = host.rootView.findViewById<ImageView>(R.id.screen_backdrop) ?: return
-        if (res == null) { view.visibility = View.GONE; view.setImageDrawable(null); return }
-        view.setImageResource(res)
+        val view = host.rootView.findViewById<FrameLayout>(R.id.screen_backdrop) ?: return
+        view.removeAllViews()
+        if (res == null) { view.visibility = View.GONE; return }
+        // Only the original picture (the widened file's middle 80 %), filling the screen: no blurred side bands.
+        view.addView(com.tinyrunners.school.ui.CoverPicture(context, res, sideInset = 0.1f), FrameLayout.LayoutParams(MATCH, MATCH))
         view.visibility = View.VISIBLE
     }
 

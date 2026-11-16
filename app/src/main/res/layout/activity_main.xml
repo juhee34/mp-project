@@ -10,12 +10,11 @@
         android:layout_height="match_parent" />
 
     <!-- A friend home over the paper on the selection (CharacterScreens.backdrop). -->
-    <ImageView
+    <FrameLayout
         android:id="@+id/screen_backdrop"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:importantForAccessibility="no"
-        android:scaleType="centerCrop"
         android:visibility="gone" />
 
     <LinearLayout

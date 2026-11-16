@@ -154,10 +154,8 @@ class ResultActivity : Activity() {
         val frame = FrameLayout(this).apply {
             setBackgroundColor(Page.BACKGROUND)
             // A's separated pack (backgrounds/result): a snowy lake under a violet evening sky, with the day's line on top.
-            addView(android.widget.ImageView(this@ResultActivity).apply {
-                setImageResource(R.drawable.bg_v2_result_wide); scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
-                importantForAccessibility = android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            }, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(com.tinyrunners.school.ui.CoverPicture(this@ResultActivity, R.drawable.bg_v2_result_wide, sideInset = 0.1f),
+                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(label(getString(R.string.result_headline_v2), 20f, Color.rgb(255, 246, 222), bold = true).apply {
                 setShadowLayer(8f, 0f, 2f, Color.argb(140, 40, 30, 60)); gravity = Gravity.CENTER
             }, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = dp(14) })

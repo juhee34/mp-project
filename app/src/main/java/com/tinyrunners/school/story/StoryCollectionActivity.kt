@@ -73,7 +73,9 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         shelf = savedInstanceState?.getString(KEY_SHELF)
-        frame = MockupFrame(this, R.drawable.bg_v2_stories_wide)
+        // The picture fills the screen behind the parts (only its original middle: no blurred side bands).
+        frame = MockupFrame(this, 0)
+        frame.addView(com.tinyrunners.school.ui.CoverPicture(this, R.drawable.bg_v2_stories_wide, sideInset = 0.1f))
         val v2 = MockupFrame.Companion::v2
         fun text(px: Int, color: Int, bold: Boolean = false) = TextView(this).apply {
             setTextColor(color); includeFontPadding = false; maxLines = 1

@@ -755,9 +755,11 @@ internal class ShopBackground(context: Context, private val interior: Boolean = 
         val art = art
         if (art != null && width > 0 && height > 0) {
             // Cover: fill the screen, cut evenly from the long side.
-            val k = maxOf(width / art.width.toFloat(), height / art.height.toFloat())
+            // Only the original picture (the widened file's middle 80 %, no blurred side bands), cut evenly to fill.
+            val aw = art.width * 0.8f; val left = art.width * 0.1f
+            val k = maxOf(width / aw, height / art.height.toFloat())
             val sw = width / k; val sh = height / k
-            src.set(((art.width - sw) / 2).toInt(), ((art.height - sh) / 2).toInt(), ((art.width + sw) / 2).toInt(), ((art.height + sh) / 2).toInt())
+            src.set((left + (aw - sw) / 2).toInt(), ((art.height - sh) / 2).toInt(), (left + (aw + sw) / 2).toInt(), ((art.height + sh) / 2).toInt())
             dst.set(0f, 0f, width.toFloat(), height.toFloat())
             canvas.drawBitmap(art, src, dst, paint)
             if (!interior) canvas.drawRect(dst, veil)

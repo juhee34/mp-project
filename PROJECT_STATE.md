@@ -27,6 +27,11 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 모든 화면에서 넓힌 그림의 흐린 양 끝 띠 없앰 (2026-11-16, B)
+- 친구 선택·자세히 보기(screen_backdrop을 FrameLayout으로, 안에 CoverPicture), 이야기 모음(MockupFrame 뒤 CoverPicture), 결과(CoverPicture), 상점·설정·가방·엽서첩·내 기록(ShopBackground가 가운데 80%만 씀): 모두 넓힌 jpg의 가운데 원본만 화면 가득 그리고, 남는 것은 위(하늘·크림 띠)에서 자름. 화면 부품 배치는 그대로.
+- 친구 선택: 위 크림 띠가 잘려 잎 위에 놓인 제목에 크림 알약 배경, "01 / 06"은 패널 안 오른쪽 위로.
+- 검증: assembleDebug·testDebugUnitTest·lintDebug 통과. 에뮬레이터(20:9)에서 친구 선택·이야기 모음·상점·결과 스크린샷 확인. 16:9 기기는 그림이 딱 맞아 잘림 없음(직접 확인 필요).
+
 ## 오프닝·메뉴: 가운데 정렬, 카드 글씨체 로고, 낮/밤 배경 (2026-11-16, B)
 - 사용자 요청: 타이틀을 예전 로그인 카드의 "Tiny Runners"(초록 세리프+잎+구분선+보라 띠)처럼, 타이틀·버튼은 가운데, 양 끝 흐린 띠 없애기, 지금 보랏빛 배경은 밤에만·낮엔 다른 그림, 메뉴도 오프닝과 똑같이.
 - ui/TitleScene.kt: 크림 판 위 로고(ui_title_logo.png = 기존 ui_opening_title에서 아래 띠를 뺀 것) + 보라 띠 문구, 가운데 버튼, 아래 친구 6명. 크기는 화면 짧은 변 비율이라 16:9·20:9 모두 같은 모양. 낮 06~18시 = 햇살 초원(bg_opening_wide, 원래 2400×1080이라 띠 없음), 밤 19~05시 = 보랏빛 마을(bg_v2_login_wide의 가운데 원본만 화면 가득, 위 하늘을 조금 자름 → 흐린 띠 없음). CoverPicture가 바닥을 남기고 자름.
