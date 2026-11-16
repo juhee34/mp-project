@@ -122,8 +122,8 @@ class CardShelf(context: Context) : LinearLayout(context) {
 
     companion object {
         val GREEN = ShopActivity.GREEN
-        val INK = Color.parseColor("#3E3A2E")
-        val INK_SOFT = Color.parseColor("#5E5A4C")
+        val INK = Color.parseColor("#2E2A36")
+        val INK_SOFT = Color.parseColor("#5C566A")
 
         private fun dp(context: Context, v: Int) = (v * context.resources.displayMetrics.density).roundToInt()
 

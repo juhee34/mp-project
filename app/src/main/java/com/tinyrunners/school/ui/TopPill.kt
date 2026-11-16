@@ -21,10 +21,10 @@ import kotlin.math.roundToInt
  * another button sits beside it, as in the design.
  */
 object TopPill {
-    val FILL = Color.rgb(252, 229, 186)
-    val EDGE = Color.rgb(184, 142, 96)
-    val LIP = Color.rgb(132, 82, 36)
-    val INK = Color.parseColor("#1E5A2A")
+    val FILL = Color.rgb(255, 252, 250)
+    val EDGE = Color.rgb(185, 163, 222)
+    val LIP = Color.rgb(120, 96, 170)
+    val INK = Color.parseColor("#5E4594")
 
     private fun dp(context: Context, v: Float) = (v * context.resources.displayMetrics.density).roundToInt()
 

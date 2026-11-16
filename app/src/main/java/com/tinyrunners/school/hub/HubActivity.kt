@@ -39,7 +39,7 @@ class HubActivity : Activity() {
         // The same scene as the opening (TitleScene): the logo, the tagline pill, the four menu buttons in the middle and
         // the six friends on the ground; the sunny meadow by day, the lavender village by night.
         fun add(label: Int, click: () -> Unit) = com.tinyrunners.school.ui.TitleScene.button(this, getString(label),
-            primary = false, width = 0.95f, heightShare = 0.1f) { if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click() }
+            primary = false, width = 0.62f, heightShare = 0.12f) { if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click() }
         val buttons = listOf(
             // 스토리 진행하기 is the game now: choose a friend, then the story is told while running.
             add(R.string.hub_story) { startActivity(MainActivity.selectionIntent(this)) },
@@ -48,8 +48,8 @@ class HubActivity : Activity() {
             add(R.string.hub_tutorial) { startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true)) },
             add(R.string.hub_settings) { startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java)) },
         )
-        val frame = com.tinyrunners.school.ui.TitleScene.screen(this, getString(R.string.hub_tagline_v2), buttons, gap = 0.014f, firstGap = 0.025f,
-            titleScale = 0.8f, aboveFriends = true)
+        val frame = com.tinyrunners.school.ui.TitleScene.screen(this, getString(R.string.hub_tagline_v2), buttons, gap = 0.012f, firstGap = 0.02f,
+            titleScale = 0.7f, aboveFriends = true)
         setContentView(frame)
         hideSystemBars()
     }

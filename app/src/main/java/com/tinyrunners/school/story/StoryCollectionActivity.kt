@@ -264,7 +264,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
         const val SHELF_TOP = 225
         val LIGHT = Color.rgb(236, 230, 206)
         val CREAM_TEXT = Color.rgb(255, 246, 222)
-        val DEEP_GREEN = Color.parseColor("#1E5A2A")
+        val DEEP_GREEN = Color.parseColor("#5E4594")
         val CREAM = Color.parseColor("#FFF8E7")
         /** Ribbons and thumbnails A has drawn so far (세계·라일·치즈·포포); the others use the world ribbon and the home picture. */
         val RIBBONS = mapOf("mint" to R.drawable.ui_story_ribbon_mint, "cheese" to R.drawable.ui_story_ribbon_cheese, "popo" to R.drawable.ui_story_ribbon_popo)
@@ -432,7 +432,7 @@ internal object LockIcon {
         canvas.drawArc(cx - size * 0.45f, cy - size * 1.05f, cx + size * 0.45f, cy - size * 0.05f, 180f, 180f, false, paint)
         paint.style = Paint.Style.FILL
         canvas.drawRoundRect(cx - size * 0.75f, cy - size * 0.45f, cx + size * 0.75f, cy + size * 0.75f, size * 0.18f, size * 0.18f, paint)
-        paint.color = Color.rgb(48, 83, 65)
+        paint.color = Color.rgb(94, 69, 148)
         canvas.drawCircle(cx, cy + size * 0.1f, size * 0.16f, paint)
     }
 }

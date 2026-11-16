@@ -185,7 +185,7 @@ class PostcardActivity : Activity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     companion object {
-        private val GREEN = Color.parseColor("#1E5A2A")
+        private val GREEN = Color.parseColor("#5E4594")
         private val INK = Color.parseColor("#3D3550")
         private val SOFT = Color.parseColor("#7A6E5E")
 

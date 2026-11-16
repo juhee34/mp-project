@@ -12,7 +12,7 @@
         android:src="@drawable/widget_preview_friend" />
     <TextView android:id="@+id/widget_name" android:text="@string/widget_preview_name"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_marginTop="2dp" android:textColor="#1E5A2A" android:textSize="13sp" android:textStyle="bold"
+        android:layout_marginTop="2dp" android:textColor="#5E4594" android:textSize="13sp" android:textStyle="bold"
         android:maxLines="1" android:ellipsize="end" />
     <TextView android:id="@+id/widget_weather" android:text="@string/widget_preview_weather"
         android:layout_width="wrap_content" android:layout_height="wrap_content"

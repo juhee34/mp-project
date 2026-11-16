@@ -265,7 +265,7 @@ class ForkChoiceView(context: Context, fork: RunFork, private val onPick: (Boole
         addView(TextView(context).apply { text = name; textSize = 19f; setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER; setTextColor(if (filled) Color.WHITE else GREEN) })
         addView(TextView(context).apply {
             text = about.substringAfter(": ", about); textSize = 14f; gravity = Gravity.CENTER; setPadding(0, dp(4), 0, 0)
-            setTextColor(if (filled) Color.argb(230, 255, 255, 255) else Color.parseColor("#5E5A4C"))
+            setTextColor(if (filled) Color.argb(230, 255, 255, 255) else Color.parseColor("#5C566A"))
         })
     }
 
@@ -280,7 +280,7 @@ class ForkChoiceView(context: Context, fork: RunFork, private val onPick: (Boole
     private fun dp(v: Int) = (v * d).roundToInt()
 
     private companion object {
-        val GREEN = Color.parseColor("#1E5A2A")
+        val GREEN = Color.parseColor("#5E4594")
         val LAVENDER = Color.parseColor("#9B7BD0")
     }
 }

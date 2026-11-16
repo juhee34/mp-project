@@ -176,7 +176,7 @@ internal class OpeningBackground(
 
     private companion object {
         val INK = Color.rgb(43, 59, 47)
-        val MUTED = Color.rgb(79, 96, 84)
+        val MUTED = Color.rgb(92, 86, 106)
 
         @SuppressLint("DiscouragedApi")
         fun loadArt(context: Context): Bitmap? {

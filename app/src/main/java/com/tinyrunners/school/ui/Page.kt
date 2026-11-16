@@ -158,12 +158,12 @@ class Page(private val activity: Activity) {
     companion object {
         const val MAX_COLUMN_DP = 560
         val BACKGROUND = Color.rgb(250, 246, 236)
-        val LEAF = Color.rgb(48, 83, 65)
-        val MINT = Color.rgb(225, 239, 218)
+        val LEAF = Color.rgb(94, 69, 148)
+        val MINT = Color.rgb(234, 226, 247)
         val PAPER = Color.rgb(255, 253, 246)
-        val LINE = Color.rgb(221, 224, 209)
-        val INK = Color.rgb(38, 52, 43)
-        val MUTED = Color.rgb(79, 96, 84)
+        val LINE = Color.rgb(226, 220, 236)
+        val INK = Color.rgb(46, 42, 54)
+        val MUTED = Color.rgb(92, 86, 106)
         val ERROR = Color.rgb(160, 60, 50)
     }
 }

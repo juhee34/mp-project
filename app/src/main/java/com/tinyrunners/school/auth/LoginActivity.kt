@@ -225,14 +225,14 @@ class LoginActivity : Activity() {
     /** A round button: dark green filled (로그인) or cream with a green edge (게스트로 둘러보기). */
     private fun pillButton(filled: Boolean, click: () -> Unit) = Button(this).apply {
         isAllCaps = false; stateListAnimator = null; typeface = Typeface.DEFAULT_BOLD
-        setTextColor(if (filled) CREAM else Color.rgb(56, 82, 62))
+        setTextColor(if (filled) CREAM else Color.rgb(46, 42, 54))
         setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
         fun pill(fill: Int) = android.graphics.drawable.GradientDrawable().apply {
-            setColor(fill); cornerRadius = dp(16).toFloat(); if (!filled) setStroke(dp(2), Color.rgb(64, 96, 70))
+            setColor(fill); cornerRadius = dp(16).toFloat(); if (!filled) setStroke(dp(2), Color.rgb(110, 84, 168))
         }
         background = android.graphics.drawable.StateListDrawable().apply {
-            addState(intArrayOf(android.R.attr.state_pressed), pill(if (filled) Color.rgb(38, 70, 48) else Color.rgb(238, 236, 214)))
-            addState(intArrayOf(), pill(if (filled) Color.rgb(52, 90, 62) else Color.rgb(255, 253, 241)))
+            addState(intArrayOf(android.R.attr.state_pressed), pill(if (filled) Color.rgb(88, 64, 140) else Color.rgb(238, 236, 214)))
+            addState(intArrayOf(), pill(if (filled) Color.rgb(110, 84, 168) else Color.rgb(255, 253, 241)))
         }
         setOnClickListener { click() }
     }.also { frame.onScaleText(it, MockupFrame.v2(20).toFloat()) }
@@ -268,8 +268,8 @@ class LoginActivity : Activity() {
         private const val RISE_MS = 340L
         private const val SINK_MS = 220L
         private val CREAM = Color.parseColor("#FFF8E7")
-        private val INK = Color.rgb(68, 60, 49)
-        private val SOFT = Color.rgb(112, 99, 71)
+        private val INK = Color.rgb(46, 42, 54)
+        private val SOFT = Color.rgb(100, 92, 116)
 
         /** After login: the hub with 스토리 진행하기 / 게임하기 / 튜토리얼 하기. Closes the opening and login popups. */
         fun openMain(activity: Activity) {

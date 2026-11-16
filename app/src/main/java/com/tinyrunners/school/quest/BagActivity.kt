@@ -253,8 +253,8 @@ class BagActivity : Activity() {
 
     companion object {
         private val GREEN = ShopActivity.GREEN
-        private val INK = Color.parseColor("#3E3A2E")
-        private val INK_SOFT = Color.parseColor("#5E5A4C")
+        private val INK = Color.parseColor("#2E2A36")
+        private val INK_SOFT = Color.parseColor("#5C566A")
         private val CHIP = Color.parseColor("#EFE6CF")
         private val ERROR = Color.parseColor("#B04A3A")
         private val COIN = Color.rgb(246, 200, 80)

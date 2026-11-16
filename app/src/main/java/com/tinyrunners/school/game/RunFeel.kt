@@ -142,7 +142,7 @@ class RunStoryPainter(private val density: Float) {
 
     private companion object {
         val INK = Color.parseColor("#3D3550")
-        val GREEN = Color.parseColor("#1E5A2A")
+        val GREEN = Color.parseColor("#5E4594")
         val CREAM = Color.parseColor("#FFF8E7")
         val HONEY = Color.parseColor("#C9A26A")
         val LAVENDER = Color.parseColor("#9B7BD0")

@@ -70,7 +70,7 @@ internal class ShowcaseStage(context: Context) : View(context) {
             canvas.drawBitmap(bitmap, src, dst, pixel)
             floor = (floorPx - top) * scale
         } else {
-            paint.color = Color.rgb(225, 239, 218); canvas.drawRect(0f, 0f, w, h, paint)
+            paint.color = Color.rgb(234, 226, 247); canvas.drawRect(0f, 0f, w, h, paint)
         }
         sprites?.let {
             // Big: about 60% of the stage height, whole pixels only.

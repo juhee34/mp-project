@@ -83,7 +83,7 @@ class PostcardArt(context: Context, private val card: Postcard, private val frie
         clip.reset(); clip.moveTo(hx - hr * 1.6f, hy - hr * 0.1f); clip.lineTo(hx + hr * 1.6f, hy - hr * 0.1f); clip.lineTo(hx, hy + hr * 1.7f); clip.close()
         canvas.drawPath(clip, fill)
         // Title on the cream band.
-        text.color = Color.parseColor("#1E5A2A")
+        text.color = Color.parseColor("#5E4594")
         text.textSize = band * 0.5f
         while (text.measureText(card.title) > w - border * 4 && text.textSize > 8f) text.textSize -= 1f
         canvas.drawText(card.title, (w - text.measureText(card.title)) / 2f, h - band / 2f - (text.descent() + text.ascent()) / 2f, text)
@@ -143,7 +143,7 @@ object PostcardNotice {
         card.addView(TextView(activity).apply {
             setText(R.string.postcard_open_album); textSize = 14f; setTextColor(Color.WHITE); setTypeface(typeface, Typeface.BOLD)
             gravity = Gravity.CENTER; setPadding((14 * d).toInt(), (8 * d).toInt(), (14 * d).toInt(), (8 * d).toInt())
-            background = GradientDrawable().apply { setColor(Color.parseColor("#1E5A2A")); cornerRadius = 18 * d }
+            background = GradientDrawable().apply { setColor(Color.parseColor("#5E4594")); cornerRadius = 18 * d }
             setOnClickListener { activity.startActivity(PostcardActivity.intent(activity)) }
         })
         root.addView(card, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT,

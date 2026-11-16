@@ -78,7 +78,7 @@ object TitleScene {
         val h = unit(context)
         return Button(context).apply {
             this.text = text; isAllCaps = false; stateListAnimator = null; typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
-            setTextColor(if (primary) Color.WHITE else Color.rgb(56, 82, 62))
+            setTextColor(if (primary) Color.WHITE else Color.rgb(46, 42, 54))
             setTextSize(TypedValue.COMPLEX_UNIT_PX, h * heightShare * 0.42f)
             setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
             background = if (primary) {

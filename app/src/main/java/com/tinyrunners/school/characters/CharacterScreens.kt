@@ -195,7 +195,7 @@ internal class CharacterScreens(
                 friend.name, friend.species, friend.home, greetingFor(friend))
             cells.forEachIndexed { i, cell ->
                 val on = friends[i].id == selectedId
-                cell.background = if (on) shape(Color.rgb(236, 242, 220), 10, Color.rgb(120, 150, 100)) else null
+                cell.background = if (on) shape(Color.rgb(236, 228, 248), 10, Color.rgb(150, 124, 200)) else null
                 cell.isSelected = on
             }
         }
@@ -545,15 +545,15 @@ internal class CharacterScreens(
     private companion object {
         const val MATCH = LinearLayout.LayoutParams.MATCH_PARENT
         const val WRAP = LinearLayout.LayoutParams.WRAP_CONTENT
-        val LEAF = Color.rgb(48, 83, 65)
-        val MINT = Color.rgb(225, 239, 218)
+        val LEAF = Color.rgb(94, 69, 148)
+        val MINT = Color.rgb(234, 226, 247)
         val PAPER = Color.rgb(255, 253, 246)
-        val LINE = Color.rgb(221, 224, 209)
-        val INK = Color.rgb(38, 52, 43)
-        val MUTED = Color.rgb(79, 96, 84)
+        val LINE = Color.rgb(226, 220, 236)
+        val INK = Color.rgb(46, 42, 54)
+        val MUTED = Color.rgb(92, 86, 106)
         /** Colours of the separated pack panels. */
-        val PANEL_INK = Color.rgb(58, 62, 48)
-        val PANEL_SOFT = Color.rgb(120, 110, 88)
+        val PANEL_INK = Color.rgb(46, 42, 54)
+        val PANEL_SOFT = Color.rgb(100, 92, 116)
         val CREAM = Color.rgb(255, 248, 231)
         /** Each friend home behind the selection (A separated pack, widened). */
         val SELECT_BACKGROUNDS = mapOf(
