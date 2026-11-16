@@ -52,8 +52,8 @@ object TitleScene {
     fun unit(context: Context): Int = context.resources.displayMetrics.let { minOf(it.widthPixels, it.heightPixels) }
 
     /** The title "Tiny Runners" in plain white letters with [tagline] in white under it, both straight on the picture. */
-    fun header(context: Context, tagline: String): LinearLayout {
-        val h = unit(context)
+    fun header(context: Context, tagline: String, scale: Float = 1f): LinearLayout {
+        val h = unit(context) * scale
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
             addView(TextView(context).apply {
@@ -78,14 +78,24 @@ object TitleScene {
         val h = unit(context)
         return Button(context).apply {
             this.text = text; isAllCaps = false; stateListAnimator = null; typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
-            setTextColor(if (primary) Color.rgb(255, 253, 241) else Color.rgb(56, 82, 62))
+            setTextColor(if (primary) Color.WHITE else Color.rgb(56, 82, 62))
             setTextSize(TypedValue.COMPLEX_UNIT_PX, h * heightShare * 0.42f)
             setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
-            background = android.graphics.drawable.StateListDrawable().apply {
-                addState(intArrayOf(android.R.attr.state_pressed),
-                    context.getDrawable(if (primary) R.drawable.ui_v2_btn_primary_pressed else R.drawable.ui_v2_btn_menu_pressed))
-                addState(intArrayOf(), context.getDrawable(if (primary) R.drawable.ui_v2_btn_primary else R.drawable.ui_v2_btn_menu))
+            background = if (primary) {
+                // 시작하기: a soft lavender, like the blanket and the book in both pictures, with a pale rim.
+                fun pill(fill: Int) = GradientDrawable().apply {
+                    setColor(fill); cornerRadius = h * heightShare / 2f
+                    setStroke((h * 0.005f).roundToInt().coerceAtLeast(2), Color.argb(230, 246, 238, 255))
+                }
+                android.graphics.drawable.StateListDrawable().apply {
+                    addState(intArrayOf(android.R.attr.state_pressed), pill(Color.rgb(132, 106, 186)))
+                    addState(intArrayOf(), pill(Color.rgb(156, 128, 206)))
+                }
+            } else android.graphics.drawable.StateListDrawable().apply {
+                addState(intArrayOf(android.R.attr.state_pressed), context.getDrawable(R.drawable.ui_v2_btn_menu_pressed))
+                addState(intArrayOf(), context.getDrawable(R.drawable.ui_v2_btn_menu))
             }
+            if (primary) setShadowLayer(h * 0.006f, 0f, h * 0.002f, Color.argb(90, 50, 30, 80))
             layoutParams = LinearLayout.LayoutParams((h * width).roundToInt(), (h * heightShare).roundToInt())
             setOnClickListener { click() }
         }
@@ -105,23 +115,29 @@ object TitleScene {
         }
     }
 
-    /** The whole screen: picture, the centred column (header and [buttons]) and the friends at the bottom. */
-    fun screen(context: Context, tagline: String, buttons: List<View>, gap: Float = 0.022f, firstGap: Float = 0.045f): FrameLayout {
+    /**
+     * The whole screen: picture, the column (header and [buttons]) in the middle and the friends at the bottom. With
+     * [aboveFriends] the column is centred in the space above the friends (a tall column), otherwise on the screen.
+     */
+    fun screen(context: Context, tagline: String, buttons: List<View>, gap: Float = 0.022f, firstGap: Float = 0.045f,
+               titleScale: Float = 1f, aboveFriends: Boolean = false): FrameLayout {
         val h = unit(context)
         return FrameLayout(context).apply {
             setBackgroundColor(Color.rgb(246, 236, 214))
             addView(background(context), FrameLayout.LayoutParams(-1, -1))
             val column = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
-                setPadding(0, (h * 0.035f).roundToInt(), 0, 0)
-                addView(header(context, tagline), LinearLayout.LayoutParams(-2, -2))
+                addView(header(context, tagline, titleScale), LinearLayout.LayoutParams(-2, -2))
                 buttons.forEachIndexed { i, b ->
                     val lp = (b.layoutParams as? LinearLayout.LayoutParams) ?: LinearLayout.LayoutParams(-2, -2)
                     lp.topMargin = (h * if (i == 0) firstGap else gap).roundToInt()
                     addView(b, lp)
                 }
             }
-            addView(column, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.CENTER_HORIZONTAL))
+            addView(column, FrameLayout.LayoutParams(-2, -2, Gravity.CENTER).apply {
+                // FrameLayout centres and then shifts by the margin, so half the friends' band centres it in the space above them.
+                if (aboveFriends) bottomMargin = (h * (FRIEND + 0.035f) / 2f).roundToInt()
+            })
             addView(friends(context), FrameLayout.LayoutParams(-1, (h * FRIEND).roundToInt(), Gravity.BOTTOM).apply {
                 bottomMargin = (h * 0.035f).roundToInt()
             })
