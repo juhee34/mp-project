@@ -27,6 +27,11 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 친구 선택 패널 글자 크게, 잘린 제목 고침 (2026-11-16, B)
+- 패널: 집 13→17, 소개 15→19(최대 3줄), 최고 기록 12→15(v2).
+- 앞 정리에서 XML의 숨은 "스토리 진행" 버튼이 남아 위 메뉴 줄에 보이며 줄이 높아져 "오늘은 누구랑 달려 볼까요?"가 잘렸음 → activity_main.xml에서 버튼 삭제, 제목 알약도 조금 아래로(v2 138–184).
+- 빌드·테스트·린트 통과, 에뮬레이터에서 라일·치즈 확인.
+
 ## 발표에서 설명하기 어려운 기능 정리 1차: 옛 화면·알림·위젯·광고 화면 삭제 (2026-11-16, B)
 - 배경: 수업 자료(설치·위젯·메뉴/대화상자·액티비티/인텐트·Java 문법) 밖의 기능을 줄여 발표 설명 부담을 덜기. 사용자 요청으로 Claude가 삭제 추천한 항목부터.
 - 삭제한 화면(액티비티 18→13개): 옛 대화창(talk/TalkActivity), 프롤로그(PrologueActivity), 마을 이야기 목록(story/StoryListActivity), 옛 이야기 화면(story/StoryActivity), 광고 보고 코인 2배(result/AdOfferActivity). 옛 대화 규칙(talk/Talk.kt)과 그 시험(TalkTest·TalkPlanTest)도 삭제.

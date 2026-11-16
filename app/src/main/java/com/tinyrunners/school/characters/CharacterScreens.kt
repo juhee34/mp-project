@@ -97,7 +97,7 @@ internal class CharacterScreens(
             if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
             // A cream pill: the picture behind is the leafy top of the home now (filled edge to edge).
             background = GradientDrawable().apply { setColor(Color.argb(235, 255, 248, 232)); cornerRadius = 999f }
-        }, 24, 114, 368, 160)
+        }, 24, 138, 368, 184)
         val counter = text(12, PANEL_SOFT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL; letterSpacing = 0.2f }
 
         // The friend big in the middle of the open space, on a soft pool of light so they stand out, with a bubble above.
@@ -130,14 +130,14 @@ internal class CharacterScreens(
         val name = text(36, PANEL_INK, bold = true).apply { gravity = Gravity.BOTTOM; maxLines = 1 }
         frame.placeV2(name, 766, 196, 1142, 250)
         frame.placeV2(View(context).apply { setBackgroundColor(Color.argb(70, 70, 90, 60)) }, 766, 262, 1142, 263)
-        val home = text(13, PANEL_SOFT).apply { maxLines = 1 }
-        frame.placeV2(home, 766, 278, 1142, 298)
-        val intro = text(15, PANEL_INK).apply {
-            setLineSpacing(0f, 1.3f); ellipsize = android.text.TextUtils.TruncateAt.END; maxLines = 4
+        val home = text(17, PANEL_SOFT).apply { maxLines = 1 }
+        frame.placeV2(home, 766, 272, 1142, 300)
+        val intro = text(19, PANEL_INK).apply {
+            setLineSpacing(0f, 1.3f); ellipsize = android.text.TextUtils.TruncateAt.END; maxLines = 3
         }
-        frame.placeV2(intro, 766, 308, 1142, 408)
-        val best = text(12, LEAF, bold = true).apply { maxLines = 1 }
-        frame.placeV2(best, 766, 414, 1142, 432)
+        frame.placeV2(intro, 766, 306, 1142, 408)
+        val best = text(15, LEAF, bold = true).apply { maxLines = 1 }
+        frame.placeV2(best, 766, 410, 1142, 434)
         frame.placeV2(View(context).apply { setBackgroundColor(Color.argb(70, 70, 90, 60)) }, 766, 440, 1142, 441)
         frame.placeV2(text(11, PANEL_SOFT).apply { text = context.getString(R.string.characters_together) }, 764, 448, 960, 464)
         val cells = friends.mapIndexed { i, f ->
