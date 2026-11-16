@@ -235,59 +235,6 @@ class SettingsActivity : Activity() {
         val feel = com.tinyrunners.school.ui.ScrollFeel(this)
         slider(R.string.settings_scroll_speed, feel.percent) { v, _ -> feel.percent = v }
         note(R.string.settings_scroll_hint)
-        rule()
-        friendNotice()
-    }
-
-    /**
-     * 친구의 날씨 안부 (guide ④): off by default; turning it on asks for the notification permission (Android 13+),
-     * then morning or evening, and a button that sends one now for the presentation.
-     */
-    private fun friendNotice() {
-        val notice = com.tinyrunners.school.notice.NoticeSettings(this)
-        val sender = com.tinyrunners.school.notice.FriendNotice
-        label(R.string.settings_notice)
-        switch(R.string.settings_notice_toggle, notice.enabled) { on ->
-            if (on && !sender.allowed(this)) {
-                // Ask first; the answer turns it on (or leaves it off) in onRequestPermissionsResult.
-                if (Build.VERSION.SDK_INT >= 33) requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTICE)
-                return@switch
-            }
-            notice.enabled = on
-            sender.schedule(this)
-            render()
-        }
-        note(R.string.settings_notice_hint)
-        val slots = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        listOf(false to R.string.settings_notice_morning, true to R.string.settings_notice_evening).forEachIndexed { i, (evening, text) ->
-            slots.addView(pill(getString(text), notice.evening == evening, enabled = notice.enabled) {
-                notice.evening = evening; sender.schedule(this); render()
-            }, LinearLayout.LayoutParams(0, dp(42), 1f).apply { if (i > 0) marginStart = dp(10) })
-        }
-        body.addView(slots, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
-        val status = note(0)
-        body.addView(smallButton(getString(R.string.settings_notice_try)) {
-            if (!sender.allowed(this)) {
-                if (Build.VERSION.SDK_INT >= 33) requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTICE_TRY)
-                return@smallButton
-            }
-            sender.sendTry(this) { sent ->
-                if (!isDestroyed) status.text = getString(if (sent) R.string.settings_notice_sent else R.string.settings_notice_not_allowed)
-            }
-        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(42)).apply { topMargin = dp(6) })
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode != REQUEST_NOTICE && requestCode != REQUEST_NOTICE_TRY) return
-        val granted = grantResults.firstOrNull() == android.content.pm.PackageManager.PERMISSION_GRANTED
-        if (requestCode == REQUEST_NOTICE) {
-            com.tinyrunners.school.notice.NoticeSettings(this).enabled = granted
-            com.tinyrunners.school.notice.FriendNotice.schedule(this)
-        }
-        if (granted && requestCode == REQUEST_NOTICE_TRY) com.tinyrunners.school.notice.FriendNotice.sendTry(this) { }
-        if (!granted) android.widget.Toast.makeText(this, R.string.settings_notice_not_allowed, android.widget.Toast.LENGTH_LONG).show()
-        render()
     }
 
     // ---- 날씨 ---------------------------------------------------------------------------------------------------
@@ -496,8 +443,6 @@ class SettingsActivity : Activity() {
 
     private companion object {
         const val REQUEST_KEEP_GUEST = 41
-        const val REQUEST_NOTICE = 42
-        const val REQUEST_NOTICE_TRY = 43
         val GREEN = ShopActivity.GREEN
         val INK = Color.parseColor("#3E3A2E")
         val INK_SOFT = Color.parseColor("#5E5A4C")

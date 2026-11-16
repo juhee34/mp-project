@@ -21,7 +21,6 @@ import com.tinyrunners.school.MainActivity
 import com.tinyrunners.school.R
 import com.tinyrunners.school.game.GameActivity
 import com.tinyrunners.school.ui.MockupFrame
-import com.tinyrunners.school.talk.PrologueActivity
 import kotlin.math.roundToInt
 
 /**

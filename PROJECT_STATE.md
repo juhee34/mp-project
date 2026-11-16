@@ -27,6 +27,15 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 발표에서 설명하기 어려운 기능 정리 1차: 옛 화면·알림·위젯·광고 화면 삭제 (2026-11-16, B)
+- 배경: 수업 자료(설치·위젯·메뉴/대화상자·액티비티/인텐트·Java 문법) 밖의 기능을 줄여 발표 설명 부담을 덜기. 사용자 요청으로 Claude가 삭제 추천한 항목부터.
+- 삭제한 화면(액티비티 18→13개): 옛 대화창(talk/TalkActivity), 프롤로그(PrologueActivity), 마을 이야기 목록(story/StoryListActivity), 옛 이야기 화면(story/StoryActivity), 광고 보고 코인 2배(result/AdOfferActivity). 옛 대화 규칙(talk/Talk.kt)과 그 시험(TalkTest·TalkPlanTest)도 삭제.
+- 삭제한 기능: 친구의 날씨 안부 알림(notice/*, NoticeReceiver, 알림·부팅 권한, 설정의 알림 칸, NoticeRulesTest), 홈 화면 위젯(widget/*, 위젯 레이아웃·xml, TodayFriendTest).
+- 남긴 것: 다른 화면이 쓰는 작은 도우미 — 조사(Josa)·아이템 아이콘(talk/TalkHelpers.kt), 이야기 목록 읽기(story/StoryRepository.kt), 특별한 날씨 판단(weather/SpecialDay.kt, 엽서용, SpecialDayTest로 시험 옮김).
+- 연결 바꿈: 달리기 끝 → 바로 결과 화면. 이야기 모음 = 친구 책 6권(본 이야기 수), 책을 누르면 그 친구 이야기 도감(stories/StoryActivity). 가방의 "전하러 가기"(옛 대화창으로 아이템 전하기) 삭제 — 아이템은 "친구의 길에서 주운 선물"로 모으기만, 안내 문구도 바꿈. 메뉴 줄의 숨은 "스토리 진행" 버튼 삭제.
+- 검증: assembleDebug·testDebugUnitTest·lintDebug 통과. 에뮬레이터: 친구 선택 → 이야기 모음 → 책 → 이야기 도감, 가방, 설정(알림 칸 없음), 달리기 끝 → 바로 결과 확인.
+- 다음 후보(사용자 선택 대기): 공유 카드·소리 단순화, 간단한 화면 XML 레이아웃으로, 핵심 화면 Java 전환 등.
+
 ## 친구 선택 말풍선을 캐릭터 머리 바로 위로 (2026-11-16, B)
 - 말풍선 v2 165–635 × 172–312 → 250–392: 꼬리가 캐릭터 머리 바로 위에 닿음(스프라이트 위쪽이 비어 있어 간격이 넓어 보였음). 빌드·테스트·린트 통과, 에뮬레이터에서 라일·누누 확인.
 

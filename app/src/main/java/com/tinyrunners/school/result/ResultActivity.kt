@@ -50,7 +50,7 @@ class ResultActivity : Activity() {
             score = intent.getIntExtra(EXTRA_SCORE, 0),
             cleared = intent.getIntExtra(EXTRA_CLEARED, 0),
             // Real special weather only (a sky picked by hand in settings does not count) — for the postcards.
-            specialWeather = weatherOf(intent)?.let { !it.chosen && com.tinyrunners.school.notice.NoticeRules.specialKey(it) != null } == true,
+            specialWeather = weatherOf(intent)?.let { !it.chosen && com.tinyrunners.school.weather.SpecialDay.key(it) != null } == true,
         )
         val character = CharacterRepository(this).find(run.characterId)
         if (character == null || run.runId.isEmpty()) { finish(); return }
@@ -100,7 +100,6 @@ class ResultActivity : Activity() {
         com.tinyrunners.school.quest.QuestItems.of(character.id)?.let { item ->
             reward(com.tinyrunners.school.talk.ItemIconView(this, item), getString(R.string.result_chip_items, getString(item.name), intent.getIntExtra(EXTRA_ITEMS, 0)))
         }
-        intent.getIntExtra(EXTRA_AD_BONUS, 0).takeIf { it > 0 }?.let { reward(CoinIcon(this), getString(R.string.result_chip_ad, it)) }
         reward(null, getString(R.string.result_chip_cleared, run.cleared))
         left.addView(android.widget.HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; addView(chips) },
             LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(10) })
@@ -212,17 +211,6 @@ class ResultActivity : Activity() {
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
-    /**
-     * Opens the village list on this friend's page and, with [storyId], that story's talk on top of it, so the
-     * list is what is left when the story ends.
-     */
-    private fun openVillage(characterId: String, storyId: String?) {
-        val list = com.tinyrunners.school.story.StoryListActivity.intent(this, characterId)
-        if (storyId == null) startActivity(list)
-        else startActivities(arrayOf(list, com.tinyrunners.school.talk.TalkActivity.village(this, characterId, storyId, askItems = true)))
-        finish()
-    }
-
     companion object {
         /** Items of the friend picked up on this run. */
         const val EXTRA_ITEMS = "items"
@@ -253,8 +241,6 @@ class ResultActivity : Activity() {
         const val EXTRA_CLEARED = "cleared"
         /** Where the run ended (world units), so the background shows that spot of the friend's road. */
         const val EXTRA_DISTANCE = "distance"
-        /** Coins given for watching the optional ad after the crash. */
-        const val EXTRA_AD_BONUS = "adBonus"
 
         fun intent(context: Context, run: RunResult) = Intent(context, ResultActivity::class.java)
             .putExtra(EXTRA_RUN_ID, run.runId)

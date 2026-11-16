@@ -29,9 +29,7 @@ import com.tinyrunners.school.progress.ProgressStore
 import com.tinyrunners.school.shop.ShopActivity
 import com.tinyrunners.school.shop.ShopStore
 import com.tinyrunners.school.story.Story
-import com.tinyrunners.school.story.StoryListActivity
 import com.tinyrunners.school.story.StoryRepository
-import com.tinyrunners.school.talk.TalkActivity
 import kotlin.math.roundToInt
 
 /**
@@ -159,15 +157,12 @@ class BagActivity : Activity() {
         val friend = friends.firstOrNull { it.id == item.friendId }
         val have = bag?.count(item.friendId)
         val next = read?.let { Story.nextUnread(stories, item.friendId, it) }
-        val ready = have != null && have >= QuestRules.NEEDED && next != null
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(10), dp(4), dp(12), dp(4))
-            // The card whose items can be given now gets a lavender edge.
             background = GradientDrawable().apply {
-                setColor(ShopActivity.CARD); cornerRadius = dp(16).toFloat()
-                setStroke(dp(if (ready) 3 else 2), if (ready) ShopActivity.LAVENDER else ShopActivity.HONEY_LIGHT)
+                setColor(ShopActivity.CARD); cornerRadius = dp(16).toFloat(); setStroke(dp(2), ShopActivity.HONEY_LIGHT)
             }
         }
         card.addView(ItemOnGrass(this, item).apply { contentDescription = getString(item.name) },
@@ -192,53 +187,13 @@ class BagActivity : Activity() {
         })
         column.addView(forRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
 
-        if (ready && next != null) {
-            // Ready: just the button under a thin rule, so the card holds the same three lines as the others and nothing is
-            // cut. The lavender edge and the button say the items can be given; the chip and the story's title are only
-            // read aloud (the card's description).
-            column.addView(View(this).apply { setBackgroundColor(ShopActivity.HONEY_LIGHT) },
-                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1)).apply { topMargin = dp(4); bottomMargin = dp(2) })
-            card.contentDescription = getString(item.name) + ", " + getString(R.string.bag_for, friend?.name.orEmpty()) + ", " +
-                getString(R.string.bag_ready_chip) + ", " + next.title
-            column.addView(Button(this).apply {
-                setText(R.string.bag_give)
-                textSize = 14f; isAllCaps = false; stateListAnimator = null; setTypeface(typeface, Typeface.BOLD)
-                minHeight = dp(30); minimumHeight = dp(30); setPadding(dp(18), 0, dp(18), 0)
-                setTextColor(Color.WHITE)
-                background = RippleDrawable(ColorStateList.valueOf(ShopActivity.OWNED), GradientDrawable().apply { setColor(GREEN); cornerRadius = dp(15).toFloat() }, null)
-                setOnClickListener {
-                    // The village list (on that friend) stays underneath, so the story ends there.
-                    startActivities(arrayOf(StoryListActivity.intent(this@BagActivity, item.friendId),
-                        TalkActivity.village(this@BagActivity, item.friendId, next.id, askItems = true)))
-                }
-            }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(32)).apply { topMargin = dp(4) })
-        } else {
-            // Not yet: a thin rule, how many more are needed, and three dots filling up as items are found.
-            column.addView(View(this).apply { setBackgroundColor(ShopActivity.HONEY_LIGHT) },
-                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1)).apply { topMargin = dp(4); bottomMargin = dp(3) })
-            column.addView(TextView(this).apply {
-                text = when {
-                    have == null || read == null -> ""
-                    next == null -> getString(R.string.bag_all_told)
-                    else -> getString(R.string.bag_more, QuestRules.NEEDED - have)
-                }
-                textSize = 13f; setTextColor(INK); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
-            })
-            if (next != null || read == null) {
-                val dots = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_HORIZONTAL }
-                repeat(QuestRules.NEEDED) { k ->
-                    dots.addView(View(this).apply {
-                        background = GradientDrawable().apply {
-                            shape = GradientDrawable.OVAL
-                            setColor(if (have != null && k < have) ShopActivity.OWNED else Color.TRANSPARENT)
-                            setStroke(dp(2), ShopActivity.HONEY)
-                        }
-                        importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-                    }, LinearLayout.LayoutParams(dp(12), dp(12)).apply { if (k > 0) marginStart = dp(8) })
-                }
-                column.addView(dots, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
-            }
-        }
+        // A thin rule and a line about the items (they are gifts picked up on the friend's road).
+        column.addView(View(this).apply { setBackgroundColor(ShopActivity.HONEY_LIGHT) },
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1)).apply { topMargin = dp(4); bottomMargin = dp(3) })
+        column.addView(TextView(this).apply {
+            text = if (have == null) "" else getString(R.string.bag_collected)
+            textSize = 13f; setTextColor(INK); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
+        })
         card.addView(column, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.6f))
         return card
     }

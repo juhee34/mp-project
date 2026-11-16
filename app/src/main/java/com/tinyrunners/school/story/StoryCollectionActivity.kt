@@ -31,9 +31,6 @@ import com.tinyrunners.school.characters.SpriteFrame
 import com.tinyrunners.school.data.CharacterDefinition
 import com.tinyrunners.school.data.CharacterRepository
 import com.tinyrunners.school.progress.ProgressStore
-import com.tinyrunners.school.talk.PrologueActivity
-import com.tinyrunners.school.talk.TalkActivity
-import com.tinyrunners.school.talk.TalkProgress
 import com.tinyrunners.school.ui.Page
 import com.tinyrunners.school.ui.MockupFrame
 import org.json.JSONObject
@@ -160,74 +157,32 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
         scroller.post { scroller.scrollTo(0, 0) }
     }
 
-    /** Everything one friend has, in story order, and whether each is open. */
-    private fun entriesOf(friend: CharacterDefinition): List<CollectionEntry> {
-        val talkSeen = !TalkProgress(this).shouldShowTalk(friend.id)
-        val first = CollectionEntry(
-            label = getString(R.string.collection_first_talk),
-            title = getString(R.string.collection_first_talk_title),
-            open = talkSeen,
-        ) { startActivity(TalkActivity.replay(this, friend.id)) }
-        val village = stories.filter { it.characterId == friend.id }.mapIndexed { i, story ->
-            CollectionEntry(
-                label = if (i == 0) getString(R.string.collection_intro) else getString(R.string.collection_episode, i),
-                title = story.title,
-                open = story.id in read,
-            ) { startActivity(TalkActivity.village(this, friend.id, story.id)) }
-        }
-        return listOf(first) + village
-    }
+    /** A friend's stories, in order, and whether each has been read in a run. */
+    private fun entriesOf(friend: CharacterDefinition): List<Boolean> =
+        stories.filter { it.characterId == friend.id }.map { it.id in read }
 
     private fun render() {
         row.removeAllViews()
         // The first book starts where the mockup's does (x 66), wherever the shelf begins on this phone.
         row.addView(RefBox(this, frame, (MockupFrame.v2(56) - shelfLeft).coerceAtLeast(MockupFrame.v2(16)), 1))
-        val friend = shelf?.let { id -> friends.firstOrNull { it.id == id } }
-        if (friend == null) {
-            shelf = null
-            back.text = getString(R.string.collection_back_home)
-            val total = friends.sumOf { entriesOf(it).size } + 1
-            val open = friends.sumOf { f -> entriesOf(f).count { it.open } } + if (prologueSeen()) 1 else 0
-            counter.text = if (loaded) getString(R.string.collection_seen, open, total) else getString(R.string.records_loading)
-            row.addView(worldCard())
-            friends.forEach { row.addView(friendCard(it)) }
-        } else {
-            back.text = getString(R.string.collection_back_books)
-            val entries = entriesOf(friend)
-            counter.text = getString(R.string.collection_seen_friend, friend.name, entries.count { it.open }, entries.size)
-            entries.forEach { row.addView(storyCard(friend, it)) }
-        }
+        shelf = null
+        back.text = getString(R.string.collection_back_home)
+        val total = friends.sumOf { entriesOf(it).size }
+        val open = friends.sumOf { f -> entriesOf(f).count { it } }
+        counter.text = if (loaded) getString(R.string.collection_seen, open, total) else getString(R.string.records_loading)
+        friends.forEach { row.addView(friendCard(it)) }
         row.addView(RefBox(this, frame, MockupFrame.v2(40), 1))
         scroller.post { pager.refresh() }
     }
 
-    private fun prologueSeen() = !TalkProgress(this).shouldShowPrologue
-
-    private fun worldCard(): View {
-        val open = prologueSeen()
-        return StoryBookCard.cover(this, frame, R.drawable.ui_v2_book_nunu, getString(R.string.collection_world),
-            getString(R.string.collection_world_sub), ImageView(this).apply {
-                setImageResource(R.drawable.story_thumb_world); scaleType = ImageView.ScaleType.CENTER_CROP
-                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            }, if (open) getString(R.string.collection_replay) else getString(R.string.collection_locked), open) {
-            startActivity(PrologueActivity.replay(this))
-        }
-    }
-
+    /** A friend's book: how many of their stories were read; it opens their 이야기 도감. */
     private fun friendCard(friend: CharacterDefinition): View {
         val entries = entriesOf(friend)
-        val open = entries.count { it.open }
         return StoryBookCard.cover(this, frame, StoryBookCard.book(friend.id), getString(R.string.collection_friend_title, friend.name),
-            friend.home + " · " + getString(R.string.collection_seen, open, entries.size), StoryBookCard.homePicture(this, friend.id),
-            if (open > 0) getString(R.string.collection_open_book) else getString(R.string.collection_not_open), open > 0,
-        ) { shelf = friend.id; render(); scroller.post { scroller.scrollTo(0, 0) } }
+            friend.home + " · " + getString(R.string.collection_seen, entries.count { it }, entries.size),
+            StoryBookCard.homePicture(this, friend.id), getString(R.string.collection_open_book), true,
+        ) { startActivity(com.tinyrunners.school.stories.StoryActivity.intent(this, friend.id)) }
     }
-
-    private fun storyCard(friend: CharacterDefinition, entry: CollectionEntry): View =
-        // Locked stories show their title only, never what happens in them.
-        StoryBookCard.cover(this, frame, StoryBookCard.book(friend.id), entry.title, entry.label,
-            SceneThumb(this, friend.id, locked = !entry.open),
-            if (entry.open) getString(R.string.collection_replay) else getString(R.string.collection_locked), entry.open) { entry.play() }
 
     private enum class Look { PRIMARY, OUTLINE, LOCKED }
 

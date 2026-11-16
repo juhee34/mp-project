@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Updated every 3 hours (the weather is asked for then; the shortest allowed is 30 min), kind to the free weather API. -->
-<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="110dp" android:minHeight="110dp"
-    android:targetCellWidth="2" android:targetCellHeight="2"
-    android:updatePeriodMillis="10800000"
-    android:initialLayout="@layout/widget_small" android:previewLayout="@layout/widget_small"
-    android:description="@string/widget_small_description"
-    android:resizeMode="none" android:widgetCategory="home_screen" />

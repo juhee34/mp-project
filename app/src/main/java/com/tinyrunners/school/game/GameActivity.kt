@@ -37,9 +37,6 @@ class GameActivity : Activity() {
         view.trail = com.tinyrunners.school.shop.ShopStore.equippedStyle(this)
         // One ID per run; the result screen saves with it, so a recreated result screen cannot double count.
         val runId = UUID.randomUUID().toString()
-        // The home-screen widget shows the friend of the latest run.
-        com.tinyrunners.school.widget.TodayFriend.remember(this, character.id)
-        com.tinyrunners.school.widget.FriendWidget.refreshAll(this)
         goToResult = {
             // Items picked up on the road go into the bag right away, so leaving the talk early keeps them.
             val picked = engine.collected
@@ -56,12 +53,9 @@ class GameActivity : Activity() {
                         .putExtra(ResultActivity.EXTRA_DISTANCE, engine.distance)
                     // The weather the run had, for the share card.
                     view.weather?.let { ResultActivity.putWeather(result, it) }
-                    // Straight on (the story is told during the run now, not in a talk window): when the run earned coins
-                    // an optional ad that doubles them, then the result screen.
-                    val runCoins = com.tinyrunners.school.shop.ShopRules.coinsForRun(engine.meters) + bonus
-                    val next = if (runCoins > 0) com.tinyrunners.school.result.AdOfferActivity.intent(this, result, runCoins) else result
+                    // Straight on to the result screen (the story is told during the run).
                     com.tinyrunners.school.audio.Music.setRoute(null)
-                    startActivity(next)
+                    startActivity(result)
                     finish()
                 }
             }, RESULT_DELAY_MS)

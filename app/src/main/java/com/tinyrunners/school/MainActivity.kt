@@ -11,10 +11,8 @@ import com.tinyrunners.school.auth.AuthService
 import com.tinyrunners.school.auth.LoginActivity
 import com.tinyrunners.school.records.RecordsActivity
 import com.tinyrunners.school.settings.SettingsActivity
-import com.tinyrunners.school.story.StoryListActivity
 import android.widget.FrameLayout
 import android.widget.TextView
-import com.tinyrunners.school.talk.TalkActivity
 import com.tinyrunners.school.characters.CharacterScreens
 import com.tinyrunners.school.data.CharacterRepository
 
@@ -35,7 +33,7 @@ class MainActivity : Activity() {
         }
         // The bag (pouch) sits at the top-right, after the shop/story/records/settings links.
         // Top-bar words wear the story collection's pill; an upright line stands before the bag.
-        listOf(R.id.menu_shop, R.id.menu_stories, R.id.menu_records, R.id.menu_settings).forEach { id ->
+        listOf(R.id.menu_shop, R.id.menu_records, R.id.menu_settings).forEach { id ->
             findViewById<TextView>(id).apply {
                 com.tinyrunners.school.ui.TopPill.style(this)
                 (layoutParams as? android.widget.LinearLayout.LayoutParams)?.let { lp ->
@@ -46,8 +44,6 @@ class MainActivity : Activity() {
                 }
             }
         }
-        // 스토리 진행 left the top bar (the story is told during runs); the story book (이야기 모음) sits before the bag.
-        findViewById<View>(R.id.menu_stories).visibility = View.GONE
         (findViewById<View>(R.id.coin_badge).parent as? android.view.ViewGroup)?.let {
             // 돌아가기 always at the top-left: back to the selection from a profile, to the menu from the selection.
             it.addView(com.tinyrunners.school.ui.HomeButton.create(this) {
@@ -68,7 +64,6 @@ class MainActivity : Activity() {
             compoundDrawablePadding = (6 * resources.displayMetrics.density).toInt()
             setOnClickListener { startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this@MainActivity, characterScreens?.currentFriendId)) }
         }
-        findViewById<View>(R.id.menu_stories).setOnClickListener { startActivity(Intent(this, StoryListActivity::class.java)) }
         findViewById<View>(R.id.menu_records).setOnClickListener { startActivity(Intent(this, RecordsActivity::class.java)) }
         findViewById<View>(R.id.menu_settings).setOnClickListener { startActivity(Intent(this, SettingsActivity::class.java)) }
         val host = findViewById<FrameLayout>(R.id.screen_host)
