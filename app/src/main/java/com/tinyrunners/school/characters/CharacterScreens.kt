@@ -123,7 +123,7 @@ internal class CharacterScreens(
         frame.placeV2(ImageView(context).apply {
             setImageResource(R.drawable.ui_v2_friend_panel); scaleType = ImageView.ScaleType.FIT_XY
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, 724, 139, 1184, 571)
+        }, 724, 139, 1184, 476)
         frame.placeV2(text(12, PANEL_SOFT).apply { text = context.getString(R.string.characters_today_mate); letterSpacing = 0.15f }, 766, 176, 1100, 196)
         // 01 / 06 at the top right inside the panel.
         frame.placeV2(counter, 1040, 176, 1142, 196)
@@ -138,21 +138,25 @@ internal class CharacterScreens(
         frame.placeV2(intro, 766, 306, 1142, 408)
         val best = text(15, LEAF, bold = true).apply { maxLines = 1 }
         frame.placeV2(best, 766, 410, 1142, 434)
-        frame.placeV2(View(context).apply { setBackgroundColor(Color.argb(70, 70, 90, 60)) }, 766, 440, 1142, 441)
-        frame.placeV2(text(11, PANEL_SOFT).apply { text = context.getString(R.string.characters_together) }, 764, 448, 960, 464)
+        // The six friends to choose from, on a cream strip along the bottom of the screen: a round portrait and a name.
+        frame.placeV2(View(context).apply {
+            background = shape(Color.argb(232, 255, 249, 235), 26)
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }, 392, 566, 888, 670)
+        val portraits = friends.map { FrameLayout(context) }
+        val names = friends.map { f -> text(14, PANEL_INK).apply { text = f.name; gravity = Gravity.CENTER } }
         val cells = friends.mapIndexed { i, f ->
             val cell = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
                 contentDescription = f.name; isClickable = true
                 setOnClickListener { if (selectedId != f.id) { selectedId = f.id; bindSelection() } }
             }
-            val pad = MockupFrame.v2(4)
-            cell.setPadding(0, pad, 0, pad)
-            cell.addView(com.tinyrunners.school.opening.OpeningFriend(context, f.id, i),
-                LinearLayout.LayoutParams(MockupFrame.v2(46), 0, 1f))
-            cell.addView(text(11, PANEL_INK).apply { text = f.name; gravity = Gravity.CENTER })
-            val x = 764 + i * 64
-            frame.placeV2(cell, x, 466, x + 56, 546)
+            cell.addView(portraits[i], LinearLayout.LayoutParams(MockupFrame.v2(62), MockupFrame.v2(62)))
+            cell.addView(names[i], LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                topMargin = MockupFrame.v2(3)
+            })
+            val x = 410 + i * 78
+            frame.placeV2(cell, x, 572, x + 76, 668)
             cell
         }
 
@@ -160,17 +164,17 @@ internal class CharacterScreens(
         val run = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_primary, R.drawable.ui_v2_btn_primary_pressed,
             "", CREAM, MockupFrame.v2(17).toFloat()) { onStartRun(selectedId.orEmpty()) }
         // The buttons wear the chosen friend's own colour (set in bindSelection), so they sit on the exact button rects.
-        frame.placeV2(run, 735, 584, 899, 638)
+        frame.placeV2(run, 735, 490, 899, 544)
         val more = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
             context.getString(R.string.characters_profile_short), PANEL_INK, MockupFrame.v2(16).toFloat()) {
             showProfile(selectedId.orEmpty())
         }
-        frame.placeV2(more, 913, 584, 1037, 638)
+        frame.placeV2(more, 913, 490, 1037, 544)
         val book = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
             context.getString(R.string.characters_story_book), PANEL_INK, MockupFrame.v2(16).toFloat()) {
             context.startActivity(StoryActivity.intent(context, selectedId.orEmpty()))
         }
-        frame.placeV2(book, 1051, 584, 1175, 638)
+        frame.placeV2(book, 1051, 490, 1175, 544)
 
         var bests: Map<String, Int> = emptyMap()
 
@@ -229,8 +233,16 @@ internal class CharacterScreens(
                 friend.name, friend.species, friend.home, greetingFor(friend))
             cells.forEachIndexed { i, cell ->
                 val on = friends[i].id == selectedId
-                cell.background = if (on) shape(blend(tint, Color.WHITE, 0.78f), 10, deep) else null
                 cell.isSelected = on
+                // The chosen friend's portrait is ringed and a little bigger; its name bold in the friend's colour.
+                portraits[i].removeAllViews()
+                portraits[i].addView(RosterPortrait(context, friends[i].id, friendColor(friends[i]), on).apply {
+                    isClickable = false; isFocusable = false
+                    val inset = if (on) 0 else MockupFrame.v2(5)
+                    layoutParams = FrameLayout.LayoutParams(MATCH, MATCH).apply { setMargins(inset, inset, inset, inset) }
+                })
+                names[i].setTextColor(if (on) deeper else MUTED)
+                names[i].typeface = if (on) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
             }
         }
 
