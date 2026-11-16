@@ -49,6 +49,13 @@ class MainActivity : Activity() {
         // 스토리 진행 left the top bar (the story is told during runs); the story book (이야기 모음) sits before the bag.
         findViewById<View>(R.id.menu_stories).visibility = View.GONE
         (findViewById<View>(R.id.coin_badge).parent as? android.view.ViewGroup)?.let {
+            // 돌아가기 always at the top-left: back to the selection from a profile, to the menu from the selection.
+            it.addView(com.tinyrunners.school.ui.HomeButton.create(this) {
+                @Suppress("DEPRECATION") onBackPressed()
+            }, 0, android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                gravity = android.view.Gravity.CENTER_VERTICAL; marginEnd = (8 * resources.displayMetrics.density).toInt()
+            })
             it.addView(com.tinyrunners.school.ui.BookButton.create(this) {
                 startActivity(Intent(this, com.tinyrunners.school.story.StoryCollectionActivity::class.java))
             })

@@ -71,7 +71,7 @@
                 android:minHeight="48dp"
                 android:text="@string/menu_stories"
                 android:textAllCaps="false"
-                android:textColor="#5E4594" />
+                android:textColor="#305341" />
 
             <Button
                 android:id="@+id/menu_records"
@@ -81,7 +81,7 @@
                 android:minHeight="48dp"
                 android:text="@string/menu_records"
                 android:textAllCaps="false"
-                android:textColor="#5E4594" />
+                android:textColor="#305341" />
 
             <Button
                 android:id="@+id/menu_settings"
@@ -91,7 +91,7 @@
                 android:minHeight="48dp"
                 android:text="@string/menu_settings"
                 android:textAllCaps="false"
-                android:textColor="#5E4594" />
+                android:textColor="#305341" />
         </LinearLayout>
 
         <FrameLayout

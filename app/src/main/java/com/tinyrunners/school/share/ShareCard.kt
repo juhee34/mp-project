@@ -42,7 +42,7 @@ import kotlin.math.roundToInt
  */
 object ShareCard {
     const val SIZE = 1080
-    private val GREEN = Color.parseColor("#5E4594")
+    private val GREEN = Color.parseColor("#1E5A2A")
     private val INK = Color.parseColor("#3D3550")
     private val SOFT = Color.parseColor("#7A6E5E")
     private val HONEY = Color.parseColor("#C9A26A")

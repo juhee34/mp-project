@@ -763,7 +763,7 @@ class RunnerView(
         val FORK_FLAG = Color.rgb(176, 148, 220)
         val PLANK_EDGE = Color.rgb(98, 64, 42)
         val ROPE = Color.rgb(150, 112, 74)
-        val BUTTON_ON = Color.rgb(94, 69, 148)
+        val BUTTON_ON = Color.rgb(48, 83, 65)
         val SCRIM = Color.argb(170, 250, 246, 236)
     }
 }

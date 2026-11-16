@@ -81,11 +81,11 @@ class PausePanel(
     }
 
     private companion object {
-        val INK = Color.rgb(46, 42, 54)
-        val SOFT = Color.rgb(100, 92, 116)
-        val LINK = Color.rgb(100, 92, 116)
+        val INK = Color.rgb(68, 60, 49)
+        val SOFT = Color.rgb(120, 110, 88)
+        val LINK = Color.rgb(112, 99, 71)
         val CREAM = Color.rgb(255, 253, 241)
-        val GREEN = Color.rgb(110, 84, 168)
-        val GREEN_DARK = Color.rgb(88, 64, 140)
+        val GREEN = Color.rgb(52, 90, 62)
+        val GREEN_DARK = Color.rgb(38, 70, 48)
     }
 }

@@ -21,7 +21,7 @@ import com.tinyrunners.school.ui.MockupFrame
 internal object StoryBookCard {
     enum class Look { PRIMARY, OUTLINE, LOCKED }
 
-    val DEEP_GREEN = Color.parseColor("#5E4594")
+    val DEEP_GREEN = Color.parseColor("#1E5A2A")
     val CREAM = Color.parseColor("#FFF8E7")
     /** Ribbons and thumbnails A has drawn so far (세계·라일·치즈·포포); the others use the world ribbon and the home picture. */
     val RIBBONS = mapOf("mint" to R.drawable.ui_story_ribbon_mint, "cheese" to R.drawable.ui_story_ribbon_cheese, "popo" to R.drawable.ui_story_ribbon_popo)
@@ -81,8 +81,8 @@ internal object StoryBookCard {
         "popo" to R.drawable.bg_v2_friends_popo_wide, "lumi" to R.drawable.bg_v2_friends_lumi_wide,
         "nunu" to R.drawable.bg_v2_friends_nunu_wide, "piko" to R.drawable.bg_v2_friends_piko_wide)
     private val homeCache = mutableMapOf<String, android.graphics.Bitmap?>()
-    val COVER_INK = Color.rgb(46, 42, 54)
-    val COVER_SOFT = Color.rgb(100, 92, 116)
+    val COVER_INK = Color.rgb(68, 60, 49)
+    val COVER_SOFT = Color.rgb(120, 110, 88)
 
     fun book(friendId: String) = BOOKS[friendId] ?: R.drawable.ui_v2_book_mint
 

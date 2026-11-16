@@ -92,18 +92,18 @@ internal class CharacterScreens(
         }
 
         // Header: back and the question.
-        frame.placeV2(com.tinyrunners.school.ui.HomeButton.create(context), 24, 114, 206, 160)
         frame.placeV2(text(26, INK, bold = true).apply {
             text = context.getString(R.string.characters_select_title); gravity = Gravity.CENTER
             if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
             // A cream pill: the picture behind is the leafy top of the home now (filled edge to edge).
             background = GradientDrawable().apply { setColor(Color.argb(235, 255, 248, 232)); cornerRadius = 999f }
-        }, 216, 114, 560, 160)
+        }, 24, 114, 368, 160)
         val counter = text(12, PANEL_SOFT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL; letterSpacing = 0.2f }
 
-        // The friend on the grass with a speech bubble above.
+        // The friend on the grass, big, on a soft pool of light so they stand out from the picture, with a bubble above.
+        frame.placeV2(SpotLight(context), 150, 420, 540, 700)
         val stand = FrameLayout(context)
-        frame.placeV2(stand, 270, 572, 420, 684)
+        frame.placeV2(stand, 238, 470, 452, 684)
         val bubble = text(15, PANEL_INK).apply {
             gravity = Gravity.CENTER_VERTICAL; setLineSpacing(0f, 1.2f)
             val pad = MockupFrame.v2(18)
@@ -111,7 +111,7 @@ internal class CharacterScreens(
             background = SpeechBubble()
             maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END
         }
-        frame.placeV2(bubble, 170, 462, 560, 566)
+        frame.placeV2(bubble, 150, 350, 560, 456)
 
         // ◀ ▶ at the screen edges.
         val prev = stageArrow("◀", R.string.characters_prev)
@@ -195,7 +195,7 @@ internal class CharacterScreens(
                 friend.name, friend.species, friend.home, greetingFor(friend))
             cells.forEachIndexed { i, cell ->
                 val on = friends[i].id == selectedId
-                cell.background = if (on) shape(Color.rgb(236, 228, 248), 10, Color.rgb(150, 124, 200)) else null
+                cell.background = if (on) shape(Color.rgb(236, 242, 220), 10, Color.rgb(120, 150, 100)) else null
                 cell.isSelected = on
             }
         }
@@ -239,9 +239,25 @@ internal class CharacterScreens(
         val view = host.rootView.findViewById<FrameLayout>(R.id.screen_backdrop) ?: return
         view.removeAllViews()
         if (res == null) { view.visibility = View.GONE; return }
-        // Only the original picture (the widened file's middle 80 %), filling the screen: no blurred side bands.
+        // Only the original picture (the widened file's middle 80 %), filling the screen: no blurred side bands. A light
+        // dim keeps it behind the friend and the panel.
         view.addView(com.tinyrunners.school.ui.CoverPicture(context, res, sideInset = 0.1f), FrameLayout.LayoutParams(MATCH, MATCH))
+        view.addView(View(context).apply { setBackgroundColor(Color.argb(70, 28, 22, 34)) }, FrameLayout.LayoutParams(MATCH, MATCH))
         view.visibility = View.VISIBLE
+    }
+
+    /** A soft, round pool of warm light (strongest at the bottom middle, where the friend stands), fading to nothing. */
+    private class SpotLight(context: android.content.Context) : View(context) {
+        private val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+        init { importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO }
+        override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+            paint.shader = android.graphics.RadialGradient(w / 2f, h * 0.78f, minOf(w / 2f, h * 0.78f),
+                intArrayOf(Color.argb(200, 255, 246, 222), Color.argb(110, 255, 240, 210), Color.argb(0, 255, 240, 210)),
+                floatArrayOf(0f, 0.55f, 1f), android.graphics.Shader.TileMode.CLAMP)
+        }
+        override fun onDraw(canvas: android.graphics.Canvas) {
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+        }
     }
 
     /** A cream speech bubble with a small tail at the bottom, toward the friend below. */
@@ -545,15 +561,15 @@ internal class CharacterScreens(
     private companion object {
         const val MATCH = LinearLayout.LayoutParams.MATCH_PARENT
         const val WRAP = LinearLayout.LayoutParams.WRAP_CONTENT
-        val LEAF = Color.rgb(94, 69, 148)
-        val MINT = Color.rgb(234, 226, 247)
+        val LEAF = Color.rgb(48, 83, 65)
+        val MINT = Color.rgb(225, 239, 218)
         val PAPER = Color.rgb(255, 253, 246)
-        val LINE = Color.rgb(226, 220, 236)
-        val INK = Color.rgb(46, 42, 54)
-        val MUTED = Color.rgb(92, 86, 106)
+        val LINE = Color.rgb(221, 224, 209)
+        val INK = Color.rgb(38, 52, 43)
+        val MUTED = Color.rgb(79, 96, 84)
         /** Colours of the separated pack panels. */
-        val PANEL_INK = Color.rgb(46, 42, 54)
-        val PANEL_SOFT = Color.rgb(100, 92, 116)
+        val PANEL_INK = Color.rgb(58, 62, 48)
+        val PANEL_SOFT = Color.rgb(120, 110, 88)
         val CREAM = Color.rgb(255, 248, 231)
         /** Each friend home behind the selection (A separated pack, widened). */
         val SELECT_BACKGROUNDS = mapOf(

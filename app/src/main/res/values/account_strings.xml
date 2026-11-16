@@ -141,4 +141,5 @@
     <string name="login_sub_v2">우리의 작은 모험을 이어 갈까요?</string>
     <string name="auth_email_hint_v2">이메일 주소</string>
     <string name="login_to_signup_v2">처음 오셨나요? 회원가입</string>
+    <string name="result_home_pill">◀ 처음으로</string>
 </resources>

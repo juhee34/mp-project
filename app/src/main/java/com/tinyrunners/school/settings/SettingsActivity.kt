@@ -499,7 +499,7 @@ class SettingsActivity : Activity() {
         const val REQUEST_NOTICE = 42
         const val REQUEST_NOTICE_TRY = 43
         val GREEN = ShopActivity.GREEN
-        val INK = Color.parseColor("#2E2A36")
-        val INK_SOFT = Color.parseColor("#5C566A")
+        val INK = Color.parseColor("#3E3A2E")
+        val INK_SOFT = Color.parseColor("#5E5A4C")
     }
 }

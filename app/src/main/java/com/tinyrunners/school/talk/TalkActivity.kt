@@ -347,8 +347,8 @@ class TalkActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
         private const val KEY_INDEX = "talkIndex"
         private const val KEY_GIVEN = "talkGiven"
         private const val EXTRA_ASK = "talkAskItems"
-        private val GATE_LEAF = Color.rgb(94, 69, 148)
-        private val GATE_INK = Color.rgb(46, 42, 54)
+        private val GATE_LEAF = Color.rgb(48, 83, 65)
+        private val GATE_INK = Color.rgb(38, 52, 43)
         private const val EXTRA_MODE = "talkMode"
         private const val EXTRA_NEXT = "talkNext"
         private const val EXTRA_METERS = "talkMeters"
@@ -574,7 +574,7 @@ internal class TalkView(
         private val PAPER = Color.argb(240, 255, 253, 246)
         private val NARRATOR_BOX = Color.argb(225, 38, 52, 43)
         private val NARRATOR_TEXT = Color.rgb(240, 236, 222)
-        private val LEAF = Color.rgb(94, 69, 148)
+        private val LEAF = Color.rgb(48, 83, 65)
         /**
          * Each speaker's dialogue colour (frame, name tag, ▼): one clearly different hue per friend, deep enough for a
          * white name. Close to their characters.json colours, but 루미 is redder than 치즈 and 누누 takes the mint of
@@ -589,7 +589,7 @@ internal class TalkView(
             "piko" to Color.rgb(170, 136, 26),
             TalkScript.PLAYER to Color.rgb(96, 106, 120),
         )
-        private val INK = Color.rgb(46, 42, 54)
+        private val INK = Color.rgb(38, 52, 43)
     }
 }
 

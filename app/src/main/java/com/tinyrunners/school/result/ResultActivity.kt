@@ -174,6 +174,10 @@ class ResultActivity : Activity() {
         }
         setContentView(frame)
         BagButton.floatIn(frame)
+        frame.addView(com.tinyrunners.school.ui.HomeButton.create(this, getString(R.string.result_home_pill)) {
+            com.tinyrunners.school.ui.HomeButton.goToMenu(this); finish()
+        }, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT,
+            Gravity.TOP or Gravity.START).apply { leftMargin = dp(16); topMargin = dp(12) })
 
         val store = ProgressStore.forCurrentUser(this)
         // (The "스토리 진행으로 / 아이템 전하기" button left with the talk windows: the story is told during the run.)

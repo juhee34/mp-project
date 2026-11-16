@@ -136,10 +136,10 @@ class TutorialOverlay(context: Context, private val onDone: () -> Unit) : FrameL
 
     private companion object {
         val PAPER = Color.rgb(255, 253, 246)
-        val LINE = Color.rgb(226, 220, 236)
-        val LEAF = Color.rgb(94, 69, 148)
-        val INK = Color.rgb(46, 42, 54)
-        val MUTED = Color.rgb(92, 86, 106)
+        val LINE = Color.rgb(221, 224, 209)
+        val LEAF = Color.rgb(48, 83, 65)
+        val INK = Color.rgb(38, 52, 43)
+        val MUTED = Color.rgb(79, 96, 84)
     }
 }
 
