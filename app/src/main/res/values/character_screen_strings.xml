@@ -57,10 +57,20 @@
     <string name="characters_together">함께할 친구</string>
     <string name="characters_counter">%1$02d / %2$02d</string>
     <!-- The story list before a run (CharacterScreens.chooseStory). -->
-    <string name="choose_story_title">%1$s의 이야기 몇 편을 볼까요?</string>
     <string name="choose_story_read">✓ 봤어요</string>
     <string name="choose_story_open">▶ 다음 이야기</string>
     <string name="choose_story_locked">🔒 잠겨 있어요</string>
-    <string name="choose_story_locked_toast">앞 이야기를 먼저 함께 달려요.</string>
     <string name="choose_story_cancel">닫기</string>
+    <string name="choose_story_book">%1$s의 이야기책</string>
+    <string name="choose_story_heading">%1$s · %2$s</string>
+    <string name="choose_story_page">%1$d / %2$d</string>
+    <string name="choose_story_go">이 이야기로 달리기</string>
+    <string name="choose_story_locked_button">앞 이야기를 먼저 함께 달려요</string>
+    <string name="choose_story_locked_summary">앞 이야기를 함께 달리면 이 페이지가 열려요.</string>
+    <string name="choose_story_prev">앞 이야기</string>
+    <string name="choose_story_next">다음 이야기</string>
+    <string name="choose_story_coming_heading">다음 이야기는 준비 중…</string>
+    <string name="choose_story_coming_summary">%1$s의 다음 이야기를 열심히 쓰고 있어요. 앞으로 이어질 이야기를 기대해 주세요!</string>
+    <string name="choose_story_coming_mark">✎ 준비 중</string>
+    <string name="choose_story_coming_button">곧 만나요</string>
 </resources>

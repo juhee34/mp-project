@@ -76,7 +76,7 @@ internal object StoryBookCard {
     private val BOOKS = mapOf(
         "mint" to R.drawable.ui_v2_book_mint, "cheese" to R.drawable.ui_v2_book_cheese, "popo" to R.drawable.ui_v2_book_popo,
         "lumi" to R.drawable.ui_v2_book_lumi, "nunu" to R.drawable.ui_v2_book_nunu, "piko" to R.drawable.ui_v2_book_piko)
-    private val HOMES = mapOf(
+    internal val HOMES = mapOf(
         "mint" to R.drawable.bg_v2_friends_mint_wide, "cheese" to R.drawable.bg_v2_friends_cheese_wide,
         "popo" to R.drawable.bg_v2_friends_popo_wide, "lumi" to R.drawable.bg_v2_friends_lumi_wide,
         "nunu" to R.drawable.bg_v2_friends_nunu_wide, "piko" to R.drawable.bg_v2_friends_piko_wide)

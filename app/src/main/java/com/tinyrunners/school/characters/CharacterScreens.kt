@@ -283,33 +283,16 @@ internal class CharacterScreens(
     private val speech = SpeechBubble()
 
     /**
-     * Before a run: the friend's stories as a list dialog (a course topic: AlertDialog with setItems). Read ones are
-     * ticked, the next one is marked, later ones stay locked until the ones before are read. Picking one starts the
-     * run with that story.
+     * Before a run: the friend's stories as a little book, one page per episode (StoryPicker, an AlertDialog with a
+     * custom view). Read ones are ticked, the next one is marked, later ones stay locked until the ones before are
+     * read. Picking one starts the run with that story.
      */
     private fun chooseStory(friend: CharacterDefinition) {
         val stories = com.tinyrunners.school.story.StoryRepository.load(context).filter { it.characterId == friend.id }
         if (stories.isEmpty()) { onStartRun(friend.id, null); return }
         com.tinyrunners.school.progress.ProgressStore.forCurrentUser(context).loadAll { result ->
             val read = result.getOrNull().orEmpty().values.flatMap { it.readStoryIds }.toSet()
-            val labels = stories.mapIndexed { i, s ->
-                val episode = if (i == 0) context.getString(R.string.collection_intro) else context.getString(R.string.collection_episode, i)
-                val mark = when {
-                    s.id in read -> context.getString(R.string.choose_story_read)
-                    s.isUnlocked(read) -> context.getString(R.string.choose_story_open)
-                    else -> context.getString(R.string.choose_story_locked)
-                }
-                "$episode · ${s.title}   $mark"
-            }.toTypedArray()
-            android.app.AlertDialog.Builder(context)
-                .setTitle(context.getString(R.string.choose_story_title, friend.name))
-                .setItems(labels) { _, which ->
-                    val story = stories[which]
-                    if (story.id in read || story.isUnlocked(read)) onStartRun(friend.id, story.id)
-                    else android.widget.Toast.makeText(context, R.string.choose_story_locked_toast, android.widget.Toast.LENGTH_SHORT).show()
-                }
-                .setNegativeButton(R.string.choose_story_cancel, null)
-                .show()
+            StoryPicker(context, friend.name, stories, read, friendColor(friend)) { story -> onStartRun(friend.id, story.id) }.show()
         }
     }
 
