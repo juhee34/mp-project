@@ -3,8 +3,9 @@ package com.tinyrunners.school.shop
 import com.tinyrunners.school.R
 
 /**
- * Decorations from the shop only change how a run looks (a little trail behind the friend) or sounds (the music
- * during runs). They never change jumping, speed or obstacles, so all six friends stay equal.
+ * Decorations from the shop only change how a run looks (a little trail behind the friend, the pretty props on the
+ * road) or sounds (the music during runs). They never change jumping, speed or where and how big obstacles are, so all
+ * six friends stay equal.
  */
 enum class TrailStyle { NONE, STARS, HEARTS, PETALS, BUBBLES, NOTES, RAINBOW, SNOWFLAKES, YARN, CLOVER, FIREFLIES, MAPLE }
 
@@ -28,8 +29,11 @@ enum class Season(val label: Int) {
     }
 }
 
-/** Shop shelves: trails behind the runner, and background music for runs. */
-enum class ItemKind { TRAIL, MUSIC }
+/**
+ * Shop shelves: trails behind the runner, background music for runs, and PROP — a pretty hometown prop that, once
+ * bought, also stands on the road as an obstacle (the plain crate, rocks, stump and log are always there).
+ */
+enum class ItemKind { TRAIL, MUSIC, PROP }
 
 /**
  * [track] is the name of a res/raw file for MUSIC items (any audio Android plays: mp3, m4a, ogg, mp4). A music
@@ -45,6 +49,9 @@ data class ShopItem(
     val track: String? = null,
     /** Sold only in this season (null: all year). Once bought it stays and can be worn in any season. */
     val season: Season? = null,
+    /** PROP items: the obstacle picture (drawable) and the friend whose hometown it comes from. */
+    val prop: Int = 0,
+    val friend: String? = null,
 )
 
 object ShopCatalog {
@@ -76,7 +83,29 @@ object ShopCatalog {
         ShopItem("music_lumi", R.string.shop_music_lumi, R.string.shop_music_lumi_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_lumi"),
         ShopItem("music_nunu", R.string.shop_music_nunu, R.string.shop_music_nunu_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_nunu"),
         ShopItem("music_piko", R.string.shop_music_piko, R.string.shop_music_piko_blurb, MUSIC_PRICE, kind = ItemKind.MUSIC, track = "music_piko"),
+        // Pretty road props (A's hometown obstacle art): bought ones join the plain ones on every friend's road.
+        ShopItem("prop_mint_ribbon_rock", R.string.shop_prop_mint_ribbon_rock, R.string.shop_prop_blurb, 40, kind = ItemKind.PROP, prop = R.drawable.obstacle_mint_ribbon_rock, friend = "mint"),
+        ShopItem("prop_cheese_cushions", R.string.shop_prop_cheese_cushions, R.string.shop_prop_blurb, 40, kind = ItemKind.PROP, prop = R.drawable.obstacle_cheese_cushions, friend = "cheese"),
+        ShopItem("prop_cheese_plant_pot", R.string.shop_prop_cheese_plant_pot, R.string.shop_prop_blurb, 50, kind = ItemKind.PROP, prop = R.drawable.obstacle_cheese_plant_pot, friend = "cheese"),
+        ShopItem("prop_cheese_sun_tin", R.string.shop_prop_cheese_sun_tin, R.string.shop_prop_blurb, 50, kind = ItemKind.PROP, prop = R.drawable.obstacle_cheese_sun_tin, friend = "cheese"),
+        ShopItem("prop_popo_harbor_crate", R.string.shop_prop_popo_harbor_crate, R.string.shop_prop_blurb, 40, kind = ItemKind.PROP, prop = R.drawable.obstacle_popo_harbor_crate, friend = "popo"),
+        ShopItem("prop_popo_shell_basket", R.string.shop_prop_popo_shell_basket, R.string.shop_prop_blurb, 50, kind = ItemKind.PROP, prop = R.drawable.obstacle_popo_shell_basket, friend = "popo"),
+        ShopItem("prop_lumi_pinecone_basket", R.string.shop_prop_lumi_pinecone_basket, R.string.shop_prop_blurb, 50, kind = ItemKind.PROP, prop = R.drawable.obstacle_lumi_pinecone_basket, friend = "lumi"),
+        ShopItem("prop_lumi_music_box", R.string.shop_prop_lumi_music_box, R.string.shop_prop_blurb, 60, kind = ItemKind.PROP, prop = R.drawable.obstacle_lumi_music_box, friend = "lumi"),
+        ShopItem("prop_nunu_books", R.string.shop_prop_nunu_books, R.string.shop_prop_blurb, 50, kind = ItemKind.PROP, prop = R.drawable.obstacle_nunu_books, friend = "nunu"),
+        ShopItem("prop_nunu_letter_basket", R.string.shop_prop_nunu_letter_basket, R.string.shop_prop_blurb, 50, kind = ItemKind.PROP, prop = R.drawable.obstacle_nunu_letter_basket, friend = "nunu"),
+        ShopItem("prop_nunu_return_crate", R.string.shop_prop_nunu_return_crate, R.string.shop_prop_blurb, 60, kind = ItemKind.PROP, prop = R.drawable.obstacle_nunu_return_crate, friend = "nunu"),
+        ShopItem("prop_piko_paper_crate", R.string.shop_prop_piko_paper_crate, R.string.shop_prop_blurb, 40, kind = ItemKind.PROP, prop = R.drawable.obstacle_piko_paper_crate, friend = "piko"),
+        ShopItem("prop_piko_rope_spool", R.string.shop_prop_piko_rope_spool, R.string.shop_prop_blurb, 50, kind = ItemKind.PROP, prop = R.drawable.obstacle_piko_rope_spool, friend = "piko"),
+        ShopItem("prop_piko_toolbox", R.string.shop_prop_piko_toolbox, R.string.shop_prop_blurb, 60, kind = ItemKind.PROP, prop = R.drawable.obstacle_piko_toolbox, friend = "piko"),
     )
+
+    /** The plain obstacles every run has, bought or not: a wooden crate, a snowy rock, a mossy stump and a fern log. */
+    val BASIC_PROPS = listOf(R.drawable.obstacle_mint_map_crate, R.drawable.obstacle_popo_snow_rock,
+        R.drawable.obstacle_lumi_moss_stump, R.drawable.obstacle_mint_fern_log)
+
+    /** The obstacle pictures for a run: the plain ones plus every pretty prop in [owned]. */
+    fun roadProps(owned: Set<String>): List<Int> = BASIC_PROPS + of(ItemKind.PROP).filter { it.id in owned }.map { it.prop }
 
     fun find(id: String?): ShopItem? = items.firstOrNull { it.id == id }
     fun style(id: String?): TrailStyle = find(id)?.style ?: TrailStyle.NONE
@@ -170,6 +199,10 @@ object ShopRules {
         return if (state.owns(item.id)) wear(state, item) else state
     }
 
-    private fun wear(state: ShopState, item: ShopItem) =
-        if (item.kind == ItemKind.MUSIC) state.copy(music = item.id) else state.copy(equipped = item.id)
+    private fun wear(state: ShopState, item: ShopItem) = when (item.kind) {
+        ItemKind.MUSIC -> state.copy(music = item.id)
+        ItemKind.TRAIL -> state.copy(equipped = item.id)
+        // A road prop is not worn: owning it is what puts it on the road.
+        ItemKind.PROP -> state
+    }
 }

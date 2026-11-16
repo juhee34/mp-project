@@ -99,4 +99,25 @@
     <string name="shop_blurb_fireflies">여름밤 반딧불이 깜빡여요</string>
     <string name="shop_item_maple">단풍잎</string>
     <string name="shop_blurb_maple">빨간 단풍잎이 팔랑 날려요</string>
+    <!-- Pretty road props (ItemKind.PROP): bought ones stand on the road as obstacles. -->
+    <string name="shop_tab_props">장애물</string>
+    <string name="shop_guide_props">산 장애물은 모든 친구의 길에 나와요. 크기와 높이는 그대로라 난이도는 같아요.</string>
+    <string name="shop_prop_blurb">고향에서 온 장애물</string>
+    <string name="shop_prop_from">%1$s의 고향에서</string>
+    <string name="shop_prop_on">길에 나와요</string>
+    <string name="shop_bought_prop">%1$s을(를) 샀어요. 다음 달리기부터 길에 나와요.</string>
+    <string name="shop_prop_mint_ribbon_rock">리본 바위</string>
+    <string name="shop_prop_cheese_cushions">포근한 방석</string>
+    <string name="shop_prop_cheese_plant_pot">창가 화분</string>
+    <string name="shop_prop_cheese_sun_tin">햇살 통</string>
+    <string name="shop_prop_popo_harbor_crate">항구 나무 상자</string>
+    <string name="shop_prop_popo_shell_basket">조개 바구니</string>
+    <string name="shop_prop_lumi_pinecone_basket">솔방울 바구니</string>
+    <string name="shop_prop_lumi_music_box">숲속 음악 상자</string>
+    <string name="shop_prop_nunu_books">도서관 책 더미</string>
+    <string name="shop_prop_nunu_letter_basket">편지 바구니</string>
+    <string name="shop_prop_nunu_return_crate">책 반납함</string>
+    <string name="shop_prop_piko_paper_crate">종이배 상자</string>
+    <string name="shop_prop_piko_rope_spool">밧줄 실타래</string>
+    <string name="shop_prop_piko_toolbox">작은 공구함</string>
 </resources>

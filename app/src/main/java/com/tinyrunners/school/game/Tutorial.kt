@@ -163,7 +163,7 @@ private class TutorialPicture(context: Context) : View(context) {
     private val dst = android.graphics.RectF()
     private val road = StoryBackground.load(context, "mint")
     private val sprites = com.tinyrunners.school.characters.CharacterSprites.load(resources, "mint")
-    private val obstacles = ObstacleArt.load(resources, "mint")
+    private val obstacles = ObstacleArt.load(resources, com.tinyrunners.school.shop.ShopCatalog.BASIC_PROPS)
     private val hazards = HazardArt.load(resources, "mint")
 
     /** Draws 라일 standing on [ground] with their feet at x..x+size. */

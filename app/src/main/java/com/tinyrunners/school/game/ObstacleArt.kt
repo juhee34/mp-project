@@ -7,15 +7,14 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
-import com.tinyrunners.school.R
-import kotlin.math.abs
-import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * A's hometown props (docs/art/OBSTACLE_HANDOFF.md): three 48x80 sprites per friend. Visual only: the engine decides
- * where obstacles are and how big they are, identically for every friend; this class just picks and draws art.
+ * A's hometown props (docs/art/OBSTACLE_HANDOFF.md), 48x80 sprites. Every run has the plain ones (a wooden crate, a
+ * snowy rock, a mossy stump, a fern log); the pretty ones join them once bought in the shop (ShopCatalog.roadProps).
+ * Visual only: the engine decides where obstacles are and how big they are, identically for every friend and whatever
+ * is owned; this class just picks and draws art.
  */
 internal class ObstacleArt private constructor(private val props: List<Prop>) {
     /** One sprite and the part of it that is actually drawn (its opaque bounds). */
@@ -25,11 +24,15 @@ internal class ObstacleArt private constructor(private val props: List<Prop>) {
 
     private val paint = Paint().apply { isFilterBitmap = false; isAntiAlias = false; isDither = false }
     private val dst = RectF()
-    private val towerProp: Prop = pickByAspect(TOWER_PIECE_ASPECT)
+    /** Towers stack the plain crate (the first prop). */
+    private val towerProp: Prop = props.first()
 
-    /** Fills a box with the prop whose proportions are closest, so stretching stays small. */
-    fun drawBox(canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float) {
-        val prop = pickByAspect((bottom - top) / (right - left))
+    /**
+     * Fills a box with one of the props whose proportions are close (so stretching stays small); [seed] picks among
+     * them and stays the same for one obstacle, so it keeps its picture while it crosses the screen.
+     */
+    fun drawBox(canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, seed: Int = 0) {
+        val prop = props[PropPick.choose(props.map { it.aspect }, (bottom - top) / (right - left), seed)]
         dst.set(left, top, right, bottom)
         canvas.drawBitmap(prop.bitmap, prop.opaque, dst, paint)
     }
@@ -47,35 +50,24 @@ internal class ObstacleArt private constructor(private val props: List<Prop>) {
         }
     }
 
-    private fun pickByAspect(target: Float): Prop =
-        props.minBy { abs(ln(it.aspect / target)) }
-
     companion object {
-        /** Squarish pieces read as stacked crates. */
-        private const val TOWER_PIECE_ASPECT = 0.9f
-        private val cache = mutableMapOf<String, ObstacleArt>()
+        private val decoded = mutableMapOf<Int, Prop>()
 
-        private val IDS = mapOf(
-            "mint" to intArrayOf(R.drawable.obstacle_mint_fern_log, R.drawable.obstacle_mint_ribbon_rock, R.drawable.obstacle_mint_map_crate),
-            "cheese" to intArrayOf(R.drawable.obstacle_cheese_plant_pot, R.drawable.obstacle_cheese_cushions, R.drawable.obstacle_cheese_sun_tin),
-            "popo" to intArrayOf(R.drawable.obstacle_popo_snow_rock, R.drawable.obstacle_popo_shell_basket, R.drawable.obstacle_popo_harbor_crate),
-            "lumi" to intArrayOf(R.drawable.obstacle_lumi_moss_stump, R.drawable.obstacle_lumi_pinecone_basket, R.drawable.obstacle_lumi_music_box),
-            "nunu" to intArrayOf(R.drawable.obstacle_nunu_books, R.drawable.obstacle_nunu_return_crate, R.drawable.obstacle_nunu_letter_basket),
-            "piko" to intArrayOf(R.drawable.obstacle_piko_paper_crate, R.drawable.obstacle_piko_rope_spool, R.drawable.obstacle_piko_toolbox),
-        )
-
-        /** Decoded once per friend and reused across runs; null (plain crates) if anything is missing. */
+        /**
+         * The art for a run from these drawables (ShopCatalog.roadProps: plain first, then the owned pretty ones). Each
+         * picture is decoded once and kept; null (plain drawn crates) if none can be read.
+         */
         @Synchronized
-        fun load(resources: Resources, characterId: String): ObstacleArt? {
-            cache[characterId]?.let { return it }
-            val ids = IDS[characterId] ?: return null
+        fun load(resources: Resources, ids: List<Int>): ObstacleArt? {
             val options = BitmapFactory.Options().apply { inScaled = false }
-            val props = ids.map { id ->
-                val bitmap = BitmapFactory.decodeResource(resources, id, options) ?: return null
-                val bounds = opaqueBounds(bitmap) ?: return null
-                Prop(bitmap, bounds)
+            val props = ids.mapNotNull { id ->
+                decoded[id] ?: run {
+                    val bitmap = BitmapFactory.decodeResource(resources, id, options) ?: return@mapNotNull null
+                    val bounds = opaqueBounds(bitmap) ?: return@mapNotNull null
+                    Prop(bitmap, bounds).also { decoded[id] = it }
+                }
             }
-            return ObstacleArt(props).also { cache[characterId] = it }
+            return if (props.isEmpty()) null else ObstacleArt(props)
         }
 
         /** Smallest rectangle containing every visible pixel (alpha > 0). */

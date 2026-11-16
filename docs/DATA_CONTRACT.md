@@ -167,3 +167,9 @@ runId별 중복 저장 방지. 실패 거리도 반영. 6명 동일 점프/속�
 - 한 판 = 한 이야기, 4막: ① 발단 = 달리기 전 RPG 대화(`opening`, 없으면 `lines`의 앞 두 줄) ② 전개·위기 = 나머지 `lines` 말풍선/자막 + 갈림길 ③ 절정 = 갈림길 8m 뒤(늦어도 25m) 달리기를 멈추고 RPG 대화(보통 화: 그 이야기의 `endings.up/down` 또는 `climax.up/down`, 마지막 화: 공용 `finaleClimax.right/wrong`) ④ 결말 = 조금 빠른 마지막 질주 `goal`m(기본 45, 이야기별 `goal` 가능) → 엔딩 일러스트 + RPG 대화(보통 화: 공용 `closing.up/down` 또는 이야기 `closing`, 마지막 화: `endings.happy/hidden/bad`). 결말 대화까지 보면 읽음 기록, 중간에 넘어지면 다시.
 - 날씨: 공용 `legendWeather.<하늘>`(해설, 발단 끝에 붙음)과 `weather.<친구id>.<하늘>`(친구 말풍선, 32m). 하늘 키 = clear, cloudy(안개 포함), rain, snow, storm, night(밤이면 하늘보다 우선). 날씨를 끄면 안 붙음. 실제 날씨를 최대 3초 기다림.
 - {name}, {title}은 공용 대사에서 채워짐. validate-content가 6하늘 × 6친구 날씨 대사, finaleClimax, closing, goal을 검사.
+
+
+## 상점 장애물 (2026-11-16, B)
+- 상점 상태(users/{uid}/shop/state 또는 기기의 shop_guest)의 `owned`에 장애물 아이템 id(`prop_<친구>_<이름>`, 14개, ShopCatalog의 ItemKind.PROP)가 더해질 수 있음. 형식은 그대로(문자열 목록).
+- 달리기의 장애물 그림 = 기본 4개(나무 상자 mint_map_crate, 눈 바위 popo_snow_rock, 이끼 그루터기 lumi_moss_stump, 고사리 통나무 mint_fern_log) + 산 장애물(모든 친구 길에). 장애물의 위치·크기·종류(엔진)는 바뀌지 않음.
+- 게임은 산 장애물을 기기 캐시(shop_equipped의 `<계정>_props`)에서 읽음 — 상점을 열거나 살 때 갱신.

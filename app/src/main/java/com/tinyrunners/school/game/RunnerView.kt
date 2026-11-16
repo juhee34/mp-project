@@ -32,7 +32,9 @@ class RunnerView(
     private val sprites = CharacterSprites.load(resources, character.id)
     private val storyBackground = StoryBackground.load(context, character.id)
     /** A's hometown props for boxes and towers; floating branches keep their drawn look. */
-    private val obstacleArt = ObstacleArt.load(resources, character.id)
+    /** The plain road props plus the pretty ones bought in the shop. */
+    private val obstacleArt = ObstacleArt.load(resources,
+        com.tinyrunners.school.shop.ShopCatalog.roadProps(com.tinyrunners.school.shop.ShopStore.ownedProps(context)))
     /** A's approved thorny branches, ground spikes and landing planks (docs/art/approved/). */
     private val hazardArt = HazardArt.load(resources, character.id)
     /** The friend's hometown item scattered on the road (quest/Quest.kt). */
@@ -406,7 +408,7 @@ class RunnerView(
         val t = sy(o.top); val b = sy(o.bottom)
         val p = 3f * scale
         val art = obstacleArt
-        if (art != null && o.kind == ObstacleKind.BOX) { art.drawBox(canvas, l, t, r, b); return }
+        if (art != null && o.kind == ObstacleKind.BOX) { art.drawBox(canvas, l, t, r, b, System.identityHashCode(o)); return }
         if (art != null && o.kind == ObstacleKind.TOWER) { art.drawTower(canvas, l, t, r, b); return }
         when (o.kind) {
             ObstacleKind.BOX -> {

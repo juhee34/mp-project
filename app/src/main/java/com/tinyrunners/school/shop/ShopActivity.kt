@@ -59,7 +59,7 @@ class ShopActivity : Activity() {
     private var busyId: String? = null
     private val busy get() = busyId != null
     /** Which shelf is shown. */
-    private enum class Shelf { TRAIL, MUSIC, ITEMS, COINS }
+    private enum class Shelf { TRAIL, PROPS, MUSIC, ITEMS, COINS }
     private var shelf = Shelf.TRAIL
     /** Friends' items in the bag, for the 아이템 shelf. */
     private var bag: com.tinyrunners.school.quest.ItemBag? = null
@@ -189,7 +189,7 @@ class ShopActivity : Activity() {
         if (w != null) coins.text = getString(R.string.shop_coins, w.coins)
         guide.text = guideText()
         tabs.removeAllViews()
-        listOf(Shelf.TRAIL to R.string.shop_tab_trails, Shelf.MUSIC to R.string.shop_tab_music,
+        listOf(Shelf.TRAIL to R.string.shop_tab_trails, Shelf.PROPS to R.string.shop_tab_props, Shelf.MUSIC to R.string.shop_tab_music,
             Shelf.ITEMS to R.string.shop_tab_items, Shelf.COINS to R.string.shop_tab_coins).forEachIndexed { i, (s, label) ->
             tabs.addView(tab(label, s), LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(40)).apply { if (i > 0) marginStart = dp(14) })
         }
@@ -203,6 +203,7 @@ class ShopActivity : Activity() {
         when (shelf) {
             Shelf.TRAIL -> add(ShopCatalog.onShelf(ItemKind.TRAIL, Season.now()) { w?.state?.owns(it) == true }.map { card(it, w) })
             Shelf.MUSIC -> add(ShopCatalog.of(ItemKind.MUSIC).map { card(it, w) })
+            Shelf.PROPS -> add(ShopCatalog.of(ItemKind.PROP).map { card(it, w) })
             Shelf.ITEMS -> add(com.tinyrunners.school.quest.QuestItems.all.map { itemCard(it, w) })
             Shelf.COINS -> add(ShopRules.COIN_PACKS.map { coinCard(it) })
         }
@@ -255,6 +256,7 @@ class ShopActivity : Activity() {
         val body = when (shelf) {
             Shelf.TRAIL -> getString(R.string.shop_guide_trails)
             Shelf.MUSIC -> getString(R.string.shop_guide_music)
+            Shelf.PROPS -> getString(R.string.shop_guide_props)
             Shelf.ITEMS -> getString(R.string.shop_guide_items, ShopRules.ITEM_PRICE)
             Shelf.COINS -> getString(R.string.shop_guide_coins, ShopRules.METERS_PER_COIN)
         }
@@ -266,7 +268,8 @@ class ShopActivity : Activity() {
     }
 
     private fun say(text: String, error: Boolean = false) {
-        message.setTextColor(if (error) ERROR else GREEN)
+        // Cream on the wooden shop picture (with the shadow set where the line is made); errors stay red.
+        message.setTextColor(if (error) ERROR else ON_WOOD)
         message.text = text
     }
 
@@ -347,14 +350,21 @@ class ShopActivity : Activity() {
     private fun card(item: ShopItem, w: Wallet?): View {
         val owned = w?.state?.owns(item.id) == true
         val music = item.kind == ItemKind.MUSIC
-        val inUse = if (music) w?.state?.music == item.id else w?.state?.equipped == item.id
+        val prop = item.kind == ItemKind.PROP
+        val inUse = when (item.kind) {
+            ItemKind.MUSIC -> w?.state?.music == item.id
+            ItemKind.TRAIL -> w?.state?.equipped == item.id
+            // A bought road prop is simply on the road; it has no "쓰기".
+            ItemKind.PROP -> owned
+        }
         // A song whose file has not been added to the app yet is on the shelf as "준비 중".
         val ready = !music || trackExists(item)
         val card = shelfCard(inUse)
         // Songs show their friend (the main theme shows everyone); decorations show the friend from the selection.
         val songFriend = if (music) item.id.removePrefix("music_").takeIf { it in FRIENDS } else null
-        card.addView(ShopPreview(this, songFriend ?: friendId, if (music) TrailStyle.NOTES else item.style,
-            everyone = music && songFriend == null).apply {
+        val picture: View = if (prop) PropPreview(this, item) else ShopPreview(this, songFriend ?: friendId,
+            if (music) TrailStyle.NOTES else item.style, everyone = music && songFriend == null)
+        card.addView(picture.apply {
             if (!ready) alpha = 0.45f
             contentDescription = getString(R.string.shop_preview_description, getString(item.name))
         }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
@@ -366,7 +376,8 @@ class ShopActivity : Activity() {
         }))
         val sub = if (music) songFriend?.let { id ->
             getString(R.string.shop_song_of, com.tinyrunners.school.data.CharacterRepository(this).find(id)?.name.orEmpty())
-        } ?: getString(R.string.shop_song_everyone) else getString(item.blurb)
+        } ?: getString(R.string.shop_song_everyone) else if (prop) getString(R.string.shop_prop_from,
+            com.tinyrunners.school.data.CharacterRepository(this).find(item.friend.orEmpty())?.name.orEmpty()) else getString(item.blurb)
         card.addView(blurb(sub))
         val priceRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         priceRow.addView(priceText(when {
@@ -379,7 +390,7 @@ class ShopActivity : Activity() {
         }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(30)))
         card.addView(priceRow)
         val button = waitingButton(item.id) ?: when {
-            inUse -> stateButton(getString(R.string.shop_wearing), Look.IN_USE)
+            inUse -> stateButton(getString(if (prop) R.string.shop_prop_on else R.string.shop_wearing), Look.IN_USE)
             owned -> stateButton(getString(R.string.shop_wear), Look.USE) { wear(item) }
             !ready -> stateButton(getString(R.string.shop_coming_soon), Look.WAIT)
             w!!.coins >= item.price -> stateButton(getString(R.string.shop_buy), Look.BUY) { buy(item) }
@@ -488,7 +499,11 @@ class ShopActivity : Activity() {
             result.onSuccess { (outcome, w) ->
                 wallet = w
                 when (outcome) {
-                    is ShopRules.Purchase.Bought -> say(getString(if (item.kind == ItemKind.MUSIC) R.string.shop_bought_music else R.string.shop_bought, getString(item.name)))
+                    is ShopRules.Purchase.Bought -> say(getString(when (item.kind) {
+                        ItemKind.MUSIC -> R.string.shop_bought_music
+                        ItemKind.PROP -> R.string.shop_bought_prop
+                        ItemKind.TRAIL -> R.string.shop_bought
+                    }, getString(item.name)))
                     is ShopRules.Purchase.NotEnough -> say(getString(R.string.shop_not_enough, outcome.missing), error = true)
                     else -> say("")
                 }
@@ -733,6 +748,28 @@ private class ItemPreview(context: Context, private val item: com.tinyrunners.sc
         val size = minOf(height * 0.72f, width * 0.5f)
         spotlight(canvas, width / 2f, floorY - size / 2f, size * 0.95f, size * 0.7f)
         com.tinyrunners.school.quest.ItemArt.draw(canvas, item, (width - size) / 2f, floorY - size, size, withGlow = false)
+    }
+}
+
+/** A road prop for sale standing on its friend's road, in a soft light, drawn pixel-sharp like in the run. */
+@SuppressLint("ViewConstructor")
+private class PropPreview(context: Context, item: ShopItem) : ScenePicture(context, item.friend) {
+    private val art = android.graphics.BitmapFactory.decodeResource(resources, item.prop,
+        android.graphics.BitmapFactory.Options().apply { inScaled = false })
+    /** Only the drawn part of the 48×80 sprite (it has empty space around the prop). */
+    private val opaque = art?.let { com.tinyrunners.school.game.ObstacleArt.opaqueBounds(it) }
+    private val box = RectF()
+
+    override fun onDraw(canvas: Canvas) {
+        drawScene(canvas)
+        val bitmap = art ?: return
+        val part = opaque ?: return
+        // As big as the picture allows: most of the height above the floor, at most two thirds of the width.
+        val k = minOf(floorY * 0.78f / part.height(), width * 0.66f / part.width())
+        val w = part.width() * k; val h = part.height() * k
+        spotlight(canvas, width / 2f, floorY - h * 0.45f, maxOf(w, h) * 0.85f, w * 0.9f)
+        box.set((width - w) / 2f, floorY - h, (width + w) / 2f, floorY)
+        canvas.drawBitmap(bitmap, part, box, pixel)
     }
 }
 

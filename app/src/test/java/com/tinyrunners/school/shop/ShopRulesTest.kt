@@ -54,7 +54,8 @@ class ShopRulesTest {
     }
 
     @Test fun eachShelfStartsWithOneFreeItemAndIdsAreUnique() {
-        for (kind in ItemKind.entries) {
+        // Trails and music start with a free item; road props are all bought (the plain ones need no item).
+        for (kind in listOf(ItemKind.TRAIL, ItemKind.MUSIC)) {
             val shelf = ShopCatalog.of(kind)
             assertEquals(1, shelf.count { it.price == 0 })
             assertTrue(shelf.filter { it.price > 0 }.isNotEmpty())
@@ -108,5 +109,25 @@ class ShopRulesTest {
         assertEquals(pack.coins - 30, ShopRules.balance(0L, state))
         assertEquals(state, ShopState.fromMap(state.toMap()))
         assertEquals(listOf(100, 550, 1200), ShopRules.COIN_PACKS.map { it.coins })
+    }
+
+    @Test fun roadPropsAreBoughtNotWornAndJoinThePlainOnes() {
+        val props = ShopCatalog.of(ItemKind.PROP)
+        assertEquals(14, props.size)
+        assertTrue(props.all { it.price > 0 && it.prop != 0 && it.friend != null })
+        // The plain ones are never sold.
+        assertTrue(props.none { it.prop in ShopCatalog.BASIC_PROPS })
+        val start = ShopState(owned = setOf("stars"), equipped = "stars")
+        val cushions = props.first { it.id == "prop_cheese_cushions" }
+        val bought = ShopRules.buy(start, cushions.id, totalMeters = 5000L) as ShopRules.Purchase.Bought
+        assertTrue(bought.state.owns(cushions.id))
+        assertEquals("stars", bought.state.equipped)   // buying a prop does not change the trail or the music
+        assertEquals(ShopCatalog.MAIN_MUSIC_ID, bought.state.music)
+        assertEquals(cushions.price, bought.state.spent)
+        // A run has the plain props, plus the owned pretty ones.
+        assertEquals(ShopCatalog.BASIC_PROPS, ShopCatalog.roadProps(emptySet()))
+        assertEquals(ShopCatalog.BASIC_PROPS + cushions.prop, ShopCatalog.roadProps(bought.state.owned))
+        // Saved and read back.
+        assertEquals(bought.state, ShopState.fromMap(bought.state.toMap()))
     }
 }

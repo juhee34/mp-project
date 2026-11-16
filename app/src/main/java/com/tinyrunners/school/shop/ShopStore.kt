@@ -44,8 +44,14 @@ interface ShopStore {
         fun equippedMusic(context: Context): String =
             cache(context).getString(cacheKey(context) + "_music", ShopCatalog.MAIN_MUSIC_ID) ?: ShopCatalog.MAIN_MUSIC_ID
 
+        /** The pretty road props the current account owns (item ids), read synchronously by the game screen. */
+        fun ownedProps(context: Context): Set<String> =
+            cache(context).getStringSet(cacheKey(context) + "_props", emptySet()).orEmpty().toSet()
+
         internal fun remember(context: Context, state: ShopState) {
-            cache(context).edit().putString(cacheKey(context), state.equipped).putString(cacheKey(context) + "_music", state.music).apply()
+            val props = state.owned.filter { ShopCatalog.find(it)?.kind == ItemKind.PROP }.toSet()
+            cache(context).edit().putString(cacheKey(context), state.equipped).putString(cacheKey(context) + "_music", state.music)
+                .putStringSet(cacheKey(context) + "_props", props).apply()
         }
 
         private fun cache(context: Context) = context.applicationContext.getSharedPreferences("shop_equipped", Context.MODE_PRIVATE)
