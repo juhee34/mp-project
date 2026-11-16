@@ -43,50 +43,62 @@ class LoginActivity : Activity() {
     private lateinit var emailLabel: TextView
     private lateinit var passwordLabel: TextView
     private lateinit var account: TextView
-    private lateinit var guest: TextView
+    private lateinit var guest: Button
     private var showingForm = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         frame = MockupFrame(this, 0)
-        frame.place(android.widget.ImageView(this).apply {
-            setImageResource(R.drawable.login_card); scaleType = android.widget.ImageView.ScaleType.FIT_XY
+        val v = MockupFrame.Companion::v2
+        // A's separated pack (reference/screen-1): a cream letter with a bookmark at the right of the opening.
+        frame.placeV2(android.widget.ImageView(this).apply {
+            setImageResource(R.drawable.ui_v2_login_panel); scaleType = android.widget.ImageView.ScaleType.FIT_XY
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, CARD[0], CARD[1], CARD[2], CARD[3])
+        }, 741, 70, 1181, 642)
+        frame.placeV2(TextView(this).apply {
+            setText(R.string.login_back_v2); setTextColor(CREAM); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER_VERTICAL
+            setShadowLayer(6f, 0f, 1f, Color.argb(160, 40, 30, 60)); isClickable = true; isFocusable = true
+            background = android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(0x33FFFFFF), null,
+                android.graphics.drawable.ColorDrawable(Color.WHITE))
+            setOnClickListener { close() }
+        }.also { frame.onScaleText(it, v(15).toFloat()) }, 28, 26, 170, 70)
+        frame.placeV2(TextView(this).apply {
+            setText(R.string.login_heading_v2); setTextColor(INK); typeface = Typeface.DEFAULT_BOLD; includeFontPadding = false
+            gravity = Gravity.CENTER_VERTICAL
+            if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
+        }.also { frame.onScaleText(it, v(24).toFloat()) }, 798, 134, 1120, 176)
+        frame.placeV2(TextView(this).apply {
+            setText(R.string.login_sub_v2); setTextColor(SOFT); includeFontPadding = false; gravity = Gravity.CENTER_VERTICAL
+        }.also { frame.onScaleText(it, v(12).toFloat()) }, 798, 182, 1137, 204)
 
-        frame.place(com.tinyrunners.school.ui.HomeButton.create(this, getString(R.string.common_back_pill)) { close() }.apply {
-            setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
-        }.also { frame.onScaleText(it, 28f) }, 30, 26, 270, 92)
-
-        emailLabel = label(R.string.auth_email).also { frame.place(it, 584, 340, 1089, 384) }
-        email = field(R.string.auth_email, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-            .also { frame.place(it, 582, 389, 1089, 458) }
-        passwordLabel = label(R.string.auth_password).also { frame.place(it, 584, 470, 1089, 514) }
+        emailLabel = label(R.string.auth_email).also { frame.placeV2(it, 798, 226, 1137, 248) }
+        email = field(R.string.auth_email_hint_v2, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+            .also { frame.placeV2(it, 798, 253, 1137, 298) }
+        passwordLabel = label(R.string.auth_password).also { frame.placeV2(it, 798, 310, 1137, 332) }
         password = field(R.string.auth_password, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD)
-            .also { frame.place(it, 582, 519, 1089, 589) }
-        // With a session: who is signed in, on the same paper strip as the fields.
+            .also { frame.placeV2(it, 798, 337, 1137, 382) }
+        // With a session: who is signed in, in a box like the fields.
         account = TextView(this).apply {
             setTextColor(INK); gravity = Gravity.CENTER_VERTICAL; maxLines = 2
-            background = getDrawable(R.drawable.ui_login_input)
+            background = box()
             setPadding(dp(14), 0, dp(14), 0)
-        }.also { frame.onScaleText(it, 26f); frame.place(it, 582, 389, 1089, 470) }
+        }.also { frame.onScaleText(it, v(14).toFloat()); frame.placeV2(it, 798, 253, 1137, 312) }
         error = TextView(this).apply { setTextColor(Page.ERROR); gravity = Gravity.CENTER; maxLines = 2 }
-            .also { frame.onScaleText(it, 22f); frame.place(it, 584, 592, 1089, 630) }
+            .also { frame.onScaleText(it, v(12).toFloat()); frame.placeV2(it, 798, 390, 1137, 428) }
 
-        submit = MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_primary, "", CREAM, 38f) { primaryClick() }
-            .also { frame.place(it, 583, 632, 1090, 712) }
-        second = MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_secondary, "", DEEP_GREEN, 38f) { secondClick() }
-            .also { frame.place(it, 580, 731, 1091, 808) }
-
-        // 가입 없이 시작하기: a quiet link under the two buttons; the guest can make an account later in 설정.
-        guest = TextView(this).apply {
-            setText(R.string.login_guest_start); setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER; paintFlags = paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
-            isClickable = true; isFocusable = true
+        submit = pillButton(filled = true) { primaryClick() }.also { frame.placeV2(it, 798, 432, 1137, 486) }
+        // 처음 오셨나요? 회원가입 (or 다른 계정으로 로그인 with a session): a quiet line under the main button.
+        second = Button(this).apply {
+            isAllCaps = false; stateListAnimator = null; setTextColor(SOFT); setPadding(0, 0, 0, 0)
+            minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
             background = android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(0x22000000), null,
                 android.graphics.drawable.ColorDrawable(Color.WHITE))
-            setOnClickListener { guestClick() }
-        }.also { frame.onScaleText(it, 26f); frame.place(it, 640, 810, 1034, 852) }
+            setOnClickListener { secondClick() }
+        }.also { frame.onScaleText(it, v(13).toFloat()); frame.placeV2(it, 798, 498, 1137, 536) }
+
+        // 게스트로 둘러보기: the outlined button at the bottom; the guest can make an account later in 설정.
+        guest = pillButton(filled = false) { guestClick() }.apply { setText(R.string.login_guest_start) }
+            .also { frame.placeV2(it, 798, 547, 1137, 599) }
 
         dim = View(this).apply { setBackgroundColor(Color.argb(120, 30, 34, 24)); alpha = 0f; setOnClickListener { } }
         setContentView(android.widget.FrameLayout(this).apply {
@@ -131,7 +143,7 @@ class LoginActivity : Activity() {
         } else {
             emailLabel.setText(R.string.auth_email)
             submit.setText(R.string.login_submit)
-            second.setText(R.string.login_to_signup)
+            second.setText(R.string.login_to_signup_v2)
             if (!AuthService.isConfigured(this)) {
                 // No Firebase settings in this build: say so and offer the guest mode instead of 회원가입.
                 submit.isEnabled = false; submit.alpha = 0.5f
@@ -201,21 +213,41 @@ class LoginActivity : Activity() {
     }
 
     private fun label(text: Int) = TextView(this).apply {
-        setText(text); setTextColor(DEEP_GREEN); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.BOTTOM or Gravity.START
+        setText(text); setTextColor(INK); gravity = Gravity.BOTTOM or Gravity.START
         includeFontPadding = false
-    }.also { frame.onScaleText(it, 30f) }
+    }.also { frame.onScaleText(it, MockupFrame.v2(11).toFloat()) }
+
+    /** The cream input box of the letter. */
+    private fun box() = android.graphics.drawable.GradientDrawable().apply {
+        setColor(Color.rgb(255, 250, 234)); cornerRadius = dp(8).toFloat(); setStroke(dp(1), Color.rgb(196, 182, 140))
+    }
+
+    /** A round button: dark green filled (로그인) or cream with a green edge (게스트로 둘러보기). */
+    private fun pillButton(filled: Boolean, click: () -> Unit) = Button(this).apply {
+        isAllCaps = false; stateListAnimator = null; typeface = Typeface.DEFAULT_BOLD
+        setTextColor(if (filled) CREAM else Color.rgb(56, 82, 62))
+        setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
+        fun pill(fill: Int) = android.graphics.drawable.GradientDrawable().apply {
+            setColor(fill); cornerRadius = dp(16).toFloat(); if (!filled) setStroke(dp(2), Color.rgb(64, 96, 70))
+        }
+        background = android.graphics.drawable.StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_pressed), pill(if (filled) Color.rgb(38, 70, 48) else Color.rgb(238, 236, 214)))
+            addState(intArrayOf(), pill(if (filled) Color.rgb(52, 90, 62) else Color.rgb(255, 253, 241)))
+        }
+        setOnClickListener { click() }
+    }.also { frame.onScaleText(it, MockupFrame.v2(16).toFloat()) }
 
     private fun field(hint: Int, type: Int) = EditText(this).apply {
         setHint(hint); inputType = type
         // In landscape, keep the card visible while typing instead of Android's full-screen text editor.
         imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI or EditorInfo.IME_ACTION_NEXT
         setTextColor(INK); setHintTextColor(Color.argb(140, 58, 58, 42))
-        background = getDrawable(R.drawable.ui_login_input)
+        background = box()
         gravity = Gravity.CENTER_VERTICAL
         setPadding(dp(14), 0, dp(14), 0)
         isSingleLine = true
         importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_YES
-    }.also { frame.onScaleText(it, 26f) }
+    }.also { frame.onScaleText(it, MockupFrame.v2(14).toFloat()) }
 
     private fun hideSystemBars() {
         if (Build.VERSION.SDK_INT >= 30) {
@@ -233,13 +265,11 @@ class LoginActivity : Activity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     companion object {
-        /** The card picture's place on the 1672×941 canvas (cut from bg_login.png at this rect). */
-        private val CARD = intArrayOf(492, 40, 1180, 895)
         private const val RISE_MS = 340L
         private const val SINK_MS = 220L
         private val CREAM = Color.parseColor("#FFF8E7")
-        private val DEEP_GREEN = Color.parseColor("#1E5A2A")
-        private val INK = Color.parseColor("#3A3A2A")
+        private val INK = Color.rgb(68, 60, 49)
+        private val SOFT = Color.rgb(112, 99, 71)
 
         /** After login: the hub with 스토리 진행하기 / 게임하기 / 튜토리얼 하기. Closes the opening and login popups. */
         fun openMain(activity: Activity) {

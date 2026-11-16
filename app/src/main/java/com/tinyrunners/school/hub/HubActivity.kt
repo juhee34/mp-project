@@ -45,8 +45,11 @@ class HubActivity : Activity() {
         }.also { frame.onScaleText(it, MockupFrame.v2(60).toFloat()) }, 340, 78, 940, 164)
         frame.placeV2(TextView(this).apply {
             setText(R.string.hub_tagline_v2); setTextColor(TAGLINE); gravity = Gravity.CENTER; includeFontPadding = false
-            setShadowLayer(4f, 0f, 0f, Color.argb(200, 255, 248, 230))
-        }.also { frame.onScaleText(it, MockupFrame.v2(17).toFloat()) }, 380, 196, 900, 226)
+            // A soft cream ribbon behind it, so it reads over the leaves of the picture.
+            background = android.graphics.drawable.GradientDrawable().apply {
+                setColor(Color.argb(215, 255, 248, 230)); cornerRadius = 999f
+            }
+        }.also { frame.onScaleText(it, MockupFrame.v2(16).toFloat()) }, 460, 194, 820, 228)
         fun add(label: Int, top: Int, click: () -> Unit) = frame.placeV2(Button(this).apply {
             setText(label); isAllCaps = false; stateListAnimator = null; setTextColor(MENU_INK); typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER; setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0

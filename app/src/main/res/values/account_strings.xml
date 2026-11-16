@@ -135,4 +135,10 @@
     <string name="settings_guest_keep_note">게스트 기록은 앱을 지우거나 로그아웃하면 다시 찾을 수 없어요. 계정을 만들면 지금 기록이 그대로 이어져요.</string>
     <string name="settings_sign_out_guest">로그아웃 (게스트 기록은 사라져요)</string>
     <string name="result_headline_v2">오늘도, 잘 다녀왔어요.</string>
+    <!-- Login letter in the separated pack (reference/screen-1). -->
+    <string name="login_back_v2">← 처음으로</string>
+    <string name="login_heading_v2">다시 만나 반가워요</string>
+    <string name="login_sub_v2">우리의 작은 모험을 이어 갈까요?</string>
+    <string name="auth_email_hint_v2">이메일 주소</string>
+    <string name="login_to_signup_v2">처음 오셨나요? 회원가입</string>
 </resources>

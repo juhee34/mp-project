@@ -19,7 +19,6 @@ import com.tinyrunners.school.story.SceneThumb
 import com.tinyrunners.school.ui.CardShelf
 import com.tinyrunners.school.ui.HomeButton
 import com.tinyrunners.school.ui.Page
-import com.tinyrunners.school.ui.PaperBackdropView
 import kotlin.math.roundToInt
 
 /**
@@ -60,7 +59,7 @@ class RecordsActivity : Activity() {
 
         setContentView(FrameLayout(this).apply {
             setBackgroundColor(Page.BACKGROUND)
-            addView(PaperBackdropView(this@RecordsActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(com.tinyrunners.school.shop.ShopBackground(this@RecordsActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(content, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             setOnApplyWindowInsetsListener { v, insets ->
                 if (Build.VERSION.SDK_INT >= 30) {

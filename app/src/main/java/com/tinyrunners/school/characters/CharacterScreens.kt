@@ -334,7 +334,8 @@ internal class CharacterScreens(
         selectedId = friend.id
         route = Route.PROFILE
         host.removeAllViews()
-        backdrop(null)
+        // The friend's home from the selection stays behind the profile (A's separated pack).
+        backdrop(SELECT_BACKGROUNDS[friend.id] ?: R.drawable.bg_v2_friends_mint_wide)
         val board = com.tinyrunners.school.ui.ScoreBoard
         val copy = friend.copy
 
@@ -442,7 +443,6 @@ internal class CharacterScreens(
         row.addView(pageWrap, LinearLayout.LayoutParams(0, WRAP, 1f))
         row.addView(right, LinearLayout.LayoutParams(dp(250), WRAP).apply { marginStart = dp(22) })
         scroll = com.tinyrunners.school.ui.TunedScrollView(context).apply { isFillViewport = true; addView(row) }
-        host.addView(com.tinyrunners.school.result.ResultScenery(context, friend.id, 0f), FrameLayout.LayoutParams(MATCH, MATCH))
         host.addView(scroll, FrameLayout.LayoutParams(MATCH, MATCH))
         restoreScroll(scrollY)
     }

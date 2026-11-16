@@ -743,21 +743,24 @@ private class ItemPreview(context: Context, private val item: com.tinyrunners.sc
  * Drawn once (no animation); everything with text is a real view on top.
  */
 internal class ShopBackground(context: Context, private val interior: Boolean = false) : View(context) {
-    /** The shop itself shows the wooden shop interior of A's separated pack (backgrounds/shop, widened); the other screens keep the frame. */
-    private val art = android.graphics.BitmapFactory.decodeResource(resources, if (interior) R.drawable.bg_v2_shop_wide else R.drawable.bg_shop_frame)
+    /** The wooden shop interior of A's separated pack (backgrounds/shop, widened): clear in the shop, veiled elsewhere. */
+    private val art = android.graphics.BitmapFactory.decodeResource(resources, R.drawable.bg_v2_shop_wide)
+    /** Settings, the bag and the postcards: the same room under a cream veil, so their dark text and cards read calmly. */
+    private val veil = Paint().apply { color = Color.argb(190, 250, 241, 222) }
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
     private val src = Rect()
     private val dst = RectF()
 
     override fun onDraw(canvas: Canvas) {
         val art = art
-        if (art != null && interior && width > 0 && height > 0) {
+        if (art != null && width > 0 && height > 0) {
             // Cover: fill the screen, cut evenly from the long side.
             val k = maxOf(width / art.width.toFloat(), height / art.height.toFloat())
             val sw = width / k; val sh = height / k
             src.set(((art.width - sw) / 2).toInt(), ((art.height - sh) / 2).toInt(), ((art.width + sw) / 2).toInt(), ((art.height + sh) / 2).toInt())
             dst.set(0f, 0f, width.toFloat(), height.toFloat())
             canvas.drawBitmap(art, src, dst, paint)
+            if (!interior) canvas.drawRect(dst, veil)
             return
         }
         if (art == null || width <= 0 || height <= 0) { canvas.drawColor(ShopActivity.FABRIC); return }
