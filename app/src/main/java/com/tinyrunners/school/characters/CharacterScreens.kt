@@ -111,7 +111,7 @@ internal class CharacterScreens(
             background = SpeechBubble()
             maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END
         }
-        frame.placeV2(bubble, 165, 172, 635, 312)
+        frame.placeV2(bubble, 165, 250, 635, 392)
 
         // ◀ ▶ at the screen edges.
         val prev = stageArrow("◀", R.string.characters_prev)
