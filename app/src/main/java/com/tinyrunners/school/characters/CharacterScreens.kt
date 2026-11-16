@@ -99,7 +99,7 @@ internal class CharacterScreens(
             // A cream pill: the picture behind is the leafy top of the home now (filled edge to edge).
             background = GradientDrawable().apply { setColor(Color.argb(235, 255, 248, 232)); cornerRadius = 999f }
         }, 24, 138, 368, 184)
-        val counter = text(12, PANEL_SOFT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL; letterSpacing = 0.2f }
+        val counter = text(21, PANEL_SOFT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL; letterSpacing = 0.2f }
 
         // The friend big in the middle of the open space, on a soft pool of light so they stand out, with a bubble above.
         frame.placeV2(SpotLight(context), 185, 230, 615, 640)
@@ -117,62 +117,62 @@ internal class CharacterScreens(
         // ◀ ▶ at the screen edges.
         val prev = stageArrow("◀", R.string.characters_prev)
         val next = stageArrow("▶", R.string.characters_next)
-        frame.placeV2(prev, 25, 330, 75, 380)
-        frame.placeV2(next, 1205, 330, 1255, 380)
+        frame.placeV2(prev, 18, 317, 94, 393)
+        frame.placeV2(next, 1186, 317, 1262, 393)
 
         // The panel at the right.
         frame.placeV2(ImageView(context).apply {
             setImageResource(R.drawable.ui_v2_friend_panel); scaleType = ImageView.ScaleType.FIT_XY
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }, 724, 139, 1184, 476)
-        frame.placeV2(text(12, PANEL_SOFT).apply { text = context.getString(R.string.characters_today_mate); letterSpacing = 0.15f }, 766, 176, 1100, 196)
+        frame.placeV2(text(21, PANEL_SOFT).apply { text = context.getString(R.string.characters_today_mate); letterSpacing = 0.1f }, 766, 166, 1000, 196)
         // 01 / 06 at the top right inside the panel.
-        frame.placeV2(counter, 1040, 176, 1142, 196)
+        frame.placeV2(counter, 1000, 166, 1142, 196)
         val name = text(40, PANEL_INK, bold = true).apply { gravity = Gravity.BOTTOM; maxLines = 1 }
-        frame.placeV2(name, 766, 196, 1142, 250)
+        frame.placeV2(name, 766, 198, 1142, 252)
         frame.placeV2(View(context).apply { setBackgroundColor(Color.argb(70, 70, 90, 60)) }, 766, 262, 1142, 263)
-        val home = text(18, PANEL_SOFT).apply { maxLines = 1 }
-        frame.placeV2(home, 766, 272, 1142, 300)
-        val intro = text(20, PANEL_INK).apply {
-            setLineSpacing(0f, 1.3f); ellipsize = android.text.TextUtils.TruncateAt.END; maxLines = 3
+        val home = text(23, PANEL_SOFT).apply { maxLines = 1 }
+        frame.placeV2(home, 766, 266, 1142, 300)
+        val intro = text(23, PANEL_INK).apply {
+            setLineSpacing(0f, 1.2f); ellipsize = android.text.TextUtils.TruncateAt.END; maxLines = 3
         }
-        frame.placeV2(intro, 766, 306, 1142, 408)
-        val best = text(15, LEAF, bold = true).apply { maxLines = 1 }
-        frame.placeV2(best, 766, 410, 1142, 434)
+        frame.placeV2(intro, 766, 302, 1142, 418)
+        val best = text(21, LEAF, bold = true).apply { maxLines = 1 }
+        frame.placeV2(best, 766, 424, 1142, 452)
         // The six friends to choose from, on a wide cream strip along the bottom of the screen: a round portrait and a
         // name each; the whole cell is the button.
         frame.placeV2(View(context).apply {
             background = shape(Color.argb(232, 255, 249, 235), 26)
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, 200, 562, 1080, 672)
+        }, 200, 568, 1080, 676)
         val portraits = friends.map { FrameLayout(context) }
-        val names = friends.map { f -> text(16, PANEL_INK).apply { text = f.name; gravity = Gravity.CENTER } }
+        val names = friends.map { f -> text(22, PANEL_INK).apply { text = f.name; gravity = Gravity.CENTER } }
         val cells = friends.mapIndexed { i, f ->
             val x = 228 + i * 140
-            frame.placeV2(portraits[i], x + 22, 568, x + 102, 640)
-            frame.placeV2(names[i], x, 642, x + 124, 666)
+            frame.placeV2(portraits[i], x + 32, 572, x + 92, 632)
+            frame.placeV2(names[i], x, 634, x + 124, 668)
             View(context).apply {
                 contentDescription = f.name; isClickable = true
                 background = RippleDrawable(ColorStateList.valueOf(Color.argb(40, 0, 0, 0)), null, android.graphics.drawable.ColorDrawable(Color.WHITE))
                 setOnClickListener { if (selectedId != f.id) { selectedId = f.id; bindSelection() } }
-            }.also { frame.placeV2(it, x, 564, x + 124, 670) }
+            }.also { frame.placeV2(it, x, 568, x + 124, 676) }
         }
 
         // Buttons under the panel.
         val run = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_primary, R.drawable.ui_v2_btn_primary_pressed,
-            "", CREAM, MockupFrame.v2(20).toFloat()) { chooseStory(friends.first { it.id == selectedId }) }
+            "", CREAM, MockupFrame.v2(27).toFloat()) { chooseStory(friends.first { it.id == selectedId }) }
         // The buttons wear the chosen friend's own colour (set in bindSelection), so they sit on the exact button rects.
-        frame.placeV2(run, 730, 488, 910, 548)
+        frame.placeV2(run, 724, 482, 940, 558)
         val more = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
-            context.getString(R.string.characters_profile_short), PANEL_INK, MockupFrame.v2(19).toFloat()) {
+            context.getString(R.string.characters_profile_short), PANEL_INK, MockupFrame.v2(24).toFloat()) {
             showProfile(selectedId.orEmpty())
         }
-        frame.placeV2(more, 920, 488, 1048, 548)
+        frame.placeV2(more, 948, 482, 1066, 558)
         val book = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
-            context.getString(R.string.characters_story_book), PANEL_INK, MockupFrame.v2(19).toFloat()) {
+            context.getString(R.string.characters_story_book), PANEL_INK, MockupFrame.v2(24).toFloat()) {
             context.startActivity(StoryActivity.intent(context, selectedId.orEmpty()))
         }
-        frame.placeV2(book, 1058, 488, 1186, 548)
+        frame.placeV2(book, 1074, 482, 1192, 558)
 
         var bests: Map<String, Int> = emptyMap()
 
@@ -373,7 +373,7 @@ internal class CharacterScreens(
     }
 
     private fun stageArrow(symbol: String, description: Int) = Button(context).apply {
-        text = symbol; textSize = 15f; setTextColor(com.tinyrunners.school.ui.CardShelf.GREEN)
+        text = symbol; textSize = 18f; setTextColor(com.tinyrunners.school.ui.CardShelf.GREEN)
         contentDescription = context.getString(description)
         setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
         background = RippleDrawable(ColorStateList.valueOf(0x33466F53), GradientDrawable().apply {

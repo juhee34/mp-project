@@ -88,18 +88,18 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
             background = RippleDrawable(ColorStateList.valueOf(0x33FFFFFF), null, android.graphics.drawable.ColorDrawable(Color.WHITE))
             setOnClickListener { goBack() }
             maxLines = 1; isSingleLine = true
-        }.also { frame.onScaleText(it, v2(14).toFloat()) }
-        frame.placeV2(back, 30, 30, 132, 72)
-        frame.placeV2(text(24, CREAM_TEXT, bold = true).apply {
+        }.also { frame.onScaleText(it, v2(26).toFloat()) }
+        frame.placeV2(back, 30, 26, 210, 76)
+        frame.placeV2(text(32, CREAM_TEXT, bold = true).apply {
             text = getString(R.string.collection_open); gravity = Gravity.CENTER_VERTICAL
-        }, 136, 30, 460, 72)
+        }, 216, 26, 560, 76)
         frame.placeV2(text(30, CREAM_TEXT, bold = true).apply {
             text = getString(R.string.collection_headline); gravity = Gravity.CENTER_VERTICAL
             setShadowLayer(6f, 0f, 2f, Color.argb(120, 0, 0, 0))
         }, 76, 108, 760, 158)
-        frame.placeV2(text(12, LIGHT).apply { text = getString(R.string.collection_subline); gravity = Gravity.CENTER_VERTICAL }, 76, 164, 760, 186)
-        counter = text(12, LIGHT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL }
-        frame.placeV2(counter, 860, 124, 1200, 146)
+        frame.placeV2(text(24, LIGHT).apply { text = getString(R.string.collection_subline); gravity = Gravity.CENTER_VERTICAL }, 76, 160, 900, 196)
+        counter = text(22, LIGHT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL }
+        frame.placeV2(counter, 860, 118, 1200, 150)
         frame.place(android.widget.ImageButton(this).apply {
             setImageDrawable(null)
             background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(R.drawable.ui_story_bag_button), null)
@@ -119,7 +119,7 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
                 frame.post { frame.move(scroller, left, v2(SHELF_TOP), right, v2(SHELF_TOP + 392)); render() }
             }
         }
-        frame.placeV2(text(12, LIGHT).apply { text = getString(R.string.collection_footer); gravity = Gravity.CENTER_VERTICAL }, 80, 668, 600, 694)
+        frame.placeV2(text(22, LIGHT).apply { text = getString(R.string.collection_footer); gravity = Gravity.CENTER_VERTICAL }, 80, 662, 880, 698)
         // Page dots and ◀ ▶ at the bottom right ("책장 둘러보기").
         pager = com.tinyrunners.school.ui.ShelfPager(this, scroller)
         frame.placeV2(pager, 900, 650, 1230, 708)

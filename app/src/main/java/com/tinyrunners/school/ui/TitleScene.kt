@@ -88,7 +88,7 @@ object TitleScene {
             }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (h * LOGO).roundToInt()))
             addView(OutlinedText(context, h * 0.008f).apply {
                 text = tagline; setTextColor(WHITE); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
-                includeFontPadding = false; setTextSize(TypedValue.COMPLEX_UNIT_PX, h * 0.042f)
+                includeFontPadding = false; setTextSize(TypedValue.COMPLEX_UNIT_PX, unit(context) * 0.042f * maxOf(scale, 0.86f))
                 setShadowLayer(h * 0.008f, 0f, h * 0.003f, SHADOW)
             }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (h * 0.07f).roundToInt()))
         }

@@ -48,16 +48,16 @@ internal class StoryPicker(
     private lateinit var dialog: AlertDialog
     private var flipping = false
     private val page = PageLayout(context)
-    private val chapter = text(0.030f, SOFT)
-    private val heading = text(0.050f, INK, bold = true).apply { maxLines = 1 }
+    private val chapter = text(0.036f, SOFT)
+    private val heading = text(0.054f, INK, bold = true).apply { maxLines = 1 }
     private val picture = EpisodePicture(context)
-    private val summary = text(0.031f, INK).apply {
+    private val summary = text(0.038f, INK).apply {
         maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END; setLineSpacing(0f, 1.1f); gravity = Gravity.TOP
     }
-    private val mark = text(0.030f, deep, bold = true)
+    private val mark = text(0.036f, deep, bold = true)
     private val go = pill()
-    private val counter = text(0.028f, SOFT).apply { gravity = Gravity.CENTER }
-    private val close = text(0.032f, SOFT).apply {
+    private val counter = text(0.036f, SOFT).apply { gravity = Gravity.CENTER }
+    private val close = text(0.040f, SOFT).apply {
         gravity = Gravity.CENTER; setText(R.string.choose_story_cancel); isClickable = true
         background = RippleDrawable(ColorStateList.valueOf(0x22000000), null, ColorDrawable(Color.WHITE))
         setOnClickListener { dialog.dismiss() }
@@ -71,20 +71,20 @@ internal class StoryPicker(
             background = BookPage(tint)
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }, 0f, 0f, 1f, 1f)
-        page.add(chapter.apply { text = context.getString(R.string.choose_story_book, friendName) }, L, 0.085f, R_, 0.125f)
-        page.add(counter, 0.62f, 0.085f, R_, 0.125f)
-        page.add(heading, L, 0.130f, R_, 0.200f)
-        page.add(picture, L, 0.212f, R_, 0.500f)
-        page.add(summary, L, 0.518f, R_, 0.700f)
-        page.add(mark, L, 0.705f, R_, 0.745f)
-        page.add(go, L, 0.765f, R_, 0.855f)
-        page.add(close, L, 0.870f, R_, 0.925f)
+        page.add(chapter.apply { text = context.getString(R.string.choose_story_book, friendName) }, L, 0.070f, R_, 0.115f)
+        page.add(counter, 0.62f, 0.070f, R_, 0.115f)
+        page.add(heading, L, 0.120f, R_, 0.190f)
+        page.add(picture, L, 0.200f, R_, 0.450f)
+        page.add(summary, L, 0.465f, R_, 0.675f)
+        page.add(mark, L, 0.680f, R_, 0.725f)
+        page.add(go, L, 0.738f, R_, 0.858f)
+        page.add(close, L, 0.866f, R_, 0.935f)
 
         // The page in the middle of the screen with an arrow on each side; a tap beside the book closes it.
         val root = object : FrameLayout(context) {
             override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
                 val w = r - l; val h = b - t
-                val ph = (h * 0.92f).toInt(); val pw = ph * 440 / 573
+                val ph = (h * 0.94f).toInt(); val pw = ph * 92 / 100
                 val px = (w - pw) / 2; val py = (h - ph) / 2
                 page.measure(MeasureSpec.makeMeasureSpec(pw, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(ph, MeasureSpec.EXACTLY))
                 page.layout(px, py, px + pw, py + ph)
@@ -174,7 +174,7 @@ internal class StoryPicker(
     private fun pill() = Button(context).apply {
         isAllCaps = false; stateListAnimator = null; typeface = Typeface.DEFAULT_BOLD
         setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
-        tag = 0.036f
+        tag = 0.044f
         fun face(fill: Int) = GradientDrawable().apply { setColor(fill); cornerRadius = 999f }
         background = android.graphics.drawable.StateListDrawable().apply {
             addState(intArrayOf(-android.R.attr.state_enabled), face(Color.rgb(214, 206, 222)))

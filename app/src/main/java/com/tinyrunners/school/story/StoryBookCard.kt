@@ -137,18 +137,19 @@ internal object StoryBookCard {
             val p = v(6); setPadding(p, p, p, p)
             addView(picture, android.widget.FrameLayout.LayoutParams(-1, -1))
             elevation = 2f
-        }, v(38), v(47), v(245), v(223))
+        }, v(38), v(47), v(245), v(200))
         fun text(px: Int, color: Int, bold: Boolean = false) = TextView(activity).apply {
             setTextColor(color); includeFontPadding = false; maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
             if (bold) typeface = Typeface.DEFAULT_BOLD
             frame.onScaleText(this, v(px).toFloat())
         }
-        box.add(text(if (title.length > 8) 18 else 24, COVER_INK, bold = true).apply { text = title; gravity = Gravity.CENTER_VERTICAL },
-            v(38), v(236), v(250), v(278))
-        box.add(text(11, COVER_SOFT).apply { text = sub; gravity = Gravity.CENTER_VERTICAL }, v(38), v(282), v(250), v(302))
-        box.add(View(activity).apply { setBackgroundColor(Color.argb(80, 90, 80, 60)) }, v(38), v(311), v(245), v(312))
-        box.add(text(12, if (open) COVER_INK else COVER_SOFT).apply { text = action; gravity = Gravity.CENTER_VERTICAL }, v(38), v(324), v(220), v(346))
-        if (open) box.add(text(13, COVER_INK).apply { text = "→"; gravity = Gravity.CENTER }, v(225), v(324), v(250), v(346))
+        box.add(text(if (title.length > 8) 24 else 28, COVER_INK, bold = true).apply { text = title; gravity = Gravity.CENTER_VERTICAL },
+            v(38), v(206), v(250), v(250))
+        // The home and how many stories were seen, on up to two lines.
+        box.add(text(21, COVER_SOFT).apply { text = sub; gravity = Gravity.CENTER_VERTICAL; maxLines = 2 }, v(38), v(252), v(250), v(306))
+        box.add(View(activity).apply { setBackgroundColor(Color.argb(80, 90, 80, 60)) }, v(38), v(312), v(245), v(313))
+        box.add(text(21, if (open) COVER_INK else COVER_SOFT).apply { text = action; gravity = Gravity.CENTER_VERTICAL }, v(38), v(320), v(220), v(352))
+        if (open) box.add(text(22, COVER_INK).apply { text = "→"; gravity = Gravity.CENTER }, v(220), v(320), v(250), v(352))
         if (!open) box.alpha = 0.82f
         box.contentDescription = "$title. $sub. $action"
         if (open) {

@@ -55,39 +55,39 @@ class LoginActivity : Activity() {
         frame.placeV2(View(this).apply {
             background = com.tinyrunners.school.characters.StoryPicker.BookPage(LEAF, Color.rgb(255, 247, 228))
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, 420, 70, 860, 642)
+        }, 410, 36, 870, 692)
         frame.placeV2(TextView(this).apply {
             setText(R.string.login_back_v2); setTextColor(CREAM); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER_VERTICAL
             setShadowLayer(6f, 0f, 1f, Color.argb(160, 40, 30, 60)); isClickable = true; isFocusable = true
             background = android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(0x33FFFFFF), null,
                 android.graphics.drawable.ColorDrawable(Color.WHITE))
             setOnClickListener { close() }
-        }.also { frame.onScaleText(it, v(22).toFloat()) }, 28, 22, 240, 76)
+        }.also { frame.onScaleText(it, v(26).toFloat()) }, 28, 16, 300, 80)
         frame.placeV2(TextView(this).apply {
             setText(R.string.login_heading_v2); setTextColor(INK); typeface = Typeface.DEFAULT_BOLD; includeFontPadding = false
             gravity = Gravity.CENTER_VERTICAL
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-        }.also { frame.onScaleText(it, v(30).toFloat()) }, 477, 128, 816, 176)
+        }.also { frame.onScaleText(it, v(38).toFloat()) }, 470, 88, 826, 148)
         frame.placeV2(TextView(this).apply {
             setText(R.string.login_sub_v2); setTextColor(SOFT); includeFontPadding = false; gravity = Gravity.CENTER_VERTICAL
-        }.also { frame.onScaleText(it, v(16).toFloat()) }, 477, 180, 816, 206)
+        }.also { frame.onScaleText(it, v(24).toFloat()) }, 470, 150, 826, 186)
 
-        emailLabel = label(R.string.auth_email).also { frame.placeV2(it, 477, 220, 816, 250) }
+        emailLabel = label(R.string.auth_email).also { frame.placeV2(it, 470, 194, 826, 228) }
         email = field(R.string.auth_email_hint_v2, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-            .also { frame.placeV2(it, 477, 253, 816, 298) }
-        passwordLabel = label(R.string.auth_password).also { frame.placeV2(it, 477, 304, 816, 334) }
+            .also { frame.placeV2(it, 470, 232, 826, 292) }
+        passwordLabel = label(R.string.auth_password).also { frame.placeV2(it, 470, 300, 826, 334) }
         password = field(R.string.auth_password, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD)
-            .also { frame.placeV2(it, 477, 337, 816, 382) }
+            .also { frame.placeV2(it, 470, 338, 826, 398) }
         // With a session: who is signed in, in a box like the fields.
         account = TextView(this).apply {
             setTextColor(INK); gravity = Gravity.CENTER_VERTICAL; maxLines = 2
             background = box()
             setPadding(dp(14), 0, dp(14), 0)
-        }.also { frame.onScaleText(it, v(18).toFloat()); frame.placeV2(it, 477, 253, 816, 312) }
+        }.also { frame.onScaleText(it, v(23).toFloat()); frame.placeV2(it, 470, 232, 826, 310) }
         error = TextView(this).apply { setTextColor(Page.ERROR); gravity = Gravity.CENTER; maxLines = 2 }
-            .also { frame.onScaleText(it, v(15).toFloat()); frame.placeV2(it, 477, 390, 816, 428) }
+            .also { frame.onScaleText(it, v(22).toFloat()); frame.placeV2(it, 470, 402, 826, 434) }
 
-        submit = pillButton(filled = true) { primaryClick() }.also { frame.placeV2(it, 477, 432, 816, 486) }
+        submit = pillButton(filled = true) { primaryClick() }.also { frame.placeV2(it, 470, 440, 826, 518) }
         // 처음 오셨나요? 회원가입 (or 다른 계정으로 로그인 with a session): a quiet line under the main button.
         second = Button(this).apply {
             isAllCaps = false; stateListAnimator = null; setTextColor(SOFT); setPadding(0, 0, 0, 0)
@@ -95,11 +95,11 @@ class LoginActivity : Activity() {
             background = android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(0x22000000), null,
                 android.graphics.drawable.ColorDrawable(Color.WHITE))
             setOnClickListener { secondClick() }
-        }.also { frame.onScaleText(it, v(17).toFloat()); frame.placeV2(it, 477, 498, 816, 536) }
+        }.also { frame.onScaleText(it, v(24).toFloat()); frame.placeV2(it, 470, 522, 826, 562) }
 
         // 게스트로 둘러보기: the outlined button at the bottom; the guest can make an account later in 설정.
         guest = pillButton(filled = false) { guestClick() }.apply { setText(R.string.login_guest_start) }
-            .also { frame.placeV2(it, 477, 547, 816, 599) }
+            .also { frame.placeV2(it, 470, 568, 826, 644) }
 
         dim = View(this).apply { setBackgroundColor(Color.argb(120, 30, 34, 24)); alpha = 0f; setOnClickListener { } }
         setContentView(android.widget.FrameLayout(this).apply {
@@ -216,7 +216,7 @@ class LoginActivity : Activity() {
     private fun label(text: Int) = TextView(this).apply {
         setText(text); setTextColor(INK); gravity = Gravity.BOTTOM or Gravity.START
         includeFontPadding = false
-    }.also { frame.onScaleText(it, MockupFrame.v2(15).toFloat()) }
+    }.also { frame.onScaleText(it, MockupFrame.v2(22).toFloat()) }
 
     /** The cream input box of the letter. */
     private fun box() = android.graphics.drawable.GradientDrawable().apply {
@@ -236,7 +236,7 @@ class LoginActivity : Activity() {
             addState(intArrayOf(), pill(if (filled) LEAF else Color.rgb(255, 253, 241)))
         }
         setOnClickListener { click() }
-    }.also { frame.onScaleText(it, MockupFrame.v2(20).toFloat()) }
+    }.also { frame.onScaleText(it, MockupFrame.v2(28).toFloat()) }
 
     private fun field(hint: Int, type: Int) = EditText(this).apply {
         setHint(hint); inputType = type
@@ -248,7 +248,7 @@ class LoginActivity : Activity() {
         setPadding(dp(14), 0, dp(14), 0)
         isSingleLine = true
         importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_YES
-    }.also { frame.onScaleText(it, MockupFrame.v2(18).toFloat()) }
+    }.also { frame.onScaleText(it, MockupFrame.v2(26).toFloat()) }
 
     private fun hideSystemBars() {
         if (Build.VERSION.SDK_INT >= 30) {
