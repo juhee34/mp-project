@@ -41,34 +41,11 @@ import kotlin.math.roundToInt
 class OpeningActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // A's separated design pack (2026-11-16, reference/screen-1): the lavender village at dusk, the title and tagline
-        // on the left, the start button under them, the six friends along the stone path. The login card opens on the right.
-        val frame = com.tinyrunners.school.ui.MockupFrame(this, R.drawable.bg_v2_login_wide)
-        val v2 = com.tinyrunners.school.ui.MockupFrame.Companion
-        frame.placeV2(android.widget.TextView(this).apply {
-            setText(R.string.app_name); setTextColor(Color.rgb(255, 244, 222)); typeface = android.graphics.Typeface.DEFAULT_BOLD
-            gravity = android.view.Gravity.CENTER; includeFontPadding = false; setShadowLayer(6f, 0f, 3f, Color.argb(120, 70, 50, 90))
-        }.also { frame.onScaleText(it, v2.v2(58).toFloat()) }, 120, 132, 540, 206)
-        frame.placeV2(android.widget.TextView(this).apply {
-            setText(R.string.opening_tagline_v2); setTextColor(Color.rgb(255, 244, 222)); gravity = android.view.Gravity.CENTER
-            setShadowLayer(4f, 0f, 2f, Color.argb(120, 70, 50, 90))
-        }.also { frame.onScaleText(it, v2.v2(16).toFloat()) }, 120, 214, 540, 244)
-        frame.placeV2(android.widget.Button(this).apply {
-            setText(R.string.opening_start); isAllCaps = false; stateListAnimator = null; setTextColor(Color.rgb(255, 253, 241))
-            typeface = android.graphics.Typeface.DEFAULT_BOLD; gravity = android.view.Gravity.CENTER
-            setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
-            background = android.graphics.drawable.StateListDrawable().apply {
-                addState(intArrayOf(android.R.attr.state_pressed), getDrawable(R.drawable.ui_v2_btn_primary_pressed))
-                addState(intArrayOf(), getDrawable(R.drawable.ui_v2_btn_primary))
-            }
-            setOnClickListener { onButton() }
-        }.also { frame.onScaleText(it, v2.v2(20).toFloat()) }, 242, 290, 418, 356)
-        // Six friends along the path.
-        val friends = CharacterRepository(this).characters
-        FRIEND_X.forEachIndexed { i, cx ->
-            val id = friends.getOrNull(i)?.id ?: return@forEachIndexed
-            frame.placeV2(OpeningFriend(this, id, i), cx - 44, FRIEND_FEET - 88, cx + 44, FRIEND_FEET)
-        }
+        // The title logo on a cream plaque, the tagline pill and 시작하기 in the middle, the six friends on the ground;
+        // the sunny meadow by day, the lavender village by night (TitleScene).
+        val start = com.tinyrunners.school.ui.TitleScene.button(this, getString(R.string.opening_start), primary = true,
+            width = 0.42f, heightShare = 0.1f) { onButton() }
+        val frame = com.tinyrunners.school.ui.TitleScene.screen(this, getString(R.string.opening_tagline_card), listOf(start))
         setContentView(frame)
         hideSystemBars()
     }
@@ -79,12 +56,6 @@ class OpeningActivity : Activity() {
         // The popup animates itself (the card rises); no window transition.
         @Suppress("DEPRECATION")
         overridePendingTransition(0, 0)
-    }
-
-    private companion object {
-        /** Friend centres and feet line in the pack's 1280×720 coordinates (along the stone path). */
-        val FRIEND_X = intArrayOf(110, 220, 330, 440, 550, 660)
-        const val FRIEND_FEET = 662
     }
 
     private fun hideSystemBars() {

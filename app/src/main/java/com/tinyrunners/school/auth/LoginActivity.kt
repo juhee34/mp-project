@@ -54,7 +54,7 @@ class LoginActivity : Activity() {
         frame.placeV2(android.widget.ImageView(this).apply {
             setImageResource(R.drawable.ui_v2_login_panel); scaleType = android.widget.ImageView.ScaleType.FIT_XY
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, 741, 70, 1181, 642)
+        }, 420, 70, 860, 642)
         frame.placeV2(TextView(this).apply {
             setText(R.string.login_back_v2); setTextColor(CREAM); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER_VERTICAL
             setShadowLayer(6f, 0f, 1f, Color.argb(160, 40, 30, 60)); isClickable = true; isFocusable = true
@@ -66,27 +66,27 @@ class LoginActivity : Activity() {
             setText(R.string.login_heading_v2); setTextColor(INK); typeface = Typeface.DEFAULT_BOLD; includeFontPadding = false
             gravity = Gravity.CENTER_VERTICAL
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-        }.also { frame.onScaleText(it, v(24).toFloat()) }, 798, 134, 1120, 176)
+        }.also { frame.onScaleText(it, v(24).toFloat()) }, 477, 134, 799, 176)
         frame.placeV2(TextView(this).apply {
             setText(R.string.login_sub_v2); setTextColor(SOFT); includeFontPadding = false; gravity = Gravity.CENTER_VERTICAL
-        }.also { frame.onScaleText(it, v(12).toFloat()) }, 798, 182, 1137, 204)
+        }.also { frame.onScaleText(it, v(12).toFloat()) }, 477, 182, 816, 204)
 
-        emailLabel = label(R.string.auth_email).also { frame.placeV2(it, 798, 226, 1137, 248) }
+        emailLabel = label(R.string.auth_email).also { frame.placeV2(it, 477, 226, 816, 248) }
         email = field(R.string.auth_email_hint_v2, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-            .also { frame.placeV2(it, 798, 253, 1137, 298) }
-        passwordLabel = label(R.string.auth_password).also { frame.placeV2(it, 798, 310, 1137, 332) }
+            .also { frame.placeV2(it, 477, 253, 816, 298) }
+        passwordLabel = label(R.string.auth_password).also { frame.placeV2(it, 477, 310, 816, 332) }
         password = field(R.string.auth_password, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD)
-            .also { frame.placeV2(it, 798, 337, 1137, 382) }
+            .also { frame.placeV2(it, 477, 337, 816, 382) }
         // With a session: who is signed in, in a box like the fields.
         account = TextView(this).apply {
             setTextColor(INK); gravity = Gravity.CENTER_VERTICAL; maxLines = 2
             background = box()
             setPadding(dp(14), 0, dp(14), 0)
-        }.also { frame.onScaleText(it, v(14).toFloat()); frame.placeV2(it, 798, 253, 1137, 312) }
+        }.also { frame.onScaleText(it, v(14).toFloat()); frame.placeV2(it, 477, 253, 816, 312) }
         error = TextView(this).apply { setTextColor(Page.ERROR); gravity = Gravity.CENTER; maxLines = 2 }
-            .also { frame.onScaleText(it, v(12).toFloat()); frame.placeV2(it, 798, 390, 1137, 428) }
+            .also { frame.onScaleText(it, v(12).toFloat()); frame.placeV2(it, 477, 390, 816, 428) }
 
-        submit = pillButton(filled = true) { primaryClick() }.also { frame.placeV2(it, 798, 432, 1137, 486) }
+        submit = pillButton(filled = true) { primaryClick() }.also { frame.placeV2(it, 477, 432, 816, 486) }
         // 처음 오셨나요? 회원가입 (or 다른 계정으로 로그인 with a session): a quiet line under the main button.
         second = Button(this).apply {
             isAllCaps = false; stateListAnimator = null; setTextColor(SOFT); setPadding(0, 0, 0, 0)
@@ -94,11 +94,11 @@ class LoginActivity : Activity() {
             background = android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(0x22000000), null,
                 android.graphics.drawable.ColorDrawable(Color.WHITE))
             setOnClickListener { secondClick() }
-        }.also { frame.onScaleText(it, v(13).toFloat()); frame.placeV2(it, 798, 498, 1137, 536) }
+        }.also { frame.onScaleText(it, v(13).toFloat()); frame.placeV2(it, 477, 498, 816, 536) }
 
         // 게스트로 둘러보기: the outlined button at the bottom; the guest can make an account later in 설정.
         guest = pillButton(filled = false) { guestClick() }.apply { setText(R.string.login_guest_start) }
-            .also { frame.placeV2(it, 798, 547, 1137, 599) }
+            .also { frame.placeV2(it, 477, 547, 816, 599) }
 
         dim = View(this).apply { setBackgroundColor(Color.argb(120, 30, 34, 24)); alpha = 0f; setOnClickListener { } }
         setContentView(android.widget.FrameLayout(this).apply {

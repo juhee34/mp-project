@@ -36,50 +36,19 @@ class HubActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // A's separated design pack (2026-11-16, reference/screen-0): 라일's home under a hanging wooden sign with the
-        // title, the tagline below it, the menu buttons in the middle and the six friends in a row on the grass.
-        val frame = MockupFrame(this, R.drawable.bg_v2_main_wide)
-        frame.placeV2(TextView(this).apply {
-            setText(R.string.app_name); setTextColor(SIGN_INK); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
-            includeFontPadding = false; setShadowLayer(0f, 0f, 2f, Color.argb(90, 255, 240, 200))
-        }.also { frame.onScaleText(it, MockupFrame.v2(60).toFloat()) }, 340, 78, 940, 164)
-        frame.placeV2(TextView(this).apply {
-            setText(R.string.hub_tagline_v2); setTextColor(TAGLINE); gravity = Gravity.CENTER; includeFontPadding = false
-            // A soft cream ribbon behind it, so it reads over the leaves of the picture.
-            background = android.graphics.drawable.GradientDrawable().apply {
-                setColor(Color.argb(215, 255, 248, 230)); cornerRadius = 999f
-            }
-        }.also { frame.onScaleText(it, MockupFrame.v2(16).toFloat()) }, 460, 194, 820, 228)
-        fun add(label: Int, top: Int, click: () -> Unit) = frame.placeV2(Button(this).apply {
-            setText(label); isAllCaps = false; stateListAnimator = null; setTextColor(MENU_INK); typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER; setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
-            background = android.graphics.drawable.StateListDrawable().apply {
-                addState(intArrayOf(android.R.attr.state_pressed), getDrawable(R.drawable.ui_v2_btn_menu_pressed))
-                addState(intArrayOf(), getDrawable(R.drawable.ui_v2_btn_menu))
-            }
-            setOnClickListener { if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click() }
-        }.also { frame.onScaleText(it, MockupFrame.v2(18).toFloat()) }, 481, top - 4, 803, top + 54)
-        // 스토리 진행하기 is the game now: choose a friend, then the story is told while running (게임하기 merged in).
-        add(R.string.hub_story, 246) { startActivity(MainActivity.selectionIntent(this)) }
-        add(R.string.hub_shop, 302) { startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null)) }
-        add(R.string.hub_tutorial, 358) {
+        // The same scene as the opening (TitleScene): the logo, the tagline pill, the four menu buttons in the middle and
+        // the six friends on the ground; the sunny meadow by day, the lavender village by night.
+        fun add(label: Int, click: () -> Unit) = com.tinyrunners.school.ui.TitleScene.button(this, getString(label),
+            primary = false, width = 0.62f, heightShare = 0.085f) { if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click() }
+        val buttons = listOf(
+            // 스토리 진행하기 is the game now: choose a friend, then the story is told while running.
+            add(R.string.hub_story) { startActivity(MainActivity.selectionIntent(this)) },
+            add(R.string.hub_shop) { startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null)) },
             // A practice run with 라일 that always starts with the game guide.
-            startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true))
-        }
-        add(R.string.hub_settings, 414) {
-            startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java))
-        }
-        // The six friends from their game sprites, in a row on the grass (reference/screen-0).
-        val friends = com.tinyrunners.school.data.CharacterRepository(this).characters
-        FRIEND_X.forEachIndexed { i, cx ->
-            val id = friends.getOrNull(i)?.id ?: return@forEachIndexed
-            frame.placeV2(com.tinyrunners.school.opening.OpeningFriend(this, id, i), cx - 40, FRIEND_FEET - 80, cx + 40, FRIEND_FEET)
-        }
-        // The line at the bottom on a soft green band.
-        frame.placeV2(TextView(this).apply {
-            setText(R.string.hub_footer_v2); setTextColor(Color.rgb(244, 236, 212)); gravity = Gravity.CENTER
-            setBackgroundColor(Color.argb(190, 52, 78, 52))
-        }.also { frame.onScaleText(it, MockupFrame.v2(12).toFloat()) }, 0, 690, 1280, 720)
+            add(R.string.hub_tutorial) { startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true)) },
+            add(R.string.hub_settings) { startActivity(android.content.Intent(this, com.tinyrunners.school.settings.SettingsActivity::class.java)) },
+        )
+        val frame = com.tinyrunners.school.ui.TitleScene.screen(this, getString(R.string.hub_tagline_v2), buttons, gap = 0.016f)
         setContentView(frame)
         hideSystemBars()
     }
@@ -101,13 +70,6 @@ class HubActivity : Activity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
     companion object {
-        /** Friend centres and feet line in the pack's 1280×720 coordinates (reference/screen-0). */
-        val FRIEND_X = intArrayOf(185, 365, 548, 722, 905, 1083)
-        const val FRIEND_FEET = 670
-        /** Colours from the pack's manifest. */
-        private val SIGN_INK = Color.rgb(74, 92, 58)
-        private val TAGLINE = Color.rgb(96, 84, 64)
-        private val MENU_INK = Color.rgb(56, 82, 62)
         private const val TAP_GUARD_MS = 600L
 
         /** Opens the hub as the only screen in the task (after login it replaces the opening and popups). */
