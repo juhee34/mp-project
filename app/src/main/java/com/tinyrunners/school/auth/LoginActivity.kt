@@ -51,8 +51,9 @@ class LoginActivity : Activity() {
         frame = MockupFrame(this, 0)
         val v = MockupFrame.Companion::v2
         // A's separated pack (reference/screen-1): a cream letter with a bookmark at the right of the opening.
-        frame.placeV2(android.widget.ImageView(this).apply {
-            setImageResource(R.drawable.ui_v2_login_panel); scaleType = android.widget.ImageView.ScaleType.FIT_XY
+        // The letter in the game's leaf green (the same page the story book uses): paper, spine and bookmark.
+        frame.placeV2(View(this).apply {
+            background = com.tinyrunners.school.characters.StoryPicker.BookPage(LEAF, Color.rgb(255, 247, 228))
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }, 420, 70, 860, 642)
         frame.placeV2(TextView(this).apply {
@@ -228,11 +229,11 @@ class LoginActivity : Activity() {
         setTextColor(if (filled) CREAM else Color.rgb(46, 42, 54))
         setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
         fun pill(fill: Int) = android.graphics.drawable.GradientDrawable().apply {
-            setColor(fill); cornerRadius = dp(16).toFloat(); if (!filled) setStroke(dp(2), Color.rgb(110, 84, 168))
+            setColor(fill); cornerRadius = dp(16).toFloat(); if (!filled) setStroke(dp(2), LEAF)
         }
         background = android.graphics.drawable.StateListDrawable().apply {
-            addState(intArrayOf(android.R.attr.state_pressed), pill(if (filled) Color.rgb(88, 64, 140) else Color.rgb(238, 236, 214)))
-            addState(intArrayOf(), pill(if (filled) Color.rgb(110, 84, 168) else Color.rgb(255, 253, 241)))
+            addState(intArrayOf(android.R.attr.state_pressed), pill(if (filled) Color.rgb(40, 86, 59) else Color.rgb(238, 236, 214)))
+            addState(intArrayOf(), pill(if (filled) LEAF else Color.rgb(255, 253, 241)))
         }
         setOnClickListener { click() }
     }.also { frame.onScaleText(it, MockupFrame.v2(20).toFloat()) }
@@ -268,8 +269,9 @@ class LoginActivity : Activity() {
         private const val RISE_MS = 340L
         private const val SINK_MS = 220L
         private val CREAM = Color.parseColor("#FFF8E7")
-        private val INK = Color.rgb(46, 42, 54)
-        private val SOFT = Color.rgb(100, 92, 116)
+        private val LEAF = Color.rgb(62, 122, 78)
+        private val INK = Color.rgb(46, 52, 40)
+        private val SOFT = Color.rgb(94, 98, 80)
 
         /** After login: the hub with 스토리 진행하기 / 게임하기 / 튜토리얼 하기. Closes the opening and login popups. */
         fun openMain(activity: Activity) {

@@ -197,8 +197,8 @@ internal class StoryPicker(
     }
 
     /** The book page: tinted cream paper with a soft edge, the spine on the left and a bookmark at the top right. */
-    private class BookPage(tint: Int) : android.graphics.drawable.Drawable() {
-        private val paper = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = blend(tint, Color.rgb(255, 249, 235), 0.84f) }
+    internal class BookPage(tint: Int, paperColor: Int? = null) : android.graphics.drawable.Drawable() {
+        private val paper = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = paperColor ?: blend(tint, Color.rgb(255, 249, 235), 0.84f) }
         private val shade = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(60, 40, 30, 50) }
         private val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; color = blend(tint, Color.rgb(30, 26, 34), 0.25f) }
         private val spine = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = blend(tint, Color.WHITE, 0.15f) }

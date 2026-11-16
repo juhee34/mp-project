@@ -48,6 +48,30 @@ object TitleScene {
     /** Height of each friend (a whole number of sprite pixels is drawn inside). */
     private const val FRIEND = 0.21f
 
+    /**
+     * Cream letters with a deep brown outline, so the title reads on the bright sky and on the night picture alike:
+     * a thick brown stroke of the same line is drawn first (a second Paint), then the TextView fills it as usual.
+     */
+    private class OutlinedText(context: Context, private val outline: Float) : TextView(context) {
+        private val stroke = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+
+        init { val p = outline.toInt() + 1; setPadding(p, 0, p, 0) }
+
+        override fun onDraw(canvas: android.graphics.Canvas) {
+            val line = layout
+            if (line != null && line.lineCount > 0) {
+                stroke.set(paint); stroke.clearShadowLayer()
+                stroke.style = android.graphics.Paint.Style.STROKE; stroke.strokeWidth = outline
+                stroke.strokeJoin = android.graphics.Paint.Join.ROUND; stroke.color = OUTLINE
+                canvas.drawText(text.toString(), totalPaddingLeft + line.getLineLeft(0),
+                    (totalPaddingTop + line.getLineBaseline(0)).toFloat(), stroke)
+            }
+            super.onDraw(canvas)
+        }
+    }
+
+    private val OUTLINE = Color.rgb(74, 52, 30)
+
     /** The screen's short side in pixels: every size here is a share of it. */
     fun unit(context: Context): Int = context.resources.displayMetrics.let { minOf(it.widthPixels, it.heightPixels) }
 
@@ -56,13 +80,13 @@ object TitleScene {
         val h = unit(context) * scale
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
-            addView(TextView(context).apply {
+            addView(OutlinedText(context, h * 0.016f).apply {
                 setText(R.string.app_name); setTextColor(WHITE); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
                 includeFontPadding = false; setTextSize(TypedValue.COMPLEX_UNIT_PX, h * 0.14f)
                 setShadowLayer(h * 0.012f, 0f, h * 0.004f, SHADOW)
                 if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
             }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (h * LOGO).roundToInt()))
-            addView(TextView(context).apply {
+            addView(OutlinedText(context, h * 0.008f).apply {
                 text = tagline; setTextColor(WHITE); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
                 includeFontPadding = false; setTextSize(TypedValue.COMPLEX_UNIT_PX, h * 0.042f)
                 setShadowLayer(h * 0.008f, 0f, h * 0.003f, SHADOW)
@@ -70,32 +94,40 @@ object TitleScene {
         }
     }
 
-    private val WHITE = Color.rgb(255, 251, 240)
-    private val SHADOW = Color.argb(150, 40, 34, 52)
+    // The game's own warm palette (the shop and the inner screens): cream letters with a deep forest-brown shadow.
+    private val WHITE = Color.rgb(255, 243, 210)
+    private val SHADOW = Color.argb(210, 52, 40, 24)
 
     /** A centred button on one of the separated pack's skins, [heightShare] of the short side tall. */
     fun button(context: Context, text: String, primary: Boolean, width: Float, heightShare: Float, click: () -> Unit): Button {
         val h = unit(context)
         return Button(context).apply {
             this.text = text; isAllCaps = false; stateListAnimator = null; typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
-            setTextColor(if (primary) Color.WHITE else Color.rgb(46, 42, 54))
+            setTextColor(if (primary) Color.rgb(255, 248, 231) else Color.rgb(74, 52, 30))
             setTextSize(TypedValue.COMPLEX_UNIT_PX, h * heightShare * 0.42f)
             setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
             background = if (primary) {
-                // 시작하기: a soft lavender, like the blanket and the book in both pictures, with a pale rim.
+                // 시작하기 / 스토리 진행하기: the leaf green of the shop and the inner screens, with a honey rim.
                 fun pill(fill: Int) = GradientDrawable().apply {
                     setColor(fill); cornerRadius = h * heightShare / 2f
-                    setStroke((h * 0.005f).roundToInt().coerceAtLeast(2), Color.argb(230, 246, 238, 255))
+                    setStroke((h * 0.006f).roundToInt().coerceAtLeast(2), Color.rgb(220, 192, 154))
                 }
                 android.graphics.drawable.StateListDrawable().apply {
-                    addState(intArrayOf(android.R.attr.state_pressed), pill(Color.rgb(132, 106, 186)))
-                    addState(intArrayOf(), pill(Color.rgb(156, 128, 206)))
+                    addState(intArrayOf(android.R.attr.state_pressed), pill(Color.rgb(40, 86, 59)))
+                    addState(intArrayOf(), pill(Color.rgb(62, 122, 78)))
                 }
-            } else android.graphics.drawable.StateListDrawable().apply {
-                addState(intArrayOf(android.R.attr.state_pressed), context.getDrawable(R.drawable.ui_v2_btn_menu_pressed))
-                addState(intArrayOf(), context.getDrawable(R.drawable.ui_v2_btn_menu))
+            } else {
+                // The other buttons: cream with a honey-brown edge, like the buttons inside the game.
+                fun pill(fill: Int) = GradientDrawable().apply {
+                    setColor(fill); cornerRadius = h * heightShare / 2f
+                    setStroke((h * 0.006f).roundToInt().coerceAtLeast(2), Color.rgb(176, 132, 86))
+                }
+                android.graphics.drawable.StateListDrawable().apply {
+                    addState(intArrayOf(android.R.attr.state_pressed), pill(Color.rgb(240, 226, 196)))
+                    addState(intArrayOf(), pill(Color.rgb(255, 249, 235)))
+                }
             }
-            if (primary) setShadowLayer(h * 0.006f, 0f, h * 0.002f, Color.argb(90, 50, 30, 80))
+            if (primary) setShadowLayer(h * 0.006f, 0f, h * 0.002f, Color.argb(90, 30, 40, 20))
             layoutParams = LinearLayout.LayoutParams((h * width).roundToInt(), (h * heightShare).roundToInt())
             setOnClickListener { click() }
         }
