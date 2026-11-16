@@ -36,16 +36,17 @@ object TitleScene {
     fun isNight(now: Calendar = Calendar.getInstance()): Boolean = now.get(Calendar.HOUR_OF_DAY).let { it < 6 || it >= 19 }
 
     /**
-     * The picture for the time of day: the sunny meadow by day (bg_opening_wide, drawn wide already), the lavender
-     * village at dusk by night (A's separated pack). The night picture is 16:9 widened with blurred side bands; only
-     * its original middle is shown, filling the screen and losing a little sky at the top instead.
+     * The picture for the time of day: the village in daylight by day (bg_title_day), the same village in lavender dusk by
+     * night (bg_title_night), both from the user (2026-11-16). They are 16:9: they fill the screen, losing a little sky.
      */
     fun background(context: Context): View =
-        if (isNight()) CoverPicture(context, R.drawable.bg_v2_login_wide, sideInset = 0.1f)
-        else CoverPicture(context, R.drawable.bg_opening_wide, sideInset = 0f)
+        if (isNight()) CoverPicture(context, R.drawable.bg_title_night, sideInset = 0f)
+        else CoverPicture(context, R.drawable.bg_title_day, sideInset = 0f)
 
     /** Height of the logo as a share of the short side. */
-    private const val LOGO = 0.23f
+    private const val LOGO = 0.21f
+    /** Height of each friend (a whole number of sprite pixels is drawn inside). */
+    private const val FRIEND = 0.21f
 
     /** The screen's short side in pixels: every size here is a share of it. */
     fun unit(context: Context): Int = context.resources.displayMetrics.let { minOf(it.widthPixels, it.heightPixels) }
@@ -91,7 +92,7 @@ object TitleScene {
     /** The six friends breathing in a row, centred, for the bottom of the screen. */
     fun friends(context: Context): LinearLayout {
         val h = unit(context)
-        val size = (h * 0.15f).roundToInt()
+        val size = (h * FRIEND).roundToInt()
         return LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER
             CharacterRepository(context).characters.forEachIndexed { i, f ->
@@ -119,8 +120,8 @@ object TitleScene {
                 }
             }
             addView(column, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.CENTER_HORIZONTAL))
-            addView(friends(context), FrameLayout.LayoutParams(-1, (h * 0.15f).roundToInt(), Gravity.BOTTOM).apply {
-                bottomMargin = (h * 0.04f).roundToInt()
+            addView(friends(context), FrameLayout.LayoutParams(-1, (h * FRIEND).roundToInt(), Gravity.BOTTOM).apply {
+                bottomMargin = (h * 0.035f).roundToInt()
             })
         }
     }
@@ -129,10 +130,10 @@ object TitleScene {
 /** The title logo with a soft cream glow around its letters and leaves, so it reads on the day and the night picture. */
 @SuppressLint("ViewConstructor")
 class GlowLogo(context: Context) : View(context) {
-    private val logo: Bitmap? = BitmapFactory.decodeResource(resources, R.drawable.ui_title_logo, BitmapFactory.Options().apply { inScaled = false })
+    private val logo: Bitmap? = BitmapFactory.decodeResource(resources, R.drawable.ui_title_logo_white, BitmapFactory.Options().apply { inScaled = false })
     private val glow: Bitmap? = logo?.extractAlpha()
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
-    private val glowPaint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(120, 255, 248, 228) }
+    private val glowPaint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(70, 28, 44, 30) }
     private val dst = RectF()
 
     /** The cream halo at this view's size: the logo's shape in cream, thickened and softened by shrinking and growing. */
