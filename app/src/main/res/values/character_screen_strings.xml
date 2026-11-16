@@ -52,4 +52,8 @@
     <string name="characters_stat_total">함께 달린 거리</string>
     <string name="characters_stat_runs">함께 달린 횟수</string>
     <string name="characters_runs_value">%1$d번</string>
+    <!-- Selection in the separated pack (reference/screen-5). -->
+    <string name="characters_today_mate">오늘의 길동무</string>
+    <string name="characters_together">함께할 친구</string>
+    <string name="characters_counter">%1$02d / %2$02d</string>
 </resources>

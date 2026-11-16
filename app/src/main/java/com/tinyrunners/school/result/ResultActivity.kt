@@ -153,17 +153,23 @@ class ResultActivity : Activity() {
         row.addView(right, LinearLayout.LayoutParams(dp(260), LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(24) })
         val frame = FrameLayout(this).apply {
             setBackgroundColor(Page.BACKGROUND)
-            addView(ResultScenery(this@ResultActivity, character.id, intent.getFloatExtra(EXTRA_DISTANCE, 0f)),
-                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            // A's separated pack (backgrounds/result): a snowy lake under a violet evening sky, with the day's line on top.
+            addView(android.widget.ImageView(this@ResultActivity).apply {
+                setImageResource(R.drawable.bg_v2_result_wide); scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+                importantForAccessibility = android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            }, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(label(getString(R.string.result_headline_v2), 20f, Color.rgb(255, 246, 222), bold = true).apply {
+                setShadowLayer(8f, 0f, 2f, Color.argb(140, 40, 30, 60)); gravity = Gravity.CENTER
+            }, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.CENTER_HORIZONTAL).apply { topMargin = dp(14) })
             addView(android.widget.ScrollView(this@ResultActivity).apply { isFillViewport = true; addView(row) },
                 FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             setOnApplyWindowInsetsListener { v, insets ->
                 if (Build.VERSION.SDK_INT >= 30) {
                     val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
-                    getChildAt(1).setPadding(bars.left, bars.top, bars.right, bars.bottom)
+                    getChildAt(2).setPadding(bars.left, bars.top, bars.right, bars.bottom)
                 } else {
                     @Suppress("DEPRECATION")
-                    getChildAt(1).setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom)
+                    getChildAt(2).setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom)
                 }
                 insets
             }

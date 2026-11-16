@@ -86,12 +86,13 @@ class ShopActivity : Activity() {
         top.addView(divider())
         top.addView(TextView(this).apply {
             setText(R.string.shop_title)
-            textSize = 26f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD)
+            // Cream with a soft dark shadow, so it reads on the wooden shop interior (A's separated pack).
+            textSize = 26f; setTextColor(ON_WOOD); setTypeface(typeface, Typeface.BOLD); setShadowLayer(8f, 0f, 2f, WOOD_SHADOW)
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
         })
         top.addView(divider())
         top.addView(TextView(this).apply {
-            setText(R.string.shop_intro); textSize = 15f; setTextColor(INK_SOFT); maxLines = 1
+            setText(R.string.shop_intro); textSize = 15f; setTextColor(ON_WOOD); maxLines = 1; setShadowLayer(8f, 0f, 2f, WOOD_SHADOW)
             ellipsize = android.text.TextUtils.TruncateAt.END
         }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { weight = 0f; width = LinearLayout.LayoutParams.WRAP_CONTENT })
         top.addView(LavenderSprig(this), LinearLayout.LayoutParams(dp(26), dp(30)).apply { marginStart = dp(10) })
@@ -115,7 +116,7 @@ class ShopActivity : Activity() {
         // Guide line between two lavender rules: ── ◇ text ◇ ──
         val guideRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         guideRow.addView(rule(), LinearLayout.LayoutParams(0, dp(2), 1f))
-        guide = TextView(this).apply { textSize = 14f; setTextColor(INK_SOFT); setPadding(dp(10), 0, dp(10), 0); gravity = Gravity.CENTER }
+        guide = TextView(this).apply { textSize = 14f; setTextColor(ON_WOOD); setShadowLayer(8f, 0f, 2f, WOOD_SHADOW); setPadding(dp(10), 0, dp(10), 0); gravity = Gravity.CENTER }
         guideRow.addView(guide)
         guideRow.addView(rule(), LinearLayout.LayoutParams(0, dp(2), 1f))
         content.addView(guideRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
@@ -125,7 +126,7 @@ class ShopActivity : Activity() {
         tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         tabRow.addView(tabs)
         message = TextView(this).apply {
-            textSize = 14f; setTextColor(GREEN); setTypeface(typeface, Typeface.BOLD); gravity = Gravity.END or Gravity.CENTER_VERTICAL
+            textSize = 14f; setTextColor(ON_WOOD); setShadowLayer(8f, 0f, 2f, WOOD_SHADOW); setTypeface(typeface, Typeface.BOLD); gravity = Gravity.END or Gravity.CENTER_VERTICAL
             maxLines = 2; setPadding(dp(12), 0, 0, 0)
         }
         tabRow.addView(message, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
@@ -144,7 +145,7 @@ class ShopActivity : Activity() {
 
         setContentView(FrameLayout(this).apply {
             setBackgroundColor(FABRIC)
-            addView(ShopBackground(this@ShopActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(ShopBackground(this@ShopActivity, interior = true), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             addView(content, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             setOnApplyWindowInsetsListener { v, insets ->
                 if (Build.VERSION.SDK_INT >= 30) {
@@ -551,6 +552,9 @@ class ShopActivity : Activity() {
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
+    private val ON_WOOD = Color.rgb(255, 241, 207)
+    private val WOOD_SHADOW = Color.argb(220, 40, 22, 10)
+
     companion object {
         const val EXTRA_FRIEND = "friendId"
         const val EXTRA_MUSIC = "openMusic"
@@ -738,12 +742,24 @@ private class ItemPreview(context: Context, private val item: com.tinyrunners.sc
  * as nine pieces: the corners keep their shape at the screen's height, and only the plain edges and middle stretch.
  * Drawn once (no animation); everything with text is a real view on top.
  */
-internal class ShopBackground(context: Context) : View(context) {
-    private val art = android.graphics.BitmapFactory.decodeResource(resources, R.drawable.bg_shop_frame)
+internal class ShopBackground(context: Context, private val interior: Boolean = false) : View(context) {
+    /** The shop itself shows the wooden shop interior of A's separated pack (backgrounds/shop, widened); the other screens keep the frame. */
+    private val art = android.graphics.BitmapFactory.decodeResource(resources, if (interior) R.drawable.bg_v2_shop_wide else R.drawable.bg_shop_frame)
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
+    private val src = Rect()
+    private val dst = RectF()
 
     override fun onDraw(canvas: Canvas) {
         val art = art
+        if (art != null && interior && width > 0 && height > 0) {
+            // Cover: fill the screen, cut evenly from the long side.
+            val k = maxOf(width / art.width.toFloat(), height / art.height.toFloat())
+            val sw = width / k; val sh = height / k
+            src.set(((art.width - sw) / 2).toInt(), ((art.height - sh) / 2).toInt(), ((art.width + sw) / 2).toInt(), ((art.height + sh) / 2).toInt())
+            dst.set(0f, 0f, width.toFloat(), height.toFloat())
+            canvas.drawBitmap(art, src, dst, paint)
+            return
+        }
         if (art == null || width <= 0 || height <= 0) { canvas.drawColor(ShopActivity.FABRIC); return }
         drawFrame(canvas, art, width.toFloat(), height.toFloat(), paint)
     }

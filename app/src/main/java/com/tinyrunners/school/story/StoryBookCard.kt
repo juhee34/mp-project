@@ -71,4 +71,91 @@ internal object StoryBookCard {
         if (look != Look.LOCKED) { box.isClickable = true; box.setOnClickListener { click() } }
         return box
     }
+
+    /** A's separated-pack book covers (panels/story-book-<id>), one spine and bookmark colour per friend. */
+    private val BOOKS = mapOf(
+        "mint" to R.drawable.ui_v2_book_mint, "cheese" to R.drawable.ui_v2_book_cheese, "popo" to R.drawable.ui_v2_book_popo,
+        "lumi" to R.drawable.ui_v2_book_lumi, "nunu" to R.drawable.ui_v2_book_nunu, "piko" to R.drawable.ui_v2_book_piko)
+    private val HOMES = mapOf(
+        "mint" to R.drawable.bg_v2_friends_mint_wide, "cheese" to R.drawable.bg_v2_friends_cheese_wide,
+        "popo" to R.drawable.bg_v2_friends_popo_wide, "lumi" to R.drawable.bg_v2_friends_lumi_wide,
+        "nunu" to R.drawable.bg_v2_friends_nunu_wide, "piko" to R.drawable.bg_v2_friends_piko_wide)
+    private val homeCache = mutableMapOf<String, android.graphics.Bitmap?>()
+    val COVER_INK = Color.rgb(68, 60, 49)
+    val COVER_SOFT = Color.rgb(120, 110, 88)
+
+    fun book(friendId: String) = BOOKS[friendId] ?: R.drawable.ui_v2_book_mint
+
+    /** The friend's home from their selection picture (the part under the pale sky), small, with the friend standing in it. */
+    fun homePicture(activity: Activity, friendId: String): View {
+        val picture = homeCache.getOrPut(friendId) {
+            val res = HOMES[friendId] ?: return@getOrPut null
+            val full = android.graphics.BitmapFactory.decodeResource(activity.resources, res,
+                android.graphics.BitmapFactory.Options().apply { inSampleSize = 4; inScaled = false }) ?: return@getOrPut null
+            // The original 16:9 picture is the middle 80 % of the widened one; its home starts under the sky band.
+            val x0 = full.width / 10; val y0 = full.height * 23 / 100
+            android.graphics.Bitmap.createBitmap(full, x0, y0, full.width - 2 * x0, full.height - y0).also { if (it != full) full.recycle() }
+        }
+        return HomePicture(activity, picture, friendId)
+    }
+
+    /** The home picture with the friend standing small at the bottom middle. */
+    private class HomePicture(activity: Activity, picture: android.graphics.Bitmap?, friendId: String) : android.widget.FrameLayout(activity) {
+        init {
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            addView(ImageView(activity).apply { setImageBitmap(picture); scaleType = ImageView.ScaleType.CENTER_CROP })
+            addView(com.tinyrunners.school.opening.OpeningFriend(activity, friendId, 0))
+        }
+        override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+            val w = MeasureSpec.getSize(widthMeasureSpec); val h = MeasureSpec.getSize(heightMeasureSpec)
+            getChildAt(0).measure(MeasureSpec.makeMeasureSpec(w, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY))
+            val f = h * 3 / 10
+            getChildAt(1).measure(MeasureSpec.makeMeasureSpec(f, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(f, MeasureSpec.EXACTLY))
+            setMeasuredDimension(w, h)
+        }
+        override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+            val w = r - l; val h = b - t
+            getChildAt(0).layout(0, 0, w, h)
+            val f = getChildAt(1).measuredWidth
+            val bottom = h - h / 9
+            getChildAt(1).layout((w - f) / 2, bottom - f, (w + f) / 2, bottom)
+        }
+    }
+
+    /**
+     * One book on the shelf, as in A's separated pack (reference/screen-4): the cover with its spine and bookmark,
+     * a framed picture, the title, a small line under it, a rule, and "책을 펼쳐 보기 →" (or why it is closed).
+     */
+    fun cover(activity: Activity, frame: MockupFrame, book: Int, title: String, sub: String, picture: View, action: String,
+              open: Boolean, click: () -> Unit): View {
+        val v = MockupFrame.Companion::v2
+        // The PNG is 271×387 with a 10 px shadow edge; one more 5 px keeps the books apart (276 apart in the mockup).
+        val box = RefBox(activity, frame, v(276), v(387))
+        box.add(ImageView(activity).apply { setImageResource(book); scaleType = ImageView.ScaleType.FIT_XY }, 0, 0, v(271), v(387))
+        box.add(android.widget.FrameLayout(activity).apply {
+            setBackgroundColor(Color.rgb(255, 250, 236))
+            val p = v(6); setPadding(p, p, p, p)
+            addView(picture, android.widget.FrameLayout.LayoutParams(-1, -1))
+            elevation = 2f
+        }, v(38), v(47), v(245), v(223))
+        fun text(px: Int, color: Int, bold: Boolean = false) = TextView(activity).apply {
+            setTextColor(color); includeFontPadding = false; maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
+            if (bold) typeface = Typeface.DEFAULT_BOLD
+            frame.onScaleText(this, v(px).toFloat())
+        }
+        box.add(text(if (title.length > 8) 18 else 24, COVER_INK, bold = true).apply { text = title; gravity = Gravity.CENTER_VERTICAL },
+            v(38), v(236), v(250), v(278))
+        box.add(text(11, COVER_SOFT).apply { text = sub; gravity = Gravity.CENTER_VERTICAL }, v(38), v(282), v(250), v(302))
+        box.add(View(activity).apply { setBackgroundColor(Color.argb(80, 90, 80, 60)) }, v(38), v(311), v(245), v(312))
+        box.add(text(12, if (open) COVER_INK else COVER_SOFT).apply { text = action; gravity = Gravity.CENTER_VERTICAL }, v(38), v(324), v(220), v(346))
+        if (open) box.add(text(13, COVER_INK).apply { text = "→"; gravity = Gravity.CENTER }, v(225), v(324), v(250), v(346))
+        if (!open) box.alpha = 0.82f
+        box.contentDescription = "$title. $sub. $action"
+        if (open) {
+            box.isClickable = true
+            box.foreground = RippleDrawable(ColorStateList.valueOf(0x22000000), null, android.graphics.drawable.ColorDrawable(Color.WHITE))
+            box.setOnClickListener { click() }
+        }
+        return box
+    }
 }

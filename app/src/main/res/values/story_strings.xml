@@ -49,4 +49,12 @@
     <string name="village_next_friend">다음 친구 보기</string>
     <string name="village_chip_read">다 봤어요</string>
     <string name="village_card_description_short">%1$s, %2$s. %3$s</string>
+    <!-- 이야기 모음 in the separated pack (reference/screen-4). -->
+    <string name="collection_headline">함께한 순간을, 한 장씩.</string>
+    <string name="collection_subline">친구의 집에서 시작된 이야기가 이곳에 모였어요.</string>
+    <string name="collection_footer">읽고 싶은 친구의 책을 펼쳐 보세요.</string>
+    <string name="collection_back_home">← 처음으로</string>
+    <string name="collection_back_books">← 책장으로</string>
+    <string name="collection_open_book">책을 펼쳐 보기</string>
+    <string name="collection_world_sub">여섯 친구가 처음 만난 날</string>
 </resources>

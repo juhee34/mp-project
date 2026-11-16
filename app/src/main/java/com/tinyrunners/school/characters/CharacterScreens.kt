@@ -24,6 +24,7 @@ import com.tinyrunners.school.R
 import com.tinyrunners.school.data.CharacterDefinition
 import com.tinyrunners.school.data.CharacterRepository
 import com.tinyrunners.school.stories.StoryActivity
+import com.tinyrunners.school.ui.MockupFrame
 import kotlin.math.roundToInt
 
 internal class CharacterScreens(
@@ -68,11 +69,11 @@ internal class CharacterScreens(
     }
 
     /**
-     * Friend selection laid out like most games' character select (docs/research/CHARACTER_SELECT_RESEARCH.md): a big
-     * stage on the left with the chosen friend standing at home, an info panel on the right (name, species and home,
-     * tagline, short introduction, best record, "라일이랑 달리기", profile and story book), and a roster of six round
-     * portraits along the bottom to switch friends. Swiping the stage or its ◀ ▶ also switches. The chosen friend is
-     * the one the shop previews decorations on.
+     * Friend selection in A's separated design pack (reference/screen-5): the chosen friend's home fills the screen
+     * (bg_v2_friends_<id>), the friend stands on the grass at the left with a greeting in a speech bubble, and a cream
+     * panel at the right holds 오늘의 길동무, the name and species, home, a short introduction, the best record and the
+     * roster of six to switch friends. Below the panel: "라일이랑 달리기", 자세히 보기 and 이야기 도감. ◀ ▶ at the screen
+     * edges and a sideways swipe also switch. The chosen friend is the one the shop previews decorations on.
      */
     fun showSelection() {
         if (repository.find(selectedId.orEmpty()) == null) selectedId = repository.characters.first().id
@@ -81,124 +82,138 @@ internal class CharacterScreens(
         host.removeAllViews()
         // The selection does not scroll up and down; this keeps save() working.
         scroll = ScrollView(context)
-        val body = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(2), dp(16), dp(8)) }
-        host.addView(body, FrameLayout.LayoutParams(MATCH, MATCH))
+        val frame = MockupFrame(context, 0)
+        frame.anchor = host.rootView
+        host.addView(frame, FrameLayout.LayoutParams(MATCH, MATCH))
+        fun text(px: Int, color: Int, bold: Boolean = false) = TextView(context).apply {
+            setTextColor(color); includeFontPadding = false
+            if (bold) typeface = Typeface.DEFAULT_BOLD
+            frame.onScaleText(this, MockupFrame.v2(px).toFloat())
+        }
 
-        val top = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(com.tinyrunners.school.ui.HomeButton.create(context))
-        top.addView(TextView(context).apply {
-            text = context.getString(R.string.characters_select_title)
-            textSize = 22f; setTextColor(INK); setTypeface(typeface, Typeface.BOLD)
+        // Header: back and the question.
+        frame.placeV2(com.tinyrunners.school.ui.HomeButton.create(context), 24, 114, 206, 160)
+        frame.placeV2(text(26, INK, bold = true).apply {
+            text = context.getString(R.string.characters_select_title); gravity = Gravity.CENTER_VERTICAL
             if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-            setPadding(dp(10), 0, 0, 0)
-        }, LinearLayout.LayoutParams(0, WRAP, 1f))
-        body.addView(top, LinearLayout.LayoutParams(MATCH, WRAP))
+            setShadowLayer(6f, 0f, 0f, Color.argb(200, 255, 248, 230))
+        }, 216, 116, 760, 158)
+        val counter = text(12, PANEL_SOFT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL; letterSpacing = 0.2f }
+        frame.placeV2(counter, 1000, 118, 1176, 138)
 
-        // Stage (left) and info panel (right).
-        val main = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-        val stageBox = FrameLayout(context)
-        val stage = ShowcaseStage(context)
-        stageBox.addView(stage, FrameLayout.LayoutParams(MATCH, MATCH))
+        // The friend on the grass with a speech bubble above.
+        val stand = FrameLayout(context)
+        frame.placeV2(stand, 270, 572, 420, 684)
+        val bubble = text(15, PANEL_INK).apply {
+            gravity = Gravity.CENTER_VERTICAL; setLineSpacing(0f, 1.2f)
+            val pad = MockupFrame.v2(18)
+            setPadding(pad, 0, pad, MockupFrame.v2(12))
+            background = SpeechBubble()
+            maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END
+        }
+        frame.placeV2(bubble, 170, 462, 560, 566)
+
+        // ◀ ▶ at the screen edges.
         val prev = stageArrow("◀", R.string.characters_prev)
         val next = stageArrow("▶", R.string.characters_next)
-        stageBox.addView(prev, FrameLayout.LayoutParams(dp(40), dp(40), Gravity.START or Gravity.CENTER_VERTICAL).apply { marginStart = dp(8) })
-        stageBox.addView(next, FrameLayout.LayoutParams(dp(40), dp(40), Gravity.END or Gravity.CENTER_VERTICAL).apply { marginEnd = dp(8) })
-        main.addView(stageBox, LinearLayout.LayoutParams(0, MATCH, 1.15f))
+        frame.placeV2(prev, 25, 330, 75, 380)
+        frame.placeV2(next, 1205, 330, 1255, 380)
 
-        val info = com.tinyrunners.school.ui.CardShelf.card(context).apply { setPadding(dp(14), dp(6), dp(14), dp(8)) }
-        val name = TextView(context).apply { textSize = 22f; setTextColor(com.tinyrunners.school.ui.CardShelf.GREEN); setTypeface(typeface, Typeface.BOLD) }
-        val tag = com.tinyrunners.school.ui.CardShelf.chip(context, "")
-        val tagline = TextView(context).apply { textSize = 15f; setTextColor(INK); setTypeface(typeface, Typeface.BOLD); maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END }
-        val intro = TextView(context).apply {
-            textSize = 14f; setTextColor(com.tinyrunners.school.ui.CardShelf.INK_SOFT); setLineSpacing(0f, 1.15f)
-            ellipsize = android.text.TextUtils.TruncateAt.END
+        // The panel at the right.
+        frame.placeV2(ImageView(context).apply {
+            setImageResource(R.drawable.ui_v2_friend_panel); scaleType = ImageView.ScaleType.FIT_XY
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }, 724, 139, 1184, 571)
+        frame.placeV2(text(12, PANEL_SOFT).apply { text = context.getString(R.string.characters_today_mate); letterSpacing = 0.15f }, 766, 176, 1100, 196)
+        val name = text(36, PANEL_INK, bold = true).apply { gravity = Gravity.BOTTOM; maxLines = 1 }
+        frame.placeV2(name, 766, 196, 1142, 250)
+        frame.placeV2(View(context).apply { setBackgroundColor(Color.argb(70, 70, 90, 60)) }, 766, 262, 1142, 263)
+        val home = text(13, PANEL_SOFT).apply { maxLines = 1 }
+        frame.placeV2(home, 766, 278, 1142, 298)
+        val intro = text(15, PANEL_INK).apply {
+            setLineSpacing(0f, 1.3f); ellipsize = android.text.TextUtils.TruncateAt.END; maxLines = 4
         }
-        val best = TextView(context).apply { textSize = 13f; setTextColor(LEAF); setTypeface(typeface, Typeface.BOLD) }
-        val nameRow = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        nameRow.addView(name)
-        nameRow.addView(tag, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(10) })
-        info.addView(nameRow)
-        info.addView(tagline, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(2) })
-        // The introduction takes the height that is left, showing only whole lines.
-        info.addView(intro, LinearLayout.LayoutParams(MATCH, 0, 1f).apply { topMargin = dp(4) })
-        info.addView(best, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(2) })
-        val run = com.tinyrunners.school.ui.CardShelf.button(context, "", primary = true) { onStartRun(selectedId.orEmpty()) }
-        info.addView(run, LinearLayout.LayoutParams(MATCH, dp(38)).apply { topMargin = dp(4) })
-        val more = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-        more.addView(com.tinyrunners.school.ui.CardShelf.button(context, context.getString(R.string.characters_profile_short), primary = false) {
+        frame.placeV2(intro, 766, 308, 1142, 408)
+        val best = text(12, LEAF, bold = true).apply { maxLines = 1 }
+        frame.placeV2(best, 766, 414, 1142, 432)
+        frame.placeV2(View(context).apply { setBackgroundColor(Color.argb(70, 70, 90, 60)) }, 766, 440, 1142, 441)
+        frame.placeV2(text(11, PANEL_SOFT).apply { text = context.getString(R.string.characters_together) }, 764, 448, 960, 464)
+        val cells = friends.mapIndexed { i, f ->
+            val cell = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
+                contentDescription = f.name; isClickable = true
+                setOnClickListener { if (selectedId != f.id) { selectedId = f.id; bindSelection() } }
+            }
+            val pad = MockupFrame.v2(4)
+            cell.setPadding(0, pad, 0, pad)
+            cell.addView(com.tinyrunners.school.opening.OpeningFriend(context, f.id, i),
+                LinearLayout.LayoutParams(MockupFrame.v2(46), 0, 1f))
+            cell.addView(text(11, PANEL_INK).apply { text = f.name; gravity = Gravity.CENTER })
+            val x = 764 + i * 64
+            frame.placeV2(cell, x, 466, x + 56, 546)
+            cell
+        }
+
+        // Buttons under the panel.
+        val run = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_primary, R.drawable.ui_v2_btn_primary_pressed,
+            "", CREAM, MockupFrame.v2(17).toFloat()) { onStartRun(selectedId.orEmpty()) }
+        frame.placeV2(run, 729, 578, 905, 644)
+        frame.placeV2(MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
+            context.getString(R.string.characters_profile_short), PANEL_INK, MockupFrame.v2(16).toFloat()) {
             showProfile(selectedId.orEmpty())
-        }, LinearLayout.LayoutParams(0, dp(32), 1f))
-        more.addView(com.tinyrunners.school.ui.CardShelf.button(context, context.getString(R.string.characters_story_book), primary = false) {
+        }, 907, 578, 1043, 644)
+        frame.placeV2(MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
+            context.getString(R.string.characters_story_book), PANEL_INK, MockupFrame.v2(16).toFloat()) {
             context.startActivity(StoryActivity.intent(context, selectedId.orEmpty()))
-        }, LinearLayout.LayoutParams(0, dp(32), 1f).apply { marginStart = dp(8) })
-        info.addView(more, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(5) })
-        main.addView(info, LinearLayout.LayoutParams(0, MATCH, 1f).apply { marginStart = dp(12) })
-        body.addView(main, LinearLayout.LayoutParams(MATCH, 0, 1f).apply { topMargin = dp(4) })
-
-        // Roster: six round portraits along the bottom.
-        val roster = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER
-            setPadding(dp(14), dp(3), dp(14), dp(2))
-            // A cream strip so the names read well over the bench in the picture.
-            background = shape(Color.argb(232, 255, 249, 235), 22)
-        }
-        body.addView(roster, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(5); gravity = Gravity.CENTER_HORIZONTAL })
+        }, 1045, 578, 1181, 644)
 
         var bests: Map<String, Int> = emptyMap()
 
-        fun bind() {
-            val friend = friends.first { it.id == selectedId }
-            val tint = friendColor(friend)
-            stage.show(friend.id, tint)
-            name.text = friend.name
-            tag.text = context.getString(R.string.characters_species_home, friend.species, friend.home)
-            tag.background = shape(blend(tint, PAPER, 0.62f), 10)
-            tagline.text = friend.copy?.tagline ?: friend.personality
+        bindSelection = {
+            val index = friends.indexOfFirst { it.id == selectedId }
+            val friend = friends[index]
+            backdrop(SELECT_BACKGROUNDS[friend.id] ?: R.drawable.bg_v2_friends_mint_wide)
+            stand.removeAllViews()
+            stand.addView(com.tinyrunners.school.opening.OpeningFriend(context, friend.id, 0), FrameLayout.LayoutParams(MATCH, MATCH))
+            bubble.text = greetingFor(friend)
+            counter.text = context.getString(R.string.characters_counter, index + 1, friends.size)
+            val sb = SpannableStringBuilder(friend.name)
+            val start = sb.length
+            sb.append("  ").append(friend.species)
+            sb.setSpan(android.text.style.RelativeSizeSpan(0.38f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            sb.setSpan(android.text.style.ForegroundColorSpan(PANEL_SOFT), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            sb.setSpan(StyleSpan(Typeface.NORMAL), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            name.text = sb
+            home.text = friend.home
             intro.text = friend.copy?.selectionIntro ?: friend.summary
-            intro.maxLines = Int.MAX_VALUE
-            intro.post {
-                val lines = intro.height / intro.lineHeight.coerceAtLeast(1)
-                intro.visibility = if (lines < 1) View.INVISIBLE else View.VISIBLE
-                intro.maxLines = lines.coerceAtLeast(1)
-            }
             val b = bests[friend.id]
             best.text = if (b != null && b > 0) context.getString(R.string.characters_best, b) else context.getString(R.string.characters_best_none)
             run.text = runLabel(friend)
-            info.contentDescription = context.getString(R.string.characters_card_description_short,
-                friend.name, friend.species, friend.home, tagline.text.toString() + " " + greetingFor(friend))
-            roster.removeAllViews()
-            friends.forEach { f ->
-                val on = f.id == selectedId
-                val cell = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL }
-                cell.addView(RosterPortrait(context, f.id, friendColor(f), on).apply {
-                    contentDescription = f.name
-                    setOnClickListener { if (selectedId != f.id) { selectedId = f.id; bind() } }
-                }, LinearLayout.LayoutParams(dp(if (on) 50 else 42), dp(if (on) 50 else 42)))
-                cell.addView(TextView(context).apply {
-                    text = f.name; textSize = 11f; gravity = Gravity.CENTER; includeFontPadding = false
-                    setTextColor(if (on) com.tinyrunners.school.ui.CardShelf.GREEN else MUTED)
-                    if (on) setTypeface(typeface, Typeface.BOLD)
-                })
-                roster.addView(cell, LinearLayout.LayoutParams(dp(70), WRAP))
+            name.contentDescription = context.getString(R.string.characters_card_description_short,
+                friend.name, friend.species, friend.home, greetingFor(friend))
+            cells.forEachIndexed { i, cell ->
+                val on = friends[i].id == selectedId
+                cell.background = if (on) shape(Color.rgb(236, 242, 220), 10, Color.rgb(120, 150, 100)) else null
+                cell.isSelected = on
             }
         }
 
         fun go(step: Int) {
             val index = friends.indexOfFirst { it.id == selectedId }
             selectedId = friends[(index + step + friends.size) % friends.size].id
-            bind()
-            stage.announceForAccessibility(friends.first { it.id == selectedId }.name)
+            bindSelection()
+            frame.announceForAccessibility(friends.first { it.id == selectedId }.name)
         }
         prev.setOnClickListener { go(-1) }
         next.setOnClickListener { go(1) }
 
-        // Sideways swipe on the stage switches friends.
+        // A sideways swipe anywhere on the open picture switches friends.
         var downX = 0f
         var downY = 0f
         @Suppress("ClickableViewAccessibility")
-        stage.setOnTouchListener { v, event ->
+        frame.setOnTouchListener { _, event ->
             when (event.actionMasked) {
-                android.view.MotionEvent.ACTION_DOWN -> { downX = event.x; downY = event.y; v.parent.requestDisallowInterceptTouchEvent(true) }
+                android.view.MotionEvent.ACTION_DOWN -> { downX = event.x; downY = event.y }
                 android.view.MotionEvent.ACTION_UP -> {
                     val dx = event.x - downX
                     if (kotlin.math.abs(dx) > dp(40) && kotlin.math.abs(dx) > kotlin.math.abs(event.y - downY)) go(if (dx < 0) 1 else -1)
@@ -206,13 +221,53 @@ internal class CharacterScreens(
             }
             true
         }
-        bind()
+        bindSelection()
         // Best distance per friend for the panel (cloud or this device).
         com.tinyrunners.school.progress.ProgressStore.forCurrentUser(context).loadAll { result ->
             if (route != Route.SELECT) return@loadAll
             bests = result.getOrNull().orEmpty().mapValues { it.value.bestMeters }
-            bind()
+            bindSelection()
         }
+    }
+
+    private var bindSelection: () -> Unit = {}
+
+    /** The full-screen picture behind the character screens: a friend's home on the selection, the shared paper otherwise. */
+    private fun backdrop(res: Int?) {
+        val view = host.rootView.findViewById<ImageView>(R.id.screen_backdrop) ?: return
+        if (res == null) { view.visibility = View.GONE; view.setImageDrawable(null); return }
+        view.setImageResource(res)
+        view.visibility = View.VISIBLE
+    }
+
+    /** A cream speech bubble with a small tail at the bottom, toward the friend below. */
+    private class SpeechBubble : Drawable() {
+        private val fill = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(255, 250, 234) }
+        private val edge = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(176, 158, 118); style = android.graphics.Paint.Style.STROKE; strokeWidth = 3f
+        }
+        private val box = android.graphics.RectF()
+        private val tailPath = android.graphics.Path()
+
+        override fun draw(canvas: android.graphics.Canvas) {
+            val r = bounds
+            val tail = r.height() * 0.13f
+            val bottom = r.bottom - tail - 2f
+            val cx = r.left + r.width() * 0.5f
+            box.set(r.left + 2f, r.top + 2f, r.right - 2f, bottom)
+            canvas.drawRect(box, fill)
+            canvas.drawRect(box, edge)
+            tailPath.reset()
+            tailPath.moveTo(cx - tail, bottom); tailPath.lineTo(cx, r.bottom - 2f); tailPath.lineTo(cx + tail, bottom)
+            canvas.drawPath(tailPath, fill)
+            canvas.drawPath(tailPath, edge)
+            // Hide the box's edge where the tail joins.
+            canvas.drawRect(cx - tail + 2f, bottom - 2f, cx + tail - 2f, bottom + 2f, fill)
+        }
+        override fun setAlpha(alpha: Int) {}
+        override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
+        @Deprecated("Deprecated in Java")
+        override fun getOpacity() = android.graphics.PixelFormat.TRANSLUCENT
     }
 
     private fun stageArrow(symbol: String, description: Int) = Button(context).apply {
@@ -279,6 +334,7 @@ internal class CharacterScreens(
         selectedId = friend.id
         route = Route.PROFILE
         host.removeAllViews()
+        backdrop(null)
         val board = com.tinyrunners.school.ui.ScoreBoard
         val copy = friend.copy
 
@@ -394,6 +450,7 @@ internal class CharacterScreens(
     private fun screen(next: Route): LinearLayout {
         route = next
         host.removeAllViews()
+        backdrop(null)
         scroll = com.tinyrunners.school.ui.TunedScrollView(context).apply { isFillViewport = true }
         val body = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -490,5 +547,14 @@ internal class CharacterScreens(
         val LINE = Color.rgb(221, 224, 209)
         val INK = Color.rgb(38, 52, 43)
         val MUTED = Color.rgb(79, 96, 84)
+        /** Colours of the separated pack panels. */
+        val PANEL_INK = Color.rgb(58, 62, 48)
+        val PANEL_SOFT = Color.rgb(120, 110, 88)
+        val CREAM = Color.rgb(255, 248, 231)
+        /** Each friend home behind the selection (A separated pack, widened). */
+        val SELECT_BACKGROUNDS = mapOf(
+            "mint" to R.drawable.bg_v2_friends_mint_wide, "cheese" to R.drawable.bg_v2_friends_cheese_wide,
+            "popo" to R.drawable.bg_v2_friends_popo_wide, "lumi" to R.drawable.bg_v2_friends_lumi_wide,
+            "nunu" to R.drawable.bg_v2_friends_nunu_wide, "piko" to R.drawable.bg_v2_friends_piko_wide)
     }
 }

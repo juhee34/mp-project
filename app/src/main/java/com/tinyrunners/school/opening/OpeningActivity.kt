@@ -41,23 +41,33 @@ import kotlin.math.roundToInt
 class OpeningActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val frame = com.tinyrunners.school.ui.MockupFrame(this, R.drawable.bg_opening_wide)
-        // The sky's clouds drift slowly behind the tree and the hills.
-        frame.addView(com.tinyrunners.school.ui.CloudDrift(this, frame, R.drawable.ui_clouds_opening, R.drawable.ui_sky_opening))
-        // The title from the login card (Tiny Runners, leaves and tagline), just above the start button.
-        frame.place(android.widget.ImageView(this).apply {
-            setImageResource(R.drawable.ui_opening_title)
-            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
-            contentDescription = getString(R.string.app_name) + ", " + getString(R.string.opening_tagline)
-        }, 496, 215, 1176, 437)
-        // The start button under the title, between the two groups of friends.
-        frame.place(com.tinyrunners.school.ui.MockupFrame.partButton(this, frame, R.drawable.ui_login_btn_primary,
-            getString(R.string.opening_start), Color.parseColor("#FFF8E7"), 44f) { onButton() }, 583, 555, 1090, 645)
-        // Six friends spread along the grass, three each side of the path, with room between them.
+        // A's separated design pack (2026-11-16, reference/screen-1): the lavender village at dusk, the title and tagline
+        // on the left, the start button under them, the six friends along the stone path. The login card opens on the right.
+        val frame = com.tinyrunners.school.ui.MockupFrame(this, R.drawable.bg_v2_login_wide)
+        val v2 = com.tinyrunners.school.ui.MockupFrame.Companion
+        frame.placeV2(android.widget.TextView(this).apply {
+            setText(R.string.app_name); setTextColor(Color.rgb(255, 244, 222)); typeface = android.graphics.Typeface.DEFAULT_BOLD
+            gravity = android.view.Gravity.CENTER; includeFontPadding = false; setShadowLayer(6f, 0f, 3f, Color.argb(120, 70, 50, 90))
+        }.also { frame.onScaleText(it, v2.v2(58).toFloat()) }, 120, 132, 540, 206)
+        frame.placeV2(android.widget.TextView(this).apply {
+            setText(R.string.opening_tagline_v2); setTextColor(Color.rgb(255, 244, 222)); gravity = android.view.Gravity.CENTER
+            setShadowLayer(4f, 0f, 2f, Color.argb(120, 70, 50, 90))
+        }.also { frame.onScaleText(it, v2.v2(16).toFloat()) }, 120, 214, 540, 244)
+        frame.placeV2(android.widget.Button(this).apply {
+            setText(R.string.opening_start); isAllCaps = false; stateListAnimator = null; setTextColor(Color.rgb(255, 253, 241))
+            typeface = android.graphics.Typeface.DEFAULT_BOLD; gravity = android.view.Gravity.CENTER
+            setPadding(0, 0, 0, 0); minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
+            background = android.graphics.drawable.StateListDrawable().apply {
+                addState(intArrayOf(android.R.attr.state_pressed), getDrawable(R.drawable.ui_v2_btn_primary_pressed))
+                addState(intArrayOf(), getDrawable(R.drawable.ui_v2_btn_primary))
+            }
+            setOnClickListener { onButton() }
+        }.also { frame.onScaleText(it, v2.v2(20).toFloat()) }, 242, 290, 418, 356)
+        // Six friends along the path.
         val friends = CharacterRepository(this).characters
         FRIEND_X.forEachIndexed { i, cx ->
             val id = friends.getOrNull(i)?.id ?: return@forEachIndexed
-            frame.place(OpeningFriend(this, id, i), cx - 105, FRIEND_FEET - 215, cx + 105, FRIEND_FEET)
+            frame.placeV2(OpeningFriend(this, id, i), cx - 44, FRIEND_FEET - 88, cx + 44, FRIEND_FEET)
         }
         setContentView(frame)
         hideSystemBars()
@@ -72,9 +82,9 @@ class OpeningActivity : Activity() {
     }
 
     private companion object {
-        /** Friend centres and feet line on the 1672×941 canvas. */
-        val FRIEND_X = intArrayOf(110, 300, 490, 1180, 1370, 1560)
-        const val FRIEND_FEET = 805
+        /** Friend centres and feet line in the pack's 1280×720 coordinates (along the stone path). */
+        val FRIEND_X = intArrayOf(110, 220, 330, 440, 550, 660)
+        const val FRIEND_FEET = 662
     }
 
     private fun hideSystemBars() {

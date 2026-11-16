@@ -134,4 +134,5 @@
     <string name="signup_keep_submit">계정 만들기</string>
     <string name="settings_guest_keep_note">게스트 기록은 앱을 지우거나 로그아웃하면 다시 찾을 수 없어요. 계정을 만들면 지금 기록이 그대로 이어져요.</string>
     <string name="settings_sign_out_guest">로그아웃 (게스트 기록은 사라져요)</string>
+    <string name="result_headline_v2">오늘도, 잘 다녀왔어요.</string>
 </resources>

@@ -19,6 +19,8 @@ class GameActivity : Activity() {
     private var runnerView: RunnerView? = null
     /** The screen's root: story talks and the ending picture are laid over the run here. */
     private var stage: FrameLayout? = null
+    /** The rest card while it is open (back closes it and the run goes on). */
+    private var pausePanel: PausePanel? = null
     private var goToResult: () -> Unit = {}
     private var weatherPending = false
 
@@ -86,6 +88,24 @@ class GameActivity : Activity() {
             }
         }
         if (!intent.getBooleanExtra(EXTRA_SHOW_GUIDE, false)) attachStory(character, engine, view)
+        // 정지 opens the rest card: 계속 달리기, 친구 바꾸기, 집으로 돌아가기.
+        view.onStopTapped = {
+            stage?.let { root ->
+                view.restCard = true
+                val card = PausePanel(this, character.id,
+                    onResume = { view.restCard = false; pausePanel = null; engine.resume() },
+                    onChangeFriend = {
+                        com.tinyrunners.school.audio.Music.setRoute(null)
+                        startActivity(com.tinyrunners.school.MainActivity.selectionIntent(this)); finish()
+                    },
+                    onHome = {
+                        com.tinyrunners.school.audio.Music.setRoute(null)
+                        com.tinyrunners.school.ui.HomeButton.goToMenu(this); finish()
+                    })
+                pausePanel = card
+                root.addView(card, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            }
+        }
         val onboarding = OnboardingStore(this)
         setContentView(FrameLayout(this).also { stage = it }.apply {
             addView(view, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
@@ -235,6 +255,12 @@ class GameActivity : Activity() {
     override fun onResume() {
         super.onResume()
         runnerView?.startLoop()
+    }
+
+    @Deprecated("Back on the rest card closes it and runs on.")
+    override fun onBackPressed() {
+        val card = pausePanel
+        if (card != null) card.close() else @Suppress("DEPRECATION") super.onBackPressed()
     }
 
     override fun onPause() {

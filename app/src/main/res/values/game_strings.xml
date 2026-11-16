@@ -34,4 +34,11 @@
     <string name="fork_choice_eyebrow">갈림길</string>
     <string name="fork_choice_up">▲ 높은 길</string>
     <string name="fork_choice_down">▶ 낮은 길</string>
+    <!-- The rest card (PausePanel, A separated pack panels/pause-1). -->
+    <string name="pause_eyebrow">천천히, 숨을 골라요</string>
+    <string name="pause_title">잠깐 쉬어가요</string>
+    <string name="pause_body">바람이 지나가는 소리도 듣고,\n우리, 조금만 쉬었다 갈까요?</string>
+    <string name="pause_continue">계속 달리기</string>
+    <string name="pause_change_friend">친구 바꾸기</string>
+    <string name="pause_home">집으로 돌아가기</string>
 </resources>

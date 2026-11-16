@@ -72,6 +72,12 @@ class RunnerView(
     /** Called once each time a run ends. */
     var onRunOver: (() -> Unit)? = null
 
+    /** Called when the player pauses with the 정지 button (the run shows its rest card then, not the plain overlay). */
+    var onStopTapped: (() -> Unit)? = null
+
+    /** The rest card (PausePanel) is open over the run. */
+    var restCard = false
+
     /** Dust at the feet and the landing shake (looks only). */
     private val feel = RunFeel()
     private var lastJumps = 0
@@ -176,7 +182,11 @@ class RunnerView(
         val x = event.getX(i); val y = event.getY(i)
         when {
             // The two top buttons never make the runner jump.
-            buttonsVisible && stopRect.contains(x, y) -> engine.pause()
+            buttonsVisible && stopRect.contains(x, y) -> {
+                val wasRunning = engine.phase == RunnerEngine.Phase.RUNNING
+                engine.pause()
+                if (wasRunning) onStopTapped?.invoke()
+            }
             buttonsVisible && goRect.contains(x, y) -> engine.resume()
             // When a result screen follows (onRunOver set), a late tap after the crash must not restart the run.
             engine.phase != RunnerEngine.Phase.OVER || onRunOver == null -> engine.tap()
@@ -216,7 +226,7 @@ class RunnerView(
             RunnerEngine.Phase.READY -> overlay(canvas, w, h,
                 context.getString(R.string.game_ready_title, character.name),
                 context.getString(R.string.game_ready_hint), null)
-            RunnerEngine.Phase.PAUSED -> overlay(canvas, w, h,
+            RunnerEngine.Phase.PAUSED -> if (!restCard) overlay(canvas, w, h,
                 context.getString(R.string.game_paused),
                 context.getString(R.string.game_paused_hint), null)
             RunnerEngine.Phase.OVER -> overlay(canvas, w, h,
@@ -227,7 +237,7 @@ class RunnerView(
         }
         // Drawn last so the 진행 button stays clear above the pause overlay.
         goal?.let { drawGoal(canvas, w, it) }
-        if (buttonsVisible && !cinematic) {
+        if (buttonsVisible && !cinematic && !restCard) {
             val running = engine.phase == RunnerEngine.Phase.RUNNING
             drawBarButton(canvas, stopRect, context.getString(R.string.game_stop_button), active = running, pauseIcon = true)
             drawBarButton(canvas, goRect, context.getString(R.string.game_go_button), active = !running, pauseIcon = false)
