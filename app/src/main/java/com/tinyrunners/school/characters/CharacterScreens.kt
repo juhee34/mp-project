@@ -30,7 +30,7 @@ import kotlin.math.roundToInt
 internal class CharacterScreens(
     private val host: FrameLayout,
     private val repository: CharacterRepository,
-    private val onStartRun: (characterId: String) -> Unit
+    private val onStartRun: (characterId: String, storyId: String?) -> Unit
 ) {
     private val context = host.context
     private lateinit var scroll: ScrollView
@@ -84,6 +84,7 @@ internal class CharacterScreens(
         scroll = ScrollView(context)
         val frame = MockupFrame(context, 0)
         frame.anchor = host.rootView
+        frame.stretchX = true
         host.addView(frame, FrameLayout.LayoutParams(MATCH, MATCH))
         fun text(px: Int, color: Int, bold: Boolean = false) = TextView(context).apply {
             setTextColor(color); includeFontPadding = false
@@ -108,7 +109,7 @@ internal class CharacterScreens(
             gravity = Gravity.CENTER_VERTICAL; setLineSpacing(0f, 1.2f)
             val pad = MockupFrame.v2(18)
             setPadding(pad, 0, pad, MockupFrame.v2(12))
-            background = SpeechBubble()
+            background = speech
             maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END
         }
         frame.placeV2(bubble, 165, 250, 635, 392)
@@ -127,54 +128,51 @@ internal class CharacterScreens(
         frame.placeV2(text(12, PANEL_SOFT).apply { text = context.getString(R.string.characters_today_mate); letterSpacing = 0.15f }, 766, 176, 1100, 196)
         // 01 / 06 at the top right inside the panel.
         frame.placeV2(counter, 1040, 176, 1142, 196)
-        val name = text(36, PANEL_INK, bold = true).apply { gravity = Gravity.BOTTOM; maxLines = 1 }
+        val name = text(40, PANEL_INK, bold = true).apply { gravity = Gravity.BOTTOM; maxLines = 1 }
         frame.placeV2(name, 766, 196, 1142, 250)
         frame.placeV2(View(context).apply { setBackgroundColor(Color.argb(70, 70, 90, 60)) }, 766, 262, 1142, 263)
-        val home = text(17, PANEL_SOFT).apply { maxLines = 1 }
+        val home = text(18, PANEL_SOFT).apply { maxLines = 1 }
         frame.placeV2(home, 766, 272, 1142, 300)
-        val intro = text(19, PANEL_INK).apply {
+        val intro = text(20, PANEL_INK).apply {
             setLineSpacing(0f, 1.3f); ellipsize = android.text.TextUtils.TruncateAt.END; maxLines = 3
         }
         frame.placeV2(intro, 766, 306, 1142, 408)
         val best = text(15, LEAF, bold = true).apply { maxLines = 1 }
         frame.placeV2(best, 766, 410, 1142, 434)
-        // The six friends to choose from, on a cream strip along the bottom of the screen: a round portrait and a name.
+        // The six friends to choose from, on a wide cream strip along the bottom of the screen: a round portrait and a
+        // name each; the whole cell is the button.
         frame.placeV2(View(context).apply {
             background = shape(Color.argb(232, 255, 249, 235), 26)
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, 392, 566, 888, 670)
+        }, 200, 562, 1080, 672)
         val portraits = friends.map { FrameLayout(context) }
-        val names = friends.map { f -> text(14, PANEL_INK).apply { text = f.name; gravity = Gravity.CENTER } }
+        val names = friends.map { f -> text(16, PANEL_INK).apply { text = f.name; gravity = Gravity.CENTER } }
         val cells = friends.mapIndexed { i, f ->
-            val cell = LinearLayout(context).apply {
-                orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
+            val x = 228 + i * 140
+            frame.placeV2(portraits[i], x + 22, 568, x + 102, 640)
+            frame.placeV2(names[i], x, 642, x + 124, 666)
+            View(context).apply {
                 contentDescription = f.name; isClickable = true
+                background = RippleDrawable(ColorStateList.valueOf(Color.argb(40, 0, 0, 0)), null, android.graphics.drawable.ColorDrawable(Color.WHITE))
                 setOnClickListener { if (selectedId != f.id) { selectedId = f.id; bindSelection() } }
-            }
-            cell.addView(portraits[i], LinearLayout.LayoutParams(MockupFrame.v2(62), MockupFrame.v2(62)))
-            cell.addView(names[i], LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                topMargin = MockupFrame.v2(3)
-            })
-            val x = 410 + i * 78
-            frame.placeV2(cell, x, 572, x + 76, 668)
-            cell
+            }.also { frame.placeV2(it, x, 564, x + 124, 670) }
         }
 
         // Buttons under the panel.
         val run = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_primary, R.drawable.ui_v2_btn_primary_pressed,
-            "", CREAM, MockupFrame.v2(17).toFloat()) { onStartRun(selectedId.orEmpty()) }
+            "", CREAM, MockupFrame.v2(20).toFloat()) { chooseStory(friends.first { it.id == selectedId }) }
         // The buttons wear the chosen friend's own colour (set in bindSelection), so they sit on the exact button rects.
-        frame.placeV2(run, 735, 490, 899, 544)
+        frame.placeV2(run, 730, 488, 910, 548)
         val more = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
-            context.getString(R.string.characters_profile_short), PANEL_INK, MockupFrame.v2(16).toFloat()) {
+            context.getString(R.string.characters_profile_short), PANEL_INK, MockupFrame.v2(19).toFloat()) {
             showProfile(selectedId.orEmpty())
         }
-        frame.placeV2(more, 913, 490, 1037, 544)
+        frame.placeV2(more, 920, 488, 1048, 548)
         val book = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
-            context.getString(R.string.characters_story_book), PANEL_INK, MockupFrame.v2(16).toFloat()) {
+            context.getString(R.string.characters_story_book), PANEL_INK, MockupFrame.v2(19).toFloat()) {
             context.startActivity(StoryActivity.intent(context, selectedId.orEmpty()))
         }
-        frame.placeV2(book, 1051, 490, 1175, 544)
+        frame.placeV2(book, 1058, 488, 1186, 548)
 
         var bests: Map<String, Int> = emptyMap()
 
@@ -216,6 +214,7 @@ internal class CharacterScreens(
             run.text = runLabel(friend)
             // Buttons in the friend's colour: filled (deepened so white words read) for the run, outlined for the rest.
             val tint = friendColor(friend)
+            speech.setColors(blend(tint, Color.WHITE, 0.82f), blend(tint, Color.rgb(30, 26, 34), 0.3f))
             val deep = blend(tint, Color.rgb(30, 26, 34), 0.38f)
             val deeper = blend(tint, Color.rgb(30, 26, 34), 0.55f)
             run.background = pressable(pill(deep, deep), pill(deeper, deeper))
@@ -280,6 +279,40 @@ internal class CharacterScreens(
 
     private var bindSelection: () -> Unit = {}
 
+    /** The rounded speech bubble above the friend (its colours follow the friend). */
+    private val speech = SpeechBubble()
+
+    /**
+     * Before a run: the friend's stories as a list dialog (a course topic: AlertDialog with setItems). Read ones are
+     * ticked, the next one is marked, later ones stay locked until the ones before are read. Picking one starts the
+     * run with that story.
+     */
+    private fun chooseStory(friend: CharacterDefinition) {
+        val stories = com.tinyrunners.school.story.StoryRepository.load(context).filter { it.characterId == friend.id }
+        if (stories.isEmpty()) { onStartRun(friend.id, null); return }
+        com.tinyrunners.school.progress.ProgressStore.forCurrentUser(context).loadAll { result ->
+            val read = result.getOrNull().orEmpty().values.flatMap { it.readStoryIds }.toSet()
+            val labels = stories.mapIndexed { i, s ->
+                val episode = if (i == 0) context.getString(R.string.collection_intro) else context.getString(R.string.collection_episode, i)
+                val mark = when {
+                    s.id in read -> context.getString(R.string.choose_story_read)
+                    s.isUnlocked(read) -> context.getString(R.string.choose_story_open)
+                    else -> context.getString(R.string.choose_story_locked)
+                }
+                "$episode · ${s.title}   $mark"
+            }.toTypedArray()
+            android.app.AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.choose_story_title, friend.name))
+                .setItems(labels) { _, which ->
+                    val story = stories[which]
+                    if (story.id in read || story.isUnlocked(read)) onStartRun(friend.id, story.id)
+                    else android.widget.Toast.makeText(context, R.string.choose_story_locked_toast, android.widget.Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton(R.string.choose_story_cancel, null)
+                .show()
+        }
+    }
+
     /** A round-ended button face: [fill] with a [edge] line. */
     private fun pill(fill: Int, edge: Int) = GradientDrawable().apply { setColor(fill); cornerRadius = 999f; setStroke(dp(2), edge) }
 
@@ -322,29 +355,33 @@ internal class CharacterScreens(
         }
     }
 
-    /** A cream speech bubble with a small tail at the bottom, toward the friend below. */
+    /** A rounded speech bubble with a small tail at the bottom, toward the friend below; [setColors] tints it. */
     private class SpeechBubble : Drawable() {
         private val fill = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(255, 250, 234) }
         private val edge = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(176, 158, 118); style = android.graphics.Paint.Style.STROKE; strokeWidth = 3f
+            color = Color.rgb(176, 158, 118); style = android.graphics.Paint.Style.STROKE; strokeWidth = 4f
         }
+        private val shape = android.graphics.Path()
         private val box = android.graphics.RectF()
-        private val tailPath = android.graphics.Path()
+        private val tail = android.graphics.Path()
+
+        fun setColors(fillColor: Int, edgeColor: Int) { fill.color = fillColor; edge.color = edgeColor; invalidateSelf() }
 
         override fun draw(canvas: android.graphics.Canvas) {
             val r = bounds
-            val tail = r.height() * 0.13f
-            val bottom = r.bottom - tail - 2f
+            val t = r.height() * 0.14f
+            val bottom = r.bottom - t - 3f
             val cx = r.left + r.width() * 0.5f
-            box.set(r.left + 2f, r.top + 2f, r.right - 2f, bottom)
-            canvas.drawRect(box, fill)
-            canvas.drawRect(box, edge)
-            tailPath.reset()
-            tailPath.moveTo(cx - tail, bottom); tailPath.lineTo(cx, r.bottom - 2f); tailPath.lineTo(cx + tail, bottom)
-            canvas.drawPath(tailPath, fill)
-            canvas.drawPath(tailPath, edge)
-            // Hide the box's edge where the tail joins.
-            canvas.drawRect(cx - tail + 2f, bottom - 2f, cx + tail - 2f, bottom + 2f, fill)
+            box.set(r.left + 3f, r.top + 3f, r.right - 3f, bottom)
+            val radius = minOf(box.height() * 0.42f, box.width() * 0.2f)
+            // One outline: the rounded box joined with the tail, filled then stroked.
+            shape.reset()
+            shape.addRoundRect(box, radius, radius, android.graphics.Path.Direction.CW)
+            tail.reset()
+            tail.moveTo(cx - t, bottom - 2f); tail.lineTo(cx, r.bottom - 3f); tail.lineTo(cx + t, bottom - 2f); tail.close()
+            shape.op(tail, android.graphics.Path.Op.UNION)
+            canvas.drawPath(shape, fill)
+            canvas.drawPath(shape, edge)
         }
         override fun setAlpha(alpha: Int) {}
         override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {}
@@ -502,7 +539,7 @@ internal class CharacterScreens(
         val right = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(0, dp(34), 0, 0) }
         fun add(text: String, primary: Boolean, click: () -> Unit) = right.addView(board.button(context, text, primary, click),
             LinearLayout.LayoutParams(MATCH, dp(46)).apply { if (right.childCount > 0) topMargin = dp(8) })
-        add(runLabel(friend), true) { onStartRun(friend.id) }
+        add(runLabel(friend), true) { chooseStory(friend) }
         add(context.getString(R.string.characters_story_book), false) { context.startActivity(StoryActivity.intent(context, friend.id)) }
         // A square picture card introducing this friend, for other apps.
         add(context.getString(R.string.share_friend_button), false) {

@@ -37,6 +37,13 @@ open class MockupFrame(context: Context, backgroundRes: Int, private val cover: 
      */
     var anchor: View? = null
 
+    /**
+     * When true, parts spread over the whole width on phones wider than 16:9 (positions and widths use the width's
+     * own scale; heights and text keep [scale]), instead of keeping a 16:9 block in the middle.
+     */
+    var stretchX = false
+    private var sx = 1f
+
     private class Ref(val x0: Int, val y0: Int, val x1: Int, val y1: Int)
 
     /** Adds [view] at a rect given in the 1280×720 coordinates of A's separated design pack. */
@@ -55,8 +62,8 @@ open class MockupFrame(context: Context, backgroundRes: Int, private val cover: 
     }
 
     /** The reference x at the screen's left and right edges (beyond 0..1672 on phones wider than 16:9). */
-    val visibleLeft get() = -offX / scale
-    val visibleRight get() = (width - offX) / scale
+    val visibleLeft get() = -offX / sx
+    val visibleRight get() = (width - offX) / sx
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val ownW = MeasureSpec.getSize(widthMeasureSpec); val ownH = MeasureSpec.getSize(heightMeasureSpec)
@@ -70,7 +77,8 @@ open class MockupFrame(context: Context, backgroundRes: Int, private val cover: 
             scale = newScale
             scaledTexts.forEach { (v, p) -> v.setTextSize(TypedValue.COMPLEX_UNIT_PX, p * scale) }
         }
-        offX = (w - REF_W * scale) / 2f
+        sx = if (stretchX) w / REF_W else scale
+        offX = (w - REF_W * sx) / 2f
         offY = (h - REF_H * scale) / 2f
         for (i in 0 until childCount) {
             val c = getChildAt(i)
@@ -78,7 +86,7 @@ open class MockupFrame(context: Context, backgroundRes: Int, private val cover: 
             if (r == null) {
                 c.measure(MeasureSpec.makeMeasureSpec(w, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY))
             } else {
-                c.measure(MeasureSpec.makeMeasureSpec(((r.x1 - r.x0) * scale).roundToInt(), MeasureSpec.EXACTLY),
+                c.measure(MeasureSpec.makeMeasureSpec(((r.x1 - r.x0) * sx).roundToInt(), MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(((r.y1 - r.y0) * scale).roundToInt(), MeasureSpec.EXACTLY))
             }
         }
@@ -94,14 +102,14 @@ open class MockupFrame(context: Context, backgroundRes: Int, private val cover: 
         if (a != null) {
             getLocationInWindow(here); a.getLocationInWindow(there)
             dx = (here[0] - there[0]).toFloat(); dy = (here[1] - there[1]).toFloat()
-            offX = (a.width.coerceAtLeast(a.measuredWidth) - REF_W * scale) / 2f - dx
+            offX = (a.width.coerceAtLeast(a.measuredWidth) - REF_W * sx) / 2f - dx
             offY = (a.height.coerceAtLeast(a.measuredHeight) - REF_H * scale) / 2f - dy
         }
         for (i in 0 until childCount) {
             val c = getChildAt(i)
             val ref = c.getTag(TAG) as? Ref
             if (ref == null) { c.layout(0, 0, c.measuredWidth, c.measuredHeight); continue }
-            val x = (offX + ref.x0 * scale).roundToInt(); val y = (offY + ref.y0 * scale).roundToInt()
+            val x = (offX + ref.x0 * sx).roundToInt(); val y = (offY + ref.y0 * scale).roundToInt()
             c.layout(x, y, x + c.measuredWidth, y + c.measuredHeight)
         }
     }

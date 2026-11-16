@@ -139,9 +139,10 @@ class MainActivity : Activity() {
         super.onSaveInstanceState(outState)
     }
 
-    private fun onStartRun(characterId: String) {
-        // Straight onto the road: the friend's story is told during the run (speech bubbles, a crossroads).
-        startActivity(com.tinyrunners.school.game.GameActivity.intent(this, characterId))
+    private fun onStartRun(characterId: String, storyId: String?) {
+        // Onto the road with the story picked in the list: it is told during the run (speech bubbles, a crossroads).
+        startActivity(com.tinyrunners.school.game.GameActivity.intent(this, characterId)
+            .putExtra(com.tinyrunners.school.game.GameActivity.EXTRA_STORY_ID, storyId))
     }
 
     @Deprecated("Uses the Activity back callback for the character screen stack.")

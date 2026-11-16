@@ -56,4 +56,11 @@
     <string name="characters_today_mate">오늘의 길동무</string>
     <string name="characters_together">함께할 친구</string>
     <string name="characters_counter">%1$02d / %2$02d</string>
+    <!-- The story list before a run (CharacterScreens.chooseStory). -->
+    <string name="choose_story_title">%1$s의 이야기 몇 편을 볼까요?</string>
+    <string name="choose_story_read">✓ 봤어요</string>
+    <string name="choose_story_open">▶ 다음 이야기</string>
+    <string name="choose_story_locked">🔒 잠겨 있어요</string>
+    <string name="choose_story_locked_toast">앞 이야기를 먼저 함께 달려요.</string>
+    <string name="choose_story_cancel">닫기</string>
 </resources>
