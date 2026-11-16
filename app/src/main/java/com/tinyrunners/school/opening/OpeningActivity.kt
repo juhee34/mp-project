@@ -45,7 +45,7 @@ class OpeningActivity : Activity() {
         // the sunny meadow by day, the lavender village by night (TitleScene).
         val start = com.tinyrunners.school.ui.TitleScene.button(this, getString(R.string.opening_start), primary = true,
             width = 0.62f, heightShare = 0.14f) { onButton() }
-        val frame = com.tinyrunners.school.ui.TitleScene.screen(this, getString(R.string.opening_tagline_card), listOf(start), firstGap = 0.07f)
+        val frame = com.tinyrunners.school.ui.TitleScene.screen(this, getString(R.string.opening_tagline_card), listOf(start), firstGap = 0.11f)
         setContentView(frame)
         hideSystemBars()
     }
