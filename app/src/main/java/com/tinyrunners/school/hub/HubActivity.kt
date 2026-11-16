@@ -38,11 +38,12 @@ class HubActivity : Activity() {
         super.onCreate(savedInstanceState)
         // The same scene as the opening (TitleScene): the logo, the tagline pill, the four menu buttons in the middle and
         // the six friends on the ground; the sunny meadow by day, the lavender village by night.
-        fun add(label: Int, click: () -> Unit) = com.tinyrunners.school.ui.TitleScene.button(this, getString(label),
-            primary = false, width = 0.62f, heightShare = 0.12f) { if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click() }
+        fun add(label: Int, primary: Boolean = false, click: () -> Unit) = com.tinyrunners.school.ui.TitleScene.button(this, getString(label),
+            primary = primary, width = 0.62f, heightShare = 0.12f) { if (SystemClock.uptimeMillis() - shownAt >= TAP_GUARD_MS) click() }
         val buttons = listOf(
             // 스토리 진행하기 is the game now: choose a friend, then the story is told while running.
-            add(R.string.hub_story) { startActivity(MainActivity.selectionIntent(this)) },
+            // The main way in, filled lavender like 시작하기 on the opening.
+            add(R.string.hub_story, primary = true) { startActivity(MainActivity.selectionIntent(this)) },
             add(R.string.hub_shop) { startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null)) },
             // A practice run with 라일 that always starts with the game guide.
             add(R.string.hub_tutorial) { startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true)) },

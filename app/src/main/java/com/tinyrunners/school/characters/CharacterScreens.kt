@@ -101,17 +101,17 @@ internal class CharacterScreens(
         val counter = text(12, PANEL_SOFT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL; letterSpacing = 0.2f }
 
         // The friend on the grass, big, on a soft pool of light so they stand out from the picture, with a bubble above.
-        frame.placeV2(SpotLight(context), 150, 420, 540, 700)
+        frame.placeV2(SpotLight(context), 205, 420, 595, 700)
         val stand = FrameLayout(context)
-        frame.placeV2(stand, 238, 470, 452, 684)
-        val bubble = text(15, PANEL_INK).apply {
+        frame.placeV2(stand, 293, 470, 507, 684)
+        val bubble = text(20, PANEL_INK).apply {
             gravity = Gravity.CENTER_VERTICAL; setLineSpacing(0f, 1.2f)
             val pad = MockupFrame.v2(18)
             setPadding(pad, 0, pad, MockupFrame.v2(12))
             background = SpeechBubble()
             maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END
         }
-        frame.placeV2(bubble, 150, 350, 560, 456)
+        frame.placeV2(bubble, 165, 316, 635, 462)
 
         // ◀ ▶ at the screen edges.
         val prev = stageArrow("◀", R.string.characters_prev)
