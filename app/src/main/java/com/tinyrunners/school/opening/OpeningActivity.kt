@@ -44,8 +44,8 @@ class OpeningActivity : Activity() {
         // The title logo on a cream plaque, the tagline pill and 시작하기 in the middle, the six friends on the ground;
         // the sunny meadow by day, the lavender village by night (TitleScene).
         val start = com.tinyrunners.school.ui.TitleScene.button(this, getString(R.string.opening_start), primary = true,
-            width = 0.42f, heightShare = 0.1f) { onButton() }
-        val frame = com.tinyrunners.school.ui.TitleScene.screen(this, getString(R.string.opening_tagline_card), listOf(start))
+            width = 0.62f, heightShare = 0.14f) { onButton() }
+        val frame = com.tinyrunners.school.ui.TitleScene.screen(this, getString(R.string.opening_tagline_card), listOf(start), firstGap = 0.07f)
         setContentView(frame)
         hideSystemBars()
     }

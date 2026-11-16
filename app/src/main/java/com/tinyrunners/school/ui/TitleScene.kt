@@ -44,34 +44,28 @@ object TitleScene {
         if (isNight()) CoverPicture(context, R.drawable.bg_v2_login_wide, sideInset = 0.1f)
         else CoverPicture(context, R.drawable.bg_opening_wide, sideInset = 0f)
 
+    /** Height of the logo as a share of the short side. */
+    private const val LOGO = 0.23f
+
     /** The screen's short side in pixels: every size here is a share of it. */
     fun unit(context: Context): Int = context.resources.displayMetrics.let { minOf(it.widthPixels, it.heightPixels) }
 
-    /** The logo on a cream plaque with [tagline] in a lavender pill under it. */
+    /** The logo straight on the picture (a soft cream glow keeps it readable at night) with [tagline] in a lavender pill. */
     fun header(context: Context, tagline: String): LinearLayout {
         val h = unit(context)
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
-            setPadding((h * 0.05f).roundToInt(), (h * 0.025f).roundToInt(), (h * 0.05f).roundToInt(), (h * 0.03f).roundToInt())
-            background = GradientDrawable().apply {
-                setColor(Color.argb(232, 255, 248, 232)); cornerRadius = h * 0.04f
-                setStroke((h * 0.004f).roundToInt().coerceAtLeast(2), Color.rgb(214, 186, 132))
-            }
-            elevation = h * 0.01f
-            addView(ImageView(context).apply {
-                setImageResource(R.drawable.ui_title_logo); scaleType = ImageView.ScaleType.FIT_CENTER
-                contentDescription = context.getString(R.string.app_name)
-            }, LinearLayout.LayoutParams((h * 0.15f * 650 / 140).roundToInt(), (h * 0.15f).roundToInt()))
+            addView(GlowLogo(context), LinearLayout.LayoutParams((h * LOGO * 650 / 140).roundToInt(), (h * LOGO).roundToInt()))
             addView(TextView(context).apply {
                 text = tagline; setTextColor(Color.rgb(48, 52, 40)); typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
-                includeFontPadding = false; setTextSize(TypedValue.COMPLEX_UNIT_PX, h * 0.032f)
-                setPadding((h * 0.05f).roundToInt(), 0, (h * 0.05f).roundToInt(), 0)
+                includeFontPadding = false; setTextSize(TypedValue.COMPLEX_UNIT_PX, h * 0.042f)
+                setPadding((h * 0.06f).roundToInt(), 0, (h * 0.06f).roundToInt(), 0)
                 background = GradientDrawable().apply {
                     setColor(Color.rgb(205, 182, 234)); cornerRadius = h * 0.04f
                     setStroke((h * 0.003f).roundToInt().coerceAtLeast(2), Color.rgb(176, 150, 214))
                 }
-            }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (h * 0.065f).roundToInt()).apply {
-                topMargin = (h * 0.012f).roundToInt()
+            }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (h * 0.082f).roundToInt()).apply {
+                topMargin = (h * 0.006f).roundToInt()
             })
         }
     }
@@ -109,18 +103,18 @@ object TitleScene {
     }
 
     /** The whole screen: picture, the centred column (header and [buttons]) and the friends at the bottom. */
-    fun screen(context: Context, tagline: String, buttons: List<View>, gap: Float = 0.022f): FrameLayout {
+    fun screen(context: Context, tagline: String, buttons: List<View>, gap: Float = 0.022f, firstGap: Float = 0.045f): FrameLayout {
         val h = unit(context)
         return FrameLayout(context).apply {
             setBackgroundColor(Color.rgb(246, 236, 214))
             addView(background(context), FrameLayout.LayoutParams(-1, -1))
             val column = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
-                setPadding(0, (h * 0.05f).roundToInt(), 0, 0)
+                setPadding(0, (h * 0.035f).roundToInt(), 0, 0)
                 addView(header(context, tagline), LinearLayout.LayoutParams(-2, -2))
                 buttons.forEachIndexed { i, b ->
                     val lp = (b.layoutParams as? LinearLayout.LayoutParams) ?: LinearLayout.LayoutParams(-2, -2)
-                    lp.topMargin = (h * if (i == 0) 0.045f else gap).roundToInt()
+                    lp.topMargin = (h * if (i == 0) firstGap else gap).roundToInt()
                     addView(b, lp)
                 }
             }
@@ -129,6 +123,57 @@ object TitleScene {
                 bottomMargin = (h * 0.04f).roundToInt()
             })
         }
+    }
+}
+
+/** The title logo with a soft cream glow around its letters and leaves, so it reads on the day and the night picture. */
+@SuppressLint("ViewConstructor")
+class GlowLogo(context: Context) : View(context) {
+    private val logo: Bitmap? = BitmapFactory.decodeResource(resources, R.drawable.ui_title_logo, BitmapFactory.Options().apply { inScaled = false })
+    private val glow: Bitmap? = logo?.extractAlpha()
+    private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
+    private val glowPaint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(120, 255, 248, 228) }
+    private val dst = RectF()
+
+    /** The cream halo at this view's size: the logo's shape in cream, thickened and softened by shrinking and growing. */
+    private var halo: Bitmap? = null
+
+    init { contentDescription = context.getString(R.string.app_name) }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        val shape = glow ?: return
+        if (w <= 0 || h <= 0) return
+        place()
+        // Small copy (1/8 size): the shape drawn a few times around itself in cream to thicken it, then grown back up
+        // with filtering, which blurs it into a soft halo.
+        val sw = (w / SHRINK).coerceAtLeast(1); val sh = (h / SHRINK).coerceAtLeast(1)
+        val small = Bitmap.createBitmap(sw, sh, Bitmap.Config.ARGB_8888)
+        val c = Canvas(small)
+        val r = RectF(dst.left / SHRINK, dst.top / SHRINK, dst.right / SHRINK, dst.bottom / SHRINK)
+        val spread = sh * 0.035f
+        for (dx in -1..1) for (dy in -1..1) {
+            c.drawBitmap(shape, null, RectF(r.left + dx * spread, r.top + dy * spread, r.right + dx * spread, r.bottom + dy * spread), glowPaint)
+        }
+        halo = Bitmap.createScaledBitmap(small, w, h, true)
+        small.recycle()
+    }
+
+    private fun place() {
+        val logo = logo ?: return
+        val k = minOf(width / logo.width.toFloat(), height / logo.height.toFloat())
+        // A little room all round for the halo.
+        val w = logo.width * k * 0.9f; val h = logo.height * k * 0.9f
+        dst.set((width - w) / 2f, (height - h) / 2f, (width + w) / 2f, (height + h) / 2f)
+    }
+
+    private companion object { const val SHRINK = 12 }
+
+    override fun onDraw(canvas: Canvas) {
+        val logo = logo ?: return
+        place()
+        halo?.let { canvas.drawBitmap(it, 0f, 0f, paint); canvas.drawBitmap(it, 0f, 0f, paint) }
+        canvas.drawBitmap(logo, null, dst, paint)
     }
 }
 
