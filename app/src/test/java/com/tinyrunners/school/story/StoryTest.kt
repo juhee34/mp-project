@@ -45,52 +45,6 @@ class StoryTest {
         assertTrue(stories()[0].isUnlocked(emptySet()))
     }
 
-    @Test fun choiceShowsOnlyThatReplyThenContinues() {
-        val p = StoryPlayer(stories()[0])
-        p.advance()
-        assertTrue(p.current is Step.Choice)
-        p.advance() // tapping does not skip a choice
-        assertTrue(p.current is Step.Choice)
-        p.choose(0)
-        assertEquals("rx1", (p.current as Step.Line).text)
-        p.choose(1) // cannot change after choosing
-        assertEquals("rx1", (p.current as Step.Line).text)
-        p.advance()
-        assertEquals("rx2", (p.current as Step.Line).text)
-        p.advance()
-        assertEquals(Step.Run, p.current)
-    }
-
-    @Test fun runWaitsForGameThenStoryEnds() {
-        val p = StoryPlayer(stories()[0])
-        p.advance(); p.choose(1); p.advance()
-        assertEquals(Step.Run, p.current)
-        p.advance() // a tap does not skip the run
-        assertEquals(Step.Run, p.current)
-        p.completeRun()
-        assertEquals(Step.Line(Story.NARRATOR, "end"), p.current)
-        p.advance()
-        assertTrue(p.finished)
-        assertNull(p.current)
-    }
-
-    @Test fun saveAndRestoreKeepsPositionInsideReply() {
-        val p = StoryPlayer(stories()[0])
-        p.advance(); p.choose(0); p.advance()
-        val state = p.save()
-        assertArrayEquals(intArrayOf(1, 0, 1), state)
-        val q = StoryPlayer(stories()[0]).apply { restore(state) }
-        assertEquals("rx2", (q.current as Step.Line).text)
-        val r = StoryPlayer(stories()[0]).apply { restore(intArrayOf(99, 5, 5)) }
-        assertTrue("out of range clamps to the end", r.finished)
-    }
-
-    @Test fun skipFinishes() {
-        val p = StoryPlayer(stories()[0])
-        p.skip()
-        assertTrue(p.finished)
-    }
-
     @Test fun nextStoryIsTheFirstUnlockedUnreadOneOfThatFriend() {
         val all = Story.parseAll(java.io.File("src/main/assets/content/village_stories.json").readText())
         assertEquals("mint_intro", Story.nextUnread(all, "mint", emptySet())?.id)

@@ -1,20 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- The friend's weather note: kind words only, never "come back" or "you will lose" (guide ④). -->
-    <string name="notice_channel">친구의 날씨 안부</string>
-    <string name="notice_channel_description">날씨가 특별한 날에만 하루 한 번, 오늘의 친구가 한마디 건네요.</string>
-    <string name="notice_title_rain">비 오는 날, %1$s의 한마디 ☂</string>
-    <string name="notice_title_snow">눈 오는 날, %1$s의 한마디 ❄</string>
-    <string name="notice_title_hot">더운 날, %1$s의 한마디</string>
-    <string name="notice_title_cold">추운 날, %1$s의 한마디</string>
-    <string name="notice_title_plain">오늘의 친구 %1$s의 한마디</string>
 
-    <string name="settings_notice">친구의 날씨 안부</string>
-    <string name="settings_notice_toggle">친구의 날씨 안부 받기</string>
-    <string name="settings_notice_hint">켜면 날씨가 특별한 날(비·눈·아주 더움·아주 추움)에만 하루 한 번 와요. 고른 도시의 날씨를 봐요. 기본은 꺼져 있어요.</string>
-    <string name="settings_notice_morning">아침 8시쯤</string>
-    <string name="settings_notice_evening">저녁 7시쯤</string>
-    <string name="settings_notice_try">지금 한 번 보내 보기</string>
-    <string name="settings_notice_sent">보냈어요. 알림을 확인해 보세요.</string>
-    <string name="settings_notice_not_allowed">알림이 허용되지 않아 켜지 못했어요. 휴대폰 설정에서 Tiny Runners 알림을 허용하면 켤 수 있어요.</string>
 </resources>

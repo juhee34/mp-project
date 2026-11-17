@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Widget card: the app's cream paper with a honey-wood edge. -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <solid android:color="#FBF1DC" />
-    <stroke android:width="3dp" android:color="#C9A26A" />
-    <corners android:radius="22dp" />
-</shape>

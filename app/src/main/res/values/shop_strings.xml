@@ -59,7 +59,6 @@
     <string name="shop_music_nunu_blurb">Nunu\'s Tiptoe</string>
     <string name="shop_music_piko">물살 속의 장화</string>
     <string name="shop_music_piko_blurb">Boots in the Current</string>
-    <string name="settings_music">음악과 효과음</string>
     <string name="settings_music_toggle">모든 화면에서 배경 음악 켜기</string>
     <string name="settings_sfx_toggle">효과음 켜기 (선택지·아이템 건네기)</string>
     <string name="result_shop">상점</string>

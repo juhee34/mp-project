@@ -238,43 +238,6 @@ internal class SceneThumb(context: Context, private val characterId: String, pri
     }
 }
 
-/** The world story: all six friends side by side on the hill. */
-@SuppressLint("ViewConstructor")
-internal class WorldThumb(context: Context, private val ids: List<String>, private val locked: Boolean) : View(context) {
-    private val sprites = ids.map { CharacterSprites.load(resources, it) }
-    private val pixel = Paint().apply { isFilterBitmap = false; isAntiAlias = false }
-    private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val dst = RectF()
-
-    override fun onDraw(canvas: Canvas) {
-        val w = width.toFloat(); val h = height.toFloat()
-        val radius = 14 * resources.displayMetrics.density
-        canvas.save()
-        canvas.clipPath(android.graphics.Path().apply { addRoundRect(0f, 0f, w, h, radius, radius, android.graphics.Path.Direction.CW) })
-        // Night sky with a little moon, then a green hill: the world before the first morning.
-        fill.color = Color.rgb(46, 58, 92); canvas.drawRect(0f, 0f, w, h, fill)
-        fill.color = Color.rgb(250, 238, 190); canvas.drawCircle(w * 0.82f, h * 0.2f, h * 0.08f, fill)
-        fill.color = Color.rgb(250, 246, 220)
-        for (i in 0 until 14) canvas.drawCircle((i * 73 % 100) / 100f * w, (i * 37 % 45) / 100f * h, 2.2f, fill)
-        val ground = h * 0.86f
-        fill.color = Color.rgb(116, 166, 98); canvas.drawOval(-w * 0.2f, ground - h * 0.12f, w * 1.2f, h * 1.4f, fill)
-        val px = max(1, (h * 0.32f / CharacterSprites.SIZE).roundToInt()).toFloat()
-        val step = w / (ids.size + 1)
-        sprites.forEachIndexed { i, s ->
-            s ?: return@forEachIndexed
-            val left = (step * (i + 1) - CharacterSprites.CENTER_X * px).roundToInt().toFloat()
-            val top = (ground - CharacterSprites.FOOT_EDGE_Y * px).roundToInt().toFloat()
-            dst.set(left, top, left + CharacterSprites.SIZE * px, top + CharacterSprites.SIZE * px)
-            canvas.drawBitmap(s[SpriteFrame.IDLE_0], null, dst, pixel)
-        }
-        if (locked) {
-            fill.color = Color.argb(150, 30, 38, 33); canvas.drawRect(0f, 0f, w, h, fill)
-            LockIcon.draw(canvas, w / 2f, h / 2f, h * 0.16f, fill)
-        }
-        canvas.restore()
-    }
-}
-
 /** A plain padlock: rounded body and a shackle. */
 internal object LockIcon {
     fun draw(canvas: Canvas, cx: Float, cy: Float, size: Float, paint: Paint) {

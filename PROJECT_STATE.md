@@ -27,6 +27,12 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 안 쓰는 코드·리소스 정리 (2026-11-17, B)
+- 지운 클래스 7개(어디서도 쓰이지 않던 예전 화면 조각): CloudDrift, ShelfPager(파일째), OpeningBackground, ResultScenery, ShowcaseStage, WorldThumb, StoryPlayer(예전 대화 재생기, 이를 시험하던 StoryTest 4개도 함께). 단위 테스트 134 → 130개.
+- 린트가 찾은 안 쓰는 리소스 중 글자 133개, 그림 50개를 지웠다. 음악(raw) 6개는 이름으로 찾아 쓰므로(getIdentifier) 남기고, 테마(style) 1개도 남김. 린트 UnusedResources 190 → 7.
+- talks.json·assets.json은 앱이 읽지 않지만 내용 검사 도구와 DATA_CONTRACT(자산 상태·대화 원고 기록)에 묶여 있어 남겼다.
+- 빌드·테스트·린트·내용 검사 통과. 에뮬레이터에서 오프닝·로그인·메뉴·선택·이야기 모음·세계 이야기·도감·상점·내 기록·설정·가방·프로필 열고 닫기, 충돌 없음.
+
 ## 대화창 동안 친구를 화면 가운데 크게 (2026-11-17, B)
 - 달리기 이야기의 대화창(시작·갈림길 뒤)에서 친구가 화면 높이의 약 42% 크기로 가운데, 대화 상자 바로 위에 서 있다(OpeningFriend 숨쉬는 모습, StoryDialogView friendId). 결말 대화는 결말 그림에 친구가 이미 있어 그대로 둠. 달리는 중 짧은 말풍선은 사용자 결정대로 그대로.
 - 빌드·테스트·린트 통과, 에뮬레이터에서 라일 시작 대화 확인.

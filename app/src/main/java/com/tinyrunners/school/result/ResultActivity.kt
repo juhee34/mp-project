@@ -251,24 +251,6 @@ class ResultActivity : Activity() {
     }
 }
 
-/**
- * The friend's own running scenery at the spot where the run ended (same framing as the run and the talk scenes),
- * or the usual hills when the friend has no background yet.
- */
-@android.annotation.SuppressLint("ViewConstructor")
-internal class ResultScenery(context: Context, characterId: String, private val distance: Float) : android.view.View(context) {
-    private val scenery = com.tinyrunners.school.game.StoryBackground.load(context, characterId)
-    private val fallback = com.tinyrunners.school.ui.ScenePainter()
-
-    override fun onDraw(canvas: android.graphics.Canvas) {
-        val w = width.toFloat(); val h = height.toFloat()
-        val scale = minOf(h / 360f, w / 640f)
-        val groundY = h - 48f * scale
-        if (scenery != null) scenery.draw(canvas, w, h, groundY, distance, scale)
-        else fallback.draw(canvas, width, height, groundY, h * 0.17f)
-    }
-}
-
 /** A still gold coin. */
 private class CoinIcon(context: Context) : android.view.View(context) {
     override fun onDraw(canvas: android.graphics.Canvas) {

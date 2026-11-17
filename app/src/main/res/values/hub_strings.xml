@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hub_story">스토리 진행하기</string>
-    <string name="hub_game">게임하기</string>
     <string name="hub_shop">상점</string>
     <string name="hub_tutorial">튜토리얼</string>
     <string name="hub_settings">설정</string>
     <!-- A's separated design pack (2026-11-16). -->
     <string name="hub_tagline_v2">길이 조금 달라도, 함께라면 괜찮아.</string>
-    <string name="hub_footer_v2">작은 발걸음이 모여, 우리의 이야기가 돼요</string>
 </resources>

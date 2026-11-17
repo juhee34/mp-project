@@ -21,20 +21,11 @@
 
     <!-- Run HUD and the narration after a crash. -->
     <string name="item_hud">× %1$d</string>
-    <string name="talk_stumble_items">쿵! 함께 %1$dm를 달렸어요. %2$s %3$d개를 주웠어요.</string>
 
     <!-- Hand-over panel in the village talk. -->
-    <string name="quest_have">%1$s %2$d개 · %3$d개 필요</string>
-    <string name="quest_give">%1$s 건네주기</string>
-    <string name="quest_short">%1$s 달리면 길에서 %2$s 주울 수 있어요.</string>
-    <string name="quest_run">달리러 가기</string>
-    <string name="quest_later">나중에</string>
-    <string name="quest_loading">가방을 확인하는 중…</string>
     <string name="quest_error">가방을 열지 못했어요. 잠시 후 다시 해 주세요.</string>
 
     <!-- Result screen after a run. -->
-    <string name="result_to_village">스토리 진행으로</string>
-    <string name="result_give_items">%1$s에게 %2$s 전하러 가기</string>
 
     <!-- 가방 screen. -->
     <string name="bag_title">가방</string>
@@ -42,11 +33,7 @@
     <string name="bag_guide">코인은 상점에서 써요. 아이템은 친구의 길에서 주운 작은 선물이에요.</string>
     <string name="bag_count">%1$d개</string>
     <string name="bag_for">%1$s에게</string>
-    <string name="bag_ready_chip">전할 준비 완료</string>
-    <string name="bag_more">%1$d개 더 모으면 전할 수 있어요</string>
     <string name="bag_coins_description">가진 코인. 누르면 상점으로 가요.</string>
-    <string name="bag_all_told">이야기를 모두 봤어요</string>
-    <string name="bag_give">전하러 가기</string>
     <string name="bag_open">가방 열기</string>
     <string name="bag_collected">친구의 길에서 주운 선물</string>
 </resources>

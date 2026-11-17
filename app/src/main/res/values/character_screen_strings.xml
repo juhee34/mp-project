@@ -1,32 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="characters_brand">TINY RUNNERS</string>
-    <string name="characters_intro_eyebrow">함께 달리는 작은 모험</string>
-    <string name="characters_intro_title">친구들의\n작은 세계</string>
-    <string name="characters_intro_body">여섯 친구의 고향을 달리는 픽셀 러닝 게임. 톡 눌러 장애물을 넘고, 쉬고 싶은 날에는 친구의 작은 이야기를 펼쳐 보세요.</string>
-    <string name="characters_intro_friends">처음부터 함께할 수 있는 친구 %1$d명</string>
-    <string name="characters_choose">친구 고르기</string>
     <string name="characters_select_title">오늘은 누구랑 달려 볼까요?</string>
-    <string name="characters_select_hint">친구마다 좋아하는 풍경과 이야기가 달라요.</string>
-    <string name="characters_placeholder_notice">여섯 친구의 픽셀 모습을 만나 보세요.</string>
-    <string name="characters_placeholder_portrait">픽셀 캐릭터</string>
-    <string name="characters_name_and_species">%1$s · %2$s</string>
-    <string name="characters_selected_name">%1$s · 선택됨</string>
-    <string name="characters_home">사는 곳</string>
     <string name="characters_personality">성격</string>
     <string name="characters_story_outline">이야기 개요</string>
-    <string name="characters_run">이 친구와 달리기</string>
-    <string name="characters_run_pending">달리기 화면은 연결 준비 중이에요.</string>
     <string name="characters_load_error">캐릭터 정보를 읽을 수 없어요.</string>
-    <string name="characters_back_intro">소개로 돌아가기</string>
-    <string name="characters_tutorial">튜토리얼하기</string>
-    <string name="characters_back_selection_pill">◀ 다른 친구 만나기</string>
-    <string name="characters_profile">이 친구 이야기 보기</string>
     <string name="characters_profile_short">자세히 보기</string>
     <string name="characters_prev">이전 친구</string>
     <string name="characters_next">다음 친구</string>
     <string name="characters_species_home">%1$s · %2$s</string>
-    <string name="characters_card_description">친구 %1$d / %2$d. %3$s, %4$s, %5$s. %6$s 옆으로 넘기거나 화살표로 다른 친구를 볼 수 있어요.</string>
     <string name="characters_greeting_mint">오늘은 이쪽으로 가 볼까? 어, 처음 보는 꽃이다!</string>
     <string name="characters_greeting_cheese">마침 산책 가려던 참이야. 네 자리도 비워 뒀어.</string>
     <string name="characters_greeting_popo">저쪽에서 처음 듣는 소리가 나. 같이 들어 볼래?</string>
@@ -34,16 +16,13 @@
     <string name="characters_greeting_nunu">나 어디 있게? …히히, 또 웃다가 들켰네.</string>
     <string name="characters_greeting_piko">앗, 물웅덩이다! 장화 챙겼어? 같이 첨벙하자!</string>
     <!-- A's friendly copy (docs/character-copy/friendly-copy.ko.json, shared). -->
-    <string name="characters_copy_home">여기 살아요</string>
     <string name="characters_copy_personality">이런 친구예요</string>
     <string name="characters_copy_habits">이럴 때가 많아요</string>
     <string name="characters_copy_cherished">소중히 챙겨요</string>
     <string name="characters_copy_running">오늘은 어디로 갈까요?</string>
     <string name="characters_copy_story">친구의 이야기가 궁금하다면</string>
-    <string name="characters_copy_story_button">이야기 만나러 가기</string>
     <string name="characters_copy_run">%1$s 달리기</string>
     <string name="characters_copy_mechanics">어느 친구를 골라도 점프와 달리는 속도는 같아요.</string>
-    <string name="characters_greeting_quote">“%1$s”</string>
     <string name="characters_card_description_short">%1$s, %2$s, %3$s. %4$s</string>
     <string name="characters_best">이 친구와 최고 기록 %1$dm</string>
     <string name="characters_best_none">아직 함께 달린 기록이 없어요</string>
@@ -54,7 +33,6 @@
     <string name="characters_runs_value">%1$d번</string>
     <!-- Selection in the separated pack (reference/screen-5). -->
     <string name="characters_today_mate">오늘의 길동무</string>
-    <string name="characters_together">함께할 친구</string>
     <string name="characters_counter">%1$02d / %2$02d</string>
     <!-- The story list before a run (CharacterScreens.chooseStory). -->
     <string name="choose_story_read">✓ 봤어요</string>
