@@ -113,7 +113,7 @@ internal class CharacterScreens(
             background = speech
             maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END
         }
-        frame.placeV2(bubble, 150, 240, 650, 396)
+        frame.placeV2(bubble, 150, 212, 650, 368)
 
         // ◀ ▶ at the screen edges.
         val prev = stageArrow("◀", R.string.characters_prev)
@@ -352,7 +352,12 @@ internal class CharacterScreens(
         private val box = android.graphics.RectF()
         private val tail = android.graphics.Path()
 
-        fun setColors(fillColor: Int, edgeColor: Int) { fill.color = fillColor; edge.color = edgeColor; invalidateSelf() }
+        /** The friend's colours, see-through so the home behind shows a little. */
+        fun setColors(fillColor: Int, edgeColor: Int) {
+            fill.color = fillColor; fill.alpha = 170
+            edge.color = edgeColor; edge.alpha = 190
+            invalidateSelf()
+        }
 
         override fun draw(canvas: android.graphics.Canvas) {
             val r = bounds
