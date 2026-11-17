@@ -50,9 +50,10 @@ object TitleScene {
 
     /**
      * Cream letters with a deep brown outline, so the title reads on the bright sky and on the night picture alike:
-     * a thick brown stroke of the same line is drawn first (a second Paint), then the TextView fills it as usual.
+     * a thick brown stroke of the same lines is drawn first (a second Paint), then the TextView fills them as usual.
+     * Also used for the words on the wooden shop picture.
      */
-    private class OutlinedText(context: Context, private val outline: Float) : TextView(context) {
+    internal class OutlinedText(context: Context, private val outline: Float) : TextView(context) {
         private val stroke = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
 
         init { val p = outline.toInt() + 1; setPadding(p, 0, p, 0) }
@@ -63,14 +64,17 @@ object TitleScene {
                 stroke.set(paint); stroke.clearShadowLayer()
                 stroke.style = android.graphics.Paint.Style.STROKE; stroke.strokeWidth = outline
                 stroke.strokeJoin = android.graphics.Paint.Join.ROUND; stroke.color = OUTLINE
-                canvas.drawText(text.toString(), totalPaddingLeft + line.getLineLeft(0),
-                    (totalPaddingTop + line.getLineBaseline(0)).toFloat(), stroke)
+                val words = text.toString()
+                for (i in 0 until line.lineCount) {
+                    canvas.drawText(words, line.getLineStart(i), line.getLineEnd(i), totalPaddingLeft + line.getLineLeft(i),
+                        (totalPaddingTop + line.getLineBaseline(i)).toFloat(), stroke)
+                }
             }
             super.onDraw(canvas)
         }
     }
 
-    private val OUTLINE = Color.rgb(74, 52, 30)
+    internal val OUTLINE = Color.rgb(74, 52, 30)
 
     /** The screen's short side in pixels: every size here is a share of it. */
     fun unit(context: Context): Int = context.resources.displayMetrics.let { minOf(it.widthPixels, it.heightPixels) }

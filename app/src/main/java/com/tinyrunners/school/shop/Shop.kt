@@ -104,8 +104,17 @@ object ShopCatalog {
     val BASIC_PROPS = listOf(R.drawable.obstacle_mint_map_crate, R.drawable.obstacle_popo_snow_rock,
         R.drawable.obstacle_lumi_moss_stump, R.drawable.obstacle_mint_fern_log)
 
-    /** The obstacle pictures for a run: the plain ones plus every pretty prop in [owned]. */
-    fun roadProps(owned: Set<String>): List<Int> = BASIC_PROPS + of(ItemKind.PROP).filter { it.id in owned }.map { it.prop }
+    /** The snowy plain props: they belong to the cold homes, so only 포포 (눈꽃 항구) and 누누 (안개 도서관) meet them. */
+    val SNOW_PROPS = setOf(R.drawable.obstacle_popo_snow_rock)
+    val SNOW_FRIENDS = setOf("popo", "nunu")
+
+    /**
+     * The obstacle pictures for a run with [friendId]: the plain ones (without the snowy rock unless the friend is
+     * 포포 or 누누) plus every pretty prop in [owned]. The sizes and heights of obstacles are the same either way.
+     */
+    fun roadProps(owned: Set<String>, friendId: String? = null): List<Int> =
+        BASIC_PROPS.filter { it !in SNOW_PROPS || friendId == null || friendId in SNOW_FRIENDS } +
+            of(ItemKind.PROP).filter { it.id in owned }.map { it.prop }
 
     fun find(id: String?): ShopItem? = items.firstOrNull { it.id == id }
     fun style(id: String?): TrailStyle = find(id)?.style ?: TrailStyle.NONE

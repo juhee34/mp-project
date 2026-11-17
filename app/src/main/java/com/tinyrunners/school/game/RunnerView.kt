@@ -34,7 +34,7 @@ class RunnerView(
     /** A's hometown props for boxes and towers; floating branches keep their drawn look. */
     /** The plain road props plus the pretty ones bought in the shop. */
     private val obstacleArt = ObstacleArt.load(resources,
-        com.tinyrunners.school.shop.ShopCatalog.roadProps(com.tinyrunners.school.shop.ShopStore.ownedProps(context)))
+        com.tinyrunners.school.shop.ShopCatalog.roadProps(com.tinyrunners.school.shop.ShopStore.ownedProps(context), character.id))
     /** A's approved thorny branches, ground spikes and landing planks (docs/art/approved/). */
     private val hazardArt = HazardArt.load(resources, character.id)
     /** The friend's hometown item scattered on the road (quest/Quest.kt). */

@@ -84,15 +84,15 @@ class ShopActivity : Activity() {
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         top.addView(com.tinyrunners.school.ui.HomeButton.create(this))
         top.addView(divider())
-        top.addView(TextView(this).apply {
+        top.addView(onWood(3).apply {
             setText(R.string.shop_title)
-            // Cream with a soft dark shadow, so it reads on the wooden shop interior (A's separated pack).
-            textSize = 24f; setTypeface(typeface, Typeface.BOLD); onPlaque(this)
+            // Cream with a brown outline, like the title on the opening, so it reads on the wooden shop interior.
+            textSize = 26f
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
         })
         top.addView(divider())
-        top.addView(TextView(this).apply {
-            setText(R.string.shop_intro); textSize = 15f; maxLines = 1; onPlaque(this)
+        top.addView(onWood(2).apply {
+            setText(R.string.shop_intro); textSize = 15f; maxLines = 1
             ellipsize = android.text.TextUtils.TruncateAt.END
         }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { weight = 0f; width = LinearLayout.LayoutParams.WRAP_CONTENT })
         top.addView(LavenderSprig(this), LinearLayout.LayoutParams(dp(26), dp(30)).apply { marginStart = dp(10) })
@@ -116,7 +116,7 @@ class ShopActivity : Activity() {
         // Guide line between two lavender rules: ── ◇ text ◇ ──
         val guideRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         guideRow.addView(rule(), LinearLayout.LayoutParams(0, dp(2), 1f))
-        guide = TextView(this).apply { textSize = 14f; gravity = Gravity.CENTER; onPlaque(this) }
+        guide = onWood(2).apply { textSize = 14f; gravity = Gravity.CENTER }
         guideRow.addView(guide)
         guideRow.addView(rule(), LinearLayout.LayoutParams(0, dp(2), 1f))
         content.addView(guideRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
@@ -125,9 +125,9 @@ class ShopActivity : Activity() {
         val tabRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         tabRow.addView(tabs)
-        message = TextView(this).apply {
-            textSize = 14f; setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER_VERTICAL
-            maxLines = 2; onPlaque(this); visibility = View.GONE
+        message = onWood(2).apply {
+            textSize = 14f; gravity = Gravity.CENTER_VERTICAL
+            maxLines = 2; visibility = View.GONE
         }
         tabRow.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
         tabRow.addView(message, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(12) })
@@ -258,20 +258,18 @@ class ShopActivity : Activity() {
     }
 
     /**
-     * Words on the wooden shop picture sit on a cream rounded plaque with a honey edge (like the buttons), in dark
-     * green, so they read clearly instead of cream letters straight on the wood.
+     * Words straight on the wooden shop picture, with no plaque behind them: bold cream letters with a dark brown
+     * outline ([outlineDp] thick), like the title on the opening, so they stand out from the wood.
      */
-    private fun onPlaque(t: TextView) {
-        t.setTextColor(GREEN); t.setShadowLayer(0f, 0f, 0f, 0)
-        t.background = GradientDrawable().apply {
-            setColor(Color.argb(240, 255, 249, 235)); cornerRadius = dp(100).toFloat(); setStroke(dp(2), HONEY_LIGHT)
-        }
-        t.setPadding(dp(14), dp(4), dp(14), dp(5))
+    private fun onWood(outlineDp: Int): TextView = com.tinyrunners.school.ui.TitleScene.OutlinedText(this, dp(outlineDp).toFloat()).apply {
+        setTextColor(ON_WOOD); setTypeface(typeface, Typeface.BOLD); includeFontPadding = true
     }
 
+    private val ON_WOOD = Color.rgb(255, 243, 214)
+
     private fun say(text: String, error: Boolean = false) {
-        // On its cream plaque (onPlaque); errors stay red; hidden while there is nothing to say.
-        message.setTextColor(if (error) ERROR else GREEN)
+        // Cream with a brown outline (onWood); errors are pink; hidden while there is nothing to say.
+        message.setTextColor(if (error) Color.rgb(255, 214, 200) else ON_WOOD)
         message.text = text
         message.visibility = if (text.isEmpty()) View.GONE else View.VISIBLE
     }

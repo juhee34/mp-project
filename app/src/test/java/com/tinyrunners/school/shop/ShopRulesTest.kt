@@ -130,4 +130,13 @@ class ShopRulesTest {
         // Saved and read back.
         assertEquals(bought.state, ShopState.fromMap(bought.state.toMap()))
     }
+
+    @Test fun theSnowyRockIsOnlyOnTheColdFriendsRoads() {
+        for (friend in listOf("popo", "nunu")) assertEquals(ShopCatalog.BASIC_PROPS, ShopCatalog.roadProps(emptySet(), friend))
+        for (friend in listOf("mint", "cheese", "lumi", "piko")) {
+            val props = ShopCatalog.roadProps(emptySet(), friend)
+            assertTrue(props.none { it in ShopCatalog.SNOW_PROPS })
+            assertEquals(ShopCatalog.BASIC_PROPS.size - ShopCatalog.SNOW_PROPS.size, props.size)
+        }
+    }
 }
