@@ -105,14 +105,15 @@ internal class CharacterScreens(
         frame.placeV2(SpotLight(context), 185, 230, 615, 640)
         val stand = FrameLayout(context)
         frame.placeV2(stand, 293, 318, 507, 532)
-        val bubble = text(26, PANEL_INK).apply {
-            gravity = Gravity.CENTER_VERTICAL; setLineSpacing(0f, 1.2f)
+        // The line in the middle of the bubble, a little bigger and bold.
+        val bubble = text(30, PANEL_INK, bold = true).apply {
+            gravity = Gravity.CENTER; setLineSpacing(0f, 1.15f)
             val pad = MockupFrame.v2(18)
             setPadding(pad, 0, pad, MockupFrame.v2(12))
             background = speech
             maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END
         }
-        frame.placeV2(bubble, 165, 250, 635, 392)
+        frame.placeV2(bubble, 150, 240, 650, 396)
 
         // ◀ ▶ at the screen edges.
         val prev = stageArrow("◀", R.string.characters_prev)
@@ -185,14 +186,14 @@ internal class CharacterScreens(
             // The friend's greeting first, then another of their lines every few seconds (A's short lines).
             bubble.removeCallbacks(chatter)
             bubble.alpha = 1f
-            bubble.text = greetingFor(friend)
+            bubble.text = withEmoji(friend.id, greetingFor(friend), 0)
             chatter = object : Runnable {
                 var turn = 0
                 override fun run() {
                     val event = if (turn++ % 2 == 0) "select" else "home"
                     val line = com.tinyrunners.school.talk.ShortLineRepository.pick(context, friend.id, event)
                     if (line != null) bubble.animate().alpha(0f).setDuration(FADE_MS).withEndAction {
-                        bubble.text = line
+                        bubble.text = withEmoji(friend.id, line, turn)
                         bubble.animate().alpha(1f).setDuration(FADE_MS).start()
                     }.start()
                     bubble.postDelayed(this, LINE_MS)
@@ -306,6 +307,12 @@ internal class CharacterScreens(
 
     /** Changes the friend's line in the selection bubble now and then; replaced when another friend is chosen. */
     private var chatter: Runnable = Runnable { }
+
+    /** A little emoji from the friend's home after each line (라일 a leaf, 포포 a snowflake, …), changing with the lines. */
+    private fun withEmoji(friendId: String, line: String, turn: Int): String {
+        val set = EMOJI[friendId] ?: return line
+        return line + " " + set[turn % set.size]
+    }
 
     /** The full-screen picture behind the character screens: a friend's home on the selection, the shared paper otherwise. */
     private fun backdrop(res: Int?) {
@@ -641,6 +648,11 @@ internal class CharacterScreens(
     private enum class Route { INTRO, SELECT, PROFILE }
 
     private companion object {
+        /** Each friend's emoji, from their home and what they love. */
+        val EMOJI = mapOf(
+            "mint" to listOf("🌿", "🗺️", "🍃"), "cheese" to listOf("☀️", "😺", "🧺"), "popo" to listOf("❄️", "🐚", "🌊"),
+            "lumi" to listOf("🎵", "🍂", "✨"), "nunu" to listOf("📚", "🎀", "👻"), "piko" to listOf("⛵", "💧", "🌈"),
+        )
         const val MATCH = LinearLayout.LayoutParams.MATCH_PARENT
         const val WRAP = LinearLayout.LayoutParams.WRAP_CONTENT
         val LEAF = Color.rgb(48, 83, 65)

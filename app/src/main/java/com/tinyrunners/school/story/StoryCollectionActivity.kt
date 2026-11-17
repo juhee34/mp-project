@@ -55,83 +55,24 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
     private val stories by lazy { StoryRepository.load(this) }
     private var read: Set<String> = emptySet()
     private var loaded = false
-    /** The friend whose shelf is open, or null for the first shelf. */
-    private var shelf: String? = null
 
-    private lateinit var frame: MockupFrame
-    private lateinit var back: Button
-    private lateinit var counter: TextView
-    private lateinit var row: LinearLayout
-    private lateinit var scroller: HorizontalScrollView
-    private lateinit var pager: com.tinyrunners.school.ui.ShelfPager
-    private var shelfLeft = 0
-    private var shelfRight = 1672
+    private lateinit var shelfView: BookShelf
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        shelf = savedInstanceState?.getString(KEY_SHELF)
-        // The picture fills the screen behind the parts (only its original middle: no blurred side bands).
-        frame = MockupFrame(this, 0)
-        frame.addView(com.tinyrunners.school.ui.CoverPicture(this, R.drawable.bg_v2_stories_wide, sideInset = 0.1f))
-        val v2 = MockupFrame.Companion::v2
-        fun text(px: Int, color: Int, bold: Boolean = false) = TextView(this).apply {
-            setTextColor(color); includeFontPadding = false; maxLines = 1
-            if (bold) typeface = Typeface.DEFAULT_BOLD
-            frame.onScaleText(this, v2(px).toFloat())
-        }
-
-        // A's separated pack (reference/screen-4): "← 처음으로 | 이야기 모음" at the top-left, the bag at the top-right,
-        // a big line and a small one, then the friends' books on a sideways shelf.
-        back = Button(this).apply {
-            isAllCaps = false; stateListAnimator = null; setTextColor(LIGHT); gravity = Gravity.CENTER_VERTICAL or Gravity.START
-            minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0; setPadding(0, 0, 0, 0)
-            background = RippleDrawable(ColorStateList.valueOf(0x33FFFFFF), null, android.graphics.drawable.ColorDrawable(Color.WHITE))
-            setOnClickListener { goBack() }
-            maxLines = 1; isSingleLine = true
-        }.also { frame.onScaleText(it, v2(26).toFloat()) }
-        frame.placeV2(back, 30, 26, 210, 76)
-        frame.placeV2(text(32, CREAM_TEXT, bold = true).apply {
-            text = getString(R.string.collection_open); gravity = Gravity.CENTER_VERTICAL
-        }, 216, 26, 560, 76)
-        frame.placeV2(text(30, CREAM_TEXT, bold = true).apply {
-            text = getString(R.string.collection_headline); gravity = Gravity.CENTER_VERTICAL
-            setShadowLayer(6f, 0f, 2f, Color.argb(120, 0, 0, 0))
-        }, 76, 108, 760, 158)
-        frame.placeV2(text(24, LIGHT).apply { text = getString(R.string.collection_subline); gravity = Gravity.CENTER_VERTICAL }, 76, 160, 900, 196)
-        counter = text(22, LIGHT).apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL }
-        frame.placeV2(counter, 860, 118, 1200, 150)
-        frame.place(android.widget.ImageButton(this).apply {
-            setImageDrawable(null)
-            background = RippleDrawable(ColorStateList.valueOf(0x22000000), getDrawable(R.drawable.ui_story_bag_button), null)
-            contentDescription = getString(R.string.bag_open)
-            setOnClickListener { startActivity(com.tinyrunners.school.quest.BagActivity.intent(this@StoryCollectionActivity)) }
-        }, v2(1198), v2(24), v2(1248), v2(74))
-
-        // Books on the shelf; they slide sideways when there are more than fit.
-        row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(row) }
-        frame.placeV2(scroller, 0, SHELF_TOP, 1280, SHELF_TOP + 392)
-        frame.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            // The shelf runs from screen edge to screen edge on phones wider than 16:9.
-            val left = frame.visibleLeft.roundToInt(); val right = frame.visibleRight.roundToInt()
-            if (left != shelfLeft || right != shelfRight) {
-                shelfLeft = left; shelfRight = right
-                frame.post { frame.move(scroller, left, v2(SHELF_TOP), right, v2(SHELF_TOP + 392)); render() }
-            }
-        }
-        frame.placeV2(text(22, LIGHT).apply { text = getString(R.string.collection_footer); gravity = Gravity.CENTER_VERTICAL }, 80, 662, 880, 698)
-        // Page dots and ◀ ▶ at the bottom right ("책장 둘러보기").
-        pager = com.tinyrunners.school.ui.ShelfPager(this, scroller)
-        frame.placeV2(pager, 900, 650, 1230, 708)
-
-        setContentView(frame)
+        // The shared bookshelf (BookShelf): the world story first, then one book per friend; ◀ ▶ slide the shelf.
+        shelfView = BookShelf(this, getString(R.string.collection_back_home), getString(R.string.collection_open)) { finish() }
+        shelfView.headline.text = getString(R.string.collection_headline)
+        shelfView.subline.text = getString(R.string.collection_subline)
+        shelfView.footer.text = getString(R.string.collection_footer)
+        setContentView(shelfView.frame)
         hideSystemBars()
     }
 
     override fun onResume() {
         super.onResume()
         render()
-        // Re-read progress each time: a story finished in 스토리 진행 opens here.
+        // Re-read progress each time: a story finished in a run opens here.
         ProgressStore.forCurrentUser(this).loadAll { result ->
             if (isDestroyed) return@loadAll
             read = result.getOrNull().orEmpty().values.flatMap { it.readStoryIds }.toSet()
@@ -140,60 +81,30 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(KEY_SHELF, shelf)
-        super.onSaveInstanceState(outState)
-    }
-
-    @Deprecated("Back from a friend's shelf returns to the first shelf.")
-    override fun onBackPressed() {
-        if (shelf != null) goBack() else @Suppress("DEPRECATION") super.onBackPressed()
-    }
-
-    private fun goBack() {
-        if (shelf == null) { finish(); return }
-        shelf = null
-        render()
-        scroller.post { scroller.scrollTo(0, 0) }
-    }
-
     /** A friend's stories, in order, and whether each has been read in a run. */
     private fun entriesOf(friend: CharacterDefinition): List<Boolean> =
         stories.filter { it.characterId == friend.id }.map { it.id in read }
 
     private fun render() {
-        row.removeAllViews()
-        // The first book starts where the mockup's does (x 66), wherever the shelf begins on this phone.
-        row.addView(RefBox(this, frame, (MockupFrame.v2(56) - shelfLeft).coerceAtLeast(MockupFrame.v2(16)), 1))
-        shelf = null
-        back.text = getString(R.string.collection_back_home)
         val total = friends.sumOf { entriesOf(it).size }
         val open = friends.sumOf { f -> entriesOf(f).count { it } }
-        counter.text = if (loaded) getString(R.string.collection_seen, open, total) else getString(R.string.records_loading)
-        friends.forEach { row.addView(friendCard(it)) }
-        row.addView(RefBox(this, frame, MockupFrame.v2(40), 1))
-        scroller.post { pager.refresh() }
+        shelfView.counter.text = if (loaded) getString(R.string.collection_seen, open, total) else getString(R.string.records_loading)
+        shelfView.setBooks(listOf(worldCard()) + friends.map { friendCard(it) })
     }
+
+    /** The first book: the world story (how the six homes and friends are joined by little roads). */
+    private fun worldCard(): View = StoryBookCard.cover(this, shelfView.frame, R.drawable.ui_v2_book_mint, getString(R.string.world_book_title),
+        getString(R.string.world_book_sub), WorldStoryActivity.ScenePicture(this).apply { set(null, R.drawable.bg_title_day, friends.map { it.id }) },
+        getString(R.string.collection_open_book), true,
+    ) { startActivity(WorldStoryActivity.intent(this, firstTime = false)) }
 
     /** A friend's book: how many of their stories were read; it opens their 이야기 도감. */
     private fun friendCard(friend: CharacterDefinition): View {
         val entries = entriesOf(friend)
-        return StoryBookCard.cover(this, frame, StoryBookCard.book(friend.id), getString(R.string.collection_friend_title, friend.name),
+        return StoryBookCard.cover(this, shelfView.frame, StoryBookCard.book(friend.id), getString(R.string.collection_friend_title, friend.name),
             friend.home + " · " + getString(R.string.collection_seen, entries.count { it }, entries.size),
             StoryBookCard.homePicture(this, friend.id), getString(R.string.collection_open_book), true,
         ) { startActivity(com.tinyrunners.school.stories.StoryActivity.intent(this, friend.id)) }
-    }
-
-    private enum class Look { PRIMARY, OUTLINE, LOCKED }
-
-    /** One storybook card (StoryBookCard, shared with 스토리 진행). */
-    private fun card(ribbon: Int, title: String, thumbPart: Int?, thumbView: View?, count: String?, button: String,
-                     look: Look, click: () -> Unit): View {
-        val picture = thumbView ?: ImageView(this).apply {
-            setImageResource(thumbPart!!); scaleType = ImageView.ScaleType.FIT_CENTER
-            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }
-        return StoryBookCard.build(this, frame, ribbon, title, picture, count, button, StoryBookCard.Look.valueOf(look.name), CARD_ZOOM, click)
     }
 
     private fun hideSystemBars() {
@@ -209,23 +120,8 @@ class StoryCollectionActivity : Activity(), com.tinyrunners.school.audio.MusicSc
         }
     }
 
-    private class CollectionEntry(val label: String, val title: String, val open: Boolean, val play: () -> Unit)
-
-    private companion object {
-        const val KEY_SHELF = "collectionShelf"
-        /** The cards stand inside the shelf of A's final picture (boards at about 205 and 765), a little smaller. */
-        const val CARD_ZOOM = 0.9f
-        /** Top of the book shelf in the pack's 1280×720 coordinates (books 237..604 with their 10 px shadow edge). */
-        const val SHELF_TOP = 225
-        val LIGHT = Color.rgb(236, 230, 206)
-        val CREAM_TEXT = Color.rgb(255, 246, 222)
-        val DEEP_GREEN = Color.parseColor("#1E5A2A")
-        val CREAM = Color.parseColor("#FFF8E7")
-        /** Ribbons and thumbnails A has drawn so far (세계·라일·치즈·포포); the others use the world ribbon and the home picture. */
-        val RIBBONS = mapOf("mint" to R.drawable.ui_story_ribbon_mint, "cheese" to R.drawable.ui_story_ribbon_cheese, "popo" to R.drawable.ui_story_ribbon_popo)
-        val THUMBS = mapOf("mint" to R.drawable.story_thumb_mint, "cheese" to R.drawable.story_thumb_cheese, "popo" to R.drawable.story_thumb_popo)
-    }
 }
+
 
 /**
  * A fixed-size box in the mockup's reference pixels (scaled by [frame]'s current scale), with children placed by

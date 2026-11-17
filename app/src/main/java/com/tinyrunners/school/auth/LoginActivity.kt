@@ -45,6 +45,8 @@ class LoginActivity : Activity() {
     private lateinit var account: TextView
     private lateinit var guest: Button
     private var showingForm = false
+    private lateinit var heading: TextView
+    private lateinit var sub: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,14 +65,14 @@ class LoginActivity : Activity() {
                 android.graphics.drawable.ColorDrawable(Color.WHITE))
             setOnClickListener { close() }
         }.also { frame.onScaleText(it, v(26).toFloat()) }, 28, 16, 300, 80)
-        frame.placeV2(TextView(this).apply {
+        heading = TextView(this).apply {
             setText(R.string.login_heading_v2); setTextColor(INK); typeface = Typeface.DEFAULT_BOLD; includeFontPadding = false
             gravity = Gravity.CENTER_VERTICAL
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-        }.also { frame.onScaleText(it, v(38).toFloat()) }, 470, 88, 826, 148)
-        frame.placeV2(TextView(this).apply {
+        }.also { frame.onScaleText(it, v(38).toFloat()); frame.placeV2(it, 470, 88, 826, 148) }
+        sub = TextView(this).apply {
             setText(R.string.login_sub_v2); setTextColor(SOFT); includeFontPadding = false; gravity = Gravity.CENTER_VERTICAL
-        }.also { frame.onScaleText(it, v(24).toFloat()) }, 470, 150, 826, 186)
+        }.also { frame.onScaleText(it, v(24).toFloat()); frame.placeV2(it, 470, 150, 826, 186) }
 
         emailLabel = label(R.string.auth_email).also { frame.placeV2(it, 470, 194, 826, 228) }
         email = field(R.string.auth_email_hint_v2, InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
@@ -129,6 +131,9 @@ class LoginActivity : Activity() {
     /** Session card (continue / other account) or the form (e-mail, password, 로그인, 회원가입). */
     private fun render() {
         val form = showingForm
+        // 다시 만나 반가워요 only for someone already signed in on this phone; a first visit gets a first greeting.
+        heading.setText(if (form) R.string.login_heading_first else R.string.login_heading_v2)
+        sub.setText(if (form) R.string.login_sub_first else R.string.login_sub_v2)
         listOf<View>(emailLabel, email, passwordLabel, password).forEach { it.visibility = if (form) View.VISIBLE else View.GONE }
         account.visibility = if (form) View.GONE else View.VISIBLE
         guest.visibility = if (form && AuthService.isConfigured(this)) View.VISIBLE else View.GONE

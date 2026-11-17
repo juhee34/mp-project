@@ -173,128 +173,63 @@ class StoryActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
     }
 
     /**
-     * The story book's shelf, laid out like 내 기록: a top bar (◀ 돌아가기, the title, where this friend's shelf stands,
-     * a run with this friend | bag), the six friends as pills to switch shelves, and one card per story in a row that
-     * slides sideways (CardShelf): the friend's home (darker while closed), the title and a state chip, what kind of
-     * story it is, its summary or what opens it, and one button.
+     * The friend's story book, laid out like 이야기 모음 (the shared BookShelf): "← 돌아가기 | 이야기 도감", the friend's
+     * book title with how far you ran together and how many are read, and one book per story on the shelf; ◀ ▶ slide it.
      */
     private fun renderList() {
         val friend = characters.find(selected)!!
-        val content = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(6), dp(16), dp(10)) }
-
-        val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        top.addView(HomeButton.create(this, getString(R.string.common_back_pill)) { finish() })
-        top.addView(TextView(this).apply {
-            text = "이야기 도감"; textSize = 22f; setTextColor(Page.INK); setTypeface(typeface, Typeface.BOLD)
-            if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
-            setPadding(dp(12), 0, dp(12), 0)
-        })
         val mine = stories.filter { it.characterId == selected && it.status == "ready" }
         val meter = progress[selected]?.totalMeters ?: 0
-        top.addView(TextView(this).apply {
-            text = when {
-                loading -> "함께한 거리를 확인하고 있어요…"
-                progressError -> "거리 기록을 불러오지 못했어요."
-                else -> "${friend.name}의 책장 · 함께한 거리 ${meter}m · 읽음 ${mine.count { it.id in store.read }}/${mine.size}"
-            }
-            textSize = 14f; setTextColor(if (progressError) Page.ERROR else Page.LEAF); setTypeface(typeface, Typeface.BOLD)
-            maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
-        }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        top.addView(Button(this).apply {
-            text = getString(R.string.characters_copy_run, com.tinyrunners.school.talk.Josa.with(friend.name, "이랑", "랑"))
-            com.tinyrunners.school.ui.TopPill.style(this)
-            setOnClickListener { run() }
-        })
-        top.addView(com.tinyrunners.school.ui.TopPill.divider(this))
-        top.addView(com.tinyrunners.school.ui.BagButton.create(this))
-        content.addView(top)
-
-        // The friends' shelves, as pills; the open one is green. The saving note sits beside them.
-        val tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        characters.characters.forEach { c ->
-            val on = c.id == selected
-            tabs.addView(Button(this).apply {
-                text = c.name
-                com.tinyrunners.school.ui.TopPill.style(this, sizeSp = 13f)
-                minHeight = dp(32); minimumHeight = dp(32); setPadding(dp(14), 0, dp(14), dp(2))
-                if (on) {
-                    setTextColor(Color.parseColor("#FFF8E7"))
-                    background = GradientDrawable().apply { setColor(com.tinyrunners.school.ui.TopPill.INK); cornerRadius = dp(100).toFloat() }
-                }
-                contentDescription = "${c.name}의 이야기" + if (on) ", 선택됨" else ""
-                setOnClickListener { if (!on) { selected = c.id; listScroll = 0; render() } }
-            }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginEnd = dp(6) })
+        val shelf = com.tinyrunners.school.story.BookShelf(this, getString(R.string.dogam_back), getString(R.string.dogam_title)) { finish() }
+        shelf.headline.text = getString(R.string.dogam_headline, friend.name)
+        shelf.subline.text = when {
+            loading -> "함께한 거리를 확인하고 있어요…"
+            progressError -> "거리 기록을 불러오지 못했어요."
+            else -> getString(R.string.dogam_subline, friend.home, meter)
         }
-        val tabRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        tabRow.addView(tabs)
-        tabRow.addView(TextView(this).apply {
-            text = "읽은 표시와 진도는 계정별로 이 기기에 저장돼요."
-            textSize = 13f; setTextColor(Page.MUTED); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
-            setPadding(dp(10), dp(3), dp(10), dp(3))
-            background = GradientDrawable().apply { setColor(Color.argb(215, 255, 249, 235)); cornerRadius = dp(12).toFloat() }
-        }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(6) })
-        content.addView(tabRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
-
-        val shelf = CardShelf(this)
-        content.addView(shelf, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(8) })
-        shelf.setCards(stories.filter { it.characterId == selected }.sortedBy { it.order }.map { storyCard(it, meter) })
-
-        setContentView(FrameLayout(this).apply {
-            setBackgroundColor(Page.BACKGROUND)
-            addView(PaperBackdropView(this@StoryActivity), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            addView(content, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-            setOnApplyWindowInsetsListener { v, insets ->
-                if (Build.VERSION.SDK_INT >= 30) {
-                    val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
-                    v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-                } else {
-                    @Suppress("DEPRECATION")
-                    v.setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom)
-                }
-                insets
-            }
-        })
+        shelf.counter.text = getString(R.string.dogam_counter, mine.count { it.id in store.read }, mine.size)
+        shelf.footer.text = "읽은 표시와 진도는 계정별로 이 기기에 저장돼요."
+        shelf.setBooks(stories.filter { it.characterId == selected }.sortedBy { it.order }.map { storyBook(it, shelf, meter) })
+        setContentView(shelf.frame)
+        hideSystemBars()
         scroll = null
     }
 
-    /** One story's card on the shelf. */
-    private fun storyCard(story: Story, meter: Long): View {
+    /** One story as a book on the shelf: the friend at home (dark with a lock while closed), the title, its state. */
+    private fun storyBook(story: Story, shelf: com.tinyrunners.school.story.BookShelf, meter: Long): View {
         val st = state(story)
-        val card = CardShelf.card(this)
-        card.addView(com.tinyrunners.school.story.SceneThumb(this, story.characterId,
+        val kind = if (story.kind == "background") "친구 소개" else "이야기 ${story.order}"
+        val status = when (st) {
+            StoryState.READ -> "읽음"
+            StoryState.UNREAD -> "새 이야기"
+            StoryState.LOCKED -> "함께 ${story.unlockDistance}m 달리면 열려요 · 지금 ${meter}m"
+            StoryState.COMING_SOON -> "준비 중"
+        }
+        val action = when (st) {
+            StoryState.READ -> "다시 읽기"
+            StoryState.LOCKED -> "미리 감상하기"
+            StoryState.COMING_SOON -> "곧 만나요"
+            else -> if (store.page(story.id) > 0) "이어서 읽기" else "읽기"
+        }
+        val picture = com.tinyrunners.school.story.SceneThumb(this, story.characterId,
             locked = st == StoryState.LOCKED || st == StoryState.COMING_SOON).apply {
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
-        val nameRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        nameRow.addView(CardShelf.title(this, story.title), LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        val (chip, fill) = when (st) {
-            StoryState.READ -> "읽음" to ShopActivity.DISABLED
-            StoryState.UNREAD -> "새 이야기" to ShopActivity.OWNED
-            StoryState.LOCKED -> "잠김" to ShopActivity.DISABLED
-            StoryState.COMING_SOON -> "준비 중" to ShopActivity.DISABLED
         }
-        nameRow.addView(CardShelf.chip(this, chip, fill))
-        card.addView(nameRow)
-        card.addView(CardShelf.body(this, if (story.kind == "background") "친구 소개" else "이야기 ${story.order}", lines = 1).apply {
-            setTextColor(CardShelf.GREEN); setTypeface(typeface, Typeface.BOLD)
-        })
-        card.addView(CardShelf.body(this, when (st) {
-            StoryState.COMING_SOON -> "본문을 준비하고 있어요."
-            StoryState.LOCKED -> "함께 ${story.unlockDistance}m 달리면 열려요 · 지금 ${meter}m"
-            else -> story.summary
-        }, lines = 2))
-        if (st != StoryState.COMING_SOON) {
-            val label = when (st) {
-                StoryState.READ -> "다시 읽기"
-                StoryState.LOCKED -> "미리 감상하기"
-                else -> if (store.page(story.id) > 0) "이어서 읽기" else "읽기"
+        return com.tinyrunners.school.story.StoryBookCard.cover(this, shelf.frame, com.tinyrunners.school.story.StoryBookCard.book(story.characterId),
+            story.title, "$kind · $status", picture, action, st != StoryState.COMING_SOON) { open(story, st == StoryState.LOCKED) }
+    }
+
+    private fun hideSystemBars() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.insetsController?.let {
+                it.hide(WindowInsets.Type.systemBars())
+                it.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
-            card.addView(CardShelf.button(this, label, primary = st == StoryState.UNREAD) { open(story, st == StoryState.LOCKED) }
-                .apply { contentDescription = "${story.title}, $label" }, CardShelf.buttonParams(this, 6))
         } else {
-            card.addView(CardShelf.button(this, "준비 중", primary = false, enabled = false) {}, CardShelf.buttonParams(this, 6))
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
-        return card
     }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()

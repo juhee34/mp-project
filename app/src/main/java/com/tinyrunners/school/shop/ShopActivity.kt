@@ -87,12 +87,12 @@ class ShopActivity : Activity() {
         top.addView(TextView(this).apply {
             setText(R.string.shop_title)
             // Cream with a soft dark shadow, so it reads on the wooden shop interior (A's separated pack).
-            textSize = 26f; setTextColor(ON_WOOD); setTypeface(typeface, Typeface.BOLD); setShadowLayer(8f, 0f, 2f, WOOD_SHADOW)
+            textSize = 24f; setTypeface(typeface, Typeface.BOLD); onPlaque(this)
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
         })
         top.addView(divider())
         top.addView(TextView(this).apply {
-            setText(R.string.shop_intro); textSize = 15f; setTextColor(ON_WOOD); maxLines = 1; setShadowLayer(8f, 0f, 2f, WOOD_SHADOW)
+            setText(R.string.shop_intro); textSize = 15f; maxLines = 1; onPlaque(this)
             ellipsize = android.text.TextUtils.TruncateAt.END
         }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { weight = 0f; width = LinearLayout.LayoutParams.WRAP_CONTENT })
         top.addView(LavenderSprig(this), LinearLayout.LayoutParams(dp(26), dp(30)).apply { marginStart = dp(10) })
@@ -116,7 +116,7 @@ class ShopActivity : Activity() {
         // Guide line between two lavender rules: ── ◇ text ◇ ──
         val guideRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         guideRow.addView(rule(), LinearLayout.LayoutParams(0, dp(2), 1f))
-        guide = TextView(this).apply { textSize = 14f; setTextColor(ON_WOOD); setShadowLayer(8f, 0f, 2f, WOOD_SHADOW); setPadding(dp(10), 0, dp(10), 0); gravity = Gravity.CENTER }
+        guide = TextView(this).apply { textSize = 14f; gravity = Gravity.CENTER; onPlaque(this) }
         guideRow.addView(guide)
         guideRow.addView(rule(), LinearLayout.LayoutParams(0, dp(2), 1f))
         content.addView(guideRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
@@ -126,10 +126,11 @@ class ShopActivity : Activity() {
         tabs = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         tabRow.addView(tabs)
         message = TextView(this).apply {
-            textSize = 14f; setTextColor(ON_WOOD); setShadowLayer(8f, 0f, 2f, WOOD_SHADOW); setTypeface(typeface, Typeface.BOLD); gravity = Gravity.END or Gravity.CENTER_VERTICAL
-            maxLines = 2; setPadding(dp(12), 0, 0, 0)
+            textSize = 14f; setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER_VERTICAL
+            maxLines = 2; onPlaque(this); visibility = View.GONE
         }
-        tabRow.addView(message, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        tabRow.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
+        tabRow.addView(message, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(12) })
         retry = outlined(getString(R.string.shop_retry)) { load() }.apply { visibility = View.GONE }
         tabRow.addView(retry, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(38)).apply { marginStart = dp(8) })
         content.addView(tabRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
@@ -166,7 +167,7 @@ class ShopActivity : Activity() {
     private fun load() {
         loadFailed = false
         retry.visibility = View.GONE
-        message.text = ""
+        say("")
         coins.setText(R.string.shop_loading)
         render()
         loadBag()
@@ -267,10 +268,23 @@ class ShopActivity : Activity() {
         }
     }
 
+    /**
+     * Words on the wooden shop picture sit on a cream rounded plaque with a honey edge (like the buttons), in dark
+     * green, so they read clearly instead of cream letters straight on the wood.
+     */
+    private fun onPlaque(t: TextView) {
+        t.setTextColor(GREEN); t.setShadowLayer(0f, 0f, 0f, 0)
+        t.background = GradientDrawable().apply {
+            setColor(Color.argb(240, 255, 249, 235)); cornerRadius = dp(100).toFloat(); setStroke(dp(2), HONEY_LIGHT)
+        }
+        t.setPadding(dp(14), dp(4), dp(14), dp(5))
+    }
+
     private fun say(text: String, error: Boolean = false) {
-        // Cream on the wooden shop picture (with the shadow set where the line is made); errors stay red.
-        message.setTextColor(if (error) ERROR else ON_WOOD)
+        // On its cream plaque (onPlaque); errors stay red; hidden while there is nothing to say.
+        message.setTextColor(if (error) ERROR else GREEN)
         message.text = text
+        message.visibility = if (text.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun loadBag() {
@@ -539,7 +553,7 @@ class ShopActivity : Activity() {
         }, null)
         if (on) isSelected = true
         setOnClickListener {
-            if (shelf != kind) { shelf = kind; if (!loadFailed) message.text = ""; scroller.scrollTo(0, 0); render() }
+            if (shelf != kind) { shelf = kind; if (!loadFailed) say(""); scroller.scrollTo(0, 0); render() }
         }
     }
 
@@ -567,8 +581,6 @@ class ShopActivity : Activity() {
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).roundToInt()
 
-    private val ON_WOOD = Color.rgb(255, 241, 207)
-    private val WOOD_SHADOW = Color.argb(220, 40, 22, 10)
 
     companion object {
         const val EXTRA_FRIEND = "friendId"

@@ -42,7 +42,11 @@ class HubActivity : Activity() {
         val buttons = listOf(
             // 스토리 진행하기 is the game now: choose a friend, then the story is told while running.
             // The main way in, filled lavender like 시작하기 on the opening.
-            add(R.string.hub_story, primary = true) { startActivity(MainActivity.selectionIntent(this)) },
+            // The very first time on this account: the world story first, then the friend selection.
+            add(R.string.hub_story, primary = true) {
+                if (com.tinyrunners.school.story.WorldStoryActivity.seen(this)) startActivity(MainActivity.selectionIntent(this))
+                else startActivity(com.tinyrunners.school.story.WorldStoryActivity.intent(this, firstTime = true))
+            },
             add(R.string.hub_shop) { startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, null)) },
             // A practice run with 라일 that always starts with the game guide.
             add(R.string.hub_tutorial) { startActivity(GameActivity.intent(this, "mint").putExtra(GameActivity.EXTRA_SHOW_GUIDE, true)) },

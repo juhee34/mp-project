@@ -231,7 +231,7 @@ internal class StoryPicker(
     }
 
     /** Places children by shares of its own size, and sizes their text by a share of its height (the view's tag). */
-    private class PageLayout(context: Context) : ViewGroup(context) {
+    internal class PageLayout(context: Context) : ViewGroup(context) {
         private val boxes = mutableMapOf<View, RectF>()
         fun add(v: View, x0: Float, y0: Float, x1: Float, y1: Float) { boxes[v] = RectF(x0, y0, x1, y1); addView(v) }
 
