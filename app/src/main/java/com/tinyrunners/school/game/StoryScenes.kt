@@ -28,6 +28,7 @@ import kotlin.math.roundToInt
  * The RPG talk box for the story's opening, climax and ending: a cream box at the bottom with the speaker's name on a
  * pill (none for the narrator), the words typed out letter by letter, ▼ when a tap goes on. A tap shows the whole line
  * at once, the next tap moves on; "건너뛰기" ends the talk. Sits over the run (dimmed) or over the ending picture.
+ * With [friendId] the friend stands big in the middle of the screen, just above the box, while the talk goes on.
  */
 @SuppressLint("ViewConstructor")
 class StoryDialogView(
@@ -36,6 +37,7 @@ class StoryDialogView(
     private val friendColor: Int,
     private val lines: List<RunLine>,
     dim: Boolean,
+    friendId: String? = null,
     private val onDone: () -> Unit,
 ) : FrameLayout(context) {
     private val d = resources.displayMetrics.density
@@ -70,6 +72,12 @@ class StoryDialogView(
         }
         // The name pill sits on the box's top edge, as in the story talks.
         val column = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+        // The friend in the middle, standing on the box (breathing like on the opening screen).
+        if (friendId != null) {
+            val size = (resources.displayMetrics.heightPixels * 0.42f).roundToInt()
+            column.addView(com.tinyrunners.school.opening.OpeningFriend(context, friendId, 0),
+                LinearLayout.LayoutParams(size, size).apply { gravity = Gravity.CENTER_HORIZONTAL; bottomMargin = -dp(6) })
+        }
         column.addView(nameTag, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
             marginStart = dp(22); bottomMargin = -dp(14)
         })

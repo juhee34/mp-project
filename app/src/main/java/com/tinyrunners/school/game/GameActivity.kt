@@ -176,7 +176,7 @@ class GameActivity : Activity() {
                     val stopped = engine.phase == RunnerEngine.Phase.RUNNING
                     engine.pause()
                     // Under the game guide (if it is open), above the run.
-                    root.addView(StoryDialogView(this, character.name, color, lines, dim) {
+                    root.addView(StoryDialogView(this, character.name, color, lines, dim, friendId = character.id) {
                         view.cinematic = false
                         if (stopped) engine.resume()
                         done()
