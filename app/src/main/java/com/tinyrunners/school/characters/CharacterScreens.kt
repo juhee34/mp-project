@@ -528,18 +528,6 @@ internal class CharacterScreens(
             LinearLayout.LayoutParams(MATCH, dp(46)).apply { if (right.childCount > 0) topMargin = dp(8) })
         add(runLabel(friend), true) { chooseStory(friend) }
         add(context.getString(R.string.characters_story_book), false) { context.startActivity(StoryActivity.intent(context, friend.id)) }
-        // A square picture card introducing this friend, for other apps.
-        add(context.getString(R.string.share_friend_button), false) {
-            try {
-                val greeting = greetingFor(friend)
-                val card = com.tinyrunners.school.share.ShareCard.friendCard(context, friend, greeting)
-                com.tinyrunners.school.share.ShareCard.share(context, card, "tiny_runners_" + friend.id + ".png",
-                    context.getString(R.string.share_friend_text, com.tinyrunners.school.talk.Josa.with(friend.name, "을", "를"), "“$greeting”"))
-            } catch (e: Exception) {
-                android.util.Log.w("CharacterScreens", "Share card failed", e)
-                android.widget.Toast.makeText(context, R.string.share_failed, android.widget.Toast.LENGTH_SHORT).show()
-            }
-        }
         add(context.getString(R.string.result_choose_friend), false) { showSelection() }
 
         val row = LinearLayout(context).apply {

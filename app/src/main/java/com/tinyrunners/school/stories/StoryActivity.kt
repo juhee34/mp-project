@@ -114,7 +114,12 @@ class StoryActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
     override fun onBackPressed() { if (reading != null) showList() else super.onBackPressed() }
 
     private fun find(id: String) = stories.first { it.id == id }
-    private fun state(s: Story) = StoryRules.state(s, progress[s.characterId]?.totalMeters ?: 0, store.unlocked, store.read)
+    /**
+     * Read = seen to the end on a run with the friend: the same record (the account's readStoryIds) that 이야기 모음 and
+     * the story list before a run count, so every screen shows the same number. Reading here only keeps a bookmark.
+     */
+    private val read: Set<String> get() = progress.values.flatMap { it.readStoryIds }.toSet()
+    private fun state(s: Story) = StoryRules.state(s, progress[s.characterId]?.totalMeters ?: 0, store.unlocked, read)
     private fun rememberScroll() {
         val view = scroll ?: return
         // A fast distance callback can arrive before the restored view is laid out.
@@ -127,7 +132,7 @@ class StoryActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
         if (state(s) == StoryState.LOCKED && !bypass) return
         if (!store.unlock(s.id)) { saveError(); return }
         rememberScroll()
-        pageIndex = if (s.id in store.read) 0 else StoryRules.bookmark(store.page(s.id), s.pages.size)
+        pageIndex = if (s.id in read) 0 else StoryRules.bookmark(store.page(s.id), s.pages.size)
         reading = s.id; readerScroll = 0; render()
     }
     private fun saveError() = Toast.makeText(this, "기기에 저장하지 못했어요. 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
@@ -163,12 +168,13 @@ class StoryActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
                 if (pageIndex < s.pages.lastIndex) {
                     turnPage(s, pageIndex + 1)
                 } else if (StoryRules.canFinish(s, pageIndex, state(s))) {
-                    if (store.markRead(s.id)) showList() else saveError()
+                    // The end of the page: the bookmark starts over; the read mark itself comes from the run.
+                    if (store.savePage(s.id, 0)) showList() else saveError()
                 }
             }
             install(p, listOf("나중에 읽기" to ::showList, "바로 달리기" to ::run),
                 listOf("이전" to { if (pageIndex > 0) turnPage(s, pageIndex - 1) },
-                    (if (pageIndex == s.pages.lastIndex) "읽음으로 저장" else "다음") to next), pageIndex > 0)
+                    (if (pageIndex == s.pages.lastIndex) "다 읽었어요" else "다음") to next), pageIndex > 0)
         }
     }
 
@@ -178,7 +184,8 @@ class StoryActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
      */
     private fun renderList() {
         val friend = characters.find(selected)!!
-        val mine = stories.filter { it.characterId == selected && it.status == "ready" }
+        // Every story of the friend, counted like 이야기 모음 does (the ones still being written included).
+        val mine = stories.filter { it.characterId == selected }
         val meter = progress[selected]?.totalMeters ?: 0
         val shelf = com.tinyrunners.school.story.BookShelf(this, getString(R.string.dogam_back), getString(R.string.dogam_title)) { finish() }
         shelf.headline.text = getString(R.string.dogam_headline, friend.name)
@@ -187,8 +194,8 @@ class StoryActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
             progressError -> "거리 기록을 불러오지 못했어요."
             else -> getString(R.string.dogam_subline, friend.home, meter)
         }
-        shelf.counter.text = getString(R.string.dogam_counter, mine.count { it.id in store.read }, mine.size)
-        shelf.footer.text = "읽은 표시와 진도는 계정별로 이 기기에 저장돼요."
+        shelf.counter.text = getString(R.string.dogam_counter, mine.count { it.id in read }, mine.size)
+        shelf.footer.text = "친구와 달리며 끝까지 본 이야기에 ‘봤어요’가 붙어요."
         shelf.setBooks(stories.filter { it.characterId == selected }.sortedBy { it.order }.map { storyBook(it, shelf, meter) })
         setContentView(shelf.frame)
         hideSystemBars()
@@ -200,15 +207,16 @@ class StoryActivity : Activity(), com.tinyrunners.school.audio.MusicScreen {
         val st = state(story)
         val kind = if (story.kind == "background") "친구 소개" else "이야기 ${story.order}"
         val status = when (st) {
-            StoryState.READ -> "읽음"
+            StoryState.READ -> "봤어요"
             StoryState.UNREAD -> "새 이야기"
             StoryState.LOCKED -> "함께 ${story.unlockDistance}m 달리면 열려요 · 지금 ${meter}m"
-            StoryState.COMING_SOON -> "준비 중"
+            // Seen on a run already, though its written pages are still coming.
+            StoryState.COMING_SOON -> if (story.id in read) "봤어요" else "준비 중"
         }
         val action = when (st) {
             StoryState.READ -> "다시 읽기"
             StoryState.LOCKED -> "미리 감상하기"
-            StoryState.COMING_SOON -> "곧 만나요"
+            StoryState.COMING_SOON -> if (story.id in read) "글은 곧 만나요" else "곧 만나요"
             else -> if (store.page(story.id) > 0) "이어서 읽기" else "읽기"
         }
         val picture = com.tinyrunners.school.story.SceneThumb(this, story.characterId,

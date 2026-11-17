@@ -19,8 +19,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
-    // FileProvider for the share cards (already brought in by Firebase at this version; named so it stays).
-    implementation("androidx.core:core:1.2.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
 }

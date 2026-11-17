@@ -811,7 +811,7 @@ internal class ShopBackground(context: Context, private val interior: Boolean = 
         private const val TOP = 70
         private const val BOTTOM = 180
 
-        /** Draws the frame picture [art] over [w]×[h] in nine pieces (also used for the share cards). */
+        /** Draws the frame picture [art] over [w]×[h] in nine pieces. */
         fun drawFrame(canvas: Canvas, art: Bitmap, w: Float, h: Float, paint: Paint) {
             val k = h / art.height
             // Source cuts (picture pixels) and the same cuts on screen; the corners never grow wider than half the screen.

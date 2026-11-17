@@ -51,7 +51,7 @@ class GameActivity : Activity() {
                         .putExtra(ResultActivity.EXTRA_ITEMS, picked)
                         .putExtra(ResultActivity.EXTRA_COINS, bonus)
                         .putExtra(ResultActivity.EXTRA_DISTANCE, engine.distance)
-                    // The weather the run had, for the share card.
+                    // The weather the run had, for the result screen (special-weather postcards).
                     view.weather?.let { ResultActivity.putWeather(result, it) }
                     // Straight on to the result screen (the story is told during the run).
                     com.tinyrunners.school.audio.Music.setRoute(null)

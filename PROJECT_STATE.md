@@ -27,6 +27,11 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 읽음 표시 통일, 공유 기능 삭제 (2026-11-17, B)
+- 읽음 표시: 이야기 도감(stories.StoryActivity)도 이야기 모음·달리기 전 이야기책과 같은 계정 기록(Firestore readStoryIds = 친구와 달리며 끝까지 본 이야기)을 본다. 숫자는 그 친구의 이야기 전부 기준 "본 이야기 n / 4"로 모음과 같다. 도감에서 글을 끝까지 읽으면 책갈피만 처음으로 돌아가고(기기), 읽음 표시는 바꾸지 않는다("읽음으로 저장" → "다 읽었어요"). 달리기로 봤지만 글이 아직 없는 편은 "봤어요 · 글은 곧 만나요". StoryStore의 기기 read/markRead는 화면에서 더 쓰지 않는다(시험용 API는 남김).
+- 공유 삭제: 결과 화면 "공유하기", 프로필 "친구 카드 공유" 버튼, share/ShareCard.kt, 매니페스트의 FileProvider와 res/xml/share_paths.xml, share_strings.xml, 공유에만 쓰던 androidx.core 의존성.
+- 빌드·테스트·린트 통과. 에뮬레이터에서 라일 도감 "본 이야기 4/4"(모음과 같음), 프로필 버튼(달리기·이야기 도감·친구 선택으로), 결과 화면 버튼(이야기 계속하기·한 번 더·상점·내 기록) 확인. 시험 달리기 1회.
+
 ## 안 쓰는 코드·리소스 정리 (2026-11-17, B)
 - 지운 클래스 7개(어디서도 쓰이지 않던 예전 화면 조각): CloudDrift, ShelfPager(파일째), OpeningBackground, ResultScenery, ShowcaseStage, WorldThumb, StoryPlayer(예전 대화 재생기, 이를 시험하던 StoryTest 4개도 함께). 단위 테스트 134 → 130개.
 - 린트가 찾은 안 쓰는 리소스 중 글자 133개, 그림 50개를 지웠다. 음악(raw) 6개는 이름으로 찾아 쓰므로(getIdentifier) 남기고, 테마(style) 1개도 남김. 린트 UnusedResources 190 → 7.

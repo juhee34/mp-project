@@ -120,18 +120,6 @@ class ResultActivity : Activity() {
             startActivity(GameActivity.intent(this, character.id).putExtra(GameActivity.EXTRA_STORY_ID, storyId))
             finish()
         }
-        // A square picture card of this run (friend, distance, score, the day's weather, their word) for other apps.
-        add(getString(R.string.share_button), primary = false) {
-            try {
-                val card = com.tinyrunners.school.share.ShareCard.runCard(this, character,
-                    com.tinyrunners.school.share.ShareCard.Run(run.meters, run.score, said, weatherOf(intent)))
-                com.tinyrunners.school.share.ShareCard.share(this, card, "tiny_runners_run.png",
-                    getString(R.string.share_run_text, com.tinyrunners.school.talk.Josa.with(character.name, "과", "와"), run.meters))
-            } catch (e: Exception) {
-                android.util.Log.w("ResultActivity", "Share card failed", e)
-                android.widget.Toast.makeText(this, R.string.share_failed, android.widget.Toast.LENGTH_SHORT).show()
-            }
-        }
         add(getString(R.string.result_shop), primary = false) {
             startActivity(com.tinyrunners.school.shop.ShopActivity.intent(this, character.id))
         }
@@ -223,7 +211,7 @@ class ResultActivity : Activity() {
         private const val EXTRA_WEATHER_DAY = "weatherDay"
         private const val EXTRA_WEATHER_CHOSEN = "weatherChosen"
 
-        /** Passes the run's weather on (for the share card). */
+        /** Passes the run's weather on (for the special-weather postcards). */
         fun putWeather(intent: Intent, w: com.tinyrunners.school.weather.WeatherReport): Intent = intent
             .putExtra(EXTRA_WEATHER_CITY, w.city.name).putExtra(EXTRA_WEATHER_SKY, w.sky.name)
             .putExtra(EXTRA_WEATHER_TEMP, w.temperatureC).putExtra(EXTRA_WEATHER_DAY, w.isDay)

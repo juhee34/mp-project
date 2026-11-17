@@ -22,7 +22,7 @@
     <string name="dogam_title">이야기 도감</string>
     <string name="dogam_headline">%1$s의 이야기책</string>
     <string name="dogam_subline">%1$s · 함께 달린 거리 %2$dm</string>
-    <string name="dogam_counter">읽음 %1$d / %2$d</string>
+    <string name="dogam_counter">본 이야기 %1$d / %2$d</string>
     <!-- 세계 이야기 (WorldStoryActivity): shown once on the first 스토리 진행하기, then the first book in 이야기 모음. -->
     <string name="world_book_title">세계 이야기</string>
     <string name="world_book_sub">여섯 고향과 여섯 친구가 사는 곳</string>
