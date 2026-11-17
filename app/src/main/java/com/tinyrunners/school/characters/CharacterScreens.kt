@@ -125,7 +125,7 @@ internal class CharacterScreens(
         frame.placeV2(ImageView(context).apply {
             setImageResource(R.drawable.ui_v2_friend_panel); scaleType = ImageView.ScaleType.FIT_XY
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, 724, 139, 1184, 476)
+        }, 724, 132, 1184, 546)
         frame.placeV2(text(21, PANEL_SOFT).apply { text = context.getString(R.string.characters_today_mate); letterSpacing = 0.1f }, 766, 166, 1000, 196)
         // 01 / 06 at the top right inside the panel.
         frame.placeV2(counter, 1000, 166, 1142, 196)
@@ -137,9 +137,9 @@ internal class CharacterScreens(
         val intro = text(23, PANEL_INK).apply {
             setLineSpacing(0f, 1.2f); ellipsize = android.text.TextUtils.TruncateAt.END; maxLines = 3
         }
-        frame.placeV2(intro, 766, 302, 1142, 418)
+        frame.placeV2(intro, 766, 300, 1142, 408)
         val best = text(21, LEAF, bold = true).apply { maxLines = 1 }
-        frame.placeV2(best, 766, 424, 1142, 452)
+        frame.placeV2(best, 766, 410, 1142, 438)
         // The six friends to choose from, on a wide cream strip along the bottom of the screen: a round portrait and a
         // name each; the whole cell is the button.
         frame.placeV2(View(context).apply {
@@ -158,21 +158,16 @@ internal class CharacterScreens(
             }.also { frame.placeV2(it, x, 556, x + 124, 650) }
         }
 
-        // Buttons under the panel.
+        // The two buttons inside the panel, at its bottom (이야기 도감 is the book icon in the top bar).
         val run = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_primary, R.drawable.ui_v2_btn_primary_pressed,
             "", CREAM, MockupFrame.v2(27).toFloat()) { chooseStory(friends.first { it.id == selectedId }) }
         // The buttons wear the chosen friend's own colour (set in bindSelection), so they sit on the exact button rects.
-        frame.placeV2(run, 724, 482, 940, 558)
+        frame.placeV2(run, 766, 448, 982, 516)
         val more = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
             context.getString(R.string.characters_profile_short), PANEL_INK, MockupFrame.v2(24).toFloat()) {
             showProfile(selectedId.orEmpty())
         }
-        frame.placeV2(more, 948, 482, 1066, 558)
-        val book = MockupFrame.skinButton(context, frame, R.drawable.ui_v2_btn_secondary, R.drawable.ui_v2_btn_secondary_pressed,
-            context.getString(R.string.characters_story_book), PANEL_INK, MockupFrame.v2(24).toFloat()) {
-            context.startActivity(StoryActivity.intent(context, selectedId.orEmpty()))
-        }
-        frame.placeV2(book, 1074, 482, 1192, 558)
+        frame.placeV2(more, 994, 448, 1142, 516)
 
         var bests: Map<String, Int> = emptyMap()
 
@@ -219,7 +214,7 @@ internal class CharacterScreens(
             val deeper = blend(tint, Color.rgb(30, 26, 34), 0.55f)
             run.background = pressable(pill(deep, deep), pill(deeper, deeper))
             run.setTextColor(Color.WHITE)
-            for (b in listOf(more, book)) {
+            for (b in listOf(more)) {
                 b.background = pressable(pill(Color.rgb(255, 251, 242), deep), pill(blend(tint, Color.WHITE, 0.7f), deep))
                 b.setTextColor(deeper)
             }
