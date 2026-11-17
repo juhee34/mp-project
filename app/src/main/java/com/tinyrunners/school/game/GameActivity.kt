@@ -81,7 +81,12 @@ class GameActivity : Activity() {
                 }
             }
         }
-        if (!intent.getBooleanExtra(EXTRA_SHOW_GUIDE, false)) attachStory(character, engine, view)
+        if (!intent.getBooleanExtra(EXTRA_SHOW_GUIDE, false)) {
+            // The run waits for the opening talk (it loads the progress and the weather first), at most a few seconds.
+            view.holdStart = true
+            view.postDelayed({ view.holdStart = false }, HOLD_START_MAX_MS)
+            attachStory(character, engine, view)
+        }
         // 정지 opens the rest card: 계속 달리기, 친구 바꾸기, 집으로 돌아가기.
         view.onStopTapped = {
             stage?.let { root ->
@@ -149,7 +154,8 @@ class GameActivity : Activity() {
                 if (isDestroyed) return
                 if (weatherPending && waited < 30) { waited++; view.postDelayed({ begin() }, 100); return }
                 val weatherKey = StoryWeather.key(view.weather)
-                val script = RunScriptParser.load(this, story?.id, character.name, story?.title ?: character.home, character.id, weatherKey) ?: return
+                val script = RunScriptParser.load(this, story?.id, character.name, story?.title ?: character.home, character.id, weatherKey)
+                    ?: run { view.holdStart = false; return }
                 val own = stories.filter { it.characterId == character.id }
                 fun allRight(up: Boolean): Boolean {
                     val earlierRight = own.filter { it.id != story?.id }.all { s ->
@@ -166,13 +172,20 @@ class GameActivity : Activity() {
                     val root = stage
                     if (lines.isEmpty() || root == null) { done(); return }
                     view.cinematic = true
+                    // The run never goes on under a talk: it stops here and goes on when the talk is over.
+                    val stopped = engine.phase == RunnerEngine.Phase.RUNNING
+                    engine.pause()
                     // Under the game guide (if it is open), above the run.
-                    root.addView(StoryDialogView(this, character.name, color, lines, dim) { view.cinematic = false; done() },
+                    root.addView(StoryDialogView(this, character.name, color, lines, dim) {
+                        view.cinematic = false
+                        if (stopped) engine.resume()
+                        done()
+                    },
                         minOf(1, root.childCount), FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
                 }
 
                 // 1. 발단: before the start.
-                talk(script.opening, dim = true) { }
+                talk(script.opening, dim = true) { view.holdStart = false }
 
                 var choiceMeters = -1
                 var choice: Boolean? = null
@@ -265,6 +278,8 @@ class GameActivity : Activity() {
     }
 
     companion object {
+        /** The longest the run waits for its opening talk before a tap may start it anyway. */
+        private const val HOLD_START_MAX_MS = 8000L
         const val EXTRA_CHARACTER_ID = "characterId"
         /** Set when a story started this run; the result screen then offers to continue the story. */
         const val EXTRA_STORY_ID = "storyId"

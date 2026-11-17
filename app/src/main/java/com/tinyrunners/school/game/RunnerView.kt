@@ -97,6 +97,8 @@ class RunnerView(
     var onTick: (() -> Unit)? = null
     /** While a story talk is on screen: no pause/ready overlay and no top buttons under it. */
     var cinematic = false
+    /** True while the story before the run is still being prepared: a tap must not start the run under it. */
+    var holdStart = false
     /** The last stretch: (metres when it began, metres of the goal), shown as a bar to the treasure. */
     var goal: Pair<Int, Int>? = null
 
@@ -190,6 +192,9 @@ class RunnerView(
                 if (wasRunning) onStopTapped?.invoke()
             }
             buttonsVisible && goRect.contains(x, y) -> engine.resume()
+            // A story talk is open, or the opening talk is still on its way: the run waits for it.
+            cinematic -> {}
+            holdStart && engine.phase == RunnerEngine.Phase.READY -> {}
             // When a result screen follows (onRunOver set), a late tap after the crash must not restart the run.
             engine.phase != RunnerEngine.Phase.OVER || onRunOver == null -> engine.tap()
         }
@@ -227,7 +232,7 @@ class RunnerView(
         if (!cinematic) when (engine.phase) {
             RunnerEngine.Phase.READY -> overlay(canvas, w, h,
                 context.getString(R.string.game_ready_title, character.name),
-                context.getString(R.string.game_ready_hint), null)
+                context.getString(if (holdStart) R.string.game_story_preparing else R.string.game_ready_hint), null)
             RunnerEngine.Phase.PAUSED -> if (!restCard) overlay(canvas, w, h,
                 context.getString(R.string.game_paused),
                 context.getString(R.string.game_paused_hint), null)
