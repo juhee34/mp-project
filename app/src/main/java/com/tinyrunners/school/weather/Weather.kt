@@ -43,6 +43,9 @@ data class WeatherReport(
     val city: City, val sky: Sky, val temperatureC: Double, val isDay: Boolean,
     /** True when the sky or time of day was picked in settings rather than measured. */
     val chosen: Boolean = false,
+    val source: WeatherSource = WeatherSource.OPEN_METEO,
+    /** True when this is the last good report kept on the phone (both services failed just now). */
+    val kept: Boolean = false,
 ) {
     companion object {
         /** Parses the `current` block of an Open-Meteo forecast response. */
@@ -54,6 +57,28 @@ data class WeatherReport(
                 temperatureC = current.getDouble("temperature_2m"),
                 isDay = current.optInt("is_day", 1) == 1,
             )
+        }
+
+        /**
+         * Parses the first hour of a MET Norway locationforecast (compact) response: the air temperature and the
+         * symbol code ("clearsky_night", "lightrain", "heavysnowshowers_day", …).
+         */
+        fun parseMet(city: City, json: String): WeatherReport {
+            val first = JSONObject(json).getJSONObject("properties").getJSONArray("timeseries").getJSONObject(0).getJSONObject("data")
+            val temperature = first.getJSONObject("instant").getJSONObject("details").getDouble("air_temperature")
+            val symbol = (first.optJSONObject("next_1_hours") ?: first.optJSONObject("next_6_hours"))
+                ?.getJSONObject("summary")?.getString("symbol_code").orEmpty()
+            return WeatherReport(city, skyOfMet(symbol), temperature, isDay = !symbol.endsWith("_night"), source = WeatherSource.MET_NORWAY)
+        }
+
+        /** MET Norway symbol code → our sky. */
+        fun skyOfMet(symbol: String): Sky = when {
+            "thunder" in symbol -> Sky.STORM
+            "snow" in symbol || "sleet" in symbol -> Sky.SNOW
+            "rain" in symbol -> Sky.RAIN
+            "fog" in symbol -> Sky.FOG
+            symbol.startsWith("clearsky") || symbol.startsWith("fair") -> Sky.CLEAR
+            else -> Sky.CLOUDY
         }
     }
 }
@@ -88,32 +113,64 @@ object WeatherChoice {
     }
 }
 
+/** Where a report came from (the settings credit line names both). */
+enum class WeatherSource { OPEN_METEO, MET_NORWAY }
+
 /**
- * Open-Meteo forecast API (https://open-meteo.com). Free for non-commercial use, no API key, so no billing risk.
- * One request per game start; failures simply leave the default sky.
+ * Real weather from two free, key-less services, so a run still gets the real sky when one is slow or down:
+ * Open-Meteo (https://open-meteo.com) first, then MET Norway (https://api.met.no, the Norwegian Meteorological
+ * Institute), both CC BY 4.0 and free for non-commercial use (no billing risk). A good report is kept on the phone
+ * for a few hours and used when both services fail, so the game never waits on the network.
  */
 object WeatherClient {
     private val io by lazy { Executors.newSingleThreadExecutor() }
     private val main by lazy { Handler(Looper.getMainLooper()) }
+    /** How long a kept report may stand in for a fresh one. */
+    const val KEEP_MS = 3 * 60 * 60 * 1000L
 
     fun url(city: City): String = String.format(Locale.US,
         "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current=weather_code,temperature_2m,is_day&timezone=auto",
         city.latitude, city.longitude)
 
-    fun fetch(city: City, done: (Result<WeatherReport>) -> Unit) {
+    fun metUrl(city: City): String = String.format(Locale.US,
+        "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=%.2f&lon=%.2f", city.latitude, city.longitude)
+
+    fun fetch(context: Context, city: City, done: (Result<WeatherReport>) -> Unit) {
+        val app = context.applicationContext
         io.execute {
-            val result = runCatching {
-                val connection = URL(url(city)).openConnection() as HttpURLConnection
-                try {
-                    connection.connectTimeout = 5000
-                    connection.readTimeout = 5000
-                    check(connection.responseCode == 200) { "HTTP ${connection.responseCode}" }
-                    WeatherReport.parse(city, connection.inputStream.bufferedReader().use { it.readText() })
-                } finally {
-                    connection.disconnect()
-                }
-            }
+            val result = runCatching { WeatherReport.parse(city, get(url(city))) }
+                .recoverCatching { WeatherReport.parseMet(city, get(metUrl(city))) }
+                .onSuccess { remember(app, it) }
+                .recoverCatching { error -> recall(app, city) ?: throw error }
             main.post { done(result) }
         }
     }
+
+    private fun get(address: String): String {
+        val connection = URL(address).openConnection() as HttpURLConnection
+        try {
+            connection.connectTimeout = 4000
+            connection.readTimeout = 5000
+            // MET Norway asks every app to name itself; a plain app name, nothing about the player.
+            connection.setRequestProperty("User-Agent", "TinyRunners/1.0 (school project)")
+            check(connection.responseCode == 200) { "HTTP ${connection.responseCode}" }
+            return connection.inputStream.bufferedReader().use { it.readText() }
+        } finally {
+            connection.disconnect()
+        }
+    }
+
+    private fun cache(context: Context) = context.getSharedPreferences("weather_cache", Context.MODE_PRIVATE)
+
+    private fun remember(context: Context, r: WeatherReport) {
+        cache(context).edit().putString(r.city.name,
+            listOf(r.sky.name, r.temperatureC, r.isDay, r.source.name, System.currentTimeMillis()).joinToString("|")).apply()
+    }
+
+    /** The last good report for [city] if it is recent enough, marked as kept. */
+    private fun recall(context: Context, city: City): WeatherReport? = runCatching {
+        val p = cache(context).getString(city.name, null)?.split("|") ?: return null
+        if (System.currentTimeMillis() - p[4].toLong() > KEEP_MS) return null
+        WeatherReport(city, Sky.valueOf(p[0]), p[1].toDouble(), p[2].toBoolean(), source = WeatherSource.valueOf(p[3]), kept = true)
+    }.getOrNull()
 }

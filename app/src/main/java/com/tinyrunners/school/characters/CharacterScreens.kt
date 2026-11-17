@@ -145,18 +145,17 @@ internal class CharacterScreens(
         frame.placeV2(View(context).apply {
             background = shape(Color.argb(232, 255, 249, 235), 26)
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, 200, 568, 1080, 676)
+        }, 200, 556, 1080, 650)
+        // Bigger round portraits only (the name is in the panel); the strip stands clear of the bottom edge.
         val portraits = friends.map { FrameLayout(context) }
-        val names = friends.map { f -> text(22, PANEL_INK).apply { text = f.name; gravity = Gravity.CENTER } }
         val cells = friends.mapIndexed { i, f ->
             val x = 228 + i * 140
-            frame.placeV2(portraits[i], x + 32, 572, x + 92, 632)
-            frame.placeV2(names[i], x, 634, x + 124, 668)
+            frame.placeV2(portraits[i], x + 20, 561, x + 104, 645)
             View(context).apply {
                 contentDescription = f.name; isClickable = true
                 background = RippleDrawable(ColorStateList.valueOf(Color.argb(40, 0, 0, 0)), null, android.graphics.drawable.ColorDrawable(Color.WHITE))
                 setOnClickListener { if (selectedId != f.id) { selectedId = f.id; bindSelection() } }
-            }.also { frame.placeV2(it, x, 568, x + 124, 676) }
+            }.also { frame.placeV2(it, x, 556, x + 124, 650) }
         }
 
         // Buttons under the panel.
@@ -234,15 +233,13 @@ internal class CharacterScreens(
             cells.forEachIndexed { i, cell ->
                 val on = friends[i].id == selectedId
                 cell.isSelected = on
-                // The chosen friend's portrait is ringed and a little bigger; its name bold in the friend's colour.
+                // The chosen friend's portrait is ringed and a little bigger.
                 portraits[i].removeAllViews()
                 portraits[i].addView(RosterPortrait(context, friends[i].id, friendColor(friends[i]), on).apply {
                     isClickable = false; isFocusable = false
                     val inset = if (on) 0 else MockupFrame.v2(5)
                     layoutParams = FrameLayout.LayoutParams(MATCH, MATCH).apply { setMargins(inset, inset, inset, inset) }
                 })
-                names[i].setTextColor(if (on) deeper else MUTED)
-                names[i].typeface = if (on) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
             }
         }
 

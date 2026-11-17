@@ -82,7 +82,8 @@
     <string name="settings_weather_off">날씨 효과를 껐어요.</string>
     <string name="settings_weather_loading">날씨를 불러오는 중…</string>
     <string name="settings_weather_failed">날씨를 불러오지 못했어요. 기본 하늘로 달려요.</string>
-    <string name="settings_weather_source">날씨 정보: Open-Meteo.com (CC BY 4.0)</string>
+    <string name="settings_weather_source">날씨 정보: Open-Meteo.com · MET Norway (CC BY 4.0)</string>
+    <string name="settings_weather_kept"> · 조금 전에 받은 날씨</string>
     <string name="settings_sign_out">로그아웃</string>
 
     <!-- Weather -->

@@ -27,6 +27,12 @@
 - 현재 충족: 화면 11개(로그인, 회원가입, 소개, 선택, 프로필, 게임, 결과, 내 기록, 설정, 이야기 목록, 이야기), Intent로 characterId·RunResult·storyId 전달, Firebase Auth/Firestore(실제 연결 확인), 기기 저장, Open-Meteo 외부 API.
 - 남은 요건 작업: 보고서·예산표·발표(A와 사용자). 제출 방식에 따라 google-services.json 포함 방법 결정.
 
+## 선택창 아래 띠 정리, 날씨 불러오기 보강 (2026-11-17, B)
+- 친구 선택 아래 띠: 이름을 빼고 동그란 초상화를 키웠다(v2 60→84). 띠를 위로 올려(v2 556–650) 화면 아래와 띄웠다.
+- 날씨: 이 네트워크에서 api.open-meteo.com이 연결은 되지만 응답이 없었다(curl 15–20초 시간 초과, open-meteo.com 본 사이트·구글은 정상). WeatherClient가 Open-Meteo(4초/5초 제한) → 실패 시 MET Norway(api.met.no, 노르웨이 기상청, 무료·키 없음·CC BY 4.0) → 둘 다 실패면 3시간 안에 받은 마지막 날씨(기기 저장, "조금 전에 받은 날씨" 표시) 순으로 쓴다. MET Norway 요청에는 앱 이름만 넣은 User-Agent(개인 정보 없음). 설정 출처 문구에 두 곳 모두 적었다. fetch(context, city)로 바뀌어 설정·게임 호출 수정. 단위 테스트 3개(MET 실제 응답 형태 파싱, 기호→하늘, URL에 키 없음) 추가, WeatherTest 6개 통과.
+- 낮/밤 질문: 에뮬레이터 시간대가 GMT라(상태 표시줄 12:xx = 한국 21:xx) 앱이 낮으로 본다. 실제 한국 시간 휴대폰에서는 19시 이후 밤 그림. 앱 코드는 바꾸지 않았다.
+- 빌드·테스트·린트 통과, 에뮬레이터에서 띠와 설정 날씨("서울 · 비 11°C", MET Norway 경유) 확인.
+
 ## 상점 글씨 판 없앰, 눈 장애물은 포포·누누 길에만 (2026-11-17, B)
 - 상점 제목·소개·안내·알림 뒤 흰 둥근 판을 없앴다. 대신 오프닝 제목과 같은 크림 글씨 + 진갈색 외곽선(TitleScene.OutlinedText를 internal로, 여러 줄도 외곽선)으로 나무 배경에서 읽히게 했다.
 - 기본 장애물 중 눈 바위(obstacle_popo_snow_rock)는 포포(눈꽃 항구)·누누(안개 도서관)의 달리기에만 나온다(ShopCatalog.SNOW_PROPS/SNOW_FRIENDS, roadProps(owned, friendId)). 다른 친구는 나무 상자·이끼 그루터기·고사리 통나무만. 장애물 크기·높이는 같아 난이도는 그대로. 튜토리얼(라일 길)도 눈 바위 없이. 단위 테스트 theSnowyRockIsOnlyOnTheColdFriendsRoads 추가.

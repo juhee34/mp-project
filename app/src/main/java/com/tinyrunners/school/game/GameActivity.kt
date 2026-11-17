@@ -75,7 +75,7 @@ class GameActivity : Activity() {
             show(com.tinyrunners.school.weather.WeatherChoice.apply(null, city, sky, day))
             if (!weatherSettings.fullyChosen) {
                 weatherPending = true
-                WeatherClient.fetch(city) { result ->
+                WeatherClient.fetch(this, city) { result ->
                     weatherPending = false
                     if (!isDestroyed) result.onSuccess { show(com.tinyrunners.school.weather.WeatherChoice.apply(it, city, sky, day)) }
                 }

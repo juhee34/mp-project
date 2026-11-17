@@ -262,10 +262,11 @@ class SettingsActivity : Activity() {
                 return
             }
             preview.text = getString(R.string.settings_weather_loading)
-            WeatherClient.fetch(city) { result ->
+            WeatherClient.fetch(this, city) { result ->
                 if (isDestroyed || settings.city != city || picking()) return@fetch
                 preview.text = result.fold({ real ->
-                    getString(R.string.weather_hud, getString(real.city.label), getString(real.sky.label), real.temperatureC)
+                    getString(R.string.weather_hud, getString(real.city.label), getString(real.sky.label), real.temperatureC) +
+                        if (real.kept) getString(R.string.settings_weather_kept) else ""
                 }, { getString(R.string.settings_weather_failed) })
             }
         }

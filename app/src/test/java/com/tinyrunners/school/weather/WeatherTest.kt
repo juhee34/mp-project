@@ -36,4 +36,34 @@ class WeatherTest {
         assertTrue(url.contains("current=weather_code,temperature_2m,is_day"))
         assertFalse(url.contains("key", ignoreCase = true))
     }
+
+    /** Shape copied from a real MET Norway locationforecast response (Seoul, 2026-11-17 21:00 KST). */
+    @Test fun parsesMetNorwayFirstHour() {
+        val json = """{"type":"Feature","properties":{"meta":{"updated_at":"2026-11-17T11:00:00Z"},"timeseries":[
+            {"time":"2026-11-17T12:00:00Z","data":{"instant":{"details":{"air_temperature":10.7,"wind_speed":2.1}},
+            "next_1_hours":{"summary":{"symbol_code":"lightrainshowers_night"}},
+            "next_6_hours":{"summary":{"symbol_code":"cloudy"}}}}]}}"""
+        val r = WeatherReport.parseMet(City.SEOUL, json)
+        assertEquals(Sky.RAIN, r.sky)
+        assertEquals(10.7, r.temperatureC, 0.001)
+        assertFalse(r.isDay)
+        assertEquals(WeatherSource.MET_NORWAY, r.source)
+    }
+
+    @Test fun metSymbolsMapToSky() {
+        assertEquals(Sky.CLEAR, WeatherReport.skyOfMet("clearsky_day"))
+        assertEquals(Sky.CLEAR, WeatherReport.skyOfMet("fair_night"))
+        assertEquals(Sky.CLOUDY, WeatherReport.skyOfMet("partlycloudy_day"))
+        assertEquals(Sky.FOG, WeatherReport.skyOfMet("fog"))
+        assertEquals(Sky.RAIN, WeatherReport.skyOfMet("heavyrain"))
+        assertEquals(Sky.SNOW, WeatherReport.skyOfMet("lightsleetshowers_day"))
+        assertEquals(Sky.STORM, WeatherReport.skyOfMet("rainandthunder"))
+    }
+
+    @Test fun backupUrlUsesCityCoordinatesWithoutKey() {
+        val url = WeatherClient.metUrl(City.SEOUL)
+        assertTrue(url.startsWith("https://api.met.no/weatherapi/locationforecast/2.0/compact?"))
+        assertTrue(url.contains("lat=37.57") && url.contains("lon=126.98"))
+        assertFalse(url.contains("key", ignoreCase = true))
+    }
 }
