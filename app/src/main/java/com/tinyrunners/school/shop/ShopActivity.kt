@@ -51,8 +51,8 @@ class ShopActivity : Activity() {
     private lateinit var row: LinearLayout
     private lateinit var scroller: HorizontalScrollView
     /** Page dots and the ▶ button under the cards (only when a shelf has more cards than fit). */
-    private lateinit var pager: LinearLayout
-    private var pages = 1
+    private lateinit var prevArrow: Button
+    private lateinit var nextArrow: Button
     private var wallet: Wallet? = null
     private var loadFailed = false
     /** The card whose purchase or wear request is being saved; its button shows "처리 중" and nothing else reacts. */
@@ -137,10 +137,15 @@ class ShopActivity : Activity() {
 
         row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(0, dp(2), 0, dp(2)) }
         scroller = HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(row) }
-        content.addView(scroller, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(6) })
-        pager = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER }
-        content.addView(pager, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(30)).apply { topMargin = dp(3) })
-        scroller.setOnScrollChangeListener { _, _, _, _, _ -> markPage() }
+        // The cards between a round ◀ and ▶ (like the friend selection); each slides the shelf by one card.
+        prevArrow = sideArrow("◀", R.string.shop_prev_card) { slide(-1) }
+        nextArrow = sideArrow("▶", R.string.shop_next_page) { slide(+1) }
+        val shelfRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        shelfRow.addView(prevArrow, LinearLayout.LayoutParams(dp(46), dp(46)).apply { marginEnd = dp(10) })
+        shelfRow.addView(scroller, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f))
+        shelfRow.addView(nextArrow, LinearLayout.LayoutParams(dp(46), dp(46)).apply { marginStart = dp(10) })
+        content.addView(shelfRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f).apply { topMargin = dp(6); bottomMargin = dp(6) })
+        scroller.setOnScrollChangeListener { _, _, _, _, _ -> updateArrows() }
         // Cards are sized from the row's width (four across), so lay them out again once that width is known.
         scroller.addOnLayoutChangeListener { _, l, _, r, _, ol, _, or, _ -> if (r - l != or - ol) scroller.post { render() } }
 
@@ -208,48 +213,32 @@ class ShopActivity : Activity() {
             Shelf.ITEMS -> add(com.tinyrunners.school.quest.QuestItems.all.map { itemCard(it, w) })
             Shelf.COINS -> add(ShopRules.COIN_PACKS.map { coinCard(it) })
         }
-        // Pages of four: dots show where you are, ▶ moves on (and back to the start after the last page).
-        val perPage = if (available > 0) maxOf(1, (available + gap) / (cardWidth + gap)) else 4
-        pages = (row.childCount + perPage - 1) / perPage
-        pager.removeAllViews()
-        if (pages > 1) {
-            repeat(pages) { i ->
-                pager.addView(View(this).apply { importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO },
-                    LinearLayout.LayoutParams(dp(12), dp(12)).apply { if (i > 0) marginStart = dp(12) })
-            }
-            pager.addView(Button(this).apply {
-                text = "▶"; textSize = 13f; setTextColor(GREEN); stateListAnimator = null; setPadding(0, 0, 0, 0)
-                minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
-                contentDescription = getString(R.string.shop_next_page)
-                background = RippleDrawable(ColorStateList.valueOf(OWNED), GradientDrawable().apply {
-                    setColor(CARD); cornerRadius = dp(8).toFloat(); setStroke(dp(2), GREEN)
-                }, null)
-                setOnClickListener {
-                    val page = currentPage()
-                    scroller.smoothScrollTo(if (page + 1 >= pages) 0 else (page + 1) * pageWidth(), 0)
-                }
-            }, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginStart = dp(22) })
-        }
-        markPage()
+        scroller.post { updateArrows() }
     }
 
-    private fun pageWidth() = scroller.width + dp(14)
-
-    private fun currentPage(): Int {
-        val max = (row.width - scroller.width).coerceAtLeast(0)
-        if (pages <= 1) return 0
-        // The last page may be partly filled, so being scrolled to the end counts as the last page.
-        return if (scroller.scrollX >= max - dp(4)) pages - 1 else (scroller.scrollX + pageWidth() / 2) / pageWidth()
+    /** One card further (or back). */
+    private fun slide(step: Int) {
+        val first = row.getChildAt(0) ?: return
+        scroller.smoothScrollBy(step * (first.width + dp(14)), 0)
     }
 
-    private fun markPage() {
-        val page = currentPage()
-        for (i in 0 until minOf(pages, pager.childCount)) {
-            pager.getChildAt(i).background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(if (i == page) GREEN else CARD); setStroke(dp(2), if (i == page) GREEN else HONEY_LIGHT)
-            }
+    /** An arrow is pale and does nothing at its end of the shelf. */
+    private fun updateArrows() {
+        for ((arrow, more) in listOf(prevArrow to scroller.canScrollHorizontally(-1), nextArrow to scroller.canScrollHorizontally(1))) {
+            arrow.isEnabled = more
+            arrow.alpha = if (more) 1f else 0.35f
         }
+    }
+
+    /** A round cream arrow with a green edge, the same as on the friend selection screen. */
+    private fun sideArrow(symbol: String, description: Int, click: () -> Unit) = Button(this).apply {
+        text = symbol; textSize = 17f; setTextColor(GREEN); stateListAnimator = null; setPadding(0, 0, 0, 0)
+        minWidth = 0; minimumWidth = 0; minHeight = 0; minimumHeight = 0
+        contentDescription = getString(description)
+        background = RippleDrawable(ColorStateList.valueOf(OWNED), GradientDrawable().apply {
+            shape = GradientDrawable.OVAL; setColor(Color.argb(240, 255, 249, 235)); setStroke(dp(2), GREEN)
+        }, null)
+        setOnClickListener { click() }
     }
 
     /** The lavender guide line for each shelf, between two small diamonds. */
